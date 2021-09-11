@@ -1,6 +1,6 @@
-import {BaseMessage} from "../message";
-import {Account} from "../../accounts/account";
-import axios from "axios";
+import { BaseMessage } from '../message';
+import { Account } from '../../accounts/account';
+import axios from 'axios';
 
 type SignAndBroadcastConfiguration = {
     message: BaseMessage;
@@ -16,11 +16,8 @@ export async function SignAndBroadcast(configuration: SignAndBroadcastConfigurat
 }
 
 async function Broadcast(configuration: BroadcastConfiguration) {
-    await axios.post(
-        `${configuration.APIServer}/api/v0/ipfs/pubsub/pub`,
-        {
-            topic: 'ALEPH-TEST',
-            data: JSON.stringify(configuration.message),
-        },
-    );
+    await axios.post(`${configuration.APIServer}/api/v0/ipfs/pubsub/pub`, {
+        topic: 'ALEPH-TEST',
+        data: JSON.stringify(configuration.message),
+    });
 }

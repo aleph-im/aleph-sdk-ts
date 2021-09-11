@@ -1,15 +1,15 @@
-import {ethereum} from "../../../src/accounts/index";
-import {aggregate, DEFAULT_API_V2} from "../../../src";
-import {StorageEngine} from "../../../src/messages/message";
+import { ethereum } from '../../../src/accounts/index';
+import { aggregate, DEFAULT_API_V2 } from '../../../src';
+import { StorageEngine } from '../../../src/messages/message';
 
-const mnemonic = "exit canvas recycle vault excite battle short roof unlock limb attract device";
+const mnemonic = 'exit canvas recycle vault excite battle short roof unlock limb attract device';
 
-describe("Aggregate message publish test", () => {
-    it("should publish an aggregate message", async () => {
+describe('Aggregate message publish test', () => {
+    it('should publish an aggregate message', async () => {
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
-        const key = "satoshi";
+        const key = 'satoshi';
 
-        const content: {A: number} = {
+        const content: { A: number } = {
             A: 1,
         };
 
@@ -17,7 +17,7 @@ describe("Aggregate message publish test", () => {
             account: account,
             key: key,
             content: content,
-            channel: "TEST",
+            channel: 'TEST',
             APIServer: DEFAULT_API_V2,
             inlineRequested: true,
             storageEngine: StorageEngine.STORAGE,
@@ -26,7 +26,7 @@ describe("Aggregate message publish test", () => {
         type T = {
             satoshi: {
                 A: number;
-            }
+            };
         };
         const message = await aggregate.Get<T>({
             APIServer: DEFAULT_API_V2,

@@ -1,6 +1,6 @@
 export type AggregateKey = {
     name: string;
-}
+};
 
 export type AggregateContent<T> = {
     address: string;

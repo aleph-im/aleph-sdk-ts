@@ -1,7 +1,7 @@
-import {BaseMessage} from "../messages/message";
+import { BaseMessage } from '../messages/message';
 
 export enum ChainType {
-    Ethereum = "ETH",
+    Ethereum = 'ETH',
 }
 
 export abstract class Account {
@@ -13,6 +13,6 @@ export abstract class Account {
         this.publicKey = publicKey;
     }
 
-    abstract GetChain(): ChainType
-    abstract Sign(message: BaseMessage): Promise<string>
+    abstract GetChain(): ChainType;
+    abstract Sign(message: BaseMessage): Promise<string>;
 }

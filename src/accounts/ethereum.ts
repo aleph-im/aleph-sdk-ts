@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import * as bip39 from 'bip39';
-import {Account, ChainType} from './account';
-import {BaseMessage, GetVerificationBuffer} from "../messages/message";
+import { Account, ChainType } from './account';
+import { BaseMessage, GetVerificationBuffer } from '../messages/message';
 
 class ETHAccount extends Account {
     wallet: ethers.Wallet;
@@ -16,7 +16,7 @@ class ETHAccount extends Account {
 
     override Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             resolve(this.wallet.signMessage(buffer.toString()));
         });
     }

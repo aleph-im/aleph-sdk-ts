@@ -1,4 +1,4 @@
-import {ChainType} from "../accounts/account";
+import { ChainType } from '../accounts/account';
 
 type MongoDBID = {
     $oid: string;
@@ -21,7 +21,7 @@ export enum StorageEngine {
 }
 
 export enum MessageType {
-    Aggregate = "AGGREGATE",
+    Aggregate = 'AGGREGATE',
 }
 
 type BaseContent = {

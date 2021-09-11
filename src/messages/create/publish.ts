@@ -1,7 +1,7 @@
 import shajs from 'sha.js';
 
-import {BaseMessage, StorageEngine} from "../message";
-import axios from "axios";
+import { BaseMessage, StorageEngine } from '../message';
+import axios from 'axios';
 
 type PutConfiguration<T> = {
     message: BaseMessage;
@@ -15,11 +15,11 @@ type PushConfiguration<T> = {
     content: T;
     APIServer: string;
     storageEngine: StorageEngine;
-}
+};
 
 type PushResponse = {
     hash: string;
-}
+};
 
 export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
     if (configuration.inlineRequested) {
@@ -28,9 +28,9 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
         if (serialized.length > 150000) {
             configuration.inlineRequested = false;
         } else {
-            configuration.message.item_type = "INLINE";
+            configuration.message.item_type = 'INLINE';
             configuration.message.item_content = serialized;
-            configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
+            configuration.message.item_hash = new shajs.sha256().update(serialized).digest('hex');
         }
     }
     if (!configuration.inlineRequested) {
