@@ -22,9 +22,10 @@ export enum StorageEngine {
 
 export enum MessageType {
     Aggregate = 'AGGREGATE',
+    Post = 'POST',
 }
 
-type BaseContent = {
+export type BaseContent = {
     address: string;
     time: number;
 };
