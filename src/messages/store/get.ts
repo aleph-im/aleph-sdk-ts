@@ -5,7 +5,7 @@ type StoreGetConfiguration = {
     APIServer: string;
 };
 
-export async function Get(configuration: StoreGetConfiguration) {
+export async function Get(configuration: StoreGetConfiguration): Promise<ArrayBuffer> {
     const response = await axios.get<ArrayBuffer>(
         `${configuration.APIServer}/api/v0/storage/raw/${configuration.fileHash}?find`,
         {

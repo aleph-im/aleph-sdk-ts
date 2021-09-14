@@ -1,3 +1,4 @@
+import * as base from './account';
 import * as ethereum from './ethereum';
 
-export { ethereum };
+export { base, ethereum };

@@ -23,6 +23,7 @@ export enum StorageEngine {
 export enum MessageType {
     Aggregate = 'AGGREGATE',
     Post = 'POST',
+    Store = 'STORE',
 }
 
 export type BaseContent = {

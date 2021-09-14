@@ -1,4 +1,5 @@
 import shajs from 'sha.js';
+import FormData from 'form-data';
 
 import { BaseMessage, StorageEngine } from '../message';
 import axios from 'axios';
@@ -19,6 +20,12 @@ type PushConfiguration<T> = {
 
 type PushResponse = {
     hash: string;
+};
+
+type PushFileConfiguration = {
+    file: File | Blob | string;
+    APIServer: string;
+    storageEngine: StorageEngine;
 };
 
 export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
@@ -54,5 +61,21 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
         },
     );
 
+    return response.data.hash;
+}
+
+export async function PushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {
+    const form = new FormData();
+
+    form.append('file', configuration.file);
+    const response = await axios.post<PushResponse>(
+        `${configuration.APIServer}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
+        form,
+        {
+            headers: {
+                'Content-Type': `multipart/form-data; boundary=${form.getBoundary()}`,
+            },
+        },
+    );
     return response.data.hash;
 }
