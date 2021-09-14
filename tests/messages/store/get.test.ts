@@ -1,4 +1,4 @@
-import {DEFAULT_API_V2, store} from "../../../src";
+import { DEFAULT_API_V2, store } from '../../../src';
 
 function ArraybufferToString(ab: ArrayBuffer) {
     return new TextDecoder().decode(ab);
