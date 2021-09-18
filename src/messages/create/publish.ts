@@ -1,5 +1,4 @@
 import shajs from 'sha.js';
-import FormData from 'form-data';
 
 import { BaseMessage, StorageEngine } from '../message';
 import axios from 'axios';
@@ -73,7 +72,7 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
         form,
         {
             headers: {
-                'Content-Type': `multipart/form-data; boundary=${form.getBoundary()}`,
+                'Content-Type': undefined,
             },
         },
     );

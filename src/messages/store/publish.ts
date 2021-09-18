@@ -20,7 +20,7 @@ type StoreContent = BaseContent & {
 };
 
 export async function Publish(spc: StorePublishConfiguration): Promise<BaseMessage> {
-    await PushFileToStorageEngine({
+    const hash = await PushFileToStorageEngine({
         APIServer: spc.APIServer,
         storageEngine: spc.storageEngine,
         file: spc.fileObject,
@@ -30,7 +30,7 @@ export async function Publish(spc: StorePublishConfiguration): Promise<BaseMessa
     const content: StoreContent = {
         address: spc.account.address,
         item_type: spc.storageEngine,
-        item_hash: '',
+        item_hash: hash,
         time: timestamp,
     };
 

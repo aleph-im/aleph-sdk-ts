@@ -13,6 +13,10 @@
     "declaration": true,
     "target": "ES6",
     "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+    ]
   },
   "include": ["src"],
   "exclude": ["node_modules", "tests"]
