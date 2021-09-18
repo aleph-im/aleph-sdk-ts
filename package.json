@@ -7,7 +7,7 @@
     "build": "rm -rf dist/ && yarn tsc",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "test": "jest",
+    "test": "jest --testTimeout=15000",
     "pub": "yarn test && yarn lint:fix && yarn build && cp package.json dist/ && cd dist"
   },
   "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
