@@ -8,7 +8,8 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "jest --testTimeout=15000",
-    "pub": "yarn test && yarn lint:fix && yarn build && cp package.json dist/ && cd dist"
+    "pub": "yarn test && yarn lint:fix && yarn build && cp package.json dist/ && cd dist",
+    "doc": "typedoc"
   },
   "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
   "author": "PtitLuca <luca.georges-francois@epitech.eu>",
@@ -30,6 +31,7 @@
     "prettier": "^2.4.0",
     "ts-jest": "^27.0.5",
     "tweetnacl": "^1.0.3",
+    "typedoc": "^0.21.4",
     "typescript": "^4.4.3",
     "uuid": "^8.3.2"
   },
