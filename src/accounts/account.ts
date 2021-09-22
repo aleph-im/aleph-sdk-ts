@@ -2,6 +2,7 @@ import { BaseMessage } from '../messages/message';
 
 export enum ChainType {
     Ethereum = 'ETH',
+    Solana = 'SOL',
 }
 
 export abstract class Account {
