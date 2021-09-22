@@ -1,7 +1,7 @@
 import * as solanajs from '@solana/web3.js';
-import {accounts, DEFAULT_API_V2, post} from '../../src/index';
-import {ChainType} from "../../src/accounts/account";
-import {StorageEngine} from "../../src/messages/message";
+import { accounts, DEFAULT_API_V2, post } from '../../src/index';
+import { ChainType } from '../../src/accounts/account';
+import { StorageEngine } from '../../src/messages/message';
 
 describe('Solana accounts', () => {
     it('should create a new solana accounts', () => {
