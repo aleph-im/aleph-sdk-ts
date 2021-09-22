@@ -1,5 +1,4 @@
 import { accounts, post } from '../../../src';
-import { ChainType } from '../../../src/accounts/account';
 import { StorageEngine } from '../../../src/messages/message';
 import { DEFAULT_API_V2 } from '../../../src';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,7 +13,6 @@ describe('Post publish tests', () => {
         expect(async () => {
             await post.Publish({
                 APIServer: DEFAULT_API_V2,
-                chain: ChainType.Ethereum,
                 channel: 'TEST',
                 inlineRequested: true,
                 storageEngine: StorageEngine.IPFS,
@@ -33,7 +31,6 @@ describe('Post publish tests', () => {
         };
         const oldPost = await post.Publish({
             APIServer: DEFAULT_API_V2,
-            chain: ChainType.Ethereum,
             channel: 'TEST',
             inlineRequested: true,
             storageEngine: StorageEngine.IPFS,
@@ -45,7 +42,6 @@ describe('Post publish tests', () => {
         content.body = 'New content !';
         await post.Publish({
             APIServer: DEFAULT_API_V2,
-            chain: ChainType.Ethereum,
             channel: 'TEST',
             inlineRequested: true,
             storageEngine: StorageEngine.IPFS,

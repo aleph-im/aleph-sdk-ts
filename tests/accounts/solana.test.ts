@@ -1,6 +1,5 @@
 import * as solanajs from '@solana/web3.js';
 import { accounts, DEFAULT_API_V2, post } from '../../src/index';
-import { ChainType } from '../../src/accounts/account';
 import { StorageEngine } from '../../src/messages/message';
 
 describe('Solana accounts', () => {
@@ -27,7 +26,6 @@ describe('Solana accounts', () => {
 
         await post.Publish({
             APIServer: DEFAULT_API_V2,
-            chain: ChainType.Solana,
             channel: 'TEST',
             inlineRequested: true,
             storageEngine: StorageEngine.IPFS,

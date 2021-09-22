@@ -1,4 +1,4 @@
-import { Account, ChainType } from '../../accounts/account';
+import { Account } from '../../accounts/account';
 import { BaseContent, BaseMessage, MessageType, StorageEngine } from '../message';
 import { PutContentToStorageEngine } from '../create/publish';
 import { SignAndBroadcast } from '../create/signature';
@@ -18,7 +18,6 @@ type ChainRef = {
 type PostSubmitConfiguration<T> = {
     APIServer: string;
     ref?: string | ChainRef;
-    chain: ChainType;
     channel: string;
     inlineRequested: boolean;
     storageEngine: StorageEngine;
@@ -47,7 +46,7 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
     }
 
     const message: BaseMessage = {
-        chain: configuration.chain,
+        chain: configuration.account.GetChain(),
         sender: configuration.account.address,
         type: MessageType.Post,
         channel: configuration.channel,
