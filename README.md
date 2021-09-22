@@ -44,7 +44,7 @@ yarn build
 
 ## Quick Start
 
-You can refer to the [documentation](https://ptitluca.github.io/aleph-ts/) to use the client in your project.
+You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/index.html) to use the client in your project.
 
 ## Features
 
