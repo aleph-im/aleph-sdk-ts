@@ -6,11 +6,17 @@ import { SignAndBroadcast } from '../create/signature';
 
 /**
  * account:         The account used to sign the aggregate message.
+ *
  * key:             The key used to index the aggregate message.
+ *
  * content:         The aggregate message content.
+ *
  * channel:         The channel in which the message will be published.
+ *
  * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph).
+ *
  * inlineRequested: Will the message be inlined ?
+ *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type AggregatePublishConfiguration<T> = {

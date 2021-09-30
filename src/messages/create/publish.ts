@@ -3,6 +3,17 @@ import shajs from 'sha.js';
 import { BaseMessage, StorageEngine } from '../message';
 import axios from 'axios';
 
+/**
+ * message:         The message to update and then publish.
+ *
+ * content:         The message's content to put in the message.
+ *
+ * inlineRequested: Will the message be inlined ?
+ *
+ * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph).
+ *
+ * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ */
 type PutConfiguration<T> = {
     message: BaseMessage;
     content: T;
@@ -27,6 +38,11 @@ type PushFileConfiguration = {
     storageEngine: StorageEngine;
 };
 
+/**
+ * This function is used to update the Aleph message's fields and then publish it to the targeted storage engine.
+ *
+ * @param configuration The configuration used to update & publish the message.
+ */
 export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
     if (configuration.inlineRequested) {
         const serialized = JSON.stringify(configuration.content);
