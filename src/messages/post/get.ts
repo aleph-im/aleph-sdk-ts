@@ -52,6 +52,13 @@ type PostQueryResponse<T> = {
     pagination_item: string;
 };
 
+/**
+ * Retrieves a post message on from the Aleph network.
+ * It uses the type(s) provided in the configuration given as a parameter to retrieve the wanted message.
+ * It also uses the pagination and page parameter to limit the number of messages to retrieve.
+ *
+ * @param configuration The configuration used to get the message, including the API endpoint.
+ */
 export async function Get<T>(configuration: PostGetConfiguration) {
     const params: PostQueryParams = {
         types: configuration.types,

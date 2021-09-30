@@ -32,6 +32,15 @@ type PostContent<T> = BaseContent & {
     ref?: string | ChainRef;
 };
 
+/**
+ * Publishes a post message to the Aleph network.
+ *
+ * This message must be indexed using a type, you can provide in the configuration.
+ *
+ * You can amend the message using the type 'amend' and by providing the reference of the message to amend (its hash).
+ *
+ * @param configuration The configuration used to publish the aggregate message.
+ */
 export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Promise<BaseMessage> {
     const timestamp: number = Date.now() / 1000;
     const content: PostContent<T> = {

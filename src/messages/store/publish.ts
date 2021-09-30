@@ -19,6 +19,12 @@ type StoreContent = BaseContent & {
     ref?: string;
 };
 
+/**
+ * Publishes a store message, containing a File.
+ * You also have to provide default message properties, such as the targeted channel or the account used to sign the message.
+ *
+ * @param spc The configuration used to publish a store message.
+ */
 export async function Publish(spc: StorePublishConfiguration): Promise<BaseMessage> {
     const hash = await PushFileToStorageEngine({
         APIServer: spc.APIServer,
