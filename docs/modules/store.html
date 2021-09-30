@@ -91,13 +91,21 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/469c7fa/src/messages/store/get.ts#L8">messages/store/get.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/92e0f06/src/messages/store/get.ts#L13">messages/store/get.ts:13</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves a store message, i.e. a message containing a File.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>configuration: <span class="tsd-signature-type">StoreGetConfiguration</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The message hash and the API Server endpoint to make the query.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -114,13 +122,22 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/469c7fa/src/messages/store/publish.ts#L22">messages/store/publish.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/92e0f06/src/messages/store/publish.ts#L28">messages/store/publish.ts:28</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Publishes a store message, containing a File.
+									You also have to provide default message properties, such as the targeted channel or the account used to sign the message.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>spc: <span class="tsd-signature-type">StorePublishConfiguration</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The configuration used to publish a store message.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseMessage</span><span class="tsd-signature-symbol">&gt;</span></h4>

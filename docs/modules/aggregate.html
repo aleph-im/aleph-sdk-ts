@@ -91,9 +91,15 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/469c7fa/src/messages/aggregate/get.ts#L14">messages/aggregate/get.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/92e0f06/src/messages/aggregate/get.ts#L20">messages/aggregate/get.ts:20</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves an aggregate message on from the Aleph network.
+									It uses the address &amp; key(s) provided in the configuration given as a parameter to retrieve the wanted message.</p>
+								</div>
+							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
@@ -104,6 +110,9 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>configuration: <span class="tsd-signature-type">AggregateGetConfiguration</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The configuration used to get the message, including the API endpoint.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -120,9 +129,20 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/469c7fa/src/messages/aggregate/publish.ts#L17">messages/aggregate/publish.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/aleph-im/aleph-sdk-ts/blob/92e0f06/src/messages/aggregate/publish.ts#L45">messages/aggregate/publish.ts:45</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Publishes an aggregate message to the Aleph network.</p>
+								</div>
+								<p>The message&#39;s content must respect the following format :
+									{
+									k_1: v_1,
+									k_2: v_2,
+								}</p>
+								<p>This message must be indexed using a key, you can provide in the configuration.</p>
+							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
@@ -133,6 +153,9 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>configuration: <span class="tsd-signature-type">AggregatePublishConfiguration</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The configuration used to publish the aggregate message.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
