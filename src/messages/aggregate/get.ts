@@ -11,6 +11,12 @@ type AggregateGetConfiguration = {
     keys: Array<string>;
 };
 
+/**
+ * Retrieves an aggregate message on from the Aleph network.
+ * It uses the address & key(s) provided in the configuration given as a parameter to retrieve the wanted message.
+ *
+ * @param configuration The configuration used to get the message, including the API endpoint.
+ */
 export async function Get<T>(
     configuration: AggregateGetConfiguration = {
         APIServer: DEFAULT_API_V2,

@@ -4,6 +4,15 @@ import { BaseMessage, MessageType, StorageEngine } from '../message';
 import { PutContentToStorageEngine } from '../create/publish';
 import { SignAndBroadcast } from '../create/signature';
 
+/**
+ * account:         The account used to sign the aggregate message.
+ * key:             The key used to index the aggregate message.
+ * content:         The aggregate message content.
+ * channel:         The channel in which the message will be published.
+ * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph).
+ * inlineRequested: Will the message be inlined ?
+ * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ */
 type AggregatePublishConfiguration<T> = {
     account: Account;
     key: string | AggregateKey;
@@ -14,6 +23,19 @@ type AggregatePublishConfiguration<T> = {
     APIServer: string;
 };
 
+/**
+ * Publishes an aggregate message to the Aleph network.
+ *
+ * The message's content must respect the following format :
+ * {
+ *     k_1: v_1,
+ *     k_2: v_2,
+ * }
+ *
+ * This message must be indexed using a key, you can provide in the configuration.
+ *
+ * @param configuration The configuration used to publish the aggregate message.
+ */
 export async function Publish<T>(configuration: AggregatePublishConfiguration<T>) {
     const timestamp = Date.now() / 1000;
     const content: AggregateContent<T> = {
