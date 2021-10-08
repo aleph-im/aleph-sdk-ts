@@ -59,7 +59,7 @@ type PostQueryResponse<T> = {
  *
  * @param configuration The configuration used to get the message, including the API endpoint.
  */
-export async function Get<T>(configuration: PostGetConfiguration) {
+export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQueryResponse<T>> {
     const params: PostQueryParams = {
         types: configuration.types,
         pagination: configuration.pagination,
