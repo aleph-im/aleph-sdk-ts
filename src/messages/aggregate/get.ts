@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { DEFAULT_API_V2 } from '../../index';
+import axios from "axios";
+import { DEFAULT_API_V2 } from "../../index";
 
 type AggregateGetResponse<T> = {
     data: T;
@@ -20,11 +20,11 @@ type AggregateGetConfiguration = {
 export async function Get<T>(
     configuration: AggregateGetConfiguration = {
         APIServer: DEFAULT_API_V2,
-        address: '',
+        address: "",
         keys: [],
     },
 ): Promise<T> {
-    const keys = configuration.keys.length === 0 ? null : configuration.keys.join(',');
+    const keys = configuration.keys.length === 0 ? null : configuration.keys.join(",");
     const response = await axios.get<AggregateGetResponse<T>>(
         `${configuration.APIServer}/api/v0/aggregates/${configuration.address}.json`,
         {
@@ -35,7 +35,7 @@ export async function Get<T>(
     );
 
     if (!response.data.data) {
-        throw new Error('no aggregate found');
+        throw new Error("no aggregate found");
     }
     return response.data.data;
 }

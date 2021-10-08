@@ -1,37 +1,37 @@
-import { accounts, post } from '../../../src';
-import { StorageEngine } from '../../../src/messages/message';
-import { DEFAULT_API_V2 } from '../../../src';
-import { v4 as uuidv4 } from 'uuid';
+import { accounts, post } from "../../../src";
+import { StorageEngine } from "../../../src/messages/message";
+import { DEFAULT_API_V2 } from "../../../src";
+import { v4 as uuidv4 } from "uuid";
 
-describe('Post publish tests', () => {
-    it('should publish post message correctly', async () => {
+describe("Post publish tests", () => {
+    it("should publish post message correctly", async () => {
         const account = accounts.ethereum.NewAccount();
         const content: { body: string } = {
-            body: 'Hello World',
+            body: "Hello World",
         };
 
         expect(async () => {
             await post.Publish({
                 APIServer: DEFAULT_API_V2,
-                channel: 'TEST',
+                channel: "TEST",
                 inlineRequested: true,
                 storageEngine: StorageEngine.IPFS,
                 account: account,
-                postType: 'custom_type',
+                postType: "custom_type",
                 content: content,
             });
         }).not.toThrow();
     });
 
-    it('should amend post message correctly', async () => {
+    it("should amend post message correctly", async () => {
         const account = accounts.ethereum.NewAccount();
         const postType = uuidv4();
         const content: { body: string } = {
-            body: 'Hello World',
+            body: "Hello World",
         };
         const oldPost = await post.Publish({
             APIServer: DEFAULT_API_V2,
-            channel: 'TEST',
+            channel: "TEST",
             inlineRequested: true,
             storageEngine: StorageEngine.IPFS,
             account: account,
@@ -39,14 +39,14 @@ describe('Post publish tests', () => {
             content: content,
         });
 
-        content.body = 'New content !';
+        content.body = "New content !";
         await post.Publish({
             APIServer: DEFAULT_API_V2,
-            channel: 'TEST',
+            channel: "TEST",
             inlineRequested: true,
             storageEngine: StorageEngine.IPFS,
             account: account,
-            postType: 'amend',
+            postType: "amend",
             content: content,
             ref: oldPost.item_hash,
         });

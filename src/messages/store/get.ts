@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 type StoreGetConfiguration = {
     fileHash: string;
@@ -14,7 +14,7 @@ export async function Get(configuration: StoreGetConfiguration): Promise<ArrayBu
     const response = await axios.get<ArrayBuffer>(
         `${configuration.APIServer}/api/v0/storage/raw/${configuration.fileHash}?find`,
         {
-            responseType: 'arraybuffer',
+            responseType: "arraybuffer",
         },
     );
 

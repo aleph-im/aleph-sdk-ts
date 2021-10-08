@@ -1,7 +1,7 @@
-import { ethers } from 'ethers';
-import * as bip39 from 'bip39';
-import { Account, ChainType } from './account';
-import { BaseMessage, GetVerificationBuffer } from '../messages/message';
+import { ethers } from "ethers";
+import * as bip39 from "bip39";
+import { Account, ChainType } from "./account";
+import { BaseMessage, GetVerificationBuffer } from "../messages/message";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.

@@ -1,12 +1,12 @@
-import { BaseMessage } from '../messages/message';
+import { BaseMessage } from "../messages/message";
 
 /**
  * ChainType defines which account was used to publish a message.
  * It is automatically provided when publishing messages.
  */
 export enum ChainType {
-    Ethereum = 'ETH',
-    Solana = 'SOL',
+    Ethereum = "ETH",
+    Solana = "SOL",
 }
 
 /**

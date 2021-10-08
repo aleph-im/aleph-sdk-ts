@@ -1,4 +1,4 @@
-import { ChainType } from '../accounts/account';
+import { ChainType } from "../accounts/account";
 
 type MongoDBID = {
     $oid: string;
@@ -16,14 +16,14 @@ type MessageConfirmation = {
 };
 
 export enum StorageEngine {
-    IPFS = 'IPFS',
-    STORAGE = 'STORAGE',
+    IPFS = "IPFS",
+    STORAGE = "STORAGE",
 }
 
 export enum MessageType {
-    Aggregate = 'AGGREGATE',
-    Post = 'POST',
-    Store = 'STORE',
+    Aggregate = "AGGREGATE",
+    Post = "POST",
+    Store = "STORE",
 }
 
 export type BaseContent = {
@@ -42,7 +42,7 @@ export type BaseMessage = {
     signature: string;
     size: number;
     time: number;
-    item_type: StorageEngine | 'INLINE';
+    item_type: StorageEngine | "INLINE";
     item_content: string;
     hash_type?: string;
     item_hash: string;

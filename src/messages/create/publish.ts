@@ -1,7 +1,7 @@
-import shajs from 'sha.js';
+import shajs from "sha.js";
 
-import { BaseMessage, StorageEngine } from '../message';
-import axios from 'axios';
+import { BaseMessage, StorageEngine } from "../message";
+import axios from "axios";
 
 /**
  * message:         The message to update and then publish.
@@ -50,9 +50,9 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
         if (serialized.length > 150000) {
             configuration.inlineRequested = false;
         } else {
-            configuration.message.item_type = 'INLINE';
+            configuration.message.item_type = "INLINE";
             configuration.message.item_content = serialized;
-            configuration.message.item_hash = new shajs.sha256().update(serialized).digest('hex');
+            configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
         }
     }
     if (!configuration.inlineRequested) {
@@ -71,7 +71,7 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
         configuration.content,
         {
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
         },
     );
@@ -82,13 +82,13 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
 export async function PushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {
     const form = new FormData();
 
-    form.append('file', configuration.file);
+    form.append("file", configuration.file);
     const response = await axios.post<PushResponse>(
         `${configuration.APIServer}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
         form,
         {
             headers: {
-                'Content-Type': undefined,
+                "Content-Type": undefined,
             },
         },
     );

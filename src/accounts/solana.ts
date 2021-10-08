@@ -1,7 +1,7 @@
-import { Account, ChainType } from './account';
-import { BaseMessage, GetVerificationBuffer } from '../messages/message';
-import * as solanajs from '@solana/web3.js';
-import nacl from 'tweetnacl';
+import { Account, ChainType } from "./account";
+import { BaseMessage, GetVerificationBuffer } from "../messages/message";
+import * as solanajs from "@solana/web3.js";
+import nacl from "tweetnacl";
 
 /**
  * SOLAccount implements the Account class for the Solana protocol.

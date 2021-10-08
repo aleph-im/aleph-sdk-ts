@@ -1,8 +1,8 @@
-import { Account } from '../../accounts/account';
-import { AggregateContent, AggregateKey } from './types';
-import { BaseMessage, MessageType, StorageEngine } from '../message';
-import { PutContentToStorageEngine } from '../create/publish';
-import { SignAndBroadcast } from '../create/signature';
+import { Account } from "../../accounts/account";
+import { AggregateContent, AggregateKey } from "./types";
+import { BaseMessage, MessageType, StorageEngine } from "../message";
+import { PutContentToStorageEngine } from "../create/publish";
+import { SignAndBroadcast } from "../create/signature";
 
 /**
  * account:         The account used to sign the aggregate message.
@@ -56,12 +56,12 @@ export async function Publish<T>(configuration: AggregatePublishConfiguration<T>
         sender: configuration.account.address,
         type: MessageType.Aggregate,
         confirmed: false,
-        signature: '',
+        signature: "",
         size: 0,
         time: timestamp,
         item_type: configuration.storageEngine,
-        item_content: '',
-        item_hash: '',
+        item_content: "",
+        item_hash: "",
     };
 
     await PutContentToStorageEngine({

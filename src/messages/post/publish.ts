@@ -1,7 +1,7 @@
-import { Account } from '../../accounts/account';
-import { BaseContent, BaseMessage, MessageType, StorageEngine } from '../message';
-import { PutContentToStorageEngine } from '../create/publish';
-import { SignAndBroadcast } from '../create/signature';
+import { Account } from "../../accounts/account";
+import { BaseContent, BaseMessage, MessageType, StorageEngine } from "../message";
+import { PutContentToStorageEngine } from "../create/publish";
+import { SignAndBroadcast } from "../create/signature";
 
 type ChainRef = {
     chain: string;
@@ -50,7 +50,7 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
         time: timestamp,
     };
 
-    if (configuration.ref !== '') {
+    if (configuration.ref !== "") {
         content.ref = configuration.ref;
     }
 
@@ -60,12 +60,12 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
         type: MessageType.Post,
         channel: configuration.channel,
         confirmed: false,
-        signature: '',
+        signature: "",
         size: 0,
         time: timestamp,
         item_type: configuration.storageEngine,
-        item_content: '',
-        item_hash: '',
+        item_content: "",
+        item_hash: "",
     };
 
     await PutContentToStorageEngine({
