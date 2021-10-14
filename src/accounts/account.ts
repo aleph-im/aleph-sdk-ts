@@ -7,6 +7,7 @@ import { BaseMessage } from "../messages/message";
 export enum ChainType {
     Ethereum = "ETH",
     Solana = "SOL",
+    Substrate = "DOT",
 }
 
 /**
