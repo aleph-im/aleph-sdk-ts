@@ -1,8 +1,9 @@
 import * as bip39 from "bip39";
-import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
-import assert from "assert";
-import { accounts, DEFAULT_API_V2, aggregate } from "../../src";
+import assert = require("node:assert");
+import { testsFunc } from "../index";
 import { StorageEngine } from "../../src/messages/message";
+import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
+import { accounts, DEFAULT_API_V2, aggregate } from "../../src";
 
 async function createAccountTest(): Promise<boolean> {
     const account = await accounts.substrate.NewAccount();
@@ -51,7 +52,7 @@ async function PublishAggregate(): Promise<boolean> {
     const account = await accounts.substrate.NewAccount();
     const key = "cheer";
     const content: { body: string } = {
-        body: "Hello From TS SDK with Substrate !",
+        body: "Typescript sdk",
     };
 
     await aggregate.Publish({
@@ -84,9 +85,20 @@ async function PublishAggregate(): Promise<boolean> {
     return true;
 }
 
-export default function substrateTests(): void {
-    createAccountTest();
-    importAccountFromMnemonicTest();
-    importAccountFromPrivateKeyTest();
-    PublishAggregate();
+export default async function substrateTests(): Promise<boolean> {
+    let passed = true;
+    let res: boolean;
+    const testBatch: testsFunc[] = [
+        createAccountTest,
+        importAccountFromMnemonicTest,
+        importAccountFromPrivateKeyTest,
+        PublishAggregate,
+    ];
+
+    for (let i = 0; i < testBatch.length; i++) {
+        res = await testBatch[i]();
+        console.log(`Test [${i + 1}-${res ? "Success" : "Failure"}]\t${testBatch[i].name}`);
+        passed = res ? passed : false;
+    }
+    return passed;
 }
