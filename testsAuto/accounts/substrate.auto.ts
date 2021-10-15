@@ -1,9 +1,11 @@
 import * as bip39 from "bip39";
-import assert = require("node:assert");
-import { testsFunc } from "../index";
-import { StorageEngine } from "../../src/messages/message";
+import assert = require("assert");
 import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
-import { accounts, DEFAULT_API_V2, aggregate } from "../../src";
+
+import { testsFunc } from "../index";
+import { accounts, aggregate } from "../../src";
+import { DEFAULT_API_V2 } from "../../src/global";
+import { StorageEngine } from "../../src/messages/message";
 
 async function createAccountTest(): Promise<boolean> {
     const account = await accounts.substrate.NewAccount();
