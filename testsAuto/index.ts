@@ -1,16 +1,5 @@
-import { substrateTests } from "./accounts";
-export type testsFunc = () => Promise<boolean>;
+import * as testsSuits from "./accounts/index";
 
-async function launchTestsAuto(): Promise<void> {
-    let passed = true;
-    const testBatch: testsFunc[] = [substrateTests.default];
+type testsFunc = () => Promise<boolean>;
 
-    for (let i = 0; i < testBatch.length; i++) {
-        console.log(`---Starting: ${testBatch[i].name}`);
-        passed = (await testBatch[i]()) ? passed : false;
-    }
-    if (!passed) process.exit(1);
-    else process.exit(0);
-}
-
-launchTestsAuto();
+export { testsFunc, testsSuits };
