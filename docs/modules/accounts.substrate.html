@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>store | aleph-sdk-ts</title>
+	<title>substrate | aleph-sdk-ts</title>
 	<meta name="description" content="Documentation for aleph-sdk-ts">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,13 @@
 					<a href="../modules.html">aleph-sdk-ts</a>
 				</li>
 				<li>
-					<a href="store.html">store</a>
+					<a href="accounts.html">accounts</a>
+				</li>
+				<li>
+					<a href="accounts.substrate.html">substrate</a>
 				</li>
 			</ul>
-			<h1>Namespace store</h1>
+			<h1>Namespace substrate</h1>
 		</div>
 	</div>
 </header>
@@ -72,8 +75,9 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="store.html#Get" class="tsd-kind-icon">Get</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="store.html#Publish" class="tsd-kind-icon">Publish</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="accounts.substrate.html#ImportAccountFromMnemonic" class="tsd-kind-icon">Import<wbr>Account<wbr>From<wbr>Mnemonic</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="accounts.substrate.html#ImportAccountFromPrivateKey" class="tsd-kind-icon">Import<wbr>Account<wbr>From<wbr>Private<wbr>Key</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="accounts.substrate.html#NewAccount" class="tsd-kind-icon">New<wbr>Account</a></li>
 							</ul>
 						</section>
 					</div>
@@ -82,65 +86,88 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
-					<a name="Get" class="tsd-anchor"></a>
-					<h3>Get</h3>
+					<a name="ImportAccountFromMnemonic" class="tsd-anchor"></a>
+					<h3>Import<wbr>Account<wbr>From<wbr>Mnemonic</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">Get<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">StoreGetConfiguration</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">Import<wbr>Account<wbr>From<wbr>Mnemonic<span class="tsd-signature-symbol">(</span>mnemonic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">DOTAccount</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Rgascoin/aleph-sdk-ts/blob/2f75385/src/messages/store/get.ts#L13">messages/store/get.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/Rgascoin/aleph-sdk-ts/blob/2f75385/src/accounts/substrate.ts#L64">accounts/substrate.ts:64</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Retrieves a store message, i.e. a message containing a File.</p>
+									<p>Imports a substrate account given a mnemonic and the &#39;polkadot&#39; package.</p>
 								</div>
+								<p>It creates an substrate wallet containing information about the account, extracted in the DOTAccount constructor.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>configuration: <span class="tsd-signature-type">StoreGetConfiguration</span></h5>
+									<h5>mnemonic: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The message hash and the API Server endpoint to make the query.</p>
+										<p>The mnemonic of the account to import.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">DOTAccount</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
-					<a name="Publish" class="tsd-anchor"></a>
-					<h3>Publish</h3>
+					<a name="ImportAccountFromPrivateKey" class="tsd-anchor"></a>
+					<h3>Import<wbr>Account<wbr>From<wbr>Private<wbr>Key</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">Publish<span class="tsd-signature-symbol">(</span>spc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">StorePublishConfiguration</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseMessage</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">Import<wbr>Account<wbr>From<wbr>Private<wbr>Key<span class="tsd-signature-symbol">(</span>privateKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">DOTAccount</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Rgascoin/aleph-sdk-ts/blob/2f75385/src/messages/store/publish.ts#L28">messages/store/publish.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/Rgascoin/aleph-sdk-ts/blob/2f75385/src/accounts/substrate.ts#L78">accounts/substrate.ts:78</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Publishes a store message, containing a File.
-									You also have to provide default message properties, such as the targeted channel or the account used to sign the message.</p>
+									<p>Imports a substrate account given a private key and the &#39;polkadot/keyring&#39; package&#39;s class.</p>
 								</div>
+								<p>It creates a substrate wallet containing information about the account, extracted in the DOTAccount constructor.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>spc: <span class="tsd-signature-type">StorePublishConfiguration</span></h5>
+									<h5>privateKey: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The configuration used to publish a store message.</p>
+										<p>The private key of the account to import.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseMessage</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">DOTAccount</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="NewAccount" class="tsd-anchor"></a>
+					<h3>New<wbr>Account</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">New<wbr>Account<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">DOTAccount</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Rgascoin/aleph-sdk-ts/blob/2f75385/src/accounts/substrate.ts#L51">accounts/substrate.ts:51</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a new substrate account using a randomly generated substrate keyring.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">DOTAccount</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -164,7 +191,7 @@
 					<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
 						<a href="accounts.solana.html">accounts.solana</a>
 					</li>
-					<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+					<li class="current tsd-kind-namespace tsd-parent-kind-namespace">
 						<a href="accounts.substrate.html">accounts.substrate</a>
 					</li>
 					<li class=" tsd-kind-namespace">
@@ -173,7 +200,7 @@
 					<li class=" tsd-kind-namespace">
 						<a href="post.html">post</a>
 					</li>
-					<li class="current tsd-kind-namespace">
+					<li class=" tsd-kind-namespace">
 						<a href="store.html">store</a>
 					</li>
 				</ul>
@@ -181,10 +208,13 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-namespace">
-						<a href="store.html#Get" class="tsd-kind-icon">Get</a>
+						<a href="accounts.substrate.html#ImportAccountFromMnemonic" class="tsd-kind-icon">Import<wbr>Account<wbr>From<wbr>Mnemonic</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-namespace">
-						<a href="store.html#Publish" class="tsd-kind-icon">Publish</a>
+						<a href="accounts.substrate.html#ImportAccountFromPrivateKey" class="tsd-kind-icon">Import<wbr>Account<wbr>From<wbr>Private<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="accounts.substrate.html#NewAccount" class="tsd-kind-icon">New<wbr>Account</a>
 					</li>
 				</ul>
 			</nav>
