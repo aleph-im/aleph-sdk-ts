@@ -11,7 +11,7 @@ import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
  *  It is used to represent a substrate account when publishing a message on the Aleph network.
  */
 class DOTAccount extends Account {
-    pair: KeyringPair;
+    private pair: KeyringPair;
     constructor(pair: KeyringPair) {
         const publicKey: string = Buffer.from(pair.publicKey).toString("hex");
         super(pair.address, publicKey);
