@@ -1,10 +1,11 @@
 import * as solanajs from "@solana/web3.js";
-import { accounts, DEFAULT_API_V2, post } from "../../src/index";
 import { StorageEngine } from "../../src/messages/message";
+import { post, solana } from "../index";
+import { DEFAULT_API_V2 } from "../../src/global";
 
 describe("Solana accounts", () => {
     it("should create a new solana accounts", () => {
-        const account = accounts.solana.NewAccount();
+        const account = solana.NewAccount();
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");
@@ -12,14 +13,14 @@ describe("Solana accounts", () => {
 
     it("should import an solana accounts using a private key", () => {
         const keyPair = new solanajs.Keypair();
-        const account = accounts.solana.ImportAccountFromPrivateKey(keyPair.secretKey);
+        const account = solana.ImportAccountFromPrivateKey(keyPair.secretKey);
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).toBe(keyPair.publicKey.toString());
     });
 
     it("should publish a post message correctly", async () => {
-        const account = accounts.solana.NewAccount();
+        const account = solana.NewAccount();
         const content: { body: string } = {
             body: "Hello World",
         };

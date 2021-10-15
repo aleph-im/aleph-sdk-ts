@@ -1,4 +1,4 @@
-import { base } from "../../accounts/index";
+import * as base from "../../accounts/account";
 import { BaseContent, BaseMessage, MessageType, StorageEngine } from "../message";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
