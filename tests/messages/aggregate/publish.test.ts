@@ -1,6 +1,6 @@
-import { ethereum } from "../../../src/accounts/index";
-import { aggregate, DEFAULT_API_V2 } from "../../../src";
 import { StorageEngine } from "../../../src/messages/message";
+import { aggregate, ethereum } from "../../index";
+import { DEFAULT_API_V2 } from "../../../src/global";
 
 const mnemonic = "exit canvas recycle vault excite battle short roof unlock limb attract device";
 

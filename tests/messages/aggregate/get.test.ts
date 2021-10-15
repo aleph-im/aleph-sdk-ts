@@ -1,5 +1,5 @@
-import { DEFAULT_API_V2 } from "../../../src";
-import { aggregate } from "../../../src/index";
+import { aggregate } from "../../index";
+import { DEFAULT_API_V2 } from "../../../src/global";
 
 describe("Aggregate message retrieve test", () => {
     it("should retrieve an existing aggregate message", async () => {
