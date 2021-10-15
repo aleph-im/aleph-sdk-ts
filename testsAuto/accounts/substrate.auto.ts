@@ -7,6 +7,13 @@ import { accounts, aggregate } from "../../src";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { StorageEngine } from "../../src/messages/message";
 
+/**
+ * This is the first test of the test bach for substrate.
+ * It should create a new substrate account and check if it worked.
+ *
+ * For the assertion comparison, the `assert` standard library is used.
+ * If the assertion failed, you must catch the error message and display it while returning false.
+ */
 async function createAccountTest(): Promise<boolean> {
     const account = await accounts.substrate.NewAccount();
 
@@ -87,6 +94,17 @@ async function PublishAggregate(): Promise<boolean> {
     return true;
 }
 
+/**
+ * SubstrateTests controls the flow of your custom tests for substrate protocol.
+ * Every test is represented by a function related to the `testsFunc` Type.
+ * The array `testBatch` Contains all the customs tests functions in a predefined order.
+ *
+ * Every test will be executed in order, then a boolean according to the failure or success of your batch
+ * will be returned.
+ *
+ * In order to produce a new test bach you have to copy this function in a new file with
+ * an appropriate name, import `assert` library and `testsFunc` type.
+ */
 export default async function substrateTests(): Promise<boolean> {
     let passed = true;
     let res: boolean;
