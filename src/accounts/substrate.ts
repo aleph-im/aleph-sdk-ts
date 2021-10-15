@@ -6,9 +6,12 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
 
-class DotAccount extends Account {
+/**
+ * DOTAccount implements the Account class for the substrate protocol.
+ *  It is used to represent a substrate account when publishing a message on the Aleph network.
+ */
+class DOTAccount extends Account {
     pair: KeyringPair;
-
     constructor(pair: KeyringPair) {
         const publicKey: string = Buffer.from(pair.publicKey).toString("hex");
         super(pair.address, publicKey);
@@ -19,6 +22,14 @@ class DotAccount extends Account {
         return ChainType.Substrate;
     }
 
+    /**
+     * The Sign method provides a way to sign a given Aleph message using a substrate account.
+     * The full message is not used as the payload, only fields of the BaseMessage type are.
+     *
+     * The sign method of the package 'polkadot' is used as the signature method.
+     *
+     * @param message The Aleph message to sign, using some of its fields.
+     */
     Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
         return new Promise((resolve) => {
@@ -34,22 +45,39 @@ class DotAccount extends Account {
     }
 }
 
-export async function NewAccount(): Promise<DotAccount> {
+/**
+ * Creates a new substrate account using a randomly generated substrate keyring.
+ */
+export async function NewAccount(): Promise<DOTAccount> {
     const mnemonic = generateMnemonic();
 
     return await ImportAccountFromMnemonic(mnemonic);
 }
 
-export async function ImportAccountFromMnemonic(mnemonic: string): Promise<DotAccount> {
+/**
+ * Imports a substrate account given a mnemonic and the 'polkadot' package.
+ *
+ * It creates an substrate wallet containing information about the account, extracted in the DOTAccount constructor.
+ *
+ * @param mnemonic The mnemonic of the account to import.
+ */
+export async function ImportAccountFromMnemonic(mnemonic: string): Promise<DOTAccount> {
     const keyRing = new Keyring({ type: "sr25519" });
 
     await cryptoWaitReady();
-    return new DotAccount(keyRing.createFromUri(mnemonic, { name: "sr25519" }));
+    return new DOTAccount(keyRing.createFromUri(mnemonic, { name: "sr25519" }));
 }
 
-export async function ImportAccountFromPrivateKey(privateKey: string): Promise<DotAccount> {
+/**
+ * Imports a substrate account given a private key and the 'polkadot/keyring' package's class.
+ *
+ * It creates a substrate wallet containing information about the account, extracted in the DOTAccount constructor.
+ *
+ * @param privateKey The private key of the account to import.
+ */
+export async function ImportAccountFromPrivateKey(privateKey: string): Promise<DOTAccount> {
     const keyRing = new Keyring({ type: "sr25519" });
 
     await cryptoWaitReady();
-    return new DotAccount(keyRing.createFromUri(privateKey, { name: "sr25519" }));
+    return new DOTAccount(keyRing.createFromUri(privateKey, { name: "sr25519" }));
 }
