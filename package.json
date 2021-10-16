@@ -15,7 +15,6 @@
   "author": "PtitLuca <luca.georges-francois@epitech.eu>",
   "license": "MIT",
   "devDependencies": {
-    "@solana/web3.js": "^1.29.0",
     "@types/elliptic": "^6.4.13",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.9.1",
@@ -23,11 +22,9 @@
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
     "arraybuffer-to-string": "^1.0.2",
-    "bip39": "^3.0.4",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "ethers": "^5.4.6",
     "jest": "^27.1.1",
     "prettier": "^2.4.0",
     "ts-jest": "^27.0.5",
@@ -37,6 +34,9 @@
     "uuid": "^8.3.2"
   },
   "dependencies": {
+    "bip39": "^3.0.4",
+    "ethers": "^5.4.6",
+    "@solana/web3.js": "^1.29.0",
     "@types/sha.js": "^2.4.0",
     "avalanche": "^3.9.0",
     "axios": "^0.21.4",
