@@ -7,7 +7,9 @@
     "build": "rm -rf dist/ && yarn tsc",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "test": "jest --testTimeout=15000",
+    "test": "yarn test:jest && yarn test:auto",
+    "test:jest": "jest --testTimeout=15000",
+    "test:auto": "ts-node testsAuto/entryPoint.ts ",
     "pub": "yarn test && yarn lint:fix && yarn build && cp package.json dist/ && cd dist",
     "doc": "typedoc"
   },
@@ -15,6 +17,7 @@
   "author": "PtitLuca <luca.georges-francois@epitech.eu>",
   "license": "MIT",
   "devDependencies": {
+    "@solana/web3.js": "^1.29.0",
     "@types/elliptic": "^6.4.13",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.9.1",
@@ -22,9 +25,11 @@
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
     "arraybuffer-to-string": "^1.0.2",
+    "bip39": "^3.0.4",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "ethers": "^5.4.6",
     "jest": "^27.1.1",
     "prettier": "^2.4.0",
     "ts-jest": "^27.0.5",
@@ -34,13 +39,13 @@
     "uuid": "^8.3.2"
   },
   "dependencies": {
-    "bip39": "^3.0.4",
-    "ethers": "^5.4.6",
-    "@solana/web3.js": "^1.29.0",
+    "@polkadot/keyring": "^7.4.1",
+    "@polkadot/util-crypto": "^7.4.1",
     "@types/sha.js": "^2.4.0",
     "avalanche": "^3.9.0",
     "axios": "^0.21.4",
     "form-data": "^4.0.0",
-    "sha.js": "^2.4.11"
+    "sha.js": "^2.4.11",
+    "ts-node": "^10.3.0"
   }
 }
