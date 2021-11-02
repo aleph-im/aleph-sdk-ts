@@ -25,7 +25,7 @@ type StoreContent = BaseContent & {
  *
  * @param spc The configuration used to publish a store message.
  */
-export async function Publish(spc: StorePublishConfiguration): Promise<BaseMessage> {
+export async function Publish(spc: StorePublishConfiguration): Promise<string> {
     const hash = await PushFileToStorageEngine({
         APIServer: spc.APIServer,
         storageEngine: spc.storageEngine,
@@ -68,5 +68,5 @@ export async function Publish(spc: StorePublishConfiguration): Promise<BaseMessa
         APIServer: spc.APIServer,
     });
 
-    return message;
+    return hash;
 }
