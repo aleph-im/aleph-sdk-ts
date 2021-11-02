@@ -1,6 +1,7 @@
-import { DEFAULT_API_V2, store } from "../../../src";
+import { store } from "../../index";
+import { DEFAULT_API_V2 } from "../../../src/global";
 
-export function ArraybufferToString(ab: ArrayBuffer) {
+export function ArraybufferToString(ab: ArrayBuffer): string {
     return new TextDecoder().decode(ab);
 }
 

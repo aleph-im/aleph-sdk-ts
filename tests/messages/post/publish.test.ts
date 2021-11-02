@@ -1,11 +1,11 @@
-import { accounts, post } from "../../../src";
 import { StorageEngine } from "../../../src/messages/message";
-import { DEFAULT_API_V2 } from "../../../src";
+import { ethereum, post } from "../../index";
+import { DEFAULT_API_V2 } from "../../../src/global";
 import { v4 as uuidv4 } from "uuid";
 
 describe("Post publish tests", () => {
     it("should publish post message correctly", async () => {
-        const account = accounts.ethereum.NewAccount();
+        const account = ethereum.NewAccount();
         const content: { body: string } = {
             body: "Hello World",
         };
@@ -24,7 +24,7 @@ describe("Post publish tests", () => {
     });
 
     it("should amend post message correctly", async () => {
-        const account = accounts.ethereum.NewAccount();
+        const account = ethereum.NewAccount();
         const postType = uuidv4();
         const content: { body: string } = {
             body: "Hello World",
