@@ -1,5 +1,5 @@
 import axios from "axios";
-import { DEFAULT_API_V2 } from "../../index";
+import { DEFAULT_API_V2 } from "../../global";
 
 type AggregateGetResponse<T> = {
     data: T;
