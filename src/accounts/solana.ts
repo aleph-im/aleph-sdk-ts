@@ -60,8 +60,8 @@ export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount 
 /**
  * Creates a new solana account using a randomly generated solana keypair.
  */
-export function NewAccount(): SOLAccount {
+export function NewAccount(): { account: SOLAccount; privateKey: Uint8Array } {
     const account = new solanajs.Keypair();
 
-    return ImportAccountFromPrivateKey(account.secretKey);
+    return { account: ImportAccountFromPrivateKey(account.secretKey), privateKey: account.secretKey };
 }

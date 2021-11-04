@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 
 describe("Ethereum accounts", () => {
     it("should create a new ethereum accounts", () => {
-        const account = ethereum.NewAccount();
+        const { account } = ethereum.NewAccount();
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");

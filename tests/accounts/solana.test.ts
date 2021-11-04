@@ -5,7 +5,7 @@ import { DEFAULT_API_V2 } from "../../src/global";
 
 describe("Solana accounts", () => {
     it("should create a new solana accounts", () => {
-        const account = solana.NewAccount();
+        const { account } = solana.NewAccount();
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");
@@ -20,7 +20,7 @@ describe("Solana accounts", () => {
     });
 
     it("should publish a post message correctly", async () => {
-        const account = solana.NewAccount();
+        const { account } = solana.NewAccount();
         const content: { body: string } = {
             body: "Hello World",
         };

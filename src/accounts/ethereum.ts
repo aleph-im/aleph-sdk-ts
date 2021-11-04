@@ -8,7 +8,7 @@ import { BaseMessage, GetVerificationBuffer } from "../messages/message";
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 class ETHAccount extends Account {
-    wallet: ethers.Wallet;
+    private wallet: ethers.Wallet;
     constructor(wallet: ethers.Wallet) {
         super(wallet.address, wallet.publicKey);
         this.wallet = wallet;
@@ -66,8 +66,8 @@ export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
  *
  * @param derivationPath
  */
-export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
+export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHAccount; mnemonic: string } {
     const mnemonic = bip39.generateMnemonic();
 
-    return ImportAccountFromMnemonic(mnemonic, derivationPath);
+    return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic };
 }

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 describe("Post publish tests", () => {
     it("should publish post message correctly", async () => {
-        const account = ethereum.NewAccount();
+        const { account } = ethereum.NewAccount();
         const content: { body: string } = {
             body: "Hello World",
         };
@@ -24,7 +24,7 @@ describe("Post publish tests", () => {
     });
 
     it("should amend post message correctly", async () => {
-        const account = ethereum.NewAccount();
+        const { account } = ethereum.NewAccount();
         const postType = uuidv4();
         const content: { body: string } = {
             body: "Hello World",

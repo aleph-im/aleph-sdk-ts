@@ -15,7 +15,7 @@ import { StorageEngine } from "../../src/messages/message";
  * If the assertion failed, you must catch the error message and display it while returning false.
  */
 async function createAccountTest(): Promise<boolean> {
-    const account = await accounts.substrate.NewAccount();
+    const { account } = await accounts.substrate.NewAccount();
 
     try {
         assert.notStrictEqual(account.address, "");
@@ -58,7 +58,7 @@ async function importAccountFromPrivateKeyTest(): Promise<boolean> {
 }
 
 async function PublishAggregate(): Promise<boolean> {
-    const account = await accounts.substrate.NewAccount();
+    const { account } = await accounts.substrate.NewAccount();
     const key = "cheer";
     const content: { body: string } = {
         body: "Typescript sdk",

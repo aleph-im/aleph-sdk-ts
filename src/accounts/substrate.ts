@@ -48,10 +48,10 @@ class DOTAccount extends Account {
 /**
  * Creates a new substrate account using a randomly generated substrate keyring.
  */
-export async function NewAccount(): Promise<DOTAccount> {
+export async function NewAccount(): Promise<{ account: DOTAccount; mnemonic: string }> {
     const mnemonic = generateMnemonic();
 
-    return await ImportAccountFromMnemonic(mnemonic);
+    return { account: await ImportAccountFromMnemonic(mnemonic), mnemonic: mnemonic };
 }
 
 /**
