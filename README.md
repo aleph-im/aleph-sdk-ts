@@ -54,10 +54,10 @@ You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/ind
 - [X] Messages retrieving
 - [X] Ethereum account
 - [ ] Avalanche account
-- [ ] NULS account
-- [ ] NULS2 account
+- [X] NULS account
+- [X] NULS2 account
 - [X] Solana account
-- [ ] Substrate account
+- [X] Substrate account
 - [ ] Cosmos account
 - [ ] Encryption methods
 
