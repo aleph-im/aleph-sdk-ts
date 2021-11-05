@@ -8,6 +8,8 @@ export enum ChainType {
     Ethereum = "ETH",
     Solana = "SOL",
     Substrate = "DOT",
+    NULS = "NULS",
+    NULS2 = "NULS2",
 }
 
 /**
