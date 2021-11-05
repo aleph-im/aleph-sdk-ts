@@ -41,9 +41,13 @@
   "dependencies": {
     "@polkadot/keyring": "^7.4.1",
     "@polkadot/util-crypto": "^7.4.1",
+    "@types/bs58": "^4.0.1",
+    "@types/ripemd160": "^2.0.0",
+    "@types/secp256k1": "^4.0.3",
     "@types/sha.js": "^2.4.0",
     "avalanche": "^3.9.0",
     "axios": "^0.21.4",
+    "bip32": "^2.0.6",
     "form-data": "^4.0.0",
     "sha.js": "^2.4.11",
     "ts-node": "^10.3.0"
