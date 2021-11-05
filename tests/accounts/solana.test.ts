@@ -22,10 +22,10 @@ describe("Solana accounts", () => {
     it("should publish a post message correctly", async () => {
         const { account } = solana.NewAccount();
         const content: { body: string } = {
-            body: "Hello World",
+            body: "Hello World 21",
         };
 
-        await post.Publish({
+        const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
@@ -43,7 +43,7 @@ describe("Solana accounts", () => {
             refs: [],
             addresses: [],
             tags: [],
-            hashes: [],
+            hashes: [msg.item_hash],
         });
 
         expect(amends.posts[0].content).toStrictEqual(content);
