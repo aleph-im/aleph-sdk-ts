@@ -1,5 +1,6 @@
-import { Account, ChainType } from "./account";
-import { BaseMessage, GetVerificationBuffer } from "../messages/message";
+import { Account } from "./account";
+import { BaseMessage, Chain } from "../messages/message";
+import { GetVerificationBuffer } from "../messages";
 import * as solanajs from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
@@ -16,8 +17,8 @@ export class SOLAccount extends Account {
         this.wallet = wallet;
     }
 
-    override GetChain(): ChainType {
-        return ChainType.Solana;
+    override GetChain(): Chain {
+        return Chain.SOL;
     }
 
     /**

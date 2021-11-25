@@ -1,4 +1,4 @@
-import { StorageEngine } from "../../../src/messages/message";
+import { ItemType } from "../../../src/messages/message";
 import { ethereum, post } from "../../index";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { v4 as uuidv4 } from "uuid";
@@ -15,7 +15,7 @@ describe("Post publish tests", () => {
                 APIServer: DEFAULT_API_V2,
                 channel: "TEST",
                 inlineRequested: true,
-                storageEngine: StorageEngine.IPFS,
+                storageEngine: ItemType.ipfs,
                 account: account,
                 postType: "custom_type",
                 content: content,
@@ -33,7 +33,7 @@ describe("Post publish tests", () => {
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: StorageEngine.IPFS,
+            storageEngine: ItemType.ipfs,
             account: account,
             postType: postType,
             content: content,
@@ -44,7 +44,7 @@ describe("Post publish tests", () => {
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: StorageEngine.IPFS,
+            storageEngine: ItemType.ipfs,
             account: account,
             postType: "amend",
             content: content,

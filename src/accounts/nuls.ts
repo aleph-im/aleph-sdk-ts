@@ -4,8 +4,9 @@ import * as bip32 from "bip32";
 import * as bip39 from "bip39";
 import RIPEMD160 from "ripemd160";
 import secp256k1 from "secp256k1";
-import { Account, ChainType } from "./account";
-import { BaseMessage, GetVerificationBuffer } from "../messages/message";
+import { Account } from "./account";
+import { BaseMessage, Chain } from "../messages/message";
+import { GetVerificationBuffer } from "../messages";
 
 export const hexRegEx = /([0-9]|[a-f])/gim;
 export type ChainNAddress = {
@@ -28,8 +29,8 @@ export class NULSAccount extends Account {
         this.privateKey = privateKey;
     }
 
-    GetChain(): ChainType {
-        return ChainType.NULS;
+    GetChain(): Chain {
+        return Chain.NULS;
     }
 
     /**

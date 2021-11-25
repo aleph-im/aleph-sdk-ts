@@ -5,7 +5,7 @@ import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 import { testsFunc } from "../index";
 import { accounts, aggregate } from "../../src";
 import { DEFAULT_API_V2 } from "../../src/global";
-import { StorageEngine } from "../../src/messages/message";
+import { ItemType } from "../../src/messages/message";
 
 /**
  * This is the first test of the test bach for substrate.
@@ -69,7 +69,7 @@ async function PublishAggregate(): Promise<boolean> {
         key: key,
         content: content,
         channel: "TEST",
-        storageEngine: StorageEngine.IPFS,
+        storageEngine: ItemType.ipfs,
         inlineRequested: true,
         APIServer: DEFAULT_API_V2,
     });

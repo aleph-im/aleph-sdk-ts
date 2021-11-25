@@ -1,35 +1,17 @@
 import { Account } from "../../accounts/account";
-import { BaseContent, BaseMessage, MessageType, StorageEngine } from "../message";
+import { MessageType, ItemType, PostContent, PostMessage, ChainRef } from "../message";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
-
-type ChainRef = {
-    chain: string;
-    channel?: string;
-    item_content: string;
-    item_hash: string;
-    item_type: string;
-    sender: string;
-    signature: string;
-    time: number;
-    type: string;
-};
 
 type PostSubmitConfiguration<T> = {
     APIServer: string;
     ref?: string | ChainRef;
     channel: string;
     inlineRequested: boolean;
-    storageEngine: StorageEngine;
+    storageEngine: ItemType;
     account: Account;
     postType: string;
     content: T;
-};
-
-type PostContent<T> = BaseContent & {
-    content?: T;
-    type: string;
-    ref?: string | ChainRef;
 };
 
 /**
@@ -41,7 +23,7 @@ type PostContent<T> = BaseContent & {
  *
  * @param configuration The configuration used to publish the aggregate message.
  */
-export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Promise<BaseMessage> {
+export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
     const timestamp: number = Date.now() / 1000;
     const content: PostContent<T> = {
         type: configuration.postType,
@@ -54,10 +36,10 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
         content.ref = configuration.ref;
     }
 
-    const message: BaseMessage = {
+    const message: PostMessage<T> = {
         chain: configuration.account.GetChain(),
         sender: configuration.account.address,
-        type: MessageType.Post,
+        type: MessageType.post,
         channel: configuration.channel,
         confirmed: false,
         signature: "",
@@ -66,6 +48,7 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
         item_type: configuration.storageEngine,
         item_content: "",
         item_hash: "",
+        content: content,
     };
 
     await PutContentToStorageEngine({
