@@ -8,7 +8,7 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "yarn test:jest && yarn test:auto",
-    "test:jest": "jest --testTimeout=15000",
+    "test:jest": "jest --testTimeout=20000",
     "test:auto": "ts-node testsAuto/entryPoint.ts ",
     "pub": "yarn test && yarn lint:fix && yarn build && cp package.json dist/ && cd dist",
     "doc": "typedoc"
