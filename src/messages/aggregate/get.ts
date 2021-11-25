@@ -6,9 +6,9 @@ type AggregateGetResponse<T> = {
 };
 
 type AggregateGetConfiguration = {
-    APIServer: string;
+    APIServer?: string;
     address: string;
-    keys: Array<string>;
+    keys?: Array<string>;
 };
 
 /**
@@ -18,21 +18,18 @@ type AggregateGetConfiguration = {
  * @param configuration The configuration used to get the message, including the API endpoint.
  */
 export async function Get<T>(
-    configuration: AggregateGetConfiguration = {
+    { APIServer = DEFAULT_API_V2, address = "", keys = [] }: AggregateGetConfiguration = {
         APIServer: DEFAULT_API_V2,
         address: "",
         keys: [],
     },
 ): Promise<T> {
-    const keys = configuration.keys.length === 0 ? null : configuration.keys.join(",");
-    const response = await axios.get<AggregateGetResponse<T>>(
-        `${configuration.APIServer}/api/v0/aggregates/${configuration.address}.json`,
-        {
-            params: {
-                keys: keys,
-            },
+    const _keys = keys.length === 0 ? null : keys.join(",");
+    const response = await axios.get<AggregateGetResponse<T>>(`${APIServer}/api/v0/aggregates/${address}.json`, {
+        params: {
+            keys: _keys,
         },
-    );
+    });
 
     if (!response.data.data) {
         throw new Error("no aggregate found");

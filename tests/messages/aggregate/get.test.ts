@@ -23,4 +23,23 @@ describe("Aggregate message retrieve test", () => {
 
         expect(message.satoshi).toStrictEqual(expected);
     });
+
+    it("should retrieve an existing aggregate message without specifies side params", async () => {
+        type T = {
+            satoshi: {
+                A: number;
+            };
+        };
+        const address = "0x629fBDA22F485720617C8f1209692484C0359D43";
+
+        const message = await aggregate.Get<T>({
+            address: address,
+        });
+
+        const expected = {
+            A: 1,
+        };
+
+        expect(message.satoshi).toStrictEqual(expected);
+    });
 });
