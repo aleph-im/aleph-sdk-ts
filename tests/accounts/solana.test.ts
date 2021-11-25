@@ -1,5 +1,5 @@
 import * as solanajs from "@solana/web3.js";
-import { StorageEngine } from "../../src/messages/message";
+import { ItemType } from "../../src/messages/message";
 import { post, solana } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 
@@ -29,7 +29,7 @@ describe("Solana accounts", () => {
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: StorageEngine.IPFS,
+            storageEngine: ItemType.ipfs,
             account: account,
             postType: "custom_type",
             content: content,

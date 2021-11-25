@@ -1,6 +1,6 @@
 import shajs from "sha.js";
 
-import { BaseMessage, StorageEngine } from "../message";
+import { BaseMessage, ItemType } from "../message";
 import axios from "axios";
 
 /**
@@ -18,14 +18,14 @@ type PutConfiguration<T> = {
     message: BaseMessage;
     content: T;
     inlineRequested: boolean;
-    storageEngine: StorageEngine;
+    storageEngine: ItemType;
     APIServer: string;
 };
 
 type PushConfiguration<T> = {
     content: T;
     APIServer: string;
-    storageEngine: StorageEngine;
+    storageEngine: ItemType;
 };
 
 type PushResponse = {
@@ -35,7 +35,7 @@ type PushResponse = {
 type PushFileConfiguration = {
     file: File | Blob | string;
     APIServer: string;
-    storageEngine: StorageEngine;
+    storageEngine: ItemType;
 };
 
 /**
@@ -50,7 +50,7 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
         if (serialized.length > 150000) {
             configuration.inlineRequested = false;
         } else {
-            configuration.message.item_type = "INLINE";
+            configuration.message.item_type = ItemType.inline;
             configuration.message.item_content = serialized;
             configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
         }
@@ -75,7 +75,7 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
             },
         },
     );
-
+    console.log("server responses:", response.data);
     return response.data.hash;
 }
 

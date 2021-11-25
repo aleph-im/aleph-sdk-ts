@@ -1,6 +1,6 @@
 import * as bip39 from "bip39";
 import { nuls } from "../index";
-import { ChainType } from "../../src/accounts/account";
+import { Chain } from "../../src/messages/message";
 
 describe("NULS accounts", () => {
     it("should create a NULS accounts", async () => {
@@ -8,7 +8,7 @@ describe("NULS accounts", () => {
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");
-        expect(account.GetChain()).toStrictEqual(ChainType.NULS);
+        expect(account.GetChain()).toStrictEqual(Chain.NULS);
     });
 
     it("should import a NULS accounts using a mnemonic", async () => {
@@ -17,7 +17,7 @@ describe("NULS accounts", () => {
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");
-        expect(account.GetChain()).toStrictEqual(ChainType.NULS);
+        expect(account.GetChain()).toStrictEqual(Chain.NULS);
     });
 
     it("should import a NULS accounts using a private key", async () => {

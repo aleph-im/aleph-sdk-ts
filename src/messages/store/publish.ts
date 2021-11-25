@@ -1,5 +1,5 @@
 import * as base from "../../accounts/account";
-import { BaseContent, BaseMessage, MessageType, StorageEngine } from "../message";
+import { MessageType, ItemType, StoreContent, StoreMessage } from "../message";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
@@ -7,16 +7,8 @@ type StorePublishConfiguration = {
     channel: string;
     account: base.Account;
     fileObject: File | Blob | string;
-    storageEngine: StorageEngine;
+    storageEngine: ItemType;
     APIServer: string;
-};
-
-type StoreContent = BaseContent & {
-    item_type: string;
-    item_hash?: string;
-    size?: number;
-    content_type?: string;
-    ref?: string;
 };
 
 /**
@@ -40,11 +32,11 @@ export async function Publish(spc: StorePublishConfiguration): Promise<string> {
         time: timestamp,
     };
 
-    const message: BaseMessage = {
+    const message: StoreMessage = {
         signature: "",
         chain: spc.account.GetChain(),
         sender: spc.account.address,
-        type: MessageType.Store,
+        type: MessageType.store,
         channel: spc.channel,
         confirmed: false,
         time: timestamp,
@@ -52,6 +44,7 @@ export async function Publish(spc: StorePublishConfiguration): Promise<string> {
         item_type: spc.storageEngine,
         item_content: "",
         item_hash: "",
+        content: content,
     };
 
     await PutContentToStorageEngine({

@@ -2,8 +2,9 @@ import * as bip39 from "bip39";
 import * as bip32 from "bip32";
 import secp256k1 from "secp256k1";
 import { generateMnemonic } from "bip39";
-import { Account, ChainType } from "./account";
-import { BaseMessage, GetVerificationBuffer } from "../messages/message";
+import { Account } from "./account";
+import { BaseMessage, Chain } from "../messages/message";
+import { GetVerificationBuffer } from "../messages";
 import { addressFromHash, magicHash, privateKeyToPublicKey, publicKeyToHash } from "./nuls";
 
 export type NULS2ImportConfig = {
@@ -22,8 +23,8 @@ export class NULS2Account extends Account {
         this.privateKey = privateKey;
     }
 
-    GetChain(): ChainType {
-        return ChainType.NULS2;
+    GetChain(): Chain {
+        return Chain.NULS2;
     }
 
     /**

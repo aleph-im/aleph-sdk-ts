@@ -1,8 +1,7 @@
 import * as bip39 from "bip39";
 import { nuls2, post } from "../index";
-import { ChainType } from "../../src/accounts/account";
 import { DEFAULT_API_V2 } from "../../src/global";
-import { StorageEngine } from "../../src/messages/message";
+import { ItemType, Chain } from "../../src/messages/message";
 
 describe("NULS2 accounts", () => {
     it("should create a NULS2 accounts", async () => {
@@ -10,7 +9,7 @@ describe("NULS2 accounts", () => {
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");
-        expect(account.GetChain()).toStrictEqual(ChainType.NULS2);
+        expect(account.GetChain()).toStrictEqual(Chain.NULS2);
     });
 
     it("should import a NULS2 accounts using a mnemonic", async () => {
@@ -19,7 +18,7 @@ describe("NULS2 accounts", () => {
 
         expect(account.address).not.toBe("");
         expect(account.publicKey).not.toBe("");
-        expect(account.GetChain()).toStrictEqual(ChainType.NULS2);
+        expect(account.GetChain()).toStrictEqual(Chain.NULS2);
     });
 
     it("should import a NULS2 accounts using a private key", async () => {
@@ -59,7 +58,7 @@ describe("NULS2 accounts", () => {
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: StorageEngine.IPFS,
+            storageEngine: ItemType.ipfs,
             account: account,
             postType: "Ralph",
             content: content,

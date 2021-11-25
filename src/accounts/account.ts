@@ -1,16 +1,4 @@
-import { BaseMessage } from "../messages/message";
-
-/**
- * ChainType defines which account was used to publish a message.
- * It is automatically provided when publishing messages.
- */
-export enum ChainType {
-    Ethereum = "ETH",
-    Solana = "SOL",
-    Substrate = "DOT",
-    NULS = "NULS",
-    NULS2 = "NULS2",
-}
+import { BaseMessage, Chain } from "../messages/message";
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -27,6 +15,6 @@ export abstract class Account {
         this.publicKey = publicKey;
     }
 
-    abstract GetChain(): ChainType;
+    abstract GetChain(): Chain;
     abstract Sign(message: BaseMessage): Promise<string>;
 }

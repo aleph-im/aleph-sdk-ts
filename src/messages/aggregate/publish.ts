@@ -1,6 +1,5 @@
 import { Account } from "../../accounts/account";
-import { AggregateContent, AggregateKey } from "./types";
-import { BaseMessage, MessageType, StorageEngine } from "../message";
+import { MessageType, ItemType, AggregateContentKey, AggregateContent, AggregateMessage } from "../message";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
@@ -21,10 +20,10 @@ import { SignAndBroadcast } from "../create/signature";
  */
 type AggregatePublishConfiguration<T> = {
     account: Account;
-    key: string | AggregateKey;
+    key: string | AggregateContentKey;
     content: T;
     channel: string;
-    storageEngine: StorageEngine;
+    storageEngine: ItemType;
     inlineRequested: boolean;
     APIServer: string;
 };
@@ -50,11 +49,11 @@ export async function Publish<T>(configuration: AggregatePublishConfiguration<T>
         time: timestamp,
         content: configuration.content,
     };
-    const message: BaseMessage = {
+    const message: AggregateMessage<T> = {
         chain: configuration.account.GetChain(),
         channel: configuration.channel,
         sender: configuration.account.address,
-        type: MessageType.Aggregate,
+        type: MessageType.aggregate,
         confirmed: false,
         signature: "",
         size: 0,
@@ -62,6 +61,7 @@ export async function Publish<T>(configuration: AggregatePublishConfiguration<T>
         item_type: configuration.storageEngine,
         item_content: "",
         item_hash: "",
+        content: content,
     };
 
     await PutContentToStorageEngine({

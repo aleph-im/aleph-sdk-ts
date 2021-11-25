@@ -1,5 +1,6 @@
-import { Account, ChainType } from "./account";
-import { BaseMessage, GetVerificationBuffer } from "../messages/message";
+import { Account } from "./account";
+import { BaseMessage, Chain } from "../messages/message";
+import { GetVerificationBuffer } from "../messages";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
@@ -18,8 +19,8 @@ export class DOTAccount extends Account {
         this.pair = pair;
     }
 
-    GetChain(): ChainType {
-        return ChainType.Substrate;
+    GetChain(): Chain {
+        return Chain.DOT;
     }
 
     /**
