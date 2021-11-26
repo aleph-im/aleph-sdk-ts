@@ -2,6 +2,7 @@ import shajs from "sha.js";
 
 import { BaseMessage, ItemType } from "../message";
 import axios from "axios";
+import FormDataNode from "form-data";
 
 /**
  * message:         The message to update and then publish.
@@ -80,9 +81,16 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
 }
 
 export async function PushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {
-    const form = new FormData();
+    const isBrowser = typeof FormData !== "undefined";
+    let form: FormDataNode | FormData;
 
-    form.append("file", configuration.file);
+    if (isBrowser) {
+        form = new FormData();
+        form.append("file", configuration.file);
+    } else {
+        form = new FormDataNode();
+        form.append("file", configuration.file, "usageName.txt");
+    }
     const response = await axios.post<PushResponse>(
         `${configuration.APIServer}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
         form,
