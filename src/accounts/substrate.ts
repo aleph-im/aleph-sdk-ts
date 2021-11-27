@@ -10,7 +10,7 @@ import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
  * DOTAccount implements the Account class for the substrate protocol.
  *  It is used to represent a substrate account when publishing a message on the Aleph network.
  */
-class DOTAccount extends Account {
+export class DOTAccount extends Account {
     private pair: KeyringPair;
     constructor(pair: KeyringPair) {
         const publicKey: string = Buffer.from(pair.publicKey).toString("hex");

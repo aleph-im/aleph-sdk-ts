@@ -8,7 +8,7 @@ import base58 from "bs58";
  * SOLAccount implements the Account class for the Solana protocol.
  * It is used to represent an solana account when publishing a message on the Aleph network.
  */
-class SOLAccount extends Account {
+export class SOLAccount extends Account {
     private wallet: solanajs.Keypair;
 
     constructor(wallet: solanajs.Keypair) {
