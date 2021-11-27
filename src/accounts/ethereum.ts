@@ -7,7 +7,7 @@ import { BaseMessage, GetVerificationBuffer } from "../messages/message";
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
-class ETHAccount extends Account {
+export class ETHAccount extends Account {
     private wallet: ethers.Wallet;
     constructor(wallet: ethers.Wallet) {
         super(wallet.address, wallet.publicKey);

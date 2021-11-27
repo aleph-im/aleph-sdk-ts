@@ -15,7 +15,7 @@ export type NULS2ImportConfig = {
  *  NULS2Account implements the Account class for the NULS2 protocol.
  *  It is used to represent a NULS2 account when publishing a message on the Aleph network.
  */
-class NULS2Account extends Account {
+export class NULS2Account extends Account {
     private readonly privateKey: string;
     constructor(address: string, publicKey: string, privateKey: string) {
         super(address, publicKey);
