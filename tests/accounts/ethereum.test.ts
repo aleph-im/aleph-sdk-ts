@@ -26,4 +26,34 @@ describe("Ethereum accounts", () => {
         expect(account.address).not.toBe("");
         expect(account.publicKey).toBe(wallet.publicKey);
     });
+
+    it("Should encrypt some data with an Ethereum account", () => {
+        const mnemonic = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const msg = "Innovation";
+
+        const c = account.encrypt(msg);
+        expect(c).not.toBe(msg);
+    });
+
+    it("Should encrypt and decrypt some data with an Ethereum account", () => {
+        const mnemonic = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const msg = "Innovation";
+
+        const c = account.encrypt(msg);
+        const d = account.decrypt(c);
+        expect(d).toBe(msg);
+    });
+
+    it("Should encrypt and decrypt with non regular parameters, some data with an Ethereum account", () => {
+        const mnemonic = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const msg = "Innovation";
+
+        const c = account.encrypt(msg, { as_hex: false });
+        const d = account.decrypt(c, { as_hex: false });
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+    });
 });

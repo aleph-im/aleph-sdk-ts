@@ -51,6 +51,8 @@ You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/ind
 - [X] Aggregate message
 - [X] Post message
 - [X] Store message
+- [X] Forget object
+- [ ] Program object
 - [X] Messages retrieving
 - [X] Ethereum account
 - [ ] Avalanche account
@@ -64,4 +66,5 @@ You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/ind
 ## Authors
 
 - [Luca Georges Francois](https://github.com/PtitLuca)
+- [Roman Gascoin](https://github.com/Rgascoin)
 - [Jonathan Schemoul](https://github.com/moshemalawach) for writing the [aleph-js](https://github.com/aleph-im/aleph-js) client

@@ -22,18 +22,19 @@ describe("Forget publish tests", () => {
             content: content,
         });
 
-        const res = await post.Get({
-            types: postType,
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [],
-            tags: [],
-            hashes: [msg.item_hash],
+        setTimeout(async () => {
+            const res = await post.Get({
+                types: postType,
+                APIServer: DEFAULT_API_V2,
+                pagination: 200,
+                page: 1,
+                refs: [],
+                addresses: [],
+                tags: [],
+                hashes: [msg.item_hash],
+            });
+            expect(content).toStrictEqual(res.posts[0].content);
         });
-
-        expect(content).toStrictEqual(res.posts[0].content);
     });
 
     it("Should submit a forget message on a specified account", async () => {

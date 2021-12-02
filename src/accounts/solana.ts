@@ -22,6 +22,80 @@ export class SOLAccount extends Account {
     }
 
     /**
+     * Put content into a tweetnacl secret box for a solana account.
+     * THIS ENCRYPTION IS NOT SAFE as the nonce is returned by the function.
+     *
+     * @param content The content to encrypt.
+     * @param as_hex Encrypt the content in hexadecimal.
+     */
+    async encrypt(
+        content: string | Buffer,
+        { as_hex = true }: { as_hex: boolean } = {
+            as_hex: true,
+        },
+    ): Promise<string | Buffer> {
+        let res: string | Buffer;
+
+        if (typeof content === "string") content = Buffer.from(content);
+        const pkey = base58.decode(this.publicKey);
+        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
+        const encrypt = nacl.secretbox(content, nonce, pkey);
+        res = this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
+        if (as_hex) res = res.toString("hex");
+        return res;
+    }
+
+    /**
+     * Decrypt a given content using a solana account.
+     *
+     * @param encryptedContent The encrypted content to decrypt.
+     * @param as_hex Was the content encrypted as hexadecimal ?
+     * @param as_string Was the content encrypted as a string ?
+     */
+    async decrypt(
+        encryptedContent: Buffer | string,
+        { as_hex = true, as_string = true }: { as_hex?: boolean; as_string?: boolean } = {
+            as_hex: true,
+            as_string: true,
+        },
+    ): Promise<Buffer | string | Uint8Array> {
+        if (as_hex && typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent, "hex");
+        else if (typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent);
+        let result: Buffer | Uint8Array | string | null;
+
+        const opts = this.decapsulateBox(encryptedContent);
+        const pkey = base58.decode(this.publicKey);
+        result = nacl.secretbox.open(opts.ciphertext, opts.nonce, pkey);
+        if (result === null) throw new Error("could not decrypt");
+        if (as_string) result = Buffer.from(result).toString();
+        return result;
+    }
+
+    /**
+     * Concat the nonce with the secret box content into a single Buffer.
+     * @param opts contain the nonce used during box creation and the result of the box in ciphertext.
+     * @private
+     */
+    private encapsulateBox(opts: { nonce: Uint8Array; ciphertext: Uint8Array }): Buffer {
+        if (!opts.nonce) {
+            throw new Error("No nonce found");
+        }
+        return Buffer.concat([opts.nonce, opts.ciphertext]);
+    }
+
+    /**
+     * Decomposed the result of the Solana's Encrypt method to be interpreted in Decrypt method.
+     * @param content, A concatenation of a nonce and a Buffer used for creating a box.
+     * @private
+     */
+    private decapsulateBox(content: Buffer): { nonce: Buffer; ciphertext: Buffer } {
+        return {
+            nonce: content.slice(0, nacl.secretbox.nonceLength),
+            ciphertext: content.slice(nacl.secretbox.nonceLength),
+        };
+    }
+
+    /**
      * The Sign method provides a way to sign a given Aleph message using an solana account.
      * The full message is not used as the payload, only fields of the BaseMessage type are.
      *

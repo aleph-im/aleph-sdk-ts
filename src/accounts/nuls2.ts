@@ -6,6 +6,7 @@ import { Account } from "./account";
 import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
 import { addressFromHash, magicHash, privateKeyToPublicKey, publicKeyToHash } from "./nuls";
+import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 
 export type NULS2ImportConfig = {
     chain_id?: number;
@@ -28,6 +29,53 @@ export class NULS2Account extends Account {
     }
 
     /**
+     * Encrypt a content using the user's public key for a NULS2 account.
+     *
+     * @param content The content to encrypt.
+     * @param as_hex Encrypt the content in hexadecimal.
+     */
+    encrypt(
+        content: string | Buffer,
+        { as_hex = true }: { as_hex: boolean } = {
+            as_hex: true,
+        },
+    ): string | Buffer {
+        let result: Buffer | string;
+
+        if (typeof content === "string") content = Buffer.from(content);
+        result = secp256k1_encrypt(this.publicKey, content);
+        if (as_hex) result = result.toString("hex");
+        return result;
+    }
+
+    /**
+     * Decrypt a given content using a NULS2 account.
+     *
+     * @param encryptedContent The encrypted content to decrypt.
+     * @param as_hex Was the content encrypted as hexadecimal ?
+     * @param as_string Was the content encrypted as a string ?
+     */
+    decrypt(
+        encryptedContent: Buffer | string,
+        { as_hex = true, as_string = true }: { as_hex?: boolean; as_string?: boolean } = {
+            as_hex: true,
+            as_string: true,
+        },
+    ): Buffer | string {
+        let result: Buffer | string;
+
+        if (as_hex && typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent, "hex");
+        else if (typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent);
+
+        const secret = this.privateKey;
+        result = secp256k1_decrypt(secret, encryptedContent);
+
+        if (result === null) throw new Error("could not decrypt");
+        if (as_string) result = result.toString();
+        return result;
+    }
+
+    /**
      * The Sign method provides a way to sign a given Aleph message using a NULS2 account.
      * The full message is not used as the payload, only fields of the BaseMessage type are.
      *
@@ -47,11 +95,11 @@ export class NULS2Account extends Account {
     }
 
     /**
-     * Append the recovery of the signature to a signature and compress it if required
+     * Append the recovery of the signature to a signature and compress it if required.
      *
-     * @param signature The signature to encode
-     * @param recovery The recovery to append
-     * @param compressed The optional compress flag
+     * @param signature The signature to encode.
+     * @param recovery The recovery to append.
+     * @param compressed The optional compress flag.
      */
     private EncodeSignature(signature: Uint8Array, recovery: number, compressed: boolean) {
         if (compressed) recovery += 4;
@@ -62,8 +110,8 @@ export class NULS2Account extends Account {
 /**
  * Creates a new NULS2 account using a randomly generated private key.
  *
- * @param chain_id The optional chain id
- * @param prefix The optional address prefix
+ * @param chain_id The optional chain id.
+ * @param prefix The optional address prefix.
  */
 export async function NewAccount(
     { chain_id = 1, prefix = "NULS" }: NULS2ImportConfig = { chain_id: 1, prefix: "NULS" },
@@ -82,8 +130,8 @@ export async function NewAccount(
  * It creates an NULS2 account containing information about the account, extracted in the NULS2Account constructor.
  *
  * @param mnemonic The mnemonic of the account to import.
- * @param chain_id The optional chain id
- * @param prefix The optional address prefix
+ * @param chain_id The optional chain id.
+ * @param prefix The optional address prefix.
  */
 export async function ImportAccountFromMnemonic(
     mnemonic: string,
@@ -103,8 +151,8 @@ export async function ImportAccountFromMnemonic(
  * It creates an NULS2 account containing information about the account, extracted in the NULS2Account constructor.
  *
  * @param privateKey The mnemonic of the account to import.
- * @param chain_id The optional chain id
- * @param prefix The optional address prefix
+ * @param chain_id The optional chain id.
+ * @param prefix The optional address prefix.
  */
 export async function ImportAccountFromPrivateKey(
     privateKey: string,
