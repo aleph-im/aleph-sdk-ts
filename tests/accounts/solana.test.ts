@@ -35,17 +35,36 @@ describe("Solana accounts", () => {
             content: content,
         });
 
-        const amends = await post.Get({
-            types: "custom_type",
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [],
-            tags: [],
-            hashes: [msg.item_hash],
-        });
+        setTimeout(async () => {
+            const amends = await post.Get({
+                types: "custom_type",
+                APIServer: DEFAULT_API_V2,
+                pagination: 200,
+                page: 1,
+                refs: [],
+                addresses: [],
+                tags: [],
+                hashes: [msg.item_hash],
+            });
+            expect(amends.posts[0].content).toStrictEqual(content);
+        }, 1000);
+    });
 
-        expect(amends.posts[0].content).toStrictEqual(content);
+    it("Should encrypt content", async () => {
+        const { account } = solana.NewAccount();
+        const msg = "solana en avant les histoires";
+
+        const c = await account.encrypt(msg);
+        expect(c).not.toBe(msg);
+    });
+
+    it("Should encrypt and decrypt content", async () => {
+        const { account } = solana.NewAccount();
+        const msg = "solana en avant les histoires";
+
+        const c = await account.encrypt(msg);
+        const d = await account.decrypt(c);
+        expect(c).not.toBe(msg);
+        expect(d).toBe(msg);
     });
 });

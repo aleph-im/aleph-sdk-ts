@@ -24,7 +24,8 @@ describe("Post publish tests", () => {
     });
 
     it("should amend post message correctly", async () => {
-        const { account } = ethereum.NewAccount();
+        const mnemonic = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const postType = uuidv4();
         const content: { body: string } = {
             body: "Hello World",
@@ -40,7 +41,7 @@ describe("Post publish tests", () => {
         });
 
         content.body = "New content !";
-        await post.Publish({
+        const newMessage = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
@@ -51,17 +52,18 @@ describe("Post publish tests", () => {
             ref: oldPost.item_hash,
         });
 
-        const amends = await post.Get({
-            types: postType,
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [],
-            tags: [],
-            hashes: [],
+        setTimeout(async () => {
+            const amends = await post.Get({
+                types: "amend",
+                APIServer: DEFAULT_API_V2,
+                pagination: 200,
+                page: 1,
+                refs: [],
+                addresses: [],
+                tags: [],
+                hashes: [newMessage.item_hash],
+            });
+            expect(amends.posts[0].content).toStrictEqual(content);
         });
-
-        expect(amends.posts[0].content).toStrictEqual(content);
     });
 });

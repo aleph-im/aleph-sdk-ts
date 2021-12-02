@@ -64,17 +64,40 @@ describe("NULS2 accounts", () => {
             content: content,
         });
 
-        const amends = await post.Get({
-            types: "Ralph",
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [],
-            tags: [],
-            hashes: [msg.item_hash],
+        setTimeout(async () => {
+            const amends = await post.Get({
+                types: "Ralph",
+                APIServer: DEFAULT_API_V2,
+                pagination: 200,
+                page: 1,
+                refs: [],
+                addresses: [],
+                tags: [],
+                hashes: [msg.item_hash],
+            });
+            expect(amends.posts[0].content).toStrictEqual(content);
         });
+    });
 
-        expect(amends.posts[0].content).toStrictEqual(content);
+    it("Should encrypt content", async () => {
+        const account = await nuls2.ImportAccountFromPrivateKey(
+            "cc0681517ecbf8d2800f6fe237fb0af9bef8c95eaa04bfaf3a733cf144a9640c",
+        );
+        const msg = "Nuuullss2";
+
+        const c = account.encrypt(msg);
+        expect(c).not.toBe(msg);
+    });
+
+    it("Should encrypt and decrypt content", async () => {
+        const account = await nuls2.ImportAccountFromPrivateKey(
+            "cc0681517ecbf8d2800f6fe237fb0af9bef8c95eaa04bfaf3a733cf144a9640c",
+        );
+        const msg = "Nuuullss2";
+
+        const c = account.encrypt(msg);
+        const d = account.decrypt(c);
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
     });
 });

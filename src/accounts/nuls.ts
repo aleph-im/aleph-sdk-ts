@@ -7,6 +7,7 @@ import secp256k1 from "secp256k1";
 import { Account } from "./account";
 import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
+import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 
 export const hexRegEx = /([0-9]|[a-f])/gim;
 export type ChainNAddress = {
@@ -31,6 +32,53 @@ export class NULSAccount extends Account {
 
     GetChain(): Chain {
         return Chain.NULS;
+    }
+
+    /**
+     * Encrypt a content using the user's public key for a NULS account.
+     *
+     * @param content The content to encrypt.
+     * @param as_hex Encrypt the content in hexadecimal.
+     */
+    encrypt(
+        content: string | Buffer,
+        { as_hex = true }: { as_hex: boolean } = {
+            as_hex: true,
+        },
+    ): string | Buffer {
+        let result: Buffer | string;
+
+        if (typeof content === "string") content = Buffer.from(content);
+        result = secp256k1_encrypt(this.publicKey, content);
+        if (as_hex) result = result.toString("hex");
+        return result;
+    }
+
+    /**
+     * Decrypt a given content using a NULS account.
+     *
+     * @param encryptedContent The encrypted content to decrypt.
+     * @param as_hex Was the content encrypted as hexadecimal ?
+     * @param as_string Was the content encrypted as a string ?
+     */
+    decrypt(
+        encryptedContent: Buffer | string,
+        { as_hex = true, as_string = true }: { as_hex?: boolean; as_string?: boolean } = {
+            as_hex: true,
+            as_string: true,
+        },
+    ): Buffer | string {
+        let result: Buffer | string;
+
+        if (as_hex && typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent, "hex");
+        else if (typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent);
+
+        const secret = this.privateKey;
+        result = secp256k1_decrypt(secret, encryptedContent);
+
+        if (result === null) throw new Error("could not decrypt");
+        if (as_string) result = result.toString();
+        return result;
     }
 
     /**
@@ -63,8 +111,8 @@ export class NULSAccount extends Account {
 /**
  * Creates a new NULS account using a randomly generated private key.
  *
- * @param chain_id The optional chain id
- * @param prefix The optional address prefix
+ * @param chain_id The optional chain id.
+ * @param prefix The optional address prefix.
  */
 export async function NewAccount(
     { chain_id = 1, prefix = "" }: NULSImportConfig = { chain_id: 1, prefix: "" },
@@ -83,8 +131,8 @@ export async function NewAccount(
  * It creates an NULS account containing information about the account, extracted in the NULSAccount constructor.
  *
  * @param mnemonic The mnemonic of the account to import.
- * @param chain_id The optional chain id
- * @param prefix The optional address prefix
+ * @param chain_id The optional chain id.
+ * @param prefix The optional address prefix.
  */
 export async function ImportAccountFromMnemonic(
     mnemonic: string,
@@ -104,8 +152,8 @@ export async function ImportAccountFromMnemonic(
  * It creates an NULS account containing information about the account, extracted in the NULSAccount constructor.
  *
  * @param privateKey The mnemonic of the account to import.
- * @param chain_id The optional chain id
- * @param prefix The optional address prefix
+ * @param chain_id The optional chain id.
+ * @param prefix The optional address prefix.
  */
 export async function ImportAccountFromPrivateKey(
     privateKey: string,
@@ -120,9 +168,9 @@ export async function ImportAccountFromPrivateKey(
 }
 
 /**
- * Creates a XOR of an array
+ * Creates a XOR of an array.
  *
- * @param body The array to XOR
+ * @param body The array to XOR.
  */
 export function getXOR(body: Uint8Array): number {
     let xor = 0;
@@ -134,10 +182,10 @@ export function getXOR(body: Uint8Array): number {
 }
 
 /**
- * Creates a hash from a message
+ * Creates a hash from a message.
  *
- * @param message The message used to create the hash
- * @param messagePrefix The optional message's hash prefix
+ * @param message The message used to create the hash.
+ * @param messagePrefix The optional message's hash prefix.
  */
 export function magicHash(message: Buffer, messagePrefix?: string | Buffer): Buffer {
     if (!messagePrefix) messagePrefix = "\u0018NULS Signed Message:\n";
@@ -152,20 +200,20 @@ export function magicHash(message: Buffer, messagePrefix?: string | Buffer): Buf
 }
 
 /**
- * Extracts a public key from a given private key
+ * Extracts a public key from a given private key.
  *
- * @param privateKey The private key to extract from
+ * @param privateKey The private key to extract from.
  */
 export function privateKeyToPublicKey(privateKey: Uint8Array): Uint8Array {
     return secp256k1.publicKeyCreate(privateKey);
 }
 
 /**
- * Creates a hash from a user's public key
+ * Creates a hash from a user's public key.
  *
- * @param publicKey The public key used to create the hash
- * @param chain_id The optional chain id
- * @param address_type The optional address type
+ * @param publicKey The public key used to create the hash.
+ * @param chain_id The optional chain id.
+ * @param address_type The optional address type.
  */
 export function publicKeyToHash(
     publicKey: Uint8Array,
@@ -181,10 +229,10 @@ export function publicKeyToHash(
 }
 
 /**
- * Extract an address from a given hash
+ * Extract an address from a given hash.
  *
- * @param hash The hash containing the address
- * @param prefix The optional address prefix
+ * @param hash The hash containing the address.
+ * @param prefix The optional address prefix.
  */
 export function addressFromHash(hash: Uint8Array, prefix?: string): string {
     const address = bs58.encode(Buffer.concat([hash, Buffer.from([getXOR(hash)])]));
@@ -194,9 +242,9 @@ export function addressFromHash(hash: Uint8Array, prefix?: string): string {
 }
 
 /**
- * Extract a hash from a given user's address
+ * Extract a hash from a given user's address.
  *
- * @param address The address used to produce the hash
+ * @param address The address used to produce the hash.
  */
 export function hashFromAddress(address: string): Buffer {
     const hash = bs58.decode(address);
@@ -205,9 +253,9 @@ export function hashFromAddress(address: string): Buffer {
 }
 
 /**
- * Performs a hash operation on a buffer, twice
+ * Performs a hash operation on a buffer, twice.
  *
- * @param buffer The buffer to hash twice
+ * @param buffer The buffer to hash twice.
  */
 export function hashTwice(buffer: Buffer): Buffer {
     let sha = new shajs.sha256().update(buffer).digest();
@@ -217,18 +265,18 @@ export function hashTwice(buffer: Buffer): Buffer {
 }
 
 /**
- * Verify if an input is in string hexadecimal format
+ * Verify if an input is in string hexadecimal format.
  *
- * @param input The input to verify
+ * @param input The input to verify.
  */
 export function isHex<T>(input: T): boolean {
     return typeof input === "string" && (input.match(hexRegEx) || []).length === input.length;
 }
 
 /**
- * Verify if a given private key is valid
+ * Verify if a given private key is valid.
  *
- * @param private_key The private key to verify
+ * @param private_key The private key to verify.
  */
 export function checkPrivateKey(private_key: string): boolean {
     if (!isHex(private_key)) return false;
