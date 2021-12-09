@@ -96,7 +96,9 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
         form,
         {
             headers: {
-                "Content-Type": undefined,
+                "Content-Type": isBrowser
+                    ? undefined
+                    : `multipart/form-data; boundary=${(form as FormDataNode).getBoundary()}`,
             },
         },
     );
