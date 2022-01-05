@@ -22,7 +22,7 @@ describe("Store message publish", () => {
         });
 
         const response = await store.Get({
-            fileHash: hash,
+            fileHash: hash.content.item_hash,
             APIServer: DEFAULT_API_V2,
         });
 
