@@ -15,7 +15,7 @@ describe("Forget publish tests", () => {
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
+            inlineRequested: false,
             storageEngine: ItemType.ipfs,
             account: account,
             postType: postType,
