@@ -10,6 +10,7 @@ export enum ChainType {
     Substrate = "DOT",
     NULS = "NULS",
     NULS2 = "NULS2",
+    NEAR = "NEAR",
 }
 
 /**
