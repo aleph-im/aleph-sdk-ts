@@ -13,7 +13,7 @@ export enum Encoding {
  * Type of execution
  */
 export enum MachineType {
-    vm_function = "vm_function",
+    vm_function = "vm-function",
 }
 
 /**

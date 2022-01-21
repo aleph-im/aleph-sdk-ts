@@ -11,13 +11,13 @@ describe("Store message publish", () => {
     it("should store a file and retrieve it correctly", async () => {
         const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
-        const fileContent = readFileSync("./tests/messages/store/testFile.txt", "utf-8");
+        const fileContent = readFileSync("./tests/messages/store/testFile.txt");
 
         const hash = await store.Publish({
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
             account: account,
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.storage,
             fileObject: fileContent,
         });
 

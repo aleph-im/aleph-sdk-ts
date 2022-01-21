@@ -34,7 +34,7 @@ type PushResponse = {
 };
 
 type PushFileConfiguration = {
-    file: File | Blob | string;
+    file: Buffer | Blob;
     APIServer: string;
     storageEngine: ItemType;
 };
@@ -86,7 +86,7 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
 
     if (isBrowser) {
         form = new FormData();
-        form.append("file", configuration.file);
+        form.append("file", new Blob([configuration.file]));
     } else {
         form = new FormDataNode();
         form.append("file", configuration.file, "usageName.txt");

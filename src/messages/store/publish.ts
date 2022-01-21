@@ -6,7 +6,7 @@ import { SignAndBroadcast } from "../create/signature";
 type StorePublishConfiguration = {
     channel: string;
     account: base.Account;
-    fileObject: File | Blob | string;
+    fileObject: Buffer | Blob;
     storageEngine: ItemType;
     APIServer: string;
 };

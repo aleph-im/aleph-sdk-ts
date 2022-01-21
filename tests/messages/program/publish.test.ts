@@ -7,14 +7,14 @@ export function ArraybufferToString(ab: ArrayBuffer): string {
     return new TextDecoder().decode(ab);
 }
 
-describe("Store message retrieval", () => {
-    it("Retrieve length of a file", async () => {
+describe("Test the program message", () => {
+    it("Publish a program retrieve the message", async () => {
         const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
-        const fileContent = readFileSync("./tests/messages/program/main.py.zip", "utf-8");
+        const fileContent = readFileSync("./tests/messages/program/main.py.zip");
 
-        await program.publish({
+        const res = await program.publish({
             account: account,
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
@@ -23,5 +23,8 @@ describe("Store message retrieval", () => {
             file: fileContent,
             entrypoint: "main:app",
         });
+
+        expect(res.content.code.entrypoint).toBe("main:app");
+        expect(res.content.address).toBe(account.address);
     });
 });
