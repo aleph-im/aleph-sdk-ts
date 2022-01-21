@@ -41,7 +41,7 @@ describe("Forget publish tests", () => {
                 storageEngine: ItemType.ipfs,
                 account: account,
             });
-            expect(Fres.content.hashes[0]).not.toBeNull();
+            expect(Fres).not.toBeNull();
         });
     });
 });
