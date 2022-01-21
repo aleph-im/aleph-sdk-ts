@@ -11,7 +11,7 @@ type ProgramPublishConfiguration = {
     storageEngine: ItemType;
     inlineRequested: boolean;
     APIServer: string;
-    file: File | Blob | string;
+    file: Buffer | Blob;
     entrypoint: string;
     subscription?: Record<string, unknown>[];
     memory?: number;
@@ -21,15 +21,9 @@ type ProgramPublishConfiguration = {
 
 // TODO: Check that program_ref, runtime and data_ref exist
 // Guard some numbers values
-export async function publish(configuration: ProgramPublishConfiguration): Promise<void> {
+export async function publish(configuration: ProgramPublishConfiguration): Promise<ProgramMessage> {
     const timestamp = Date.now() / 1000;
-    let storageEngine: ItemType = ItemType.storage;
-
-    if (typeof configuration.file === "string") {
-        if (configuration.file.length > 4 * 1024 * 1024) storageEngine = ItemType.ipfs;
-    } else {
-        if (configuration.file.size > 4 * 1024 * 1024) storageEngine = ItemType.ipfs;
-    }
+    const storageEngine: ItemType = ItemType.storage;
 
     // Store the source code of the program and retrieve the hash.
     const programRef = await storePublish({
@@ -107,5 +101,5 @@ export async function publish(configuration: ProgramPublishConfiguration): Promi
         APIServer: configuration.APIServer,
     });
 
-    console.log(programRef, content, message);
+    return message;
 }
