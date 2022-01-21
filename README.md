@@ -52,7 +52,7 @@ You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/ind
 - [X] Post message
 - [X] Store message
 - [X] Forget object
-- [ ] Program object
+- [X] Program object
 - [X] Messages retrieving
 - [X] Ethereum account
 - [ ] Avalanche account

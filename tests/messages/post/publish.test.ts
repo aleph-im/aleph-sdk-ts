@@ -52,7 +52,7 @@ describe("Post publish tests", () => {
             ref: oldPost.item_hash,
         });
 
-        setTimeout(async () => {
+        await setTimeout(async () => {
             const amends = await post.Get({
                 types: "amend",
                 APIServer: DEFAULT_API_V2,

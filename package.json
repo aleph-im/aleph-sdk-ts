@@ -8,7 +8,7 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "yarn test:jest && yarn test:auto",
-    "test:jest": "jest --testTimeout=23000 --maxWorkers=1 --verbose",
+    "test:jest": "jest --testTimeout=23000 --maxWorkers=2 --verbose",
     "test:auto": "ts-node testsAuto/entryPoint.ts ",
     "pub": "yarn test && yarn lint:fix && yarn build && cp package.json dist/ && cd dist",
     "doc": "typedoc"
@@ -38,15 +38,14 @@
     "uuid": "^8.3.2"
   },
   "dependencies": {
-    "@solana/web3.js": "^1.31.0",
     "@polkadot/keyring": "^7.4.1",
     "@polkadot/util": "7.7.1",
     "@polkadot/util-crypto": "^7.4.1",
+    "@solana/web3.js": "^1.31.0",
     "@types/bs58": "^4.0.1",
     "@types/ripemd160": "^2.0.0",
     "@types/secp256k1": "^4.0.3",
     "@types/sha.js": "^2.4.0",
-    "avalanche": "^3.9.0",
     "axios": "^0.21.4",
     "bip32": "^2.0.6",
     "eciesjs": "^0.3.12",

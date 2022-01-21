@@ -22,8 +22,8 @@ describe("Forget publish tests", () => {
             content: content,
         });
 
-        setTimeout(async () => {
-            const res = await post.Get({
+        await setTimeout(async () => {
+            const Gres = await post.Get({
                 types: postType,
                 APIServer: DEFAULT_API_V2,
                 pagination: 200,
@@ -33,33 +33,15 @@ describe("Forget publish tests", () => {
                 tags: [],
                 hashes: [msg.item_hash],
             });
-            expect(content).toStrictEqual(res.posts[0].content);
+            const Fres = await forget.publish({
+                APIServer: DEFAULT_API_V2,
+                channel: "TEST",
+                hashes: [Gres.posts[0].hash],
+                inlineRequested: true,
+                storageEngine: ItemType.ipfs,
+                account: account,
+            });
+            expect(Fres.content.hashes[0]).not.toBeNull();
         });
-    });
-
-    it("Should submit a forget message on a specified account", async () => {
-        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
-
-        const Gres = await post.Get({
-            types: postType,
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [account.address],
-            tags: [],
-            hashes: [],
-        });
-
-        const Fres = await forget.publish({
-            APIServer: DEFAULT_API_V2,
-            channel: "TEST",
-            hashes: [Gres.posts[0].hash],
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
-            account: account,
-        });
-
-        expect(Gres.posts[0].hash).toBe(Fres.content.hashes[0]);
     });
 });

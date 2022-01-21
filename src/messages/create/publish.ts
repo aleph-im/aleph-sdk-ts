@@ -76,7 +76,6 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
             },
         },
     );
-    console.log("server responses:", response.data);
     return response.data.hash;
 }
 
