@@ -12,36 +12,36 @@ describe("Forget publish tests", () => {
     it("should post a message which will be forget", async () => {
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
-        const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
-            channel: "TEST",
-            inlineRequested: false,
-            storageEngine: ItemType.ipfs,
-            account: account,
-            postType: postType,
-            content: content,
-        });
-
         await setTimeout(async () => {
-            const Gres = await post.Get({
-                types: postType,
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
-                hashes: [msg.item_hash],
-            });
-            const Fres = await forget.publish({
+            await post.Publish({
                 APIServer: DEFAULT_API_V2,
                 channel: "TEST",
-                hashes: [Gres.posts[0].hash],
-                inlineRequested: true,
+                inlineRequested: false,
                 storageEngine: ItemType.ipfs,
                 account: account,
+                postType: postType,
+                content: content,
             });
-            expect(Fres).not.toBeNull();
         });
+
+        const Gres = await post.Get({
+            types: postType,
+            APIServer: DEFAULT_API_V2,
+            pagination: 200,
+            page: 1,
+            refs: [],
+            addresses: [account.address],
+            tags: [],
+            hashes: [],
+        });
+        const Fres = await forget.publish({
+            APIServer: DEFAULT_API_V2,
+            channel: "TEST",
+            hashes: [Gres.posts[0].hash],
+            inlineRequested: true,
+            storageEngine: ItemType.ipfs,
+            account: account,
+        });
+        expect(Fres.content).not.toBeNull();
     });
 });
