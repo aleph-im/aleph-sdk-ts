@@ -32,47 +32,19 @@ export class NULS2Account extends Account {
      * Encrypt a content using the user's public key for a NULS2 account.
      *
      * @param content The content to encrypt.
-     * @param as_hex Encrypt the content in hexadecimal.
      */
-    encrypt(
-        content: string | Buffer,
-        { as_hex = true }: { as_hex: boolean } = {
-            as_hex: true,
-        },
-    ): string | Buffer {
-        let result: Buffer | string;
-
-        if (typeof content === "string") content = Buffer.from(content);
-        result = secp256k1_encrypt(this.publicKey, content);
-        if (as_hex) result = result.toString("hex");
-        return result;
+    encrypt(content: Buffer): Buffer {
+        return secp256k1_encrypt(this.publicKey, content);
     }
 
     /**
      * Decrypt a given content using a NULS2 account.
      *
      * @param encryptedContent The encrypted content to decrypt.
-     * @param as_hex Was the content encrypted as hexadecimal ?
-     * @param as_string Was the content encrypted as a string ?
      */
-    decrypt(
-        encryptedContent: Buffer | string,
-        { as_hex = true, as_string = true }: { as_hex?: boolean; as_string?: boolean } = {
-            as_hex: true,
-            as_string: true,
-        },
-    ): Buffer | string {
-        let result: Buffer | string;
-
-        if (as_hex && typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent, "hex");
-        else if (typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent);
-
+    decrypt(encryptedContent: Buffer): Buffer {
         const secret = this.privateKey;
-        result = secp256k1_decrypt(secret, encryptedContent);
-
-        if (result === null) throw new Error("could not decrypt");
-        if (as_string) result = result.toString();
-        return result;
+        return secp256k1_decrypt(secret, encryptedContent);
     }
 
     /**

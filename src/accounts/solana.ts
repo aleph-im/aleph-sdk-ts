@@ -26,49 +26,25 @@ export class SOLAccount extends Account {
      * THIS ENCRYPTION IS NOT SAFE as the nonce is returned by the function.
      *
      * @param content The content to encrypt.
-     * @param as_hex Encrypt the content in hexadecimal.
      */
-    async encrypt(
-        content: string | Buffer,
-        { as_hex = true }: { as_hex: boolean } = {
-            as_hex: true,
-        },
-    ): Promise<string | Buffer> {
-        let res: string | Buffer;
-
-        if (typeof content === "string") content = Buffer.from(content);
+    async encrypt(content: Buffer): Promise<Buffer> {
         const pkey = base58.decode(this.publicKey);
         const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
         const encrypt = nacl.secretbox(content, nonce, pkey);
-        res = this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
-        if (as_hex) res = res.toString("hex");
-        return res;
+        return this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
     }
 
     /**
      * Decrypt a given content using a solana account.
      *
      * @param encryptedContent The encrypted content to decrypt.
-     * @param as_hex Was the content encrypted as hexadecimal ?
-     * @param as_string Was the content encrypted as a string ?
      */
-    async decrypt(
-        encryptedContent: Buffer | string,
-        { as_hex = true, as_string = true }: { as_hex?: boolean; as_string?: boolean } = {
-            as_hex: true,
-            as_string: true,
-        },
-    ): Promise<Buffer | string | Uint8Array> {
-        if (as_hex && typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent, "hex");
-        else if (typeof encryptedContent === "string") encryptedContent = Buffer.from(encryptedContent);
-        let result: Buffer | Uint8Array | string | null;
-
+    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
         const opts = this.decapsulateBox(encryptedContent);
         const pkey = base58.decode(this.publicKey);
-        result = nacl.secretbox.open(opts.ciphertext, opts.nonce, pkey);
+        const result = nacl.secretbox.open(opts.ciphertext, opts.nonce, pkey);
         if (result === null) throw new Error("could not decrypt");
-        if (as_string) result = Buffer.from(result).toString();
-        return result;
+        return Buffer.from(result);
     }
 
     /**
