@@ -52,7 +52,7 @@ describe("Solana accounts", () => {
 
     it("Should encrypt content", async () => {
         const { account } = solana.NewAccount();
-        const msg = "solana en avant les histoires";
+        const msg = Buffer.from("solana en avant les histoires");
 
         const c = await account.encrypt(msg);
         expect(c).not.toBe(msg);
@@ -60,11 +60,11 @@ describe("Solana accounts", () => {
 
     it("Should encrypt and decrypt content", async () => {
         const { account } = solana.NewAccount();
-        const msg = "solana en avant les histoires";
+        const msg = Buffer.from("solana en avant les histoires");
 
         const c = await account.encrypt(msg);
         const d = await account.decrypt(c);
         expect(c).not.toBe(msg);
-        expect(d).toBe(msg);
+        expect(d).toStrictEqual(msg);
     });
 });

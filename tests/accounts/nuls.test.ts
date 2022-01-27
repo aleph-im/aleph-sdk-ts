@@ -35,7 +35,7 @@ describe("NULS accounts", () => {
         const account = await nuls.ImportAccountFromPrivateKey(
             "cc0681517ecbf8d2800f6fe237fb0af9bef8c95eaa04bfaf3a733cf144a9640c",
         );
-        const msg = "Nuuullss";
+        const msg = Buffer.from("Nuuullss");
 
         const c = account.encrypt(msg);
         expect(c).not.toBe(msg);
@@ -45,7 +45,7 @@ describe("NULS accounts", () => {
         const account = await nuls.ImportAccountFromPrivateKey(
             "cc0681517ecbf8d2800f6fe237fb0af9bef8c95eaa04bfaf3a733cf144a9640c",
         );
-        const msg = "Nuuullss";
+        const msg = Buffer.from("Nuuullss");
 
         const c = account.encrypt(msg);
         const d = account.decrypt(c);
