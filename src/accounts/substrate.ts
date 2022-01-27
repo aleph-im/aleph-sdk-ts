@@ -44,6 +44,27 @@ export class DOTAccount extends Account {
             );
         });
     }
+
+    /**
+     * Encrypt a content using the user's public key for a Substrate account.
+     *
+     * @param content The content to encrypt.
+     */
+    encrypt(content: Buffer): Buffer {
+        return Buffer.from(this.pair.encryptMessage(content, this.pair.address));
+    }
+
+    /**
+     * Decrypt a given content using a NULS account.
+     *
+     * @param encryptedContent The encrypted content to decrypt.
+     */
+    decrypt(encryptedContent: Buffer): Buffer | null {
+        const res = this.pair.decryptMessage(encryptedContent, this.pair.address);
+        if (res) return Buffer.from(res);
+
+        throw "Error: This message can't be decoded";
+    }
 }
 
 /**
