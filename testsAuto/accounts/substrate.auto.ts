@@ -94,6 +94,40 @@ async function PublishAggregate(): Promise<boolean> {
     return true;
 }
 
+async function encrypt(): Promise<boolean> {
+    const account = await accounts.substrate.ImportAccountFromMnemonic(
+        "immune orbit beyond retire marble clog shiver ice illegal tomorrow antenna tennis",
+    );
+    const msg = Buffer.from("Nuuullss");
+
+    try {
+        const c = account.encrypt(msg);
+        assert.notStrictEqual(c, msg);
+    } catch (e: unknown) {
+        console.error(`importAccountFromMnemonicTest: ${e}`);
+        return false;
+    }
+    return true;
+}
+
+async function encryptNDecrypt(): Promise<boolean> {
+    const account = await accounts.substrate.ImportAccountFromMnemonic(
+        "immune orbit beyond retire marble clog shiver ice illegal tomorrow antenna tennis",
+    );
+    const msg = Buffer.from("Innovation");
+
+    try {
+        const c = account.encrypt(msg);
+        const d = account.decrypt(c);
+        assert.notStrictEqual(c, msg);
+        assert.deepEqual(d, msg);
+    } catch (e: unknown) {
+        console.error(`importAccountFromMnemonicTest: ${e}`);
+        return false;
+    }
+    return true;
+}
+
 /**
  * SubstrateTests controls the flow of your custom tests for substrate protocol.
  * Every test is represented by a function related to the `testsFunc` Type.
@@ -113,6 +147,8 @@ export default async function substrateTests(): Promise<boolean> {
         importAccountFromMnemonicTest,
         importAccountFromPrivateKeyTest,
         PublishAggregate,
+        encrypt,
+        encryptNDecrypt,
     ];
 
     for (let i = 0; i < testBatch.length; i++) {
