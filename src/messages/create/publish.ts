@@ -88,7 +88,7 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
         form.append("file", new Blob([configuration.file]));
     } else {
         form = new FormDataNode();
-        form.append("file", configuration.file, "usageName.txt");
+        form.append("file", configuration.file, "File");
     }
     const response = await axios.post<PushResponse>(
         `${configuration.APIServer}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
