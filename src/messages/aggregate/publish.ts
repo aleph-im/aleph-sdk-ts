@@ -41,7 +41,7 @@ type AggregatePublishConfiguration<T> = {
  *
  * @param configuration The configuration used to publish the aggregate message.
  */
-export async function Publish<T>(configuration: AggregatePublishConfiguration<T>): Promise<void> {
+export async function Publish<T>(configuration: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
     const timestamp = Date.now() / 1000;
     const content: AggregateContent<T> = {
         address: configuration.account.address,
@@ -77,4 +77,6 @@ export async function Publish<T>(configuration: AggregatePublishConfiguration<T>
         account: configuration.account,
         APIServer: configuration.APIServer,
     });
+
+    return message;
 }

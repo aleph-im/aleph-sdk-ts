@@ -13,7 +13,7 @@ describe("Aggregate message publish test", () => {
             A: 1,
         };
 
-        await aggregate.Publish({
+        const res = await aggregate.Publish({
             account: account,
             key: key,
             content: content,
@@ -39,5 +39,6 @@ describe("Aggregate message publish test", () => {
         };
 
         expect(message.satoshi).toStrictEqual(expected);
+        expect(message.satoshi).toStrictEqual(res.content.content);
     });
 });
