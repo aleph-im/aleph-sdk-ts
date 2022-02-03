@@ -29,7 +29,6 @@ describe("NULS accounts", () => {
         expect(account.publicKey).toBe("02a7e23f579821364bf186b2ee0fb2aa9e5faa57cd4f281599ca242d8d9faa8533");
         expect(account.address).toBe("6HgcLR5Yjc7yyMiteQZxTpuB6NYRiqWf");
     });
-});
 
     it("Should encrypt content", async () => {
         const account = await nuls.ImportAccountFromPrivateKey(
