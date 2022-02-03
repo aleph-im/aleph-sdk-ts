@@ -43,8 +43,7 @@ export class NULS2Account extends Account {
      * @param encryptedContent The encrypted content to decrypt.
      */
     decrypt(encryptedContent: Buffer): Buffer {
-        const secret = this.privateKey;
-        return secp256k1_decrypt(secret, encryptedContent);
+        return secp256k1_decrypt(this.privateKey, encryptedContent);
     }
 
     /**
