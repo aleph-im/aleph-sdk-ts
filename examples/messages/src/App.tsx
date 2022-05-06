@@ -1,12 +1,13 @@
 import React, {useEffect} from 'react';
-import {DEFAULT_API_V2, store} from "aleph-sdk-ts";
+import {DEFAULT_API_V2} from 'aleph-sdk-ts/global';
+import {store} from "aleph-sdk-ts";
 import {ethereum} from "aleph-sdk-ts/accounts";
-import {StorageEngine} from "aleph-sdk-ts/messages/message";
+import {ItemType} from "aleph-sdk-ts/messages/message";
 
 function App() {
   useEffect(() => {
     (async () => {
-      const account = ethereum.NewAccount();
+      const { account } = ethereum.NewAccount();
       console.log(account.address);
 
       const file = new File(
@@ -21,7 +22,7 @@ function App() {
         channel: "TEST",
         account: account,
         fileObject: file,
-        storageEngine: StorageEngine.STORAGE,
+        storageEngine: ItemType.storage,
         APIServer: DEFAULT_API_V2,
       });
 
@@ -29,7 +30,7 @@ function App() {
     })();
   }, []);
   return (
-      <div>
+    <div>
     </div>
   );
 }
