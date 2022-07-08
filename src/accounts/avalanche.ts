@@ -1,5 +1,3 @@
-import * as bip39 from "bip39";
-import * as bip32 from "bip32";
 import shajs from "sha.js";
 import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
@@ -78,30 +76,16 @@ async function getKeyChain() {
     return xChain.keyChain();
 }
 
-async function getKeyPair(privateKey: string) {
+async function getKeyPair(privateKey?: string): Promise<KeyPair> {
     const keyChain = await getKeyChain();
     const keyPair = keyChain.makeKey();
-    const keyBuff = AvaBuff.from(privateKey, "hex");
 
-    if (keyPair.importKey(keyBuff)) return keyPair;
-    throw new Error("Invalid private key");
-}
-
-/**
- * Imports an avalanche account given a mnemonic.
- *
- * It creates an avalanche keypair containing information about the account, extracted in the AvalancheAccount constructor.
- *
- * @param mnemonic The mnemonic of the account to import.
- */
-export async function ImportAccountFromMnemonic(mnemonic: string): Promise<AvalancheAccount> {
-    const seed = await bip39.mnemonicToSeed(mnemonic);
-    const bip32I = bip32.fromSeed(seed);
-
-    const privateKey = bip32I?.privateKey;
-    if (privateKey) return ImportAccountFromPrivateKey(privateKey.toString("hex"));
-
-    throw new Error("Could not get private key from mnemonic");
+    if (privateKey) {
+        const keyBuff = AvaBuff.from(privateKey, "hex");
+        if (keyPair.importKey(keyBuff)) return keyPair;
+        throw new Error("Invalid private key");
+    }
+    return keyPair;
 }
 
 /**
@@ -117,10 +101,12 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<A
 }
 
 /**
- * Creates a new Avalanche account using a generated mnemonic following BIP 39 standard.
+ * Creates a new Avalanche account using a randomly generated privateKey
  *
  */
-export async function NewAccount(): Promise<{ account: AvalancheAccount; mnemonic: string }> {
-    const mnemonic = bip39.generateMnemonic();
-    return { account: await ImportAccountFromMnemonic(mnemonic), mnemonic };
+export async function NewAccount(): Promise<{ account: AvalancheAccount; privateKey: string }> {
+    const keypair = await getKeyPair();
+    const privateKey = keypair.getPrivateKey().toString("hex");
+
+    return { account: new AvalancheAccount(keypair), privateKey };
 }
