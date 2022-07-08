@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>store | aleph-sdk-ts</title>
+	<title>forget | aleph-sdk-ts</title>
 	<meta name="description" content="Documentation for aleph-sdk-ts">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">aleph-sdk-ts</a>
 				</li>
 				<li>
-					<a href="store.html">store</a>
+					<a href="forget.html">forget</a>
 				</li>
 			</ul>
-			<h1>Namespace store</h1>
+			<h1>Namespace forget</h1>
 		</div>
 	</div>
 </header>
@@ -72,8 +72,7 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="store.html#Get" class="tsd-kind-icon">Get</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="store.html#Publish" class="tsd-kind-icon">Publish</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="forget.html#publish" class="tsd-kind-icon">publish</a></li>
 							</ul>
 						</section>
 					</div>
@@ -82,65 +81,37 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
-					<a name="Get" class="tsd-anchor"></a>
-					<h3>Get</h3>
+					<a name="publish" class="tsd-anchor"></a>
+					<h3>publish</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">Get<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">StoreGetConfiguration</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">publish<span class="tsd-signature-symbol">(</span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ForgetPublishConfiguration</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ForgetMessage</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/BjrInt/aleph-sdk-ts/blob/89a8291/src/messages/store/get.ts#L13">messages/store/get.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/BjrInt/aleph-sdk-ts/blob/89a8291/src/messages/forget/publish.ts#L41">messages/forget/publish.ts:41</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Retrieves a store message, i.e. a message containing a File.</p>
+									<p>Submit a forget object to remove content from a Post message on the network.</p>
 								</div>
+								<p>Account submitting the forget message. Should either be:
+									The sender of the original message to forget.
+									the sender of the VM that created the message.
+								The address the original message was attributed to.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>configuration: <span class="tsd-signature-type">StoreGetConfiguration</span></h5>
+									<h5>configuration: <span class="tsd-signature-type">ForgetPublishConfiguration</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The message hash and the API Server endpoint to make the query.</p>
+										<p>The configuration used to publish the forget message.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
-					<a name="Publish" class="tsd-anchor"></a>
-					<h3>Publish</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-						<li class="tsd-signature tsd-kind-icon">Publish<span class="tsd-signature-symbol">(</span>spc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">StorePublishConfiguration</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">StoreMessage</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/BjrInt/aleph-sdk-ts/blob/89a8291/src/messages/store/publish.ts#L20">messages/store/publish.ts:20</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Publishes a store message, containing a File.
-									You also have to provide default message properties, such as the targeted channel or the account used to sign the message.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>spc: <span class="tsd-signature-type">StorePublishConfiguration</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The configuration used to publish a store message.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">StoreMessage</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ForgetMessage</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -158,7 +129,7 @@
 					<li class=" tsd-kind-namespace">
 						<a href="aggregate.html">aggregate</a>
 					</li>
-					<li class=" tsd-kind-namespace">
+					<li class="current tsd-kind-namespace">
 						<a href="forget.html">forget</a>
 					</li>
 					<li class=" tsd-kind-namespace">
@@ -167,7 +138,7 @@
 					<li class=" tsd-kind-namespace">
 						<a href="program.html">program</a>
 					</li>
-					<li class="current tsd-kind-namespace">
+					<li class=" tsd-kind-namespace">
 						<a href="store.html">store</a>
 					</li>
 				</ul>
@@ -175,10 +146,7 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-namespace">
-						<a href="store.html#Get" class="tsd-kind-icon">Get</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-namespace">
-						<a href="store.html#Publish" class="tsd-kind-icon">Publish</a>
+						<a href="forget.html#publish" class="tsd-kind-icon">publish</a>
 					</li>
 				</ul>
 			</nav>
