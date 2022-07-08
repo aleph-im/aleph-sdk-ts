@@ -5,8 +5,8 @@ import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import Avalanche from "avalanche";
 import { KeyPair } from "avalanche/dist/apis/avm";
+import { Avalanche, Buffer as AvaBuff } from "avalanche";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
@@ -56,7 +56,7 @@ export class AvalancheAccount extends Account {
      * The Sign method provides a way to sign a given Aleph message using an avalanche keypair.
      * The full message is not used as the payload, only fields of the BaseMessage type are.
      *
-     * The signMessage method of the keypair is used as the signature method.
+     * The sign method of the keypair is used as the signature method.
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
@@ -65,9 +65,9 @@ export class AvalancheAccount extends Account {
         const digest = await this.digestMessage(buffer);
 
         const digestHex = digest.toString("hex");
-        const digestBuff = Buffer.from(digestHex, "hex");
+        const digestBuff = AvaBuff.from(digestHex, "hex");
 
-        return this.signer.sign(digestBuff);
+        return this.signer.sign(digestBuff).toString();
     }
 }
 
@@ -81,7 +81,7 @@ async function getKeyChain() {
 async function getKeyPair(privateKey: string) {
     const keyChain = await getKeyChain();
     const keyPair = keyChain.makeKey();
-    const keyBuff = Buffer.from(privateKey, "hex");
+    const keyBuff = AvaBuff.from(privateKey, "hex");
 
     if (keyPair.importKey(keyBuff)) return keyPair;
     throw new Error("Invalid private key");
