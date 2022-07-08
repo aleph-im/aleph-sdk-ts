@@ -9,8 +9,8 @@ import Avalanche from "avalanche";
 import { KeyPair } from "avalanche/dist/apis/avm";
 
 /**
- * AvalancheAccount implements the Account class for the Ethereum protocol.
- * It is used to represent an ethereum account when publishing a message on the Aleph network.
+ * AvalancheAccount implements the Account class for the Avalanche protocol.
+ * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
 export class AvalancheAccount extends Account {
     private signer;
@@ -43,15 +43,6 @@ export class AvalancheAccount extends Account {
         return secp256k1_decrypt(secret, encryptedContent);
     }
 
-    /**
-     * The Sign method provides a way to sign a given Aleph message using an ethereum account.
-     * The full message is not used as the payload, only fields of the BaseMessage type are.
-     *
-     * The signMessage method of the package 'ethers' is used as the signature method.
-     *
-     * @param message The Aleph message to sign, using some of its fields.
-     */
-
     private async digestMessage(message: Buffer) {
         const msgSize = Buffer.alloc(4);
         msgSize.writeUInt32BE(message.length, 0);
@@ -61,6 +52,14 @@ export class AvalancheAccount extends Account {
         return new shajs.sha256().update(msgBuf).digest();
     }
 
+    /**
+     * The Sign method provides a way to sign a given Aleph message using an avalanche keypair.
+     * The full message is not used as the payload, only fields of the BaseMessage type are.
+     *
+     * The signMessage method of the keypair is used as the signature method.
+     *
+     * @param message The Aleph message to sign, using some of its fields.
+     */
     async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
         const digest = await this.digestMessage(buffer);
@@ -120,7 +119,6 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<A
 /**
  * Creates a new Avalanche account using a generated mnemonic following BIP 39 standard.
  *
- * @param derivationPath
  */
 export async function NewAccount(): Promise<{ account: AvalancheAccount; mnemonic: string }> {
     const mnemonic = bip39.generateMnemonic();
