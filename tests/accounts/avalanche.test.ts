@@ -1,6 +1,7 @@
 import { avalanche } from "../index";
 import * as bip39 from "bip39";
 import * as bip32 from "bip32";
+import { fail } from "assert";
 
 describe("Avalanche accounts", () => {
     it("should create a new Avalanche account", async () => {
@@ -27,6 +28,26 @@ describe("Avalanche accounts", () => {
         if (privateKey) {
             const accountFromPK = await avalanche.ImportAccountFromPrivateKey(privateKey.toString("hex"));
             expect(account.publicKey).toBe(accountFromPK.publicKey);
+        } else {
+            fail();
         }
+    });
+
+    it("Should encrypt some data with an Avalanche keypair", async () => {
+        const { account } = await avalanche.NewAccount();
+        const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
+
+        const c = account.encrypt(msg);
+        expect(c).not.toBe(msg);
+    });
+
+    it("Should encrypt and decrypt some data with an Avalanche keypair", async () => {
+        const { account } = await avalanche.NewAccount();
+        const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
+
+        const c = account.encrypt(msg);
+        const d = account.decrypt(c);
+
+        expect(d).toStrictEqual(msg);
     });
 });
