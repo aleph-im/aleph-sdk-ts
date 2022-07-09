@@ -4,7 +4,7 @@ import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
-import { Avalanche, Buffer as AvaBuff } from "avalanche";
+import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
@@ -76,12 +76,18 @@ async function getKeyChain() {
     return xChain.keyChain();
 }
 
-async function getKeyPair(privateKey?: string): Promise<KeyPair> {
+export async function getKeyPair(privateKey?: string): Promise<KeyPair> {
     const keyChain = await getKeyChain();
     const keyPair = keyChain.makeKey();
 
     if (privateKey) {
-        const keyBuff = AvaBuff.from(privateKey, "hex");
+        let keyBuff: AvaBuff;
+        if (privateKey.startsWith("PrivateKey-")) {
+            const bintools = BinTools.getInstance();
+            keyBuff = bintools.cb58Decode(privateKey.split("-")[1]);
+        } else {
+            keyBuff = AvaBuff.from(privateKey, "hex");
+        }
         if (keyPair.importKey(keyBuff)) return keyPair;
         throw new Error("Invalid private key");
     }
