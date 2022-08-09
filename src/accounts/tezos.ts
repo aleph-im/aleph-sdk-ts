@@ -53,14 +53,30 @@ export class XTZAccount extends Account {
 }
 
 /**
- * Imports a Tezos account given a private key and the Keypair Tezos package's class.
- *
- * It creates a Tezos wallet containing information about the account, extracted in the SOLAccount constructor.
+ * Imports a Tezos account given a private key, using the @taquito/signer InMemorySigner class.
  *
  * @param privateKey The private key of the account to import.
+ * @param passphrase The password, if the key is encrypted.
  */
-export async function ImportAccountFromPrivateKey(privateKey: string): Promise<XTZAccount> {
-    const wallet: InMemorySigner = new InMemorySigner(privateKey);
+export async function ImportAccountFromPrivateKey(privateKey: string, passphrase?: string): Promise<XTZAccount> {
+    const wallet: InMemorySigner = new InMemorySigner(privateKey, passphrase);
+
+    return new XTZAccount(await wallet.publicKeyHash(), wallet);
+}
+
+/**
+ * Imports a Tezos account given fundraiser information, using the @taquito/signer InMemorySigner class.
+ *
+ * @param email The email used.
+ * @param password The password used.
+ * @param mnemonic The mnemonic received during the fundraiser.
+ */
+export async function ImportAccountFromFundraiserInfo(
+    email: string,
+    password: string,
+    mnemonic: string,
+): Promise<XTZAccount> {
+    const wallet: InMemorySigner = await InMemorySigner.fromFundraiser(email, password, mnemonic);
 
     return new XTZAccount(await wallet.publicKeyHash(), wallet);
 }
