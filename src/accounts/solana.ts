@@ -23,14 +23,12 @@ export class SOLAccount extends Account {
 
     /**
      * Put content into a tweetnacl secret box for a solana account.
-     * THIS ENCRYPTION IS NOT SAFE as the nonce is returned by the function.
      *
      * @param content The content to encrypt.
      */
     async encrypt(content: Buffer): Promise<Buffer> {
-        const pkey = base58.decode(this.publicKey);
-        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
-        const encrypt = nacl.secretbox(content, nonce, pkey);
+        const nonce = nacl.randomBytes(nacl.box.nonceLength);
+        const encrypt = nacl.box(content, nonce, this.wallet.publicKey.toBytes(), this.wallet.secretKey.slice(0, 32));
         return this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
     }
 
@@ -41,8 +39,12 @@ export class SOLAccount extends Account {
      */
     async decrypt(encryptedContent: Buffer): Promise<Buffer> {
         const opts = this.decapsulateBox(encryptedContent);
-        const pkey = base58.decode(this.publicKey);
-        const result = nacl.secretbox.open(opts.ciphertext, opts.nonce, pkey);
+        const result = nacl.box.open(
+            opts.ciphertext,
+            opts.nonce,
+            this.wallet.publicKey.toBytes(),
+            this.wallet.secretKey.slice(0, 32),
+        );
         if (result === null) throw new Error("could not decrypt");
         return Buffer.from(result);
     }
@@ -66,8 +68,8 @@ export class SOLAccount extends Account {
      */
     private decapsulateBox(content: Buffer): { nonce: Buffer; ciphertext: Buffer } {
         return {
-            nonce: content.slice(0, nacl.secretbox.nonceLength),
-            ciphertext: content.slice(nacl.secretbox.nonceLength),
+            nonce: content.slice(0, nacl.box.nonceLength),
+            ciphertext: content.slice(nacl.box.nonceLength),
         };
     }
 
