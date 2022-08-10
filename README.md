@@ -55,7 +55,7 @@ You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/ind
 - [X] Program object
 - [X] Messages retrieving
 - [X] Ethereum account
-- [ ] Avalanche account
+- [X] Avalanche account
 - [X] NULS account
 - [X] NULS2 account
 - [X] Solana account
