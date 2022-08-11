@@ -106,6 +106,10 @@ dist
 
 # Custom
 .idea
+<<<<<<< HEAD
 
 # Documentation
 docs/
+=======
+.gitsigners
+>>>>>>> 1108692 (add .gitsigners to .gitignore, containing some signing key)
