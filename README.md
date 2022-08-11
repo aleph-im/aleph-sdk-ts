@@ -6,6 +6,11 @@ aleph-sdk-ts is the Typescript SDK you can use to interact with the Aleph decent
 When I started this project, it was just for adding TS support to the [Aleph-JS](https://github.com/aleph-im/aleph-js) project.
 This project is still under development, please consider this if you are using it.
 
+## Quick Start
+
+- An API reference is available in the `/docs` directory, [and online](https://aleph-im.github.io/aleph-sdk-ts/index.html) 
+- For guides and use-cases check the [Aleph TS SDK Gitbook](https://aleph-im.gitbook.io/ts-sdk/)
+
 ## Installation
 
 ### Use it in your project
@@ -42,9 +47,6 @@ Just run:
 yarn build
 ```
 
-## Quick Start
-
-You can refer to the [documentation](https://aleph-im.github.io/aleph-sdk-ts/index.html) to use the client in your project.
 
 ## Features
 
