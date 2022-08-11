@@ -11,7 +11,7 @@ import nacl from "tweetnacl";
  * XTZAccount implements the Account class for the Tezos protocol.
  * It is used to represent a Tezos account when publishing a message on the Aleph network.
  */
-export class XTZAccount extends Account {
+export class TEZOSAccount extends Account {
     private signer: InMemorySigner;
 
     /**
@@ -24,7 +24,7 @@ export class XTZAccount extends Account {
     }
 
     override GetChain(): Chain {
-        return Chain.XTZ;
+        return Chain.TEZOS;
     }
 
     /**
@@ -58,10 +58,10 @@ export class XTZAccount extends Account {
  * @param privateKey The private key of the account to import.
  * @param passphrase The password, if the key is encrypted.
  */
-export async function ImportAccountFromPrivateKey(privateKey: string, passphrase?: string): Promise<XTZAccount> {
+export async function ImportAccountFromPrivateKey(privateKey: string, passphrase?: string): Promise<TEZOSAccount> {
     const wallet: InMemorySigner = new InMemorySigner(privateKey, passphrase);
 
-    return new XTZAccount(await wallet.publicKeyHash(), wallet);
+    return new TEZOSAccount(await wallet.publicKey(), wallet);
 }
 
 /**
@@ -75,16 +75,16 @@ export async function ImportAccountFromFundraiserInfo(
     email: string,
     password: string,
     mnemonic: string,
-): Promise<XTZAccount> {
+): Promise<TEZOSAccount> {
     const wallet: InMemorySigner = await InMemorySigner.fromFundraiser(email, password, mnemonic);
 
-    return new XTZAccount(await wallet.publicKeyHash(), wallet);
+    return new TEZOSAccount(await wallet.publicKeyHash(), wallet);
 }
 
 /**
  * Creates a new Tezos account (tz1) using a randomly generated Tezos keypair.
  */
-export async function NewAccount(): Promise<{ account: XTZAccount; privateKey: Uint8Array }> {
+export async function NewAccount(): Promise<{ account: TEZOSAccount; privateKey: Uint8Array }> {
     const key = b58cencode(nacl.sign.keyPair().secretKey, prefix.edsk);
     const wallet = await ImportAccountFromPrivateKey(key);
 
