@@ -36,7 +36,6 @@
     },
     "dependencies": {
         "@cosmjs/proto-signing": "^0.28.11",
-        "@cosmjs/stargate": "^0.28.11",
         "@polkadot/keyring": "^7.7.1",
         "@polkadot/util": "^7.7.1",
         "@polkadot/util-crypto": "^7.7.1",
