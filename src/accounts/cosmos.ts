@@ -1,14 +1,19 @@
-import { DirectSecp256k1HdWallet, DirectSecp256k1HdWalletOptions, DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
+import {
+    DirectSecp256k1HdWallet,
+    DirectSecp256k1HdWalletOptions,
+    DirectSecp256k1Wallet,
+    makeAuthInfoBytes,
+    makeSignDoc,
+    OfflineDirectSigner,
+} from "@cosmjs/proto-signing";
 import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 
-type AnyDirectWallet = DirectSecp256k1Wallet | DirectSecp256k1HdWallet;
-
 export class CosmosAccount extends Account {
-    private wallet: AnyDirectWallet;
+    private wallet: OfflineDirectSigner;
 
-    constructor(wallet: AnyDirectWallet, publicKey: string, address: string) {
+    constructor(wallet: OfflineDirectSigner, publicKey: string, address: string) {
         super(address, publicKey);
         this.wallet = wallet;
     }
@@ -19,11 +24,24 @@ export class CosmosAccount extends Account {
 
     async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        // TODO
+        const signer = {
+            typeUrl: "signutil/MsgSignText",
+            value: buffer,
+        };
+
+        const signDoc = makeSignDoc(
+            buffer,
+            makeAuthInfoBytes([{ pubkey: signer, sequence: 0 }], [], 0),
+            "signed-message-v1",
+            0,
+        );
+        const { signature } = await this.wallet.signDirect(this.address, signDoc);
+
+        return signature.toString();
     }
 }
 
-async function getCosmosAccount(wallet: AnyDirectWallet) {
+async function getCosmosAccount(wallet: OfflineDirectSigner): Promise<CosmosAccount> {
     const [account] = await wallet.getAccounts();
     const publicKey = Buffer.from(account.pubkey).toString("hex");
 
