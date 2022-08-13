@@ -1,9 +1,11 @@
 import { Account } from "./account";
 import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
-import * as solanajs from "@solana/web3.js";
-import nacl from "tweetnacl";
 import base58 from "bs58";
+import nacl from "tweetnacl";
+import * as solanajs from "@solana/web3.js";
+import * as ecies25519 from "ecies-25519";
+import { Buffer } from "buffer";
 
 /**
  * SOLAccount implements the Account class for the Solana protocol.
@@ -27,9 +29,14 @@ export class SOLAccount extends Account {
      * @param content The content to encrypt.
      */
     async encrypt(content: Buffer): Promise<Buffer> {
-        const nonce = nacl.randomBytes(nacl.box.nonceLength);
-        const encrypt = nacl.box(content, nonce, this.wallet.publicKey.toBytes(), this.wallet.secretKey.slice(0, 32));
-        return this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
+        return Buffer.from(
+            await ecies25519.encrypt(content, this.wallet.publicKey.toBuffer(), {
+                sender: {
+                    privateKey: this.wallet.secretKey,
+                    publicKey: this.wallet.publicKey.toBuffer(),
+                },
+            }),
+        );
     }
 
     /**
@@ -38,39 +45,7 @@ export class SOLAccount extends Account {
      * @param encryptedContent The encrypted content to decrypt.
      */
     async decrypt(encryptedContent: Buffer): Promise<Buffer> {
-        const opts = this.decapsulateBox(encryptedContent);
-        const result = nacl.box.open(
-            opts.ciphertext,
-            opts.nonce,
-            this.wallet.publicKey.toBytes(),
-            this.wallet.secretKey.slice(0, 32),
-        );
-        if (result === null) throw new Error("could not decrypt");
-        return Buffer.from(result);
-    }
-
-    /**
-     * Concat the nonce with the secret box content into a single Buffer.
-     * @param opts contain the nonce used during box creation and the result of the box in ciphertext.
-     * @private
-     */
-    private encapsulateBox(opts: { nonce: Uint8Array; ciphertext: Uint8Array }): Buffer {
-        if (!opts.nonce) {
-            throw new Error("No nonce found");
-        }
-        return Buffer.concat([opts.nonce, opts.ciphertext]);
-    }
-
-    /**
-     * Decomposed the result of the Solana's Encrypt method to be interpreted in Decrypt method.
-     * @param content, A concatenation of a nonce and a Buffer used for creating a box.
-     * @private
-     */
-    private decapsulateBox(content: Buffer): { nonce: Buffer; ciphertext: Buffer } {
-        return {
-            nonce: content.slice(0, nacl.box.nonceLength),
-            ciphertext: content.slice(nacl.box.nonceLength),
-        };
+        return Buffer.from(await ecies25519.decrypt(encryptedContent, this.wallet.secretKey));
     }
 
     /**
