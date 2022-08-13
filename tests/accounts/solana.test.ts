@@ -2,8 +2,9 @@ import * as solanajs from "@solana/web3.js";
 import { ItemType } from "../../src/messages/message";
 import { post, solana } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
-import nacl from "tweetnacl";
 import base58 from "bs58";
+import { Buffer } from "buffer";
+import * as ecies25519 from "ecies-25519";
 
 describe("Solana accounts", () => {
     it("should create a new solana accounts", () => {
@@ -75,16 +76,7 @@ describe("Solana accounts", () => {
         const msg = Buffer.from("solana en avant les histoires");
 
         const c = await account.encrypt(msg);
-        const opts = {
-            nonce: c.slice(0, nacl.box.nonceLength),
-            ciphertext: c.slice(nacl.box.nonceLength),
-        };
-        const d = nacl.box.open(
-            opts.ciphertext,
-            opts.nonce,
-            base58.decode(account.publicKey),
-            base58.decode(account.publicKey),
-        );
-        expect(d).toBeNull();
+        const d = Buffer.from(await ecies25519.decrypt(c, base58.decode(account.publicKey)));
+        expect(d).not.toBe(msg);
     });
 });

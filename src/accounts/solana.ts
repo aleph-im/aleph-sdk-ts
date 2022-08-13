@@ -32,7 +32,7 @@ export class SOLAccount extends Account {
         return Buffer.from(
             await ecies25519.encrypt(content, this.wallet.publicKey.toBuffer(), {
                 sender: {
-                    privateKey: this.wallet.secretKey,
+                    privateKey: this.wallet.secretKey.slice(32, 64),
                     publicKey: this.wallet.publicKey.toBuffer(),
                 },
             }),
@@ -45,7 +45,7 @@ export class SOLAccount extends Account {
      * @param encryptedContent The encrypted content to decrypt.
      */
     async decrypt(encryptedContent: Buffer): Promise<Buffer> {
-        return Buffer.from(await ecies25519.decrypt(encryptedContent, this.wallet.secretKey));
+        return Buffer.from(await ecies25519.decrypt(encryptedContent, this.wallet.secretKey.slice(32, 64)));
     }
 
     /**
