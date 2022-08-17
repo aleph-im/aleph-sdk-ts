@@ -37,7 +37,7 @@ export class CosmosAccount extends Account {
         );
         const { signature } = await this.wallet.signDirect(this.address, signDoc);
 
-        return signature.toString();
+        return JSON.stringify(signature);
     }
 }
 
