@@ -3,7 +3,6 @@ import { ItemType } from "../../src/messages/message";
 import { post, solana } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 import base58 from "bs58";
-import { Buffer } from "buffer";
 import * as ecies25519 from "ecies-25519";
 
 describe("Solana accounts", () => {

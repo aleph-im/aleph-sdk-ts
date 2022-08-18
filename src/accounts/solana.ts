@@ -5,7 +5,6 @@ import base58 from "bs58";
 import nacl from "tweetnacl";
 import * as solanajs from "@solana/web3.js";
 import * as ecies25519 from "ecies-25519";
-import { Buffer } from "buffer";
 
 /**
  * SOLAccount implements the Account class for the Solana protocol.
