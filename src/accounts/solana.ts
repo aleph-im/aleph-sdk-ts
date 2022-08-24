@@ -5,16 +5,30 @@ import * as solanajs from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
 
+export interface SolanaWallet {
+    signMessage(message: Uint8Array): Promise<Uint8Array>;
+    publicKey: solanajs.PublicKey;
+}
+
+const isKeypair = (keypairOrWallet: solanajs.Keypair | SolanaWallet): keypairOrWallet is solanajs.Keypair =>
+    keypairOrWallet.hasOwnProperty("_keypair");
+
 /**
  * SOLAccount implements the Account class for the Solana protocol.
- * It is used to represent an solana account when publishing a message on the Aleph network.
+ * It is used to represent a solana account when publishing a message on the Aleph network.
  */
 export class SOLAccount extends Account {
-    private wallet: solanajs.Keypair;
+    private keypair: solanajs.Keypair | undefined;
+    private wallet: SolanaWallet | undefined;
 
-    constructor(wallet: solanajs.Keypair) {
-        super(wallet.publicKey.toString(), wallet.publicKey.toString());
-        this.wallet = wallet;
+    constructor(keypairOrWallet: solanajs.Keypair | SolanaWallet) {
+        super(keypairOrWallet.publicKey.toString(), keypairOrWallet.publicKey.toString());
+
+        if (isKeypair(keypairOrWallet)) {
+            this.keypair = keypairOrWallet;
+        } else {
+            this.wallet = keypairOrWallet;
+        }
     }
 
     override GetChain(): Chain {
@@ -27,8 +41,10 @@ export class SOLAccount extends Account {
      * @param content The content to encrypt.
      */
     async encrypt(content: Buffer): Promise<Buffer> {
+        if (!this.keypair) throw new Error("Unsupported when used with a wallet");
+
         const nonce = nacl.randomBytes(nacl.box.nonceLength);
-        const encrypt = nacl.box(content, nonce, this.wallet.publicKey.toBytes(), this.wallet.secretKey.slice(0, 32));
+        const encrypt = nacl.box(content, nonce, this.keypair.publicKey.toBytes(), this.keypair.secretKey.slice(0, 32));
         return this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
     }
 
@@ -38,12 +54,14 @@ export class SOLAccount extends Account {
      * @param encryptedContent The encrypted content to decrypt.
      */
     async decrypt(encryptedContent: Buffer): Promise<Buffer> {
+        if (!this.keypair) throw new Error("Unsupported when used with a wallet");
+
         const opts = this.decapsulateBox(encryptedContent);
         const result = nacl.box.open(
             opts.ciphertext,
             opts.nonce,
-            this.wallet.publicKey.toBytes(),
-            this.wallet.secretKey.slice(0, 32),
+            this.keypair.publicKey.toBytes(),
+            this.keypair.secretKey.slice(0, 32),
         );
         if (result === null) throw new Error("could not decrypt");
         return Buffer.from(result);
@@ -74,7 +92,7 @@ export class SOLAccount extends Account {
     }
 
     /**
-     * The Sign method provides a way to sign a given Aleph message using an solana account.
+     * The Sign method provides a way to sign a given Aleph message using a solana account.
      * The full message is not used as the payload, only fields of the BaseMessage type are.
      *
      * nacl is used to sign the payload with the account's private key.
@@ -82,33 +100,34 @@ export class SOLAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    override Sign(message: BaseMessage): Promise<string> {
+    override async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
 
-        return new Promise((resolve) => {
-            const bufferSignature = nacl.sign.detached(buffer, this.wallet.secretKey);
+        // TODO let's clean this up with a proper interface later, this is just for prototyping
+        let bufferSignature = !!this.keypair ? nacl.sign.detached(buffer, this.keypair.secretKey) : undefined;
+        bufferSignature = !!this.wallet ? await this.wallet.signMessage(buffer) : bufferSignature;
 
-            resolve(
-                JSON.stringify({
-                    signature: base58.encode(bufferSignature),
-                    publicKey: this.publicKey,
-                }),
-            );
+        // This will only happen if the constructor is not used properly
+        if (!bufferSignature) throw new Error("Could not sign message");
+
+        return JSON.stringify({
+            signature: base58.encode(bufferSignature),
+            publicKey: this.publicKey,
         });
     }
 }
 
 /**
- * Imports an solana account given a private key and the Keypair solana/web3js package's class.
+ * Imports a solana account given a private key and the Keypair solana/web3js package's class.
  *
- * It creates an solana wallet containing information about the account, extracted in the SOLAccount constructor.
+ * It creates a solana keypair containing information about the account, extracted in the SOLAccount constructor.
  *
  * @param privateKey The private key of the account to import.
  */
 export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount {
-    const wallet: solanajs.Keypair = solanajs.Keypair.fromSecretKey(privateKey);
+    const keypair: solanajs.Keypair = solanajs.Keypair.fromSecretKey(privateKey);
 
-    return new SOLAccount(wallet);
+    return new SOLAccount(keypair);
 }
 
 /**

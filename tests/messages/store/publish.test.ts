@@ -30,5 +30,5 @@ describe("Store message publish", () => {
         const expected = "y";
 
         expect(got).toBe(expected);
-    });
+    }, 20000);
 });
