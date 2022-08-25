@@ -38,18 +38,18 @@ describe("Tezos accounts", () => {
         });
 
         expect(msg.item_hash).not.toBeUndefined();
-        console.log(msg);
-        const amends = await post.Get({
-            types: "custom_type",
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [],
-            tags: [],
-            hashes: [msg.item_hash],
+        setTimeout(async () => {
+            const amends = await post.Get({
+                types: "custom_type",
+                APIServer: DEFAULT_API_V2,
+                pagination: 200,
+                page: 1,
+                refs: [],
+                addresses: [],
+                tags: [],
+                hashes: [msg.item_hash],
+            });
+            expect(amends.posts[0].content).toStrictEqual(content);
         });
-        expect(amends.posts.length).not.toBe(0);
-        expect(amends.posts[0].content).toStrictEqual(content);
     });
 });
