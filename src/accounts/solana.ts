@@ -3,19 +3,37 @@ import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
-import { BaseMessageSignerWalletAdapter, MessageSignerWalletAdapter } from "@solana/wallet-adapter-base";
 import base58 from "bs58";
+
+type WalletSignature = {
+    signature: Uint8Array;
+    publicKey: string;
+};
+interface MessageSigner {
+    signMessage(message: Uint8Array): Promise<WalletSignature>;
+    publicKey: PublicKey;
+    connected: boolean;
+    connect(): Promise<void>;
+}
 
 /**
  * SOLAccount implements the Account class for the Solana protocol.
  * It is used to represent an solana account when publishing a message on the Aleph network.
  */
 export class SOLAccount extends Account {
-    private wallet: MessageSignerWalletAdapter | Keypair;
+    private wallet?: MessageSigner;
+    private keypair?: Keypair;
+    public isKeypair: boolean;
 
-    constructor(publicKey: PublicKey, wallet: Keypair | MessageSignerWalletAdapter) {
+    constructor(publicKey: PublicKey, walletOrKeypair: Keypair | MessageSigner) {
         super(publicKey.toString(), publicKey.toString());
-        this.wallet = wallet;
+        if (walletOrKeypair instanceof Keypair) {
+            this.keypair = walletOrKeypair;
+            this.isKeypair = true;
+        } else {
+            this.wallet = walletOrKeypair;
+            this.isKeypair = false;
+        }
     }
 
     override GetChain(): Chain {
@@ -35,10 +53,11 @@ export class SOLAccount extends Account {
         const buffer = GetVerificationBuffer(message);
         let signature;
 
-        if (this.wallet instanceof BaseMessageSignerWalletAdapter) {
-            signature = await this.wallet.signMessage(buffer);
-        } else if (this.wallet instanceof Keypair) {
-            signature = nacl.sign.detached(buffer, this.wallet.secretKey);
+        if (this.wallet) {
+            const signed = await this.wallet.signMessage(buffer);
+            signature = signed.signature;
+        } else if (this.keypair) {
+            signature = nacl.sign.detached(buffer, this.keypair.secretKey);
         } else {
             throw new Error("Cannot sign message");
         }
@@ -73,9 +92,9 @@ export function NewAccount(): { account: SOLAccount; privateKey: Uint8Array } {
 }
 
 /**
- * Retrieves a solana account using an in-browser wallet
+ * Retrieves a solana account using an in-browser wallet provider
  */
-export async function getAccountFromProvider(provider: MessageSignerWalletAdapter): Promise<SOLAccount> {
+export async function GetAccountFromProvider(provider: MessageSigner): Promise<SOLAccount> {
     if (!provider.connected) await provider.connect();
     if (!provider.publicKey) throw new Error("This wallet does not provide a public key");
 
