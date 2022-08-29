@@ -8,11 +8,9 @@ import { BaseMessage, Chain } from "../messages/message";
  */
 export abstract class Account {
     readonly address: string;
-    readonly publicKey: string;
 
-    protected constructor(address: string, publicKey: string) {
+    protected constructor(address: string) {
         this.address = address;
-        this.publicKey = publicKey;
     }
 
     abstract GetChain(): Chain;

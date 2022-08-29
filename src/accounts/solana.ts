@@ -13,7 +13,7 @@ export class SOLAccount extends Account {
     private wallet: solanajs.Keypair;
 
     constructor(wallet: solanajs.Keypair) {
-        super(wallet.publicKey.toString(), wallet.publicKey.toString());
+        super(wallet.publicKey.toString());
         this.wallet = wallet;
     }
 
@@ -91,7 +91,7 @@ export class SOLAccount extends Account {
             resolve(
                 JSON.stringify({
                     signature: base58.encode(bufferSignature),
-                    publicKey: this.publicKey,
+                    publicKey: this.wallet.publicKey.toString(),
                 }),
             );
         });

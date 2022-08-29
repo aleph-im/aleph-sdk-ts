@@ -7,7 +7,6 @@ describe("Avalanche accounts", () => {
         const { account } = await avalanche.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
     });
 
     it("should retreive an avalanche keypair from an hexadecimal private key", async () => {
@@ -15,7 +14,7 @@ describe("Avalanche accounts", () => {
 
         if (privateKey) {
             const accountFromPK = await avalanche.ImportAccountFromPrivateKey(privateKey);
-            expect(account.publicKey).toBe(accountFromPK.publicKey);
+            expect(account.address).toBe(accountFromPK.address);
         } else {
             fail();
         }
@@ -29,7 +28,7 @@ describe("Avalanche accounts", () => {
         const fromHex = await avalanche.ImportAccountFromPrivateKey(hexPrivateKey);
         const fromCb58 = await avalanche.ImportAccountFromPrivateKey(cb58PrivateKey);
 
-        expect(fromHex.publicKey).toBe(fromCb58.publicKey);
+        expect(fromHex.address).toBe(fromCb58.address);
     });
 
     it("Should encrypt some data with an Avalanche keypair", async () => {
