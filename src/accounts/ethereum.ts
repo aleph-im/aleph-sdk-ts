@@ -10,10 +10,14 @@ import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "ecie
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 export class ETHAccount extends Account {
-    private wallet: ethers.Wallet;
-    constructor(wallet: ethers.Wallet) {
-        super(wallet.address);
-        this.wallet = wallet;
+    private wallet?: ethers.Wallet;
+    private signer?: ethers.Signer;
+
+    constructor(walletOrSigner: ethers.Wallet | ethers.Signer, address: string) {
+        super(address);
+
+        if (walletOrSigner instanceof ethers.Wallet) this.wallet = walletOrSigner;
+        else this.signer = walletOrSigner;
     }
 
     override GetChain(): Chain {
@@ -26,7 +30,9 @@ export class ETHAccount extends Account {
      * @param content The content to encrypt.
      */
     encrypt(content: Buffer): Buffer {
-        return secp256k1_encrypt(this.wallet.publicKey, content);
+        if (this.wallet) return secp256k1_encrypt(this.wallet.publicKey, content);
+
+        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -35,8 +41,11 @@ export class ETHAccount extends Account {
      * @param encryptedContent The encrypted content to decrypt.
      */
     decrypt(encryptedContent: Buffer): Buffer {
-        const secret = this.wallet.privateKey;
-        return secp256k1_decrypt(secret, encryptedContent);
+        if (this.wallet) {
+            const secret = this.wallet.privateKey;
+            return secp256k1_decrypt(secret, encryptedContent);
+        }
+        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -47,11 +56,13 @@ export class ETHAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    override Sign(message: BaseMessage): Promise<string> {
+    async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        return new Promise((resolve) => {
-            resolve(this.wallet.signMessage(buffer.toString()));
-        });
+        const signMethod = this.wallet || this.signer;
+
+        if (signMethod) return signMethod.signMessage(buffer.toString());
+
+        throw new Error("Cannot sign message");
     }
 }
 
@@ -66,7 +77,7 @@ export class ETHAccount extends Account {
 export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
     const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath);
 
-    return new ETHAccount(wallet);
+    return new ETHAccount(wallet, wallet.address);
 }
 
 /**
@@ -79,7 +90,7 @@ export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/
 export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
     const wallet = new ethers.Wallet(privateKey);
 
-    return new ETHAccount(wallet);
+    return new ETHAccount(wallet, wallet.address);
 }
 
 /**
@@ -91,4 +102,12 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
     const mnemonic = bip39.generateMnemonic();
 
     return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic };
+}
+
+export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider) {
+    const ETHprovider = new ethers.providers.Web3Provider(provider);
+    const signer = ETHprovider.getSigner();
+    const address = await signer.getAddress();
+
+    return new ETHAccount(signer, address);
 }
