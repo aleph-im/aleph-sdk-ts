@@ -9,7 +9,7 @@ describe("Tezos accounts", () => {
         const { account } = await tezos.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
+        expect(await account.GetPublicKey()).not.toBe("");
     });
 
     it("should import an tezos accounts using a private key", async () => {
@@ -18,7 +18,7 @@ describe("Tezos accounts", () => {
         const account = await tezos.ImportAccountFromPrivateKey(secretKey);
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).toBe(b58cencode(keyPair.publicKey, prefix.edpk));
+        expect(await account.GetPublicKey()).toBe(b58cencode(keyPair.publicKey, prefix.edpk));
     });
 
     it("should publish a post message correctly", async () => {

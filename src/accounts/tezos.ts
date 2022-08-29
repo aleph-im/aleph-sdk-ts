@@ -15,16 +15,20 @@ export class TEZOSAccount extends Account {
     private signer: InMemorySigner;
 
     /**
-     * @param publicKey The public key encoded in base58.
+     * @param publicKey The public key encoded in base58. Needed due to asynchronous getter of the public key.
      * @param signer The signer containing the private key used to sign the message.
      */
     constructor(publicKey: string, signer: InMemorySigner) {
-        super(getPkhfromPk(publicKey), publicKey);
+        super(getPkhfromPk(publicKey));
         this.signer = signer;
     }
 
     override GetChain(): Chain {
         return Chain.TEZOS;
+    }
+
+    async GetPublicKey(): Promise<string> {
+        return this.signer.publicKey();
     }
 
     /**
@@ -42,12 +46,7 @@ export class TEZOSAccount extends Account {
         return new Promise(async (resolve) => {
             const bufferSignature = await this.signer.sign(buffer.toString("hex"));
 
-            resolve(
-                JSON.stringify({
-                    signature: bufferSignature.sig,
-                    publicKey: this.publicKey,
-                }),
-            );
+            resolve(bufferSignature.sig);
         });
     }
 }
