@@ -1,7 +1,8 @@
-import { ItemType } from "../../src/messages/message";
+import { ItemType, BaseMessage } from "../../src/messages/message";
+import { GetVerificationBuffer } from "../../src/messages";
 import { post, tezos } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
-import { b58cencode, prefix } from "@taquito/utils";
+import { b58cencode, b58cdecode, prefix, validateSignature, encodeExpr } from "@taquito/utils";
 import nacl from "tweetnacl";
 
 describe("Tezos accounts", () => {
@@ -19,6 +20,32 @@ describe("Tezos accounts", () => {
 
         expect(account.address).not.toBe("");
         expect(await account.GetPublicKey()).toBe(b58cencode(keyPair.publicKey, prefix.edpk));
+    });
+
+    it("should sign a tezos message correctly", async () => {
+        const { account } = await tezos.NewAccount();
+        const content: { body: string } = {
+            body: "Hello World TEZOS",
+        };
+        const msg = await post.Publish({
+            APIServer: DEFAULT_API_V2,
+            channel: "ALEPH-TEST",
+            inlineRequested: true,
+            storageEngine: ItemType.ipfs,
+            account: account,
+            postType: "custom_type",
+            content: content,
+        });
+        expect(validateSignature(msg.signature)).toBe(3);
+
+        const buffer = GetVerificationBuffer(msg as unknown as BaseMessage);
+        const digest = encodeExpr(buffer.toString("hex"));
+        const result = nacl.sign.detached.verify(
+            b58cdecode(digest, prefix.expr),
+            b58cdecode(msg.signature, prefix.sig),
+            b58cdecode(await account.GetPublicKey(), prefix.edpk),
+        );
+        expect(result).toBe(true);
     });
 
     it("should publish a post message correctly", async () => {
