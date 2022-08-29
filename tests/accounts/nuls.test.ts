@@ -7,7 +7,6 @@ describe("NULS accounts", () => {
         const { account } = await nuls.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
         expect(account.GetChain()).toStrictEqual(Chain.NULS);
     });
 
@@ -16,7 +15,6 @@ describe("NULS accounts", () => {
         const account = await nuls.ImportAccountFromMnemonic(mnemonic);
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
         expect(account.GetChain()).toStrictEqual(Chain.NULS);
     });
 
@@ -26,7 +24,6 @@ describe("NULS accounts", () => {
         );
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).toBe("02a7e23f579821364bf186b2ee0fb2aa9e5faa57cd4f281599ca242d8d9faa8533");
         expect(account.address).toBe("6HgcLR5Yjc7yyMiteQZxTpuB6NYRiqWf");
     });
 

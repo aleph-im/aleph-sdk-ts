@@ -9,7 +9,6 @@ import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 
-export const hexRegEx = /([0-9]|[a-f])/gim;
 export type ChainNAddress = {
     chain_id?: number;
     address_type?: number;
@@ -25,9 +24,12 @@ export type NULSImportConfig = {
  */
 export class NULSAccount extends Account {
     private readonly privateKey: string;
+    private readonly publicKey: string;
+
     constructor(address: string, publicKey: string, privateKey: string) {
-        super(address, publicKey);
+        super(address);
         this.privateKey = privateKey;
+        this.publicKey = publicKey;
     }
 
     GetChain(): Chain {
@@ -145,12 +147,7 @@ export async function ImportAccountFromPrivateKey(
  * @param body The array to XOR.
  */
 export function getXOR(body: Uint8Array): number {
-    let xor = 0;
-
-    for (let i = 0; i < body.length; i += 1) {
-        xor ^= body[i];
-    }
-    return xor;
+    return body.reduce((xor, i) => (xor ^= i), 0);
 }
 
 /**
@@ -241,8 +238,8 @@ export function hashTwice(buffer: Buffer): Buffer {
  *
  * @param input The input to verify.
  */
-export function isHex<T>(input: T): boolean {
-    return typeof input === "string" && (input.match(hexRegEx) || []).length === input.length;
+export function isHex(input: string): boolean {
+    return /([0-9]|[a-f])/gim.test(input);
 }
 
 /**

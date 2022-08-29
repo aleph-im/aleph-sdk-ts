@@ -26,7 +26,7 @@ export class SOLAccount extends Account {
     public isKeypair: boolean;
 
     constructor(publicKey: PublicKey, walletOrKeypair: Keypair | MessageSigner) {
-        super(publicKey.toString(), publicKey.toString());
+        super(publicKey.toString());
         if (walletOrKeypair instanceof Keypair) {
             this.keypair = walletOrKeypair;
             this.isKeypair = true;

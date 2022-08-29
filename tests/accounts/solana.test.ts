@@ -8,7 +8,6 @@ describe("Solana accounts", () => {
         const { account } = solana.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
     });
 
     it("should import an solana accounts using a private key", () => {
@@ -16,7 +15,6 @@ describe("Solana accounts", () => {
         const account = solana.ImportAccountFromPrivateKey(keyPair.secretKey);
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).toBe(keyPair.publicKey.toString());
     });
 
     it("should publish a post message correctly", async () => {
