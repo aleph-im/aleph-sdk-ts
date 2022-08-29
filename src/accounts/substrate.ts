@@ -14,8 +14,7 @@ import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
 export class DOTAccount extends Account {
     private pair: KeyringPair;
     constructor(pair: KeyringPair) {
-        const publicKey: string = Buffer.from(pair.publicKey).toString("hex");
-        super(pair.address, publicKey);
+        super(pair.address);
         this.pair = pair;
     }
 

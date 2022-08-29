@@ -12,7 +12,7 @@ import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "ecie
 export class ETHAccount extends Account {
     private wallet: ethers.Wallet;
     constructor(wallet: ethers.Wallet) {
-        super(wallet.address, wallet.publicKey);
+        super(wallet.address);
         this.wallet = wallet;
     }
 
@@ -26,7 +26,7 @@ export class ETHAccount extends Account {
      * @param content The content to encrypt.
      */
     encrypt(content: Buffer): Buffer {
-        return secp256k1_encrypt(this.publicKey, content);
+        return secp256k1_encrypt(this.wallet.publicKey, content);
     }
 
     /**

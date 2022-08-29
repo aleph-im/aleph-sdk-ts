@@ -7,7 +7,6 @@ describe("Ethereum accounts", () => {
         const { account } = ethereum.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
     });
 
     it("should import an ethereum accounts using a mnemonic", () => {
@@ -15,7 +14,6 @@ describe("Ethereum accounts", () => {
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
     });
 
     it("should import an ethereum accounts using a private key", () => {
@@ -24,7 +22,6 @@ describe("Ethereum accounts", () => {
         const account = ethereum.ImportAccountFromPrivateKey(wallet.privateKey);
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).toBe(wallet.publicKey);
     });
 
     it("Should encrypt some data with an Ethereum account", () => {

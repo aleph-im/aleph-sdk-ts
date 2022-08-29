@@ -19,9 +19,12 @@ export type NULS2ImportConfig = {
  */
 export class NULS2Account extends Account {
     private readonly privateKey: string;
+    private readonly publicKey: string;
+
     constructor(address: string, publicKey: string, privateKey: string) {
-        super(address, publicKey);
+        super(address);
         this.privateKey = privateKey;
+        this.publicKey = publicKey;
     }
 
     GetChain(): Chain {

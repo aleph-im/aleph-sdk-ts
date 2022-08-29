@@ -14,7 +14,7 @@ export class AvalancheAccount extends Account {
     private signer;
 
     constructor(signer: KeyPair) {
-        super(signer.getAddressString(), signer.getPublicKeyString());
+        super(signer.getAddressString());
         this.signer = signer;
     }
 
