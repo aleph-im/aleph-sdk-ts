@@ -64,7 +64,7 @@ export class SOLAccount extends Account {
 
         return JSON.stringify({
             signature: base58.encode(signature),
-            publicKey: this.publicKey,
+            publicKey: this.address,
         });
     }
 }
