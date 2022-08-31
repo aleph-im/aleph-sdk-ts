@@ -58,7 +58,6 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
         }
     }
     if (!configuration.inlineRequested) {
-        configuration.message.item_content = undefined;
         configuration.message.item_type = configuration.storageEngine;
         configuration.message.item_hash = await PushToStorageEngine<T>({
             content: configuration.content,
