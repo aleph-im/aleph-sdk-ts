@@ -4,6 +4,8 @@ import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
+import { Metamask } from "../providers/Metamask";
+import { BaseProviderWallet } from "../providers/BaseProviderWallet";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
@@ -11,13 +13,13 @@ import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "ecie
  */
 export class ETHAccount extends Account {
     private wallet?: ethers.Wallet;
-    private signer?: ethers.Signer;
+    private provider?: BaseProviderWallet;
 
-    constructor(walletOrSigner: ethers.Wallet | ethers.Signer, address: string) {
+    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string) {
         super(address);
 
-        if (walletOrSigner instanceof ethers.Wallet) this.wallet = walletOrSigner;
-        else this.signer = walletOrSigner;
+        if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider;
+        else this.provider = walletOrProvider;
     }
 
     override GetChain(): Chain {
@@ -29,8 +31,9 @@ export class ETHAccount extends Account {
      *
      * @param content The content to encrypt.
      */
-    encrypt(content: Buffer): Buffer {
-        if (this.wallet) return secp256k1_encrypt(this.wallet.publicKey, content);
+    async encrypt(content: Buffer): Promise<Buffer> {
+        const publicKey = this.wallet?.publicKey || (await this.provider?.getPublicKey());
+        if (publicKey) return secp256k1_encrypt(publicKey, content);
 
         throw new Error("Cannot encrypt content");
     }
@@ -40,10 +43,13 @@ export class ETHAccount extends Account {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    decrypt(encryptedContent: Buffer): Buffer {
+    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
         if (this.wallet) {
             const secret = this.wallet.privateKey;
             return secp256k1_decrypt(secret, encryptedContent);
+        }
+        if (this.provider) {
+            this.provider.decrypt(encryptedContent);
         }
         throw new Error("Cannot encrypt content");
     }
@@ -58,7 +64,7 @@ export class ETHAccount extends Account {
      */
     async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        const signMethod = this.wallet || this.signer;
+        const signMethod = this.wallet || this.provider;
 
         if (signMethod) return signMethod.signMessage(buffer.toString());
 
@@ -106,8 +112,9 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
 
 export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider) {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
-    const signer = ETHprovider.getSigner();
-    const address = await signer.getAddress();
+    const metamask = new Metamask(ETHprovider);
+    await metamask.connect();
 
-    return new ETHAccount(signer, address);
+    if (metamask.address) return new ETHAccount(metamask, await metamask.address);
+    throw new Error("Insufficient permissions");
 }
