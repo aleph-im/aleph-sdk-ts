@@ -1,76 +1,43 @@
 import { Account } from "./account";
 import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
-import * as solanajs from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
+
+type WalletSignature = {
+    signature: Uint8Array;
+    publicKey: string;
+};
+interface MessageSigner {
+    signMessage(message: Uint8Array): Promise<WalletSignature>;
+    publicKey: PublicKey;
+    connected: boolean;
+    connect(): Promise<void>;
+}
 
 /**
  * SOLAccount implements the Account class for the Solana protocol.
  * It is used to represent an solana account when publishing a message on the Aleph network.
  */
 export class SOLAccount extends Account {
-    private wallet: solanajs.Keypair;
+    private wallet?: MessageSigner;
+    private keypair?: Keypair;
+    public isKeypair: boolean;
 
-    constructor(wallet: solanajs.Keypair) {
-        super(wallet.publicKey.toString());
-        this.wallet = wallet;
+    constructor(publicKey: PublicKey, walletOrKeypair: Keypair | MessageSigner) {
+        super(publicKey.toString());
+        if (walletOrKeypair instanceof Keypair) {
+            this.keypair = walletOrKeypair;
+            this.isKeypair = true;
+        } else {
+            this.wallet = walletOrKeypair;
+            this.isKeypair = false;
+        }
     }
 
     override GetChain(): Chain {
         return Chain.SOL;
-    }
-
-    /**
-     * Put content into a tweetnacl secret box for a solana account.
-     *
-     * @param content The content to encrypt.
-     */
-    async encrypt(content: Buffer): Promise<Buffer> {
-        const nonce = nacl.randomBytes(nacl.box.nonceLength);
-        const encrypt = nacl.box(content, nonce, this.wallet.publicKey.toBytes(), this.wallet.secretKey.slice(0, 32));
-        return this.encapsulateBox({ nonce: nonce, ciphertext: encrypt });
-    }
-
-    /**
-     * Decrypt a given content using a solana account.
-     *
-     * @param encryptedContent The encrypted content to decrypt.
-     */
-    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
-        const opts = this.decapsulateBox(encryptedContent);
-        const result = nacl.box.open(
-            opts.ciphertext,
-            opts.nonce,
-            this.wallet.publicKey.toBytes(),
-            this.wallet.secretKey.slice(0, 32),
-        );
-        if (result === null) throw new Error("could not decrypt");
-        return Buffer.from(result);
-    }
-
-    /**
-     * Concat the nonce with the secret box content into a single Buffer.
-     * @param opts contain the nonce used during box creation and the result of the box in ciphertext.
-     * @private
-     */
-    private encapsulateBox(opts: { nonce: Uint8Array; ciphertext: Uint8Array }): Buffer {
-        if (!opts.nonce) {
-            throw new Error("No nonce found");
-        }
-        return Buffer.concat([opts.nonce, opts.ciphertext]);
-    }
-
-    /**
-     * Decomposed the result of the Solana's Encrypt method to be interpreted in Decrypt method.
-     * @param content, A concatenation of a nonce and a Buffer used for creating a box.
-     * @private
-     */
-    private decapsulateBox(content: Buffer): { nonce: Buffer; ciphertext: Buffer } {
-        return {
-            nonce: content.slice(0, nacl.box.nonceLength),
-            ciphertext: content.slice(nacl.box.nonceLength),
-        };
     }
 
     /**
@@ -82,18 +49,22 @@ export class SOLAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    override Sign(message: BaseMessage): Promise<string> {
+    override async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
+        let signature;
 
-        return new Promise((resolve) => {
-            const bufferSignature = nacl.sign.detached(buffer, this.wallet.secretKey);
+        if (this.wallet) {
+            const signed = await this.wallet.signMessage(buffer);
+            signature = signed.signature;
+        } else if (this.keypair) {
+            signature = nacl.sign.detached(buffer, this.keypair.secretKey);
+        } else {
+            throw new Error("Cannot sign message");
+        }
 
-            resolve(
-                JSON.stringify({
-                    signature: base58.encode(bufferSignature),
-                    publicKey: this.wallet.publicKey.toString(),
-                }),
-            );
+        return JSON.stringify({
+            signature: base58.encode(signature),
+            publicKey: this.address,
         });
     }
 }
@@ -106,16 +77,26 @@ export class SOLAccount extends Account {
  * @param privateKey The private key of the account to import.
  */
 export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount {
-    const wallet: solanajs.Keypair = solanajs.Keypair.fromSecretKey(privateKey);
+    const keypair = Keypair.fromSecretKey(privateKey);
 
-    return new SOLAccount(wallet);
+    return new SOLAccount(keypair.publicKey, keypair);
 }
 
 /**
  * Creates a new solana account using a randomly generated solana keypair.
  */
 export function NewAccount(): { account: SOLAccount; privateKey: Uint8Array } {
-    const account = new solanajs.Keypair();
+    const account = new Keypair();
 
     return { account: ImportAccountFromPrivateKey(account.secretKey), privateKey: account.secretKey };
+}
+
+/**
+ * Retrieves a solana account using an in-browser wallet provider
+ */
+export async function GetAccountFromProvider(provider: MessageSigner): Promise<SOLAccount> {
+    if (!provider.connected) await provider.connect();
+    if (!provider.publicKey) throw new Error("This wallet does not provide a public key");
+
+    return new SOLAccount(provider.publicKey, provider);
 }
