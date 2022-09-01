@@ -4,6 +4,9 @@ import { BaseProviderWallet, ProviderNames } from "./BaseProviderWallet";
 const RPC_WARNING = `DEPRECATION WARNING: 
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`;
 
+/**
+ * Wrapper for the metamask Provider
+ */
 export class Metamask extends BaseProviderWallet {
     private provider: ethers.providers.Web3Provider;
     private signer?: ethers.providers.JsonRpcSigner;
