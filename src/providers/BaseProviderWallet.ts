@@ -1,5 +1,5 @@
 export enum ProviderNames {
-    METAMASK = "Metamask",
+    JSONRPC = "JSONRPC",
     LEDGER = "Ledger",
 }
 

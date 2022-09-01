@@ -5,9 +5,9 @@ const RPC_WARNING = `DEPRECATION WARNING:
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`;
 
 /**
- * Wrapper for the metamask Provider
+ * Wrapper for JSON RPC Providers (ex: Metamask)
  */
-export class Metamask extends BaseProviderWallet {
+export class JsonRPCWallet extends BaseProviderWallet {
     private provider: ethers.providers.Web3Provider;
     private signer?: ethers.providers.JsonRpcSigner;
     public address?: string;
@@ -24,12 +24,12 @@ export class Metamask extends BaseProviderWallet {
             this.signer = this.provider.getSigner();
             this.address = await this.signer.getAddress();
         } catch (err: any) {
-            throw new Error("Could not get Metamask permissions");
+            throw new Error("Could not get Wallet permissions");
         }
     }
 
     public getName(): ProviderNames {
-        return ProviderNames.METAMASK;
+        return ProviderNames.JSONRPC;
     }
 
     public async getPublicKey(): Promise<string> {
@@ -53,7 +53,6 @@ export class Metamask extends BaseProviderWallet {
 
     public async signMessage(data: Buffer | string): Promise<string> {
         if (!this.signer) throw new Error("Wallet not connected");
-
         return this.signer.signMessage(data);
     }
 }

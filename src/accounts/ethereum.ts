@@ -4,7 +4,7 @@ import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { Metamask } from "../providers/Metamask";
+import { JsonRPCWallet } from "../providers/JsonRPCWallet";
 import { BaseProviderWallet } from "../providers/BaseProviderWallet";
 
 /**
@@ -112,9 +112,9 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
 
 export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider) {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
-    const metamask = new Metamask(ETHprovider);
-    await metamask.connect();
+    const jrw = new JsonRPCWallet(ETHprovider);
+    await jrw.connect();
 
-    if (metamask.address) return new ETHAccount(metamask, await metamask.address);
+    if (jrw.address) return new ETHAccount(jrw, await jrw.address);
     throw new Error("Insufficient permissions");
 }
