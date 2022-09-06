@@ -110,6 +110,11 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
     return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic };
 }
 
+/**
+ * Get an account from a Web3 provider (ex: Metamask)
+ *
+ * @param  {ethers.providers.ExternalProvider} provider
+ */
 export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider) {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(ETHprovider);
