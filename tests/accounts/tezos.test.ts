@@ -36,14 +36,16 @@ describe("Tezos accounts", () => {
             postType: "custom_type",
             content: content,
         });
-        expect(validateSignature(msg.signature)).toBe(3);
+        const signature = JSON.parse(msg.signature).signature;
+        const publicKey = JSON.parse(msg.signature).publicKey;
+        expect(validateSignature(signature)).toBe(3);
 
         const buffer = GetVerificationBuffer(msg as unknown as BaseMessage);
         const digest = encodeExpr(buffer.toString("hex"));
         const result = nacl.sign.detached.verify(
             b58cdecode(digest, prefix.expr),
-            b58cdecode(msg.signature, prefix.sig),
-            b58cdecode(await account.GetPublicKey(), prefix.edpk),
+            b58cdecode(signature, prefix.sig),
+            b58cdecode(publicKey, prefix.edpk),
         );
         expect(result).toBe(true);
     });

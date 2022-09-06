@@ -46,7 +46,12 @@ export class TEZOSAccount extends Account {
         return new Promise(async (resolve) => {
             const bufferSignature = await this.signer.sign(buffer.toString("hex"));
 
-            resolve(bufferSignature.sig);
+            resolve(
+                JSON.stringify({
+                    signature: bufferSignature.sig,
+                    publicKey: await this.GetPublicKey(),
+                }),
+            );
         });
     }
 }
