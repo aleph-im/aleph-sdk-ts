@@ -1,8 +1,3 @@
-export enum ProviderNames {
-    JSONRPC = "JSONRPC",
-    LEDGER = "Ledger",
-}
-
 /**
  * Wrapper for web3 Providers abstraction
  */
@@ -17,12 +12,6 @@ export abstract class BaseProviderWallet {
      * @param  {Buffer} data data to decrypt
      */
     abstract decrypt(data: Buffer): Promise<string>;
-
-    /**
-     * Returns the name of the provider
-     */
-    abstract getName(): ProviderNames;
-
     /**
      * Asks the provider for a public key
      */

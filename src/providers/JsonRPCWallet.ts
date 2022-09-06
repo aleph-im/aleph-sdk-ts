@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { BaseProviderWallet, ProviderNames } from "./BaseProviderWallet";
+import { BaseProviderWallet } from "./BaseProviderWallet";
 
 const RPC_WARNING = `DEPRECATION WARNING: 
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`;
@@ -26,10 +26,6 @@ export class JsonRPCWallet extends BaseProviderWallet {
         } catch (err: any) {
             throw new Error("Could not get Wallet permissions");
         }
-    }
-
-    public getName(): ProviderNames {
-        return ProviderNames.JSONRPC;
     }
 
     public async getPublicKey(): Promise<string> {

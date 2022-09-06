@@ -115,6 +115,6 @@ export async function GetAccountFromProvider(provider: ethers.providers.External
     const jrw = new JsonRPCWallet(ETHprovider);
     await jrw.connect();
 
-    if (jrw.address) return new ETHAccount(jrw, await jrw.address);
+    if (jrw.address) return new ETHAccount(jrw, jrw.address);
     throw new Error("Insufficient permissions");
 }
