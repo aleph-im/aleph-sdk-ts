@@ -49,7 +49,8 @@ export class ETHAccount extends Account {
             return secp256k1_decrypt(secret, encryptedContent);
         }
         if (this.provider) {
-            this.provider.decrypt(encryptedContent);
+            const decrypted = await this.provider.decrypt(encryptedContent);
+            return Buffer.from(decrypted);
         }
         throw new Error("Cannot encrypt content");
     }
