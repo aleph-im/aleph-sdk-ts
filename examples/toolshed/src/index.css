@@ -1,0 +1,38 @@
+*{
+  box-sizing: border-box;
+}
+
+body{
+  margin: auto;
+}
+
+main{
+  max-width: 1200px;
+  width: 85%;
+  margin: auto;
+}
+
+.halfpage{
+  width: 50%;
+  min-width: 400px;
+  padding: 10px 0 10px 25px;
+}
+
+.halfpage:first-child{
+  padding: 10px 25px 10px 0;
+  border-right: 1px solid #CCC;
+}
+
+input{
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid #CCC;
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+button{
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+
