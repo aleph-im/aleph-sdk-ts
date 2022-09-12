@@ -8,7 +8,7 @@ import * as nearAPI from "near-api-js";
  * NEARAccount implements the Account class for the NEAR protocol.
  * It is used to represent an near account when publishing a message on the Aleph network.
  */
-class NEARAccount extends Account {
+export class NEARAccount extends Account {
     private readonly wallet: nearAPI.KeyPair;
 
     constructor(wallet: nearAPI.KeyPair) {
