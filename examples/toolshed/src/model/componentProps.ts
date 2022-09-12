@@ -7,3 +7,5 @@ export type consumeProps = {
 export type dispatchProps = {
     dispatch: React.Dispatch<ActionType>;
 };
+
+export type dispatchAndConsume = consumeProps & dispatchProps;
