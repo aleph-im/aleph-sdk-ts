@@ -1,6 +1,6 @@
 {
     "name": "aleph-sdk-ts",
-    "version": "1.0.1",
+    "version": "3.0.2",
     "description": "Aleph.im Typescript SDK",
     "keywords": ["web3", "aleph.im", "blockchain", "messages", "ethereum", "solana", "defi", "dao", "nft"],
     "main": "dist/index.js",
