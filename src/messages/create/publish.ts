@@ -58,6 +58,10 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
         }
     }
     if (!configuration.inlineRequested) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { item_content, ...messageWithoutItemContent } = configuration.message;
+        configuration.message = messageWithoutItemContent;
+
         configuration.message.item_type = configuration.storageEngine;
         configuration.message.item_hash = await PushToStorageEngine<T>({
             content: configuration.content,

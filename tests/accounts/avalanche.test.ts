@@ -1,26 +1,21 @@
 import { avalanche, post } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
-import { ItemType } from "../../src/messages/message";
+import { Chain, ItemType } from "../../src/messages/message";
 
 describe("Avalanche accounts", () => {
-    it("should create a new Avalanche account", async () => {
-        const { account } = await avalanche.NewAccount();
-
-        expect(account.address).not.toBe("");
-    });
-
-    it("should retreive an avalanche keypair from an hexadecimal private key", async () => {
+    it("should retrieve an avalanche keypair from an hexadecimal private key", async () => {
         const { account, privateKey } = await avalanche.NewAccount();
 
         if (privateKey) {
             const accountFromPK = await avalanche.ImportAccountFromPrivateKey(privateKey);
             expect(account.address).toBe(accountFromPK.address);
+            expect(account.GetChain()).toBe(Chain.AVAX);
         } else {
             fail();
         }
     });
 
-    it("should retreive an avalanche keypair from a base58 private key", async () => {
+    it("should retrieve an avalanche keypair from a base58 private key", async () => {
         const keyPair = await avalanche.getKeyPair();
         const hexPrivateKey = keyPair.getPrivateKey().toString("hex");
         const cb58PrivateKey = keyPair.getPrivateKeyString();
@@ -31,12 +26,11 @@ describe("Avalanche accounts", () => {
         expect(fromHex.address).toBe(fromCb58.address);
     });
 
-    it("Should encrypt some data with an Avalanche keypair", async () => {
-        const { account } = await avalanche.NewAccount();
-        const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
+    it("should fail to get a Keypair", async () => {
+        const fakePrivateKey = "a";
+        const fct = async () => await avalanche.ImportAccountFromPrivateKey(fakePrivateKey);
 
-        const c = account.encrypt(msg);
-        expect(c).not.toBe(msg);
+        await expect(fct).rejects.toThrow("Invalid private key");
     });
 
     it("Should encrypt and decrypt some data with an Avalanche keypair", async () => {
@@ -46,6 +40,7 @@ describe("Avalanche accounts", () => {
         const c = account.encrypt(msg);
         const d = account.decrypt(c);
 
+        expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
     });
 

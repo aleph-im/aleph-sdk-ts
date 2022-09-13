@@ -1,26 +1,62 @@
-import * as solanajs from "@solana/web3.js";
-import { ItemType } from "../../src/messages/message";
+import { Chain, ItemType, MessageType } from "../../src/messages/message";
 import { post, solana } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 
-describe("Solana accounts", () => {
-    it("should create a new solana accounts", () => {
-        const { account } = solana.NewAccount();
+import { Keypair } from "@solana/web3.js";
+import { panthomLikeProvider, officialLikeProvider } from "../provider/solanaProvider";
 
-        expect(account.address).not.toBe("");
+describe("Solana accounts", () => {
+    it("should import an solana accounts using a private key", () => {
+        const { account, privateKey } = solana.NewAccount();
+        const accountFromPrivateKey = solana.ImportAccountFromPrivateKey(privateKey);
+
+        expect(account.address).toStrictEqual(accountFromPrivateKey.address);
+        expect(account.GetChain()).toStrictEqual(Chain.SOL);
     });
 
-    it("should import an solana accounts using a private key", () => {
-        const keyPair = new solanajs.Keypair();
-        const account = solana.ImportAccountFromPrivateKey(keyPair.secretKey);
+    it("should import an solana accounts using a provider", async () => {
+        const randomKeypair = new Keypair();
+        const providerPhantom = new panthomLikeProvider(randomKeypair);
+        const providerOfficial = new officialLikeProvider(randomKeypair);
+        const accountSecretKey = await solana.ImportAccountFromPrivateKey(randomKeypair.secretKey);
+        const accountPhantom = await solana.GetAccountFromProvider(providerPhantom);
+        const accountOfficial = await solana.GetAccountFromProvider(providerOfficial);
 
-        expect(account.address).not.toBe("");
+        expect(accountSecretKey.address).toStrictEqual(accountPhantom.address);
+        expect(accountOfficial.address).toStrictEqual(accountPhantom.address);
+    });
+
+    it("should get the same signed message for each account", async () => {
+        const randomKeypair = new Keypair();
+        const providerPhantom = new panthomLikeProvider(randomKeypair);
+        const providerOfficial = new officialLikeProvider(randomKeypair);
+        const accountSecretKey = await solana.ImportAccountFromPrivateKey(randomKeypair.secretKey);
+        const accountPhantom = await solana.GetAccountFromProvider(providerPhantom);
+        const accountOfficial = await solana.GetAccountFromProvider(providerOfficial);
+
+        const message = {
+            chain: accountSecretKey.GetChain(),
+            sender: accountSecretKey.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: accountSecretKey.address, time: 15 },
+        };
+
+        expect(accountSecretKey.Sign(message)).toStrictEqual(accountPhantom.Sign(message));
+        expect(accountOfficial.Sign(message)).toStrictEqual(accountPhantom.Sign(message));
     });
 
     it("should publish a post message correctly", async () => {
         const { account } = solana.NewAccount();
         const content: { body: string } = {
-            body: "Hello World 21",
+            body: "This message was posted from the typescript-SDK test suite with SOL",
         };
 
         const msg = await post.Publish({

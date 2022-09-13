@@ -42,4 +42,22 @@ describe("Aggregate message retrieve test", () => {
 
         expect(message.satoshi).toStrictEqual(expected);
     });
+
+    it("should failed to retrieve an aggregate message", async () => {
+        type T = {
+            satoshi: {
+                A: number;
+            };
+        };
+        const key = "satoshi";
+        const address = "0x629xBDA22F485720617C8f1209692484C0358D43";
+
+        await expect(
+            aggregate.Get<T>({
+                APIServer: DEFAULT_API_V2,
+                address: address,
+                keys: [key],
+            }),
+        ).rejects.toThrow();
+    });
 });
