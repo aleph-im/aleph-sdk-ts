@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 
 type StoreGetConfiguration = {
     fileHash: string;
@@ -12,9 +13,10 @@ type StoreGetConfiguration = {
  */
 export async function Get(configuration: StoreGetConfiguration): Promise<ArrayBuffer> {
     const response = await axios.get<ArrayBuffer>(
-        `${configuration.APIServer}/api/v0/storage/raw/${configuration.fileHash}?find`,
+        `${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/raw/${configuration.fileHash}?find`,
         {
             responseType: "arraybuffer",
+            socketPath: getSocketPath(),
         },
     );
 
