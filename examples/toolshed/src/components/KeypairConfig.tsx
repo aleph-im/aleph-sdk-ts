@@ -10,7 +10,6 @@ function KeypairConfig({state, dispatch} : dispatchAndConsume) {
   const _account = (() => (
     state.selectedChain === KeypairChains.Avalanche ? accounts.avalanche
     : state.selectedChain === KeypairChains.Ethereum ? accounts.ethereum
-    : state.selectedChain === KeypairChains.NULS ? accounts.nuls 
     : state.selectedChain === KeypairChains.NULS2 ? accounts.nuls2
     : state.selectedChain === KeypairChains.Polkadot ? accounts.substrate
     : state.selectedChain === KeypairChains.Solana ? accounts.solana

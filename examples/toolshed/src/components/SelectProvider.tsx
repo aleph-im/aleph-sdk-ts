@@ -9,11 +9,11 @@ type Option = {
   readonly isDisabled?: boolean
 }
 
+
 export const availableKeypairs: Option[] = [
   { label: 'Avalanche', value: KeypairChains.Avalanche },
   { label: 'Cosmos', value: 'CSDK_KP', isDisabled: true },
   { label: 'Ethereum', value: KeypairChains.Ethereum },
-  { label: 'NULS', value: KeypairChains.NULS },
   { label: 'NULS2', value: KeypairChains.NULS2 },
   { label: 'Polkadot/Substrate', value: KeypairChains.Polkadot },
   { label: 'Solana', value: KeypairChains.Solana },
