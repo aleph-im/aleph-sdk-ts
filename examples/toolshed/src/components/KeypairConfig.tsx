@@ -35,7 +35,7 @@ function KeypairConfig({state, dispatch} : dispatchAndConsume) {
     let method = _account.ImportAccountFromPrivateKey
 
     if(mnemonicOrPk.match(' ')){
-      if(!_account.hasOwnProperty('ImportAccountFromMnemonic'))
+      if(!_account.ImportAccountFromMnemonic)
         return alert('This account cannot be imported from a mnemonic')
       
       method = _account.ImportAccountFromMnemonic
