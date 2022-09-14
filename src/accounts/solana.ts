@@ -76,8 +76,8 @@ export class SOLAccount extends Account {
  *
  * @param privateKey The private key of the account to import.
  */
-export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount {
-    const keypair = Keypair.fromSecretKey(privateKey);
+export function ImportAccountFromPrivateKey(privateKey: string): SOLAccount {
+    const keypair = Keypair.fromSecretKey(Buffer.from(privateKey));
 
     return new SOLAccount(keypair.publicKey, keypair);
 }
@@ -88,7 +88,7 @@ export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount 
 export function NewAccount(): { account: SOLAccount; privateKey: Uint8Array } {
     const account = new Keypair();
 
-    return { account: ImportAccountFromPrivateKey(account.secretKey), privateKey: account.secretKey };
+    return { account: ImportAccountFromPrivateKey(account.secretKey.toString()), privateKey: account.secretKey };
 }
 
 /**
