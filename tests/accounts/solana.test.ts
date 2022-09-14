@@ -12,7 +12,7 @@ describe("Solana accounts", () => {
 
     it("should import an solana accounts using a private key", () => {
         const keyPair = new solanajs.Keypair();
-        const account = solana.ImportAccountFromPrivateKey(keyPair.secretKey);
+        const account = solana.ImportAccountFromPrivateKey(keyPair.secretKey.toString());
 
         expect(account.address).not.toBe("");
     });
@@ -33,18 +33,17 @@ describe("Solana accounts", () => {
             content: content,
         });
 
-        setTimeout(async () => {
-            const amends = await post.Get({
-                types: "custom_type",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
-                hashes: [msg.item_hash],
-            });
-            expect(amends.posts[0].content).toStrictEqual(content);
-        }, 1000);
+        const amends = await post.Get({
+            types: "custom_type",
+            APIServer: DEFAULT_API_V2,
+            pagination: 200,
+            page: 1,
+            refs: [],
+            addresses: [],
+            tags: [],
+            hashes: [msg.item_hash],
+        });
+
+        expect(amends.posts[0].content).toStrictEqual(content);
     });
 });
