@@ -9,6 +9,7 @@ type WalletSignature = {
     signature: Uint8Array;
     publicKey: string;
 };
+
 interface MessageSigner {
     signMessage(message: Uint8Array): Promise<WalletSignature>;
     publicKey: PublicKey;
@@ -23,16 +24,13 @@ interface MessageSigner {
 export class SOLAccount extends Account {
     private wallet?: MessageSigner;
     private keypair?: Keypair;
-    public isKeypair: boolean;
 
     constructor(publicKey: PublicKey, walletOrKeypair: Keypair | MessageSigner) {
         super(publicKey.toString());
         if (walletOrKeypair instanceof Keypair) {
             this.keypair = walletOrKeypair;
-            this.isKeypair = true;
         } else {
             this.wallet = walletOrKeypair;
-            this.isKeypair = false;
         }
     }
 
