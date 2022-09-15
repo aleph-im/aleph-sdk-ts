@@ -179,8 +179,7 @@ export function getXOR(body: Uint8Array): number {
  * @param message The message used to create the hash.
  * @param messagePrefix The optional message's hash prefix.
  */
-export function magicHash(message: Buffer, messagePrefix?: string | Buffer): Buffer {
-    if (!messagePrefix) messagePrefix = "\u0018NULS Signed Message:\n";
+export function magicHash(message: Buffer, messagePrefix: string | Buffer = "\u0018NULS Signed Message:\n"): Buffer {
     if (!Buffer.isBuffer(messagePrefix)) messagePrefix = Buffer.from(messagePrefix);
 
     let buffer = Buffer.allocUnsafe(messagePrefix.length + 6 + message.length);
