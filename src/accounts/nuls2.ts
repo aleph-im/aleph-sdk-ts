@@ -65,7 +65,7 @@ export class NULS2Account extends Account {
      * @param message The Aleph message to sign, using some of its fields.
      */
     Sign(message: BaseMessage): Promise<string> {
-        const digest = magicHash(GetVerificationBuffer(message));
+        const digest = NULS2Account.magicHash(GetVerificationBuffer(message));
         const privateKeyBuffer = Buffer.from(this.privateKey, "hex");
 
         return new Promise((resolve) => {
@@ -85,6 +85,70 @@ export class NULS2Account extends Account {
     private EncodeSignature(signature: Uint8Array, recovery: number, compressed: boolean) {
         if (compressed) recovery += 4;
         return Buffer.concat([Buffer.alloc(1, recovery + 27), signature]);
+    }
+
+    /**
+     * Extract an address from a given hash.
+     *
+     * @param hash The hash containing the address.
+     * @param prefix The optional address prefix.
+     */
+    static addressFromHash(hash: Uint8Array, prefix?: string): string {
+        const xoredHash = hash.reduce((xor, i) => (xor ^= i), 0);
+        const address = bs58.encode(Buffer.concat([hash, Buffer.from([xoredHash])]));
+
+        if (prefix) return prefix + String.fromCharCode(prefix.length + 96) + address;
+        return address;
+    }
+
+    /**
+     * Creates a hash from a user's public key.
+     *
+     * @param publicKey The public key used to create the hash.
+     * @param chain_id The optional chain id.
+     * @param address_type The optional address type.
+     */
+    static publicKeyToHash(
+        publicKey: Uint8Array,
+        { chain_id = 8964, address_type = 1 }: ChainNAddress = { chain_id: 8964, address_type: 1 },
+    ): Buffer {
+        const sha = new shajs.sha256().update(publicKey).digest();
+        const publicKeyHash = new RIPEMD160().update(sha).digest();
+        const output = Buffer.allocUnsafe(3);
+
+        output.writeInt16LE(chain_id, 0);
+        output.writeInt8(address_type, 2);
+        return Buffer.concat([output, publicKeyHash]);
+    }
+
+    /**
+     * Creates a hash from a message.
+     *
+     * @param message The message used to create the hash.
+     * @param messagePrefix The optional message's hash prefix.
+     */
+    static magicHash(message: Buffer, messagePrefix: string | Buffer = "\u0018NULS Signed Message:\n"): Buffer {
+        if (!Buffer.isBuffer(messagePrefix)) messagePrefix = Buffer.from(messagePrefix);
+
+        let buffer = Buffer.allocUnsafe(messagePrefix.length + 6 + message.length);
+        let cursor = messagePrefix.copy(buffer, 0);
+        if (message.length < 253) {
+            buffer[cursor] = message.length;
+            cursor += 1;
+        } else if (message.length <= 0xffff) {
+            buffer[cursor] = 253;
+            buffer.writeUIntLE(message.length, cursor + 1, 2);
+            cursor += 3;
+        } else if (message.length <= 0xffffffff) {
+            buffer[cursor] = 254;
+            buffer.writeUIntLE(message.length, cursor + 1, 4);
+            cursor += 5;
+        } else {
+            throw new Error("Message can't be hashed due to is size");
+        }
+        cursor += Buffer.from(message).copy(buffer, cursor);
+        buffer = buffer.slice(0, cursor);
+        return new shajs.sha256().update(buffer).digest();
     }
 }
 
@@ -142,89 +206,7 @@ export async function ImportAccountFromPrivateKey(
     const pub = secp256k1.publicKeyCreate(Buffer.from(privateKey, "hex"));
     const publicKey = Buffer.from(pub).toString("hex");
 
-    const hash = publicKeyToHash(pub, { chain_id: chain_id });
-    const address = addressFromHash(hash, prefix);
+    const hash = NULS2Account.publicKeyToHash(pub, { chain_id: chain_id });
+    const address = NULS2Account.addressFromHash(hash, prefix);
     return new NULS2Account(address, publicKey, privateKey);
-}
-
-/********************************
- * NULS2 TOOLS METHODS
- ********************************/
-
-/**
- * Extract an address from a given hash.
- *
- * @param hash The hash containing the address.
- * @param prefix The optional address prefix.
- */
-export function addressFromHash(hash: Uint8Array, prefix?: string): string {
-    const address = bs58.encode(Buffer.concat([hash, Buffer.from([getXOR(hash)])]));
-
-    if (prefix) return prefix + String.fromCharCode(prefix.length + 96) + address;
-    return address;
-}
-
-/**
- * Creates a XOR of an array.
- *
- * @param body The array to XOR.
- */
-export function getXOR(body: Uint8Array): number {
-    return body.reduce((xor, i) => (xor ^= i), 0);
-}
-
-/**
- * Creates a hash from a message.
- *
- * @param message The message used to create the hash.
- * @param messagePrefix The optional message's hash prefix.
- */
-export function magicHash(message: Buffer, messagePrefix: string | Buffer = "\u0018NULS Signed Message:\n"): Buffer {
-    if (!Buffer.isBuffer(messagePrefix)) messagePrefix = Buffer.from(messagePrefix);
-
-    let buffer = Buffer.allocUnsafe(messagePrefix.length + 6 + message.length);
-    let cursor = messagePrefix.copy(buffer, 0);
-    cursor += writeVarInt(message.length, buffer, cursor);
-    cursor += Buffer.from(message).copy(buffer, cursor);
-    buffer = buffer.slice(0, cursor);
-    return new shajs.sha256().update(buffer).digest();
-}
-
-/**
- * Creates a hash from a user's public key.
- *
- * @param publicKey The public key used to create the hash.
- * @param chain_id The optional chain id.
- * @param address_type The optional address type.
- */
-export function publicKeyToHash(
-    publicKey: Uint8Array,
-    { chain_id = 8964, address_type = 1 }: ChainNAddress = { chain_id: 8964, address_type: 1 },
-): Buffer {
-    const sha = new shajs.sha256().update(publicKey).digest();
-    const publicKeyHash = new RIPEMD160().update(sha).digest();
-    const output = Buffer.allocUnsafe(3);
-
-    output.writeInt16LE(chain_id, 0);
-    output.writeInt8(address_type, 2);
-    return Buffer.concat([output, publicKeyHash]);
-}
-
-export function writeVarInt(value: number, buf: Buffer, cursor: number): number {
-    let len = 1;
-
-    if (value < 253) {
-        buf[cursor] = value;
-    } else if (value <= 0xffff) {
-        buf[cursor] = 253;
-        buf.writeUIntLE(value, cursor + 1, 2);
-        len = 3;
-    } else if (value <= 0xffffffff) {
-        buf[cursor] = 254;
-        buf.writeUIntLE(value, cursor + 1, 4);
-        len = 5;
-    } else {
-        throw new Error("not implemented");
-    }
-    return len;
 }
