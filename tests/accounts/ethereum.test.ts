@@ -104,8 +104,8 @@ describe("Ethereum accounts", () => {
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
+            inlineRequested: false,
+            storageEngine: ItemType.storage,
             account: account,
             postType: "custom_type",
             content: content,
