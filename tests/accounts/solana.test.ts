@@ -3,7 +3,7 @@ import { post, solana } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 
 import { Keypair } from "@solana/web3.js";
-import { phantomLikeProvider } from "../provider/solanaProvider";
+import { panthomLikeProvider, officialLikeProvider } from "../provider/solanaProvider";
 
 describe("Solana accounts", () => {
     it("should import an solana accounts using a private key", () => {
@@ -16,18 +16,23 @@ describe("Solana accounts", () => {
 
     it("should import an solana accounts using a provider", async () => {
         const randomKeypair = new Keypair();
-        const provider = new phantomLikeProvider(randomKeypair);
+        const providerPhantom = new panthomLikeProvider(randomKeypair);
+        const providerOfficial = new officialLikeProvider(randomKeypair);
         const accountSecretKey = await solana.ImportAccountFromPrivateKey(randomKeypair.secretKey);
-        const accountProvider = await solana.GetAccountFromProvider(provider);
+        const accountPhantom = await solana.GetAccountFromProvider(providerPhantom);
+        const accountOfficial = await solana.GetAccountFromProvider(providerOfficial);
 
-        expect(accountSecretKey.address).toStrictEqual(accountProvider.address);
+        expect(accountSecretKey.address).toStrictEqual(accountPhantom.address);
+        expect(accountOfficial.address).toStrictEqual(accountPhantom.address);
     });
 
     it("should get the same signed message for each account", async () => {
         const randomKeypair = new Keypair();
-        const provider = new phantomLikeProvider(randomKeypair);
+        const providerPhantom = new panthomLikeProvider(randomKeypair);
+        const providerOfficial = new officialLikeProvider(randomKeypair);
         const accountSecretKey = await solana.ImportAccountFromPrivateKey(randomKeypair.secretKey);
-        const accountProvider = await solana.GetAccountFromProvider(provider);
+        const accountPhantom = await solana.GetAccountFromProvider(providerPhantom);
+        const accountOfficial = await solana.GetAccountFromProvider(providerOfficial);
 
         const message = {
             chain: accountSecretKey.GetChain(),
@@ -44,7 +49,8 @@ describe("Solana accounts", () => {
             content: { address: accountSecretKey.address, time: 15 },
         };
 
-        expect(accountSecretKey.Sign(message)).toStrictEqual(accountProvider.Sign(message));
+        expect(accountSecretKey.Sign(message)).toStrictEqual(accountPhantom.Sign(message));
+        expect(accountOfficial.Sign(message)).toStrictEqual(accountPhantom.Sign(message));
     });
 
     it("should publish a post message correctly", async () => {

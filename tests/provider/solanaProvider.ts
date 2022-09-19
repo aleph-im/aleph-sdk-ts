@@ -7,7 +7,7 @@ type WalletSignature = {
     publicKey: string;
 };
 
-export class phantomLikeProvider {
+class solanaFakeProvider {
     public provider;
     public publicKey: PublicKey;
     public secretKey: Uint8Array;
@@ -23,9 +23,18 @@ export class phantomLikeProvider {
     connect(): Promise<void> {
         return this.provider.connect();
     }
+}
 
+export class panthomLikeProvider extends solanaFakeProvider {
     signMessage(message: Uint8Array): Promise<WalletSignature> {
         const signature = nacl.sign.detached(message, this.secretKey);
         return Promise.resolve({ signature: signature, publicKey: this.publicKey.toString() });
+    }
+}
+
+export class officialLikeProvider extends solanaFakeProvider {
+    signMessage(message: Uint8Array): Promise<Uint8Array> {
+        const signature = nacl.sign.detached(message, this.secretKey);
+        return Promise.resolve(signature);
     }
 }

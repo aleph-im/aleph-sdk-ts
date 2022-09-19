@@ -10,7 +10,7 @@ type WalletSignature = {
     publicKey: string;
 };
 interface MessageSigner {
-    signMessage(message: Uint8Array): Promise<WalletSignature>;
+    signMessage(message: Uint8Array): Promise<WalletSignature> | Promise<Uint8Array>;
     publicKey: PublicKey;
     connected: boolean;
     connect(): Promise<void>;
@@ -55,7 +55,8 @@ export class SOLAccount extends Account {
 
         if (this.wallet) {
             const signed = await this.wallet.signMessage(buffer);
-            signature = signed.signature;
+            if (signed instanceof Uint8Array) signature = signed;
+            else signature = signed.signature;
         } else if (this.keypair) {
             signature = nacl.sign.detached(buffer, this.keypair.secretKey);
         } else {
