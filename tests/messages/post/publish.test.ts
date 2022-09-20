@@ -22,7 +22,7 @@ describe("Post publish tests", () => {
         });
 
         content.body = "New content !";
-        await post.Publish({
+        const amended = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
@@ -33,18 +33,16 @@ describe("Post publish tests", () => {
             ref: oldPost.item_hash,
         });
 
-        setTimeout(async () => {
-            const amends = await post.Get({
-                types: "amend",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
-                hashes: [oldPost.item_hash],
-            });
-            expect(amends.posts[0].content).toStrictEqual(content);
+        const amends = await post.Get({
+            types: "amend",
+            APIServer: DEFAULT_API_V2,
+            pagination: 200,
+            page: 1,
+            refs: [oldPost.item_hash],
+            addresses: [],
+            tags: [],
+            hashes: [amended.item_hash],
         });
+        expect(amends.posts[0].content).toStrictEqual(content);
     });
 });
