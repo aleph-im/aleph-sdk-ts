@@ -43,15 +43,11 @@ export class TEZOSAccount extends Account {
     override async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
 
-        return new Promise(async (resolve) => {
-            const bufferSignature = await this.signer.sign(buffer.toString("hex"));
+        const bufferSignature = await this.signer.sign(buffer.toString("hex"));
 
-            resolve(
-                JSON.stringify({
-                    signature: bufferSignature.sig,
-                    publicKey: await this.GetPublicKey(),
-                }),
-            );
+        return JSON.stringify({
+            signature: bufferSignature.sig,
+            publicKey: await this.GetPublicKey(),
         });
     }
 }
