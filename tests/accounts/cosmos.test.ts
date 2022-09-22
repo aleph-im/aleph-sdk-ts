@@ -7,7 +7,6 @@ describe("Cosmos accounts", () => {
         const { account } = await cosmos.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.publicKey).not.toBe("");
     });
 
     it("should import an cosmos accounts using a mnemonic", async () => {
@@ -15,7 +14,6 @@ describe("Cosmos accounts", () => {
         const cloneAccount = await cosmos.ImportAccountFromMnemonic(refAccount.mnemonic);
 
         expect(refAccount.account.address).toBe(cloneAccount.address);
-        expect(refAccount.account.publicKey).toBe(cloneAccount.publicKey);
     });
 
     it("should publish a post message correctly", async () => {
