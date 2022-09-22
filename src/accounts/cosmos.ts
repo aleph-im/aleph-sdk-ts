@@ -1,19 +1,18 @@
 import {
-    DirectSecp256k1HdWallet,
-    DirectSecp256k1HdWalletOptions,
-    DirectSecp256k1Wallet,
-    makeAuthInfoBytes,
     makeSignDoc,
-    OfflineDirectSigner,
-} from "@cosmjs/proto-signing";
+    OfflineAminoSigner,
+    Secp256k1HdWallet,
+    Secp256k1HdWalletOptions,
+    Secp256k1Wallet,
+} from "@cosmjs/amino";
 import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 
 export class CosmosAccount extends Account {
-    private wallet: OfflineDirectSigner;
+    private wallet: OfflineAminoSigner;
 
-    constructor(wallet: OfflineDirectSigner, publicKey: string, address: string) {
+    constructor(wallet: OfflineAminoSigner, publicKey: string, address: string) {
         super(address, publicKey);
         this.wallet = wallet;
     }
@@ -24,24 +23,29 @@ export class CosmosAccount extends Account {
 
     async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        const signer = {
-            typeUrl: "signutil/MsgSignText",
-            value: buffer,
+
+        const aminoMsg = {
+            type: "signutil/MsgSignText",
+            value: {
+                message: buffer,
+                signer: message.sender,
+            },
         };
 
-        const signDoc = makeSignDoc(
-            buffer,
-            makeAuthInfoBytes([{ pubkey: signer, sequence: 0 }], [], 0),
-            "signed-message-v1",
-            0,
-        );
-        const { signature } = await this.wallet.signDirect(this.address, signDoc);
+        const signDoc = makeSignDoc([aminoMsg], { amount: [], gas: "0" }, "signed-message-v1", "0", "0", "0");
 
-        return JSON.stringify(signature);
+        const { signature } = await this.wallet.signAmino(this.address, signDoc);
+        const alephSignature = {
+            account_number: "0",
+            sequence: "0",
+            ...signature,
+        };
+
+        return JSON.stringify(alephSignature);
     }
 }
 
-async function getCosmosAccount(wallet: OfflineDirectSigner): Promise<CosmosAccount> {
+async function getCosmosAccount(wallet: OfflineAminoSigner): Promise<CosmosAccount> {
     const [account] = await wallet.getAccounts();
     const publicKey = Buffer.from(account.pubkey).toString("hex");
 
@@ -50,9 +54,9 @@ async function getCosmosAccount(wallet: OfflineDirectSigner): Promise<CosmosAcco
 
 export async function NewAccount(
     length?: 12 | 15 | 18 | 21 | 24,
-    options?: Partial<DirectSecp256k1HdWalletOptions>,
+    options?: Partial<Secp256k1HdWalletOptions>,
 ): Promise<{ account: CosmosAccount; mnemonic: string }> {
-    const wallet = await DirectSecp256k1HdWallet.generate(length, options);
+    const wallet = await Secp256k1HdWallet.generate(length, options);
 
     return {
         account: await getCosmosAccount(wallet),
@@ -62,16 +66,16 @@ export async function NewAccount(
 
 export async function ImportAccountFromMnemonic(
     mnemonic: string,
-    options?: Partial<DirectSecp256k1HdWalletOptions>,
+    options?: Partial<Secp256k1HdWalletOptions>,
 ): Promise<CosmosAccount> {
-    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, options);
+    const wallet = await Secp256k1HdWallet.fromMnemonic(mnemonic, options);
 
     return getCosmosAccount(wallet);
 }
 
 export async function ImportAccountFromPrivateKey(privateKey: string, prefix?: string): Promise<CosmosAccount> {
     const key = Buffer.from(privateKey);
-    const wallet = await DirectSecp256k1Wallet.fromKey(key, prefix);
+    const wallet = await Secp256k1Wallet.fromKey(key, prefix);
 
     return getCosmosAccount(wallet);
 }
