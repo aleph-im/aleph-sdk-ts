@@ -12,8 +12,8 @@ import { BaseMessage, Chain } from "../messages/message";
 export class CosmosAccount extends Account {
     private wallet: OfflineAminoSigner;
 
-    constructor(wallet: OfflineAminoSigner, publicKey: string, address: string) {
-        super(address, publicKey);
+    constructor(wallet: OfflineAminoSigner, address: string) {
+        super(address);
         this.wallet = wallet;
     }
 
@@ -47,9 +47,8 @@ export class CosmosAccount extends Account {
 
 async function getCosmosAccount(wallet: OfflineAminoSigner): Promise<CosmosAccount> {
     const [account] = await wallet.getAccounts();
-    const publicKey = Buffer.from(account.pubkey).toString("hex");
 
-    return new CosmosAccount(wallet, publicKey, account.address);
+    return new CosmosAccount(wallet, account.address);
 }
 
 export async function NewAccount(
