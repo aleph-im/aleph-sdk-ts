@@ -27,12 +27,12 @@ export class CosmosAccount extends Account {
         const aminoMsg = {
             type: "signutil/MsgSignText",
             value: {
-                message: buffer,
+                message: buffer.toString(),
                 signer: message.sender,
             },
         };
 
-        const signDoc = makeSignDoc([aminoMsg], { amount: [], gas: "0" }, "signed-message-v1", "0", "0", "0");
+        const signDoc = makeSignDoc([aminoMsg], { amount: [], gas: "0" }, "signed-message-v1", "", "0", "0");
 
         const { signature } = await this.wallet.signAmino(this.address, signDoc);
         const alephSignature = {
