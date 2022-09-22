@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 
 type PostGetConfiguration = {
     types: string | string[];
@@ -79,8 +80,12 @@ export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQ
         params.hashes = configuration.hashes.join(",");
     }
 
-    const response = await axios.get<PostQueryResponse<T>>(`${configuration.APIServer}/api/v0/posts.json`, {
-        params,
-    });
+    const response = await axios.get<PostQueryResponse<T>>(
+        `${stripTrailingSlash(configuration.APIServer)}/api/v0/posts.json`,
+        {
+            params,
+            socketPath: getSocketPath(),
+        },
+    );
     return response.data;
 }

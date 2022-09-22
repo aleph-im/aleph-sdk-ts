@@ -14,7 +14,7 @@ export class AvalancheAccount extends Account {
     private signer;
 
     constructor(signer: KeyPair) {
-        super(signer.getAddress().toString("hex"), signer.getPublicKey().toString("hex"));
+        super(signer.getAddressString());
         this.signer = signer;
     }
 
@@ -28,7 +28,8 @@ export class AvalancheAccount extends Account {
      * @param content The content to encrypt.
      */
     encrypt(content: Buffer): Buffer {
-        return secp256k1_encrypt(this.publicKey, content);
+        const publicKey = this.signer.getPublicKey().toString("hex");
+        return secp256k1_encrypt(publicKey, content);
     }
 
     /**
@@ -65,7 +66,10 @@ export class AvalancheAccount extends Account {
         const digestHex = digest.toString("hex");
         const digestBuff = AvaBuff.from(digestHex, "hex");
 
-        return this.signer.sign(digestBuff).toString();
+        const signatureBuffer = this.signer.sign(digestBuff);
+        const bintools = BinTools.getInstance();
+
+        return bintools.cb58Encode(signatureBuffer);
     }
 }
 

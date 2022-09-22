@@ -19,7 +19,6 @@ async function createAccountTest(): Promise<boolean> {
 
     try {
         assert.notStrictEqual(account.address, "");
-        assert.notStrictEqual(account.publicKey, "");
     } catch (e: unknown) {
         console.error(`createAccountTest: ${e}`);
         return false;
@@ -33,7 +32,6 @@ async function importAccountFromMnemonicTest(): Promise<boolean> {
 
     try {
         assert.notStrictEqual(account.address, "");
-        assert.notStrictEqual(account.publicKey, "");
     } catch (e: unknown) {
         console.error(`importAccountFromMnemonicTest: ${e}`);
         return false;
@@ -49,7 +47,6 @@ async function importAccountFromPrivateKeyTest(): Promise<boolean> {
 
     try {
         assert.strictEqual(account.address, importedAccount.address);
-        assert.notStrictEqual(importedAccount.publicKey, "");
     } catch (e: unknown) {
         console.error(`importAccountFromPrivateKeyTest: ${e}`);
         return false;
