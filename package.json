@@ -11,8 +11,8 @@
         "doc": "typedoc",
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-        "postinstall": "node postinstall.mjs",
-        "prepublishOnly": "yarn test && yarn build",
+        "prepare": "yarn build",
+        "prepublishOnly": "yarn test",
         "test": "yarn test:jest && yarn test:auto",
         "test:jest": "jest --testTimeout=60000 --maxWorkers=2 --verbose",
         "test:auto": "ts-node testsAuto/entryPoint.ts "
