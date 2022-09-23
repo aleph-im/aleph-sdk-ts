@@ -11,10 +11,12 @@ import { BaseMessage, Chain } from "../messages/message";
 
 export class CosmosAccount extends Account {
     private wallet: OfflineAminoSigner;
+    private accountNumber: number;
 
-    constructor(wallet: OfflineAminoSigner, address: string) {
+    constructor(wallet: OfflineAminoSigner, address: string, accountNumber = 0) {
         super(address);
         this.wallet = wallet;
+        this.accountNumber = accountNumber;
     }
 
     GetChain(): Chain {
@@ -32,17 +34,28 @@ export class CosmosAccount extends Account {
             },
         };
 
-        const signDoc = makeSignDoc([aminoMsg], { amount: [], gas: "0" }, "signed-message-v1", "", "0", "0");
+        const signDoc = makeSignDoc(
+            [aminoMsg],
+            { amount: [], gas: "0" },
+            "signed-message-v1",
+            "",
+            this.accountNumber,
+            "0",
+        );
         const { signature } = await this.wallet.signAmino(this.address, signDoc);
 
         return JSON.stringify(signature);
     }
 }
 
-async function getCosmosAccount(wallet: OfflineAminoSigner): Promise<CosmosAccount> {
-    const [account] = await wallet.getAccounts();
-
-    return new CosmosAccount(wallet, account.address);
+async function getCosmosAccount(wallet: OfflineAminoSigner, accountNumber = 0): Promise<CosmosAccount> {
+    const accounts = await wallet.getAccounts();
+    try {
+        const account = accounts[accountNumber];
+        return new CosmosAccount(wallet, account.address, accountNumber);
+    } catch (err) {
+        throw new RangeError("Account offset out of bound");
+    }
 }
 
 export async function NewAccount(
