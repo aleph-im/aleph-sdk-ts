@@ -3,7 +3,12 @@ import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
 import { InMemorySigner } from "@taquito/signer";
 import { b58cdecode, b58cencode, prefix } from "@taquito/utils";
-import { getPkhfromPk } from "@taquito/utils";
+import { getPkhfromPk, char2Bytes } from "@taquito/utils";
+import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-types";
+import { BeaconWallet } from "@taquito/beacon-wallet";
+
+// The data to format
+const dappUrl = "aleph.im";
 
 import nacl from "tweetnacl";
 
@@ -12,15 +17,15 @@ import nacl from "tweetnacl";
  * It is used to represent a Tezos account when publishing a message on the Aleph network.
  */
 export class TEZOSAccount extends Account {
-    private signer: InMemorySigner;
+    private readonly wallet: BeaconWallet | InMemorySigner;
 
     /**
      * @param publicKey The public key encoded in base58. Needed due to asynchronous getter of the public key.
-     * @param signer The signer containing the private key used to sign the message.
+     * @param wallet The signer containing the private key used to sign the message.
      */
-    constructor(publicKey: string, signer: InMemorySigner) {
+    constructor(publicKey: string, wallet: BeaconWallet | InMemorySigner) {
         super(getPkhfromPk(publicKey));
-        this.signer = signer;
+        this.wallet = wallet;
     }
 
     override GetChain(): Chain {
@@ -28,7 +33,11 @@ export class TEZOSAccount extends Account {
     }
 
     async GetPublicKey(): Promise<string> {
-        return this.signer.publicKey();
+        if (this.wallet instanceof BeaconWallet) {
+            return await getPublicKeyFromWallet(this.wallet);
+        } else {
+            return this.wallet.publicKey();
+        }
     }
 
     /**
@@ -42,14 +51,47 @@ export class TEZOSAccount extends Account {
      */
     override async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-
-        const bufferSignature = await this.signer.sign(buffer.toString("hex"));
-
+        const ISO8601formattedTimestamp = new Date().toISOString();
+        // The full string
+        const formattedInput: string = [
+            "Tezos Signed Message:",
+            dappUrl,
+            ISO8601formattedTimestamp,
+            buffer.toString(),
+        ].join(" ");
+        console.log(formattedInput);
+        // The bytes to sign
+        const bytes = char2Bytes(formattedInput);
+        const payloadBytes = "05" + "0100" + char2Bytes(String(bytes.length)) + bytes;
+        // The payload to send to the wallet
+        const payload: RequestSignPayloadInput = {
+            signingType: SigningType.MICHELINE,
+            payload: payloadBytes,
+            sourceAddress: await this.GetPublicKey(),
+        };
+        console.log(payload);
+        // The signature
+        let signature: string;
+        if (this.wallet instanceof BeaconWallet) {
+            signature = (await this.wallet.client.requestSignPayload(payload)).signature;
+        } else {
+            signature = (await this.wallet.sign(payloadBytes)).sig;
+        }
+        console.log(signature);
         return JSON.stringify({
-            signature: bufferSignature.sig,
+            signature: signature,
             publicKey: await this.GetPublicKey(),
         });
     }
+}
+
+/**
+ * Imports a Tezos account given a beacon wallet integration, using the @taquito/beacon-wallet BeaconWallet class.
+ *
+ * @param wallet
+ */
+export async function ImportAccountFromBeaconWallet(wallet: BeaconWallet): Promise<TEZOSAccount> {
+    return new TEZOSAccount(await getPublicKeyFromWallet(wallet), wallet);
 }
 
 /**
@@ -92,4 +134,12 @@ export async function NewAccount(): Promise<{ account: TEZOSAccount; privateKey:
         account: wallet,
         privateKey: b58cdecode(key, prefix.edsk),
     };
+}
+
+async function getPublicKeyFromWallet(wallet: BeaconWallet): Promise<string> {
+    const publicKey = (await wallet.client.getActiveAccount())?.publicKey;
+    if (publicKey === undefined) {
+        throw new Error("No active account on the tezos wallet");
+    }
+    return publicKey;
 }

@@ -37,6 +37,7 @@
         "@types/uuid": "^8.3.1",
         "@typescript-eslint/eslint-plugin": "^4.31.0",
         "@typescript-eslint/parser": "^4.31.0",
+        "@airgap/beacon-types": "^3.2.0",
         "cypress": "^10.8.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.5.0",
