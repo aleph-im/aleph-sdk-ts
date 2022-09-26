@@ -61,7 +61,7 @@ describe("Avalanche accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account,
-            postType: "custom_type",
+            postType: "avalanche",
             content: content,
         });
 

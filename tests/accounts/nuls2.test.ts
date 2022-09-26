@@ -56,7 +56,7 @@ describe("NULS2 accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account,
-            postType: "Ralph",
+            postType: "nuls",
             content: content,
         });
 

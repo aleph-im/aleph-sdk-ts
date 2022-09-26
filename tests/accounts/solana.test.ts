@@ -29,7 +29,7 @@ describe("Solana accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account,
-            postType: "custom_type",
+            postType: "solana",
             content: content,
         });
 

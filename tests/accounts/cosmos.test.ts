@@ -28,7 +28,7 @@ describe("Cosmos accounts", () => {
             channel: "aleph-ts-sdk-testchannel",
             content,
             inlineRequested: true,
-            postType: "custom_type",
+            postType: "cosmos",
             storageEngine: ItemType.ipfs,
         });
 

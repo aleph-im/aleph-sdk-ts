@@ -39,7 +39,7 @@ describe("Tezos accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: signerAccount,
-            postType: "custom_type",
+            postType: "tezos",
             content: content,
         });
         const sigInfo = JSON.parse(msg.signature);
