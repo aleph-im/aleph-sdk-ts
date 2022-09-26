@@ -8,7 +8,7 @@ import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 
 // The data to format
-export const STANDARD_DAPP_URL = "aleph.im";
+export const STANDARD_DAPP_URL = "https://aleph.im";
 
 import nacl from "tweetnacl";
 
