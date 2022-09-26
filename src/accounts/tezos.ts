@@ -8,7 +8,7 @@ import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 
 // The data to format
-const dappUrl = "aleph.im";
+export const STANDARD_DAPP_URL = "aleph.im";
 
 import nacl from "tweetnacl";
 
@@ -18,14 +18,18 @@ import nacl from "tweetnacl";
  */
 export class TEZOSAccount extends Account {
     private readonly wallet: BeaconWallet | InMemorySigner;
+    public dAppUrl: string;
 
     /**
      * @param publicKey The public key encoded in base58. Needed due to asynchronous getter of the public key.
      * @param wallet The signer containing the private key used to sign the message.
+     * @param dAppUrl The URL of the dApp that is publishing the message. Defaults to "aleph.im". Used by wallets to
+     * display the requester of the signature.
      */
-    constructor(publicKey: string, wallet: BeaconWallet | InMemorySigner) {
+    constructor(publicKey: string, wallet: BeaconWallet | InMemorySigner, dAppUrl?: string) {
         super(getPkhfromPk(publicKey));
         this.wallet = wallet;
+        this.dAppUrl = dAppUrl || STANDARD_DAPP_URL;
     }
 
     override GetChain(): Chain {
@@ -51,15 +55,14 @@ export class TEZOSAccount extends Account {
      */
     override async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        const ISO8601formattedTimestamp = new Date().toISOString();
+        const ISO8601formattedTimestamp = new Date(message.time).toISOString();
         // The full string
         const formattedInput: string = [
             "Tezos Signed Message:",
-            dappUrl,
+            this.dAppUrl,
             ISO8601formattedTimestamp,
             buffer.toString(),
         ].join(" ");
-        console.log(formattedInput);
         // The bytes to sign
         const bytes = char2Bytes(formattedInput);
         const payloadBytes = "05" + "0100" + char2Bytes(String(bytes.length)) + bytes;
@@ -69,7 +72,6 @@ export class TEZOSAccount extends Account {
             payload: payloadBytes,
             sourceAddress: await this.GetPublicKey(),
         };
-        console.log(payload);
         // The signature
         let signature: string;
         if (this.wallet instanceof BeaconWallet) {
@@ -77,10 +79,11 @@ export class TEZOSAccount extends Account {
         } else {
             signature = (await this.wallet.sign(payloadBytes)).sig;
         }
-        console.log(signature);
         return JSON.stringify({
             signature: signature,
             publicKey: await this.GetPublicKey(),
+            signingType: SigningType.MICHELINE.toLowerCase(),
+            dAppUrl: this.dAppUrl,
         });
     }
 }
@@ -126,12 +129,12 @@ export async function ImportAccountFromFundraiserInfo(
 /**
  * Creates a new Tezos account (tz1) using a randomly generated Tezos keypair.
  */
-export async function NewAccount(): Promise<{ account: TEZOSAccount; privateKey: Uint8Array }> {
+export async function NewAccount(): Promise<{ signerAccount: TEZOSAccount; privateKey: Uint8Array }> {
     const key = b58cencode(nacl.sign.keyPair().secretKey, prefix.edsk);
     const wallet = await ImportAccountFromPrivateKey(key);
 
     return {
-        account: wallet,
+        signerAccount: wallet,
         privateKey: b58cdecode(key, prefix.edsk),
     };
 }

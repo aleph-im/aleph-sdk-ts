@@ -26,6 +26,7 @@
         "node": "<18.0.0"
     },
     "devDependencies": {
+        "@airgap/beacon-types": "^3.2.0",
         "@types/bs58": "^4.0.1",
         "@types/elliptic": "^6.4.13",
         "@types/jest": "^27.4.1",
@@ -37,7 +38,6 @@
         "@types/uuid": "^8.3.1",
         "@typescript-eslint/eslint-plugin": "^4.31.0",
         "@typescript-eslint/parser": "^4.31.0",
-        "@airgap/beacon-types": "^3.2.0",
         "cypress": "^10.8.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.5.0",
