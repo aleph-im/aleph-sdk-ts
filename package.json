@@ -7,7 +7,7 @@
         "/dist"
     ],
     "scripts": {
-        "build": "rm -rf dist/ && npm run tsc",
+        "build": "rm -rf dist/ && tsc",
         "doc": "typedoc",
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
