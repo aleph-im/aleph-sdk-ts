@@ -61,14 +61,14 @@ describe("Tezos accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: signerAccount,
-            postType: "custom_type",
+            postType: "tezos",
             content: content,
         });
 
         expect(msg.item_hash).not.toBeUndefined();
         setTimeout(async () => {
             const amends = await post.Get({
-                types: "custom_type",
+                types: "tezos",
                 APIServer: DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,

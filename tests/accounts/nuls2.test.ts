@@ -62,7 +62,7 @@ describe("NULS2 accounts", () => {
 
         setTimeout(async () => {
             const amends = await post.Get({
-                types: "Ralph",
+                types: "nuls",
                 APIServer: DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,

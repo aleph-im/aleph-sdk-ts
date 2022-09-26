@@ -41,7 +41,7 @@ describe("Cosmos accounts", () => {
                 pagination: 200,
                 refs: [],
                 tags: [],
-                types: "custom_type",
+                types: "cosmos",
             });
             expect(amends.posts.length).toBeGreaterThan(0);
             // expect(amends.posts[0].content).toStrictEqual(content);

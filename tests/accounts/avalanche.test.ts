@@ -66,7 +66,7 @@ describe("Avalanche accounts", () => {
         });
 
         const amends = await post.Get({
-            types: "custom_type",
+            types: "avalanche",
             APIServer: DEFAULT_API_V2,
             pagination: 200,
             page: 1,
