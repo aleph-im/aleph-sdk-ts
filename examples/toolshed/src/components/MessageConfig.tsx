@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-import { ItemType } from "../../../../src/messages/message";
-import { Publish } from "../../../../src/messages/post";
-import { DEFAULT_API_V2 } from "../../../../src/global";
 import { consumeProps } from "../model/componentProps";
+
+import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { constant } from "@aleph-sdk-ts/core-base/dist/utils";
+import { post } from "@aleph-sdk-ts/messages"
 
 function MessageConfig({ state }: consumeProps) {
   const [messageHash, setMessageHash] = useState(null)
@@ -18,8 +19,8 @@ function MessageConfig({ state }: consumeProps) {
     setMessageHash(null)
     setIsSending(true)
 
-    const message = await Publish({
-        APIServer: DEFAULT_API_V2,
+    const message = await post.Publish({
+        APIServer: constant.DEFAULT_API_V2,
         channel: "Typescript-SDK-Toolshed",
         inlineRequested: true,
         storageEngine: ItemType.ipfs,

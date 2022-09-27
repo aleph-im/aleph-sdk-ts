@@ -1,0 +1,18 @@
+{
+    "name": "@aleph-sdk-ts/accounts-software-solana",
+    "version": "0.0.1",
+    "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
+    "author": "Aleph.im",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "scripts": {
+        "compile": "tsc -b",
+        "test": "echo \"Error: Tests not implemented yet\" && exit 1"
+    },
+    "dependencies": {
+        "@aleph-sdk-ts/core-base": "*",
+        "@solana/web3.js": "^1.63.1",
+        "bs58": "^5.0.0",
+        "tweetnacl": "^1.0.3"
+    }
+}

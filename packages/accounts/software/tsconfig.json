@@ -1,0 +1,31 @@
+{
+  "extends": "../../../tsconfig.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "references": [
+    {
+      "path": "../../core/base"
+    },
+    {
+      "path": "avalanche"
+    },
+    {
+      "path": "cosmos"
+    },
+    {
+      "path": "ethereum"
+    },
+    {
+      "path": "nuls2"
+    },
+    {
+      "path": "solana"
+    },
+    {
+      "path": "substrate"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+    "name": "@aleph-sdk-ts/messages",
+    "version": "0.0.1",
+    "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
+    "author": "Aleph.im",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "scripts": {
+        "compile": "tsc -b",
+        "test": "echo \"Error: Tests not implemented yet\" && exit 1"
+    },
+    "dependencies": {
+        "@aleph-sdk-ts/core-base": "*",
+        "axios": "^0.21.4"
+    }
+}

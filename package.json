@@ -2,22 +2,29 @@
     "name": "aleph-sdk-ts",
     "version": "1.0.1",
     "description": "Aleph.im Typescript SDK",
-    "main": "dist/index.js",
     "files": [
         "/dist"
     ],
+    "workspaces": [
+        "packages/accounts/software",
+        "packages/accounts/software/*",
+        "packages/core/*",
+        "packages/messages"
+    ],
     "scripts": {
-        "build": "rm -rf dist/ && yarn tsc",
+        "clean": "find . -type d -name dist -prune -exec rm -rf {} \\; && find . -name \"*.tsbuildinfo\" -type f -delete",
+        "build": "tsc -b tsconfig.build.json",
+        "dev": "rm -rf dist/ && tsc -b -v -w -i ",
         "doc": "typedoc",
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-        "prepack": "yarn test && yarn build",
-        "test": "yarn test:jest && yarn test:auto",
-        "test:jest": "jest --testTimeout=60000 --maxWorkers=2 --verbose",
-        "test:auto": "ts-node testsAuto/entryPoint.ts "
+        "prepack": "npm run test && npm run build",
+        "test": "npm run test:jest && npm run test:auto",
+        "test:jest": "jest --testTimeout=60000 --verbose",
+        "test:auto": "ts-node tests/testsAuto/entryPoint.ts "
     },
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
-    "author": "PtitLuca <luca.georges-francois@epitech.eu>",
+    "author": "Aleph.im",
     "license": "MIT",
     "devDependencies": {
         "@types/bs58": "^4.0.1",
@@ -43,21 +50,8 @@
         "typescript": "^4.6.3"
     },
     "dependencies": {
-        "@cosmjs/amino": "^0.29.0",
-        "@polkadot/keyring": "^7.7.1",
-        "@polkadot/util": "^7.7.1",
-        "@polkadot/util-crypto": "^7.7.1",
-        "@solana/wallet-adapter-base": "^0.9.15",
-        "@solana/web3.js": "^1.39.1",
-        "avalanche": "^3.15.3",
-        "axios": "^0.21.4",
-        "bip32": "^2.0.6",
-        "bip39": "^3.0.4",
-        "eciesjs": "^0.3.14",
-        "ethers": "^5.6.4",
         "form-data": "^4.0.0",
         "sha.js": "^2.4.11",
-        "tweetnacl": "^1.0.3",
         "uuid": "^8.3.2"
     }
 }

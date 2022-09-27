@@ -1,7 +1,11 @@
-import { ethereum, store } from "../../../tests";
-import { DEFAULT_API_V2 } from "../../../src/global";
-import { ItemType } from "../../../src/messages/message";
-import { ArraybufferToString } from "../../../tests/messages/store/publish.test";
+import { store } from "@aleph-sdk-ts/messages";
+import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum";
+import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+
+export function ArraybufferToString(ab) {
+    return new TextDecoder().decode(ab);
+}
 
 describe("My First Test", () => {
     it("Does not do much!", () => {

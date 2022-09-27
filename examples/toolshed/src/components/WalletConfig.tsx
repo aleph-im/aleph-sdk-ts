@@ -1,4 +1,7 @@
-import { solana, ethereum } from '../../../../src/accounts'
+
+import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum"
+import { solana } from "@aleph-sdk-ts/accounts-software-solana"
+
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
