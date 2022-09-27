@@ -46,7 +46,7 @@ jobs:
 
           git fetch origin $BRANCH
           git reset --mixed origin/$BRANCH
-          git add .
+          git add -f docs
 
-          git commit -m "Updating documentation: $GITHUB_HEAD_REF"
+          git commit -m "Updating documentation: $GITHUB_ACTOR"
           git push origin HEAD:$BRANCH
