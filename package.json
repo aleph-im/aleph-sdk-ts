@@ -7,12 +7,12 @@
         "/dist"
     ],
     "scripts": {
-        "build": "rm -rf dist/ && yarn tsc",
+        "build": "rm -rf dist/ && tsc",
         "doc": "typedoc",
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-        "prepack": "yarn test && yarn build",
-        "test": "yarn test:jest && yarn test:auto",
+        "prepack": "npm run test && npm run build",
+        "test": "npm run test:jest && npm run test:auto",
         "test:jest": "jest --testTimeout=60000 --maxWorkers=2 --verbose",
         "test:auto": "ts-node testsAuto/entryPoint.ts "
     },
