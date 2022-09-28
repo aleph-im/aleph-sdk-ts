@@ -6,8 +6,8 @@ This tool is intended as a quick demo to send message on the Aleph.im network us
 
 ```
 # install dependencies
-yarn 
+npm install 
 
 # Launches the app in your default browser
-yarn dev
+npm run dev
 ```
