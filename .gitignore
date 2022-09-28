@@ -106,3 +106,6 @@ dist
 
 # Custom
 .idea
+
+# Documentation
+docs/
