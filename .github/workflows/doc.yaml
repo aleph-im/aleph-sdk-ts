@@ -1,0 +1,52 @@
+name: Generate Doc
+
+on:
+  push:
+    branches: [main]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  Doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Caching Nodes.js modules
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Create Doc
+        run: yarn doc
+
+      - name: Push Doc
+        run: |
+          BRANCH=gh-pages
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          git fetch origin $BRANCH
+          git reset --mixed origin/$BRANCH
+          git add -f docs
+
+          git commit -m "Updating documentation: $GITHUB_ACTOR"
+          git push origin HEAD:$BRANCH
