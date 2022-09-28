@@ -17,7 +17,7 @@ This project is still under development, please consider this if you are using i
 
 Run the following command:
 ```shell
-yarn add aleph-sdk-ts
+npm install aleph-sdk-ts
 ```
 
 ## Play with this repository
@@ -31,8 +31,8 @@ git clone https://github.com/aleph-im/aleph-sdk-ts
 
 - Run the tests manually:
 ```shell
-yarn install
-yarn test
+npm install
+npm run test
 ```
 
 - Or use [act](https://github.com/nektos/act):
@@ -44,7 +44,7 @@ act
 
 Just run:
 ```shell
-yarn build
+npm run build
 ```
 
 
