@@ -28,7 +28,7 @@ describe("Cosmos accounts", () => {
             channel: "aleph-ts-sdk-testchannel",
             content,
             inlineRequested: true,
-            postType: "custom_type",
+            postType: "cosmos",
             storageEngine: ItemType.ipfs,
         });
 
@@ -41,7 +41,7 @@ describe("Cosmos accounts", () => {
                 pagination: 200,
                 refs: [],
                 tags: [],
-                types: "custom_type",
+                types: "cosmos",
             });
             expect(amends.posts.length).toBeGreaterThan(0);
             // expect(amends.posts[0].content).toStrictEqual(content);

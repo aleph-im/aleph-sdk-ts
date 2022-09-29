@@ -62,8 +62,8 @@ npm run build
 - [X] NULS2 account
 - [X] Solana account
 - [X] Substrate account
-- [ ] Cosmos account
-- [ ] Tezos account (inProgress)
+- [x] Cosmos account
+- [x] Tezos account
 - [ ] Encryption methods
 
 ## Authors
