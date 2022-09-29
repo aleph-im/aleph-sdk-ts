@@ -1,73 +1,41 @@
 # aleph-sdk-ts
 
 ## Description
-aleph-sdk-ts is the Typescript SDK you can use to interact with the Aleph decentralized network, about which you can find more information [here](https://aleph.im/).
 
-When I started this project, it was just for adding TS support to the [Aleph-JS](https://github.com/aleph-im/aleph-js) project.
-This project is still under development, please consider this if you are using it.
+This SDK offers binding to interact with the [Aleph decentralized network](https://aleph.im/).
+
+Written in Typescript it is meant as a drop in replacement for the [aleph-js library]().
 
 ## Quick Start
 
-- An API reference is available in the `/docs` directory, [and online](https://aleph-im.github.io/aleph-sdk-ts/index.html) 
-- For guides and use-cases check the [Aleph TS SDK Gitbook](https://aleph-im.gitbook.io/ts-sdk/)
-
-## Installation
-
-### Use it in your project
-
-Run the following command:
 ```shell
 npm install aleph-sdk-ts
 ```
 
-## Play with this repository
+- An API reference [on the repository github pages](https://aleph-im.github.io/aleph-sdk-ts/index.html) 
+- For guides and use-cases check the [Aleph TS SDK Gitbook](https://aleph-im.gitbook.io/ts-sdk/)
+- Some examples are available in the `/examples` directory.
 
-First and foremost, clone the repository:
-```shell
-git clone https://github.com/aleph-im/aleph-sdk-ts
+## Running from source
+
+If you wish to use feature which are not (yet) released, feel free to clone this repository on your local machine.
+
+Make sure to install the dependencies first by running:
+```
+npm install
 ```
 
-### Run the tests
-
-- Run the tests manually:
-```shell
-npm install
+You can run the test suite, using:
+```
 npm run test
 ```
 
-- Or use [act](https://github.com/nektos/act):
-```shell
-act
-```
 
-### Build the project
+## Contribution
 
-Just run:
-```shell
-npm run build
-```
+Your contributions are always welcome, [here's a guide to get started](./contributing.md).
 
+## License
 
-## Features
+This software is released under [The MIT License](./LICENSE).
 
-- [X] Aggregate message
-- [X] Post message
-- [X] Store message
-- [X] Forget object
-- [X] Program object
-- [X] Messages retrieving
-- [X] Ethereum account
-- [X] Avalanche account
-- [X] NULS account
-- [X] NULS2 account
-- [X] Solana account
-- [X] Substrate account
-- [x] Cosmos account
-- [x] Tezos account
-- [ ] Encryption methods
-
-## Authors
-
-- [Luca Georges Francois](https://github.com/PtitLuca)
-- [Roman Gascoin](https://github.com/Rgascoin)
-- [Jonathan Schemoul](https://github.com/moshemalawach) for writing the [aleph-js](https://github.com/aleph-im/aleph-js) client
