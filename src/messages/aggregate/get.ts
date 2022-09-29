@@ -1,5 +1,6 @@
 import axios from "axios";
 import { DEFAULT_API_V2 } from "../../global";
+import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 
 type AggregateGetResponse<T> = {
     data: T;
@@ -25,11 +26,15 @@ export async function Get<T>(
     },
 ): Promise<T> {
     const _keys = keys.length === 0 ? null : keys.join(",");
-    const response = await axios.get<AggregateGetResponse<T>>(`${APIServer}/api/v0/aggregates/${address}.json`, {
-        params: {
-            keys: _keys,
+    const response = await axios.get<AggregateGetResponse<T>>(
+        `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
+        {
+            socketPath: getSocketPath(),
+            params: {
+                keys: _keys,
+            },
         },
-    });
+    );
 
     if (!response.data.data) {
         throw new Error("no aggregate found");

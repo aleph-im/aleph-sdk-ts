@@ -4,16 +4,22 @@ import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
+import { JsonRPCWallet } from "../providers/JsonRPCWallet";
+import { BaseProviderWallet } from "../providers/BaseProviderWallet";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 export class ETHAccount extends Account {
-    private wallet: ethers.Wallet;
-    constructor(wallet: ethers.Wallet) {
-        super(wallet.address);
-        this.wallet = wallet;
+    private wallet?: ethers.Wallet;
+    private provider?: BaseProviderWallet;
+
+    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string) {
+        super(address);
+
+        if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider;
+        else this.provider = walletOrProvider;
     }
 
     override GetChain(): Chain {
@@ -25,8 +31,11 @@ export class ETHAccount extends Account {
      *
      * @param content The content to encrypt.
      */
-    encrypt(content: Buffer): Buffer {
-        return secp256k1_encrypt(this.wallet.publicKey, content);
+    async encrypt(content: Buffer): Promise<Buffer> {
+        const publicKey = this.wallet?.publicKey || (await this.provider?.getPublicKey());
+        if (publicKey) return secp256k1_encrypt(publicKey, content);
+
+        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -34,9 +43,16 @@ export class ETHAccount extends Account {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    decrypt(encryptedContent: Buffer): Buffer {
-        const secret = this.wallet.privateKey;
-        return secp256k1_decrypt(secret, encryptedContent);
+    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
+        if (this.wallet) {
+            const secret = this.wallet.privateKey;
+            return secp256k1_decrypt(secret, encryptedContent);
+        }
+        if (this.provider) {
+            const decrypted = await this.provider.decrypt(encryptedContent);
+            return Buffer.from(decrypted);
+        }
+        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -47,11 +63,13 @@ export class ETHAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    override Sign(message: BaseMessage): Promise<string> {
+    async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        return new Promise((resolve) => {
-            resolve(this.wallet.signMessage(buffer.toString()));
-        });
+        const signMethod = this.wallet || this.provider;
+
+        if (signMethod) return signMethod.signMessage(buffer.toString());
+
+        throw new Error("Cannot sign message");
     }
 }
 
@@ -66,7 +84,7 @@ export class ETHAccount extends Account {
 export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
     const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath);
 
-    return new ETHAccount(wallet);
+    return new ETHAccount(wallet, wallet.address);
 }
 
 /**
@@ -79,7 +97,7 @@ export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/
 export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
     const wallet = new ethers.Wallet(privateKey);
 
-    return new ETHAccount(wallet);
+    return new ETHAccount(wallet, wallet.address);
 }
 
 /**
@@ -91,4 +109,18 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
     const mnemonic = bip39.generateMnemonic();
 
     return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic };
+}
+
+/**
+ * Get an account from a Web3 provider (ex: Metamask)
+ *
+ * @param  {ethers.providers.ExternalProvider} provider
+ */
+export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider) {
+    const ETHprovider = new ethers.providers.Web3Provider(provider);
+    const jrw = new JsonRPCWallet(ETHprovider);
+    await jrw.connect();
+
+    if (jrw.address) return new ETHAccount(jrw, jrw.address);
+    throw new Error("Insufficient permissions");
 }

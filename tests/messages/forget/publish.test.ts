@@ -15,8 +15,8 @@ describe("Forget publish tests", () => {
         const res = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: false,
-            storageEngine: ItemType.ipfs,
+            inlineRequested: true,
+            storageEngine: ItemType.inline,
             account: account,
             postType: postType,
             content: content,
@@ -27,7 +27,7 @@ describe("Forget publish tests", () => {
             channel: "TEST",
             hashes: [res.item_hash],
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.inline,
             account: account,
         });
         expect(Fres.content).not.toBeNull();
