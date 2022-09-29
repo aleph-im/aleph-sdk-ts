@@ -17,14 +17,18 @@ export async function SignAndBroadcast(configuration: SignAndBroadcastConfigurat
 }
 
 async function Broadcast(configuration: BroadcastConfiguration) {
-    await axios.post(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/ipfs/pubsub/pub`,
-        {
-            topic: "ALEPH-TEST",
-            data: JSON.stringify(configuration.message),
-        },
-        {
-            socketPath: getSocketPath(),
-        },
-    );
+    try {
+        await axios.post(
+            `${stripTrailingSlash(configuration.APIServer)}/api/v0/ipfs/pubsub/pub`,
+            {
+                topic: "ALEPH-TEST",
+                data: JSON.stringify(configuration.message),
+            },
+            {
+                socketPath: getSocketPath(),
+            },
+        );
+    } catch (err) {
+        console.warn(err);
+    }
 }

@@ -18,7 +18,7 @@ describe("Test the program message", () => {
             account: account,
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
+            inlineRequested: false,
             storageEngine: ItemType.ipfs,
             file: fileContent,
             entrypoint: "main:app",

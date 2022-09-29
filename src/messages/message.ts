@@ -15,6 +15,7 @@ export enum Chain {
     AVAX = "AVAX",
     CSDK = "CSDK",
     NEO = "NEO",
+    TEZOS = "TEZOS",
 }
 
 /**
@@ -120,7 +121,7 @@ export type BaseMessage = {
     size: number;
     time: number;
     item_type: ItemType;
-    item_content: string;
+    item_content?: string;
     hash_type?: HashType;
     item_hash: string;
     content: BaseContent;

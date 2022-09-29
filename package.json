@@ -22,7 +22,11 @@
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
     "author": "PtitLuca <luca.georges-francois@epitech.eu>",
     "license": "MIT",
+    "engines": {
+        "node": "<18.0.0"
+    },
     "devDependencies": {
+        "@airgap/beacon-types": "^3.2.0",
         "@types/bs58": "^4.0.1",
         "@types/elliptic": "^6.4.13",
         "@types/jest": "^27.4.1",
@@ -52,6 +56,8 @@
         "@polkadot/util-crypto": "^7.7.1",
         "@solana/wallet-adapter-base": "^0.9.15",
         "@solana/web3.js": "^1.39.1",
+        "@taquito/beacon-wallet": "^14.0.0",
+        "@taquito/signer": "^13.0.1",
         "avalanche": "^3.15.3",
         "axios": "^0.21.4",
         "bip32": "^2.0.6",
