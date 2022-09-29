@@ -3,7 +3,7 @@
  *
  * @param  {string} url
  */
-export function stripTrailingSlash(url: string) {
+export function stripTrailingSlash(url: string): string {
     return url.replace(/\/*\s*$/gi, "");
 }
 
@@ -11,7 +11,7 @@ export function stripTrailingSlash(url: string) {
  * Returns the content of the ALEPH_API_UNIX_SOCKET environment variable
  * or undefined.
  */
-export function getSocketPath() {
+export function getSocketPath(): string | undefined {
     try {
         return process?.env?.ALEPH_API_UNIX_SOCKET;
     } catch {
