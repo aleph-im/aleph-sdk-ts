@@ -56,13 +56,13 @@ describe("NULS2 accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account,
-            postType: "Ralph",
+            postType: "nuls",
             content: content,
         });
 
         setTimeout(async () => {
             const amends = await post.Get({
-                types: "Ralph",
+                types: "nuls",
                 APIServer: DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,

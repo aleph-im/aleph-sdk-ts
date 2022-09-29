@@ -15,6 +15,7 @@ export enum Chain {
     AVAX = "AVAX",
     CSDK = "CSDK",
     NEO = "NEO",
+    TEZOS = "TEZOS",
 }
 
 /**

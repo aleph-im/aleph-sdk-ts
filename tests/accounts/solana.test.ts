@@ -65,13 +65,13 @@ describe("Solana accounts", () => {
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account,
-            postType: "custom_type",
+            postType: "solana",
             content: content,
         });
 
         setTimeout(async () => {
             const amends = await post.Get({
-                types: "custom_type",
+                types: "solana",
                 APIServer: DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,
