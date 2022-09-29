@@ -6,6 +6,9 @@
     "files": [
         "/dist"
     ],
+    "publishConfig": {
+        "@aleph-im:registry": "https://npm.pkg.github.com"
+    },
     "scripts": {
         "build": "rm -rf dist/ && tsc",
         "doc": "typedoc",
