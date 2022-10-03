@@ -2,13 +2,12 @@
     "name": "aleph-sdk-ts",
     "version": "3.0.2",
     "description": "Aleph.im Typescript SDK",
+    "keywords": ["web3", "aleph.im", "blockchain", "messages", "ethereum", "solana", "defi", "dao", "nft"],
     "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "files": [
         "/dist"
     ],
-    "publishConfig": {
-        "@aleph-im:registry": "https://npm.pkg.github.com"
-    },
     "scripts": {
         "build": "rm -rf dist/ && tsc",
         "doc": "typedoc",
@@ -20,7 +19,13 @@
         "test:auto": "ts-node testsAuto/entryPoint.ts "
     },
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
-    "author": "PtitLuca <luca.georges-francois@epitech.eu>",
+    "author": "Aleph.im Team",
+    "contributors": [
+        "PtitLuca <luca.georges-francois@epitech.eu>",
+        "Roman Gascoin <roman.gascoin@gmail.com>",
+        "Mike Hukiewitz <m.h.hukiewitz@students.uu.nl>",
+        "Kelian Christophe <BjrInt@users.noreply.github.com>"
+    ],
     "license": "MIT",
     "engines": {
         "node": "<18.0.0"
