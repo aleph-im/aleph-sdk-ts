@@ -2,8 +2,7 @@ import { useState } from "react";
 
 import { consumeProps } from "../model/componentProps";
 
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
-import { constant } from "@aleph-sdk-ts/core-base/dist/utils";
+import { utils, messageType } from "@aleph-sdk-ts/core-base";
 import { post } from "@aleph-sdk-ts/messages"
 
 function MessageConfig({ state }: consumeProps) {
@@ -20,10 +19,10 @@ function MessageConfig({ state }: consumeProps) {
     setIsSending(true)
 
     const message = await post.Publish({
-        APIServer: constant.DEFAULT_API_V2,
+        APIServer: utils.constant.DEFAULT_API_V2,
         channel: "Typescript-SDK-Toolshed",
         inlineRequested: true,
-        storageEngine: ItemType.ipfs,
+        storageEngine: messageType.ItemType.ipfs,
         account: state.account,
         postType: "Toolshed",
         content: messageContent,

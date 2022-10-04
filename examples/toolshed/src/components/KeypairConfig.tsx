@@ -6,7 +6,7 @@ import { Actions } from '../reducer'
 import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum"
 import { solana } from "@aleph-sdk-ts/accounts-software-solana"
 import { substrate } from "@aleph-sdk-ts/accounts-software-substrate"
-import { nuls2 } from "@aleph-sdk-ts/accounts-software-nul2"
+import { nuls2 } from "@aleph-sdk-ts/accounts-software-nuls2"
 import { avalanche } from "@aleph-sdk-ts/accounts-software-avalanche"
 
 function KeypairConfig({state, dispatch} : dispatchAndConsume) {

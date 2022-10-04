@@ -1,7 +1,5 @@
 import shajs from "sha.js";
-import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { utils } from "@aleph-sdk-ts/core-base";
-import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { Account, utils, messageType } from "@aleph-sdk-ts/core-base";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
@@ -18,8 +16,8 @@ export class AvalancheAccount extends Account {
         this.signer = signer;
     }
 
-    override GetChain(): Chain {
-        return Chain.AVAX;
+    override GetChain(): messageType.Chain {
+        return messageType.Chain.AVAX;
     }
 
     /**
@@ -59,7 +57,7 @@ export class AvalancheAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    async Sign(message: BaseMessage): Promise<string> {
+    async Sign(message: messageType.BaseMessage): Promise<string> {
         const buffer = utils.GetVerificationBuffer(message);
         const digest = await this.digestMessage(buffer);
 

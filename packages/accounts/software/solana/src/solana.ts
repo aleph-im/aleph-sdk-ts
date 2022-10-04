@@ -1,6 +1,4 @@
-import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { utils } from "@aleph-sdk-ts/core-base";
-import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { Account, utils, messageType } from "@aleph-sdk-ts/core-base";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
@@ -36,8 +34,8 @@ export class SOLAccount extends Account {
         }
     }
 
-    override GetChain(): Chain {
-        return Chain.SOL;
+    override GetChain(): messageType.Chain {
+        return messageType.Chain.SOL;
     }
 
     /**
@@ -49,7 +47,7 @@ export class SOLAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    override async Sign(message: BaseMessage): Promise<string> {
+    override async Sign(message: messageType.BaseMessage): Promise<string> {
         const buffer = utils.GetVerificationBuffer(message);
         let signature;
 

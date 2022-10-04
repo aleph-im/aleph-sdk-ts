@@ -1,7 +1,4 @@
-import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { utils } from "@aleph-sdk-ts/core-base";
-import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
-
+import { Account, utils, messageType } from "@aleph-sdk-ts/core-base";
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
@@ -18,8 +15,8 @@ export class DOTAccount extends Account {
         this.pair = pair;
     }
 
-    GetChain(): Chain {
-        return Chain.DOT;
+    GetChain(): messageType.Chain {
+        return messageType.Chain.DOT;
     }
 
     /**
@@ -30,7 +27,7 @@ export class DOTAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    Sign(message: BaseMessage): Promise<string> {
+    Sign(message: messageType.BaseMessage): Promise<string> {
         const buffer = utils.GetVerificationBuffer(message);
         return new Promise((resolve) => {
             const signed = `0x${Buffer.from(this.pair.sign(buffer)).toString("hex")}`;

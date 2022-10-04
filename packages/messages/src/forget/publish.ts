@@ -1,5 +1,5 @@
 import { PutContentToStorageEngine } from "../create/publish";
-import { ForgetContent, ForgetMessage, ItemType, MessageType } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
 import { SignAndBroadcast } from "../create/signature";
 
@@ -21,7 +21,7 @@ import { SignAndBroadcast } from "../create/signature";
 type ForgetPublishConfiguration = {
     account: Account;
     channel: string;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
     inlineRequested: boolean;
     APIServer: string;
     hashes: string[];
@@ -38,19 +38,19 @@ type ForgetPublishConfiguration = {
  *
  * @param configuration The configuration used to publish the forget message.
  */
-export async function Publish(configuration: ForgetPublishConfiguration): Promise<ForgetMessage> {
+export async function Publish(configuration: ForgetPublishConfiguration): Promise<messageType.ForgetMessage> {
     const timestamp = Date.now() / 1000;
-    const content: ForgetContent = {
+    const content: messageType.ForgetContent = {
         address: configuration.account.address,
         time: timestamp,
         hashes: configuration.hashes,
         reason: configuration.reason ? configuration.reason : "None",
     };
 
-    const message: ForgetMessage = {
+    const message: messageType.ForgetMessage = {
         chain: configuration.account.GetChain(),
         sender: configuration.account.address,
-        type: MessageType.forget,
+        type: messageType.MessageType.forget,
         channel: configuration.channel,
         confirmed: false,
         signature: "",

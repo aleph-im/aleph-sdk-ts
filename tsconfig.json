@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ESNext",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,
@@ -12,7 +12,7 @@
     "composite": true,
     "sourceMap": true,
     "declaration": true,
-    "target": "ES6",
+    "target": "ESNext",
     "esModuleInterop": true,
     "lib": [
       "dom",

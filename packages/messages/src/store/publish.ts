@@ -1,5 +1,5 @@
 import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { MessageType, ItemType, StoreContent, StoreMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
@@ -7,7 +7,7 @@ type StorePublishConfiguration = {
     channel: string;
     account: Account;
     fileObject: Buffer | Blob;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
     APIServer: string;
 };
 
@@ -17,7 +17,7 @@ type StorePublishConfiguration = {
  *
  * @param spc The configuration used to publish a store message.
  */
-export async function Publish(spc: StorePublishConfiguration): Promise<StoreMessage> {
+export async function Publish(spc: StorePublishConfiguration): Promise<messageType.StoreMessage> {
     const hash = await PushFileToStorageEngine({
         APIServer: spc.APIServer,
         storageEngine: spc.storageEngine,
@@ -25,18 +25,18 @@ export async function Publish(spc: StorePublishConfiguration): Promise<StoreMess
     });
 
     const timestamp = Date.now() / 1000;
-    const content: StoreContent = {
+    const content: messageType.StoreContent = {
         address: spc.account.address,
         item_type: spc.storageEngine,
         item_hash: hash,
         time: timestamp,
     };
 
-    const message: StoreMessage = {
+    const message: messageType.StoreMessage = {
         signature: "",
         chain: spc.account.GetChain(),
         sender: spc.account.address,
-        type: MessageType.store,
+        type: messageType.MessageType.store,
         channel: spc.channel,
         confirmed: false,
         time: timestamp,

@@ -1,11 +1,5 @@
 import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import {
-    MessageType,
-    ItemType,
-    AggregateContentKey,
-    AggregateContent,
-    AggregateMessage,
-} from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
@@ -26,10 +20,10 @@ import { SignAndBroadcast } from "../create/signature";
  */
 type AggregatePublishConfiguration<T> = {
     account: Account;
-    key: string | AggregateContentKey;
+    key: string | messageType.AggregateContentKey;
     content: T;
     channel: string;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
     inlineRequested: boolean;
     APIServer: string;
 };
@@ -47,19 +41,21 @@ type AggregatePublishConfiguration<T> = {
  *
  * @param configuration The configuration used to publish the aggregate message.
  */
-export async function Publish<T>(configuration: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
+export async function Publish<T>(
+    configuration: AggregatePublishConfiguration<T>,
+): Promise<messageType.AggregateMessage<T>> {
     const timestamp = Date.now() / 1000;
-    const content: AggregateContent<T> = {
+    const content: messageType.AggregateContent<T> = {
         address: configuration.account.address,
         key: configuration.key,
         time: timestamp,
         content: configuration.content,
     };
-    const message: AggregateMessage<T> = {
+    const message: messageType.AggregateMessage<T> = {
         chain: configuration.account.GetChain(),
         channel: configuration.channel,
         sender: configuration.account.address,
-        type: MessageType.aggregate,
+        type: messageType.MessageType.aggregate,
         confirmed: false,
         signature: "",
         size: 0,

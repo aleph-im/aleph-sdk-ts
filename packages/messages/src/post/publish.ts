@@ -1,14 +1,14 @@
 import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { MessageType, ItemType, PostContent, PostMessage, ChainRef } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
 type PostSubmitConfiguration<T> = {
     APIServer: string;
-    ref?: string | ChainRef;
+    ref?: string | messageType.ChainRef;
     channel: string;
     inlineRequested: boolean;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
     account: Account;
     postType: string;
     content: T;
@@ -23,9 +23,9 @@ type PostSubmitConfiguration<T> = {
  *
  * @param configuration The configuration used to publish the aggregate message.
  */
-export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
+export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Promise<messageType.PostMessage<T>> {
     const timestamp: number = Date.now() / 1000;
-    const content: PostContent<T> = {
+    const content: messageType.PostContent<T> = {
         type: configuration.postType,
         address: configuration.account.address,
         content: configuration.content,
@@ -36,10 +36,10 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
         content.ref = configuration.ref;
     }
 
-    const message: PostMessage<T> = {
+    const message: messageType.PostMessage<T> = {
         chain: configuration.account.GetChain(),
         sender: configuration.account.address,
-        type: MessageType.post,
+        type: messageType.MessageType.post,
         channel: configuration.channel,
         confirmed: false,
         signature: "",

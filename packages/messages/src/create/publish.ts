@@ -1,6 +1,6 @@
 import shajs from "sha.js";
 
-import { BaseMessage, ItemType } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import axios from "axios";
 import FormDataNode from "form-data";
 import { utils } from "@aleph-sdk-ts/core-base";
@@ -17,17 +17,17 @@ import { utils } from "@aleph-sdk-ts/core-base";
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type PutConfiguration<T> = {
-    message: BaseMessage;
+    message: messageType.BaseMessage;
     content: T;
     inlineRequested: boolean;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
     APIServer: string;
 };
 
 type PushConfiguration<T> = {
     content: T;
     APIServer: string;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
 };
 
 type PushResponse = {
@@ -37,7 +37,7 @@ type PushResponse = {
 type PushFileConfiguration = {
     file: Buffer | Blob;
     APIServer: string;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
 };
 
 /**
@@ -52,7 +52,7 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
         if (serialized.length > 150000) {
             configuration.inlineRequested = false;
         } else {
-            configuration.message.item_type = ItemType.inline;
+            configuration.message.item_type = messageType.ItemType.inline;
             configuration.message.item_content = serialized;
             configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
         }

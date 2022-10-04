@@ -1,8 +1,6 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
-import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { utils } from "@aleph-sdk-ts/core-base";
-import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { Account, utils, messageType } from "@aleph-sdk-ts/core-base";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { BaseProviderWallet, JsonRPCWallet } from "@aleph-sdk-ts/core-providers";
 
@@ -21,8 +19,8 @@ export class ETHAccount extends Account {
         else this.provider = walletOrProvider;
     }
 
-    override GetChain(): Chain {
-        return Chain.ETH;
+    override GetChain(): messageType.Chain {
+        return messageType.Chain.ETH;
     }
 
     /**
@@ -62,7 +60,7 @@ export class ETHAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    async Sign(message: BaseMessage): Promise<string> {
+    async Sign(message: messageType.BaseMessage): Promise<string> {
         const buffer = utils.GetVerificationBuffer(message);
         const signMethod = this.wallet || this.provider;
 

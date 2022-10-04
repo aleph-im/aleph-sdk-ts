@@ -1,20 +1,13 @@
 import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
-import { ItemType, MessageType, ProgramMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { messageType, programType } from "@aleph-sdk-ts/core-base";
 import { Publish as storePublish } from "../store";
-import {
-    Encoding,
-    FunctionTriggers,
-    MachineType,
-    MachineVolume,
-    ProgramContent,
-} from "@aleph-sdk-ts/core-base/dist/types/programModel";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
 type ProgramPublishConfiguration = {
     account: Account;
     channel: string;
-    storageEngine: ItemType;
+    storageEngine: messageType.ItemType;
     inlineRequested: boolean;
     APIServer: string;
     file: Buffer | Blob;
@@ -22,14 +15,14 @@ type ProgramPublishConfiguration = {
     subscription?: Record<string, unknown>[];
     memory?: number;
     runtime?: string;
-    volumes?: MachineVolume[];
+    volumes?: programType.MachineVolume[];
 };
 
 // TODO: Check that program_ref, runtime and data_ref exist
 // Guard some numbers values
-export async function Publish(configuration: ProgramPublishConfiguration): Promise<ProgramMessage> {
+export async function Publish(configuration: ProgramPublishConfiguration): Promise<messageType.ProgramMessage> {
     const timestamp = Date.now() / 1000;
-    const storageEngine: ItemType = ItemType.storage;
+    const storageEngine: messageType.ItemType = messageType.ItemType.storage;
 
     // Store the source code of the program and retrieve the hash.
     const programRef = await storePublish({
@@ -40,18 +33,18 @@ export async function Publish(configuration: ProgramPublishConfiguration): Promi
         fileObject: configuration.file,
     });
 
-    let triggers: FunctionTriggers = { http: true };
+    let triggers: programType.FunctionTriggers = { http: true };
     if (configuration.subscription) {
         triggers = { ...triggers, message: configuration.subscription };
     }
 
-    const content: ProgramContent = {
+    const content: programType.ProgramContent = {
         address: configuration.account.address,
         time: timestamp,
-        type: MachineType.vm_function,
+        type: programType.MachineType.vm_function,
         allow_amend: false,
         code: {
-            encoding: Encoding.zip, // retrieve the file format or params
+            encoding: programType.Encoding.zip, // retrieve the file format or params
             entrypoint: configuration.entrypoint,
             ref: programRef.item_hash,
             use_latest: true,
@@ -78,7 +71,7 @@ export async function Publish(configuration: ProgramPublishConfiguration): Promi
         volumes: configuration.volumes ? configuration.volumes : [],
     };
 
-    const message: ProgramMessage = {
+    const message: messageType.ProgramMessage = {
         chain: configuration.account.GetChain(),
         channel: configuration.channel,
         confirmed: false,
@@ -89,7 +82,7 @@ export async function Publish(configuration: ProgramPublishConfiguration): Promi
         item_content: "",
         item_hash: "",
         time: timestamp,
-        type: MessageType.program,
+        type: messageType.MessageType.program,
         content: content,
     };
 

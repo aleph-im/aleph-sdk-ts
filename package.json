@@ -5,6 +5,7 @@
     "files": [
         "/dist"
     ],
+    "type": "module",
     "workspaces": [
         "packages/accounts/software",
         "packages/accounts/software/*",
