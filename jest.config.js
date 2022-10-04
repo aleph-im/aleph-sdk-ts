@@ -1,5 +1,6 @@
-module.exports = {
+export default {
     preset: "ts-jest",
-    testEnvironment: "node",
+    testEnvironment: "jest-environment-node",
     testPathIgnorePatterns: ["<rootDir>/cypress/"],
+    transform: {},
 };
