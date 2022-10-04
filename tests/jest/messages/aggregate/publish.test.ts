@@ -1,5 +1,5 @@
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { messageType } from "@aleph-sdk-ts/core-base";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum";
 import { aggregate } from "@aleph-sdk-ts/messages";
 import { expect } from "@jest/globals";
@@ -20,9 +20,9 @@ describe("Aggregate message publish test", () => {
             key: key,
             content: content,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             inlineRequested: true,
-            storageEngine: ItemType.storage,
+            storageEngine: messageType.ItemType.storage,
         });
 
         type T = {
@@ -31,7 +31,7 @@ describe("Aggregate message publish test", () => {
             };
         };
         const message = await aggregate.Get<T>({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             address: account.address,
             keys: [key],
         });

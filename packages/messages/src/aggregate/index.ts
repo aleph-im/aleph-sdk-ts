@@ -1,4 +1,2 @@
-import { Get } from "./get";
-import { Publish } from "./publish";
-
-export { Get, Publish };
+export { Get } from "./get";
+export { Publish } from "./publish";

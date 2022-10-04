@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getSocketPath, stripTrailingSlash } from "@aleph-sdk-ts/core-base/dist/utils/url";
+import { utils } from "@aleph-sdk-ts/core-base";
 
 type StoreGetConfiguration = {
     fileHash: string;
@@ -13,10 +13,10 @@ type StoreGetConfiguration = {
  */
 export async function Get(configuration: StoreGetConfiguration): Promise<ArrayBuffer> {
     const response = await axios.get<ArrayBuffer>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/raw/${configuration.fileHash}?find`,
+        `${utils.url.stripTrailingSlash(configuration.APIServer)}/api/v0/storage/raw/${configuration.fileHash}?find`,
         {
             responseType: "arraybuffer",
-            socketPath: getSocketPath(),
+            socketPath: utils.url.getSocketPath(),
         },
     );
 

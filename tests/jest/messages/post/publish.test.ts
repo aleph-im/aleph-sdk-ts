@@ -1,6 +1,6 @@
 import { post } from "@aleph-sdk-ts/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { utils } from "@aleph-sdk-ts/core-base";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 
 import { avalanche } from "@aleph-sdk-ts/accounts-software-avalanche";
@@ -59,10 +59,10 @@ describe("Avalanche accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
             account: account,
             postType: "custom_type",
             content: content,
@@ -70,7 +70,7 @@ describe("Avalanche accounts", () => {
 
         const amends = await post.Get({
             types: "custom_type",
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             pagination: 200,
             page: 1,
             refs: [],

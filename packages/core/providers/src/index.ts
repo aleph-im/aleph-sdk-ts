@@ -1,4 +1,2 @@
-import { JsonRPCWallet } from "./JsonRPCWallet";
-import { BaseProviderWallet } from "./BaseProviderWallet";
-
-export { JsonRPCWallet, BaseProviderWallet };
+export { JsonRPCWallet } from "./JsonRPCWallet";
+export { BaseProviderWallet } from "./BaseProviderWallet";

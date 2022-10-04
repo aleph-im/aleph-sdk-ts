@@ -1,8 +1,8 @@
 import * as bip39 from "bip39";
 
 import { post } from "@aleph-sdk-ts/messages";
-import { ItemType, Chain } from "@aleph-sdk-ts/core-base/dist/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { messageType } from "@aleph-sdk-ts/core-base";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 import { nuls2 } from "@aleph-sdk-ts/accounts-software-nuls2";
 
@@ -11,7 +11,7 @@ describe("NULS2 accounts", () => {
         const { account } = await nuls2.NewAccount();
 
         expect(account.address).not.toBe("");
-        expect(account.GetChain()).toStrictEqual(Chain.NULS2);
+        expect(account.GetChain()).toStrictEqual(messageType.Chain.NULS2);
     });
 
     it("should import a NULS2 accounts using a mnemonic", async () => {
@@ -19,7 +19,7 @@ describe("NULS2 accounts", () => {
         const account = await nuls2.ImportAccountFromMnemonic(mnemonic);
 
         expect(account.address).not.toBe("");
-        expect(account.GetChain()).toStrictEqual(Chain.NULS2);
+        expect(account.GetChain()).toStrictEqual(messageType.Chain.NULS2);
     });
 
     it("should import a NULS2 accounts using a private key", async () => {
@@ -54,10 +54,10 @@ describe("NULS2 accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
             account: account,
             postType: "nuls",
             content: content,
@@ -66,7 +66,7 @@ describe("NULS2 accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "nuls",
-                APIServer: DEFAULT_API_V2,
+                APIServer: utils.constant.DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,
                 refs: [],

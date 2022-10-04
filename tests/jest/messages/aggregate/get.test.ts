@@ -1,5 +1,5 @@
 import { aggregate } from "@aleph-sdk-ts/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 
 describe("Aggregate message retrieve test", () => {
@@ -13,7 +13,7 @@ describe("Aggregate message retrieve test", () => {
         const address = "0x629fBDA22F485720617C8f1209692484C0359D43";
 
         const message = await aggregate.Get<T>({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             address: address,
             keys: [key],
         });

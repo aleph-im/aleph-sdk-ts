@@ -1,7 +1,5 @@
-import * as aggregate from "./aggregate";
-import * as post from "./post";
-import * as store from "./store";
-import * as forget from "./forget";
-import * as program from "./program";
-
-export { aggregate, post, store, forget, program };
+export * as aggregate from "./aggregate";
+export * as post from "./post";
+export * as store from "./store";
+export * as forget from "./forget";
+export * as program from "./program";

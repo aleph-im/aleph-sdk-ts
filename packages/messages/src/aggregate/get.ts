@@ -1,6 +1,5 @@
 import axios from "axios";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
-import { getSocketPath, stripTrailingSlash } from "@aleph-sdk-ts/core-base/dist/utils/url";
+import { utils } from "@aleph-sdk-ts/core-base";
 
 type AggregateGetResponse<T> = {
     data: T;
@@ -19,17 +18,17 @@ type AggregateGetConfiguration = {
  * @param configuration The configuration used to get the message, including the API endpoint.
  */
 export async function Get<T>(
-    { APIServer = DEFAULT_API_V2, address = "", keys = [] }: AggregateGetConfiguration = {
-        APIServer: DEFAULT_API_V2,
+    { APIServer = utils.constant.DEFAULT_API_V2, address = "", keys = [] }: AggregateGetConfiguration = {
+        APIServer: utils.constant.DEFAULT_API_V2,
         address: "",
         keys: [],
     },
 ): Promise<T> {
     const _keys = keys.length === 0 ? null : keys.join(",");
     const response = await axios.get<AggregateGetResponse<T>>(
-        `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
+        `${utils.url.stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
         {
-            socketPath: getSocketPath(),
+            socketPath: utils.url.getSocketPath(),
             params: {
                 keys: _keys,
             },

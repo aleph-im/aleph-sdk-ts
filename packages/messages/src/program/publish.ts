@@ -1,5 +1,5 @@
-import { Account } from "@aleph-sdk-ts/core-base/dist/account";
-import { ItemType, MessageType, ProgramMessage } from "@aleph-sdk-ts/core-base/dist/messages";
+import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
+import { ItemType, MessageType, ProgramMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
 import { Publish as storePublish } from "../store";
 import {
     Encoding,
@@ -7,7 +7,7 @@ import {
     MachineType,
     MachineVolume,
     ProgramContent,
-} from "@aleph-sdk-ts/core-base/dist/programModel";
+} from "@aleph-sdk-ts/core-base/dist/types/programModel";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 

@@ -1,8 +1,8 @@
 import * as solanajs from "@solana/web3.js";
 
 import { post } from "@aleph-sdk-ts/messages";
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { messageType } from "@aleph-sdk-ts/core-base";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 import { solana } from "@aleph-sdk-ts/accounts-software-solana";
 
@@ -27,10 +27,10 @@ describe("Solana accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
             account: account,
             postType: "solana",
             content: content,
@@ -39,7 +39,7 @@ describe("Solana accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "solana",
-                APIServer: DEFAULT_API_V2,
+                APIServer: utils.constant.DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,
                 refs: [],

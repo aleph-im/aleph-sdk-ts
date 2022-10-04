@@ -4,8 +4,8 @@ import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 
 import { testsFunc } from "../index";
 import { aggregate } from "@aleph-sdk-ts/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { utils } from "@aleph-sdk-ts/core-base";
+import { ItemType } from "@aleph-sdk-ts/core-base/dist/types/messages";
 import { substrate } from "@aleph-sdk-ts/accounts-software-substrate";
 
 /**
@@ -69,7 +69,7 @@ async function PublishAggregate(): Promise<boolean> {
         channel: "TEST",
         storageEngine: ItemType.ipfs,
         inlineRequested: true,
-        APIServer: DEFAULT_API_V2,
+        APIServer: utils.constant.DEFAULT_API_V2,
     });
 
     type exceptedType = {
@@ -78,7 +78,7 @@ async function PublishAggregate(): Promise<boolean> {
         };
     };
     const amends = await aggregate.Get<exceptedType>({
-        APIServer: DEFAULT_API_V2,
+        APIServer: utils.constant.DEFAULT_API_V2,
         address: account.address,
         keys: [key],
     });

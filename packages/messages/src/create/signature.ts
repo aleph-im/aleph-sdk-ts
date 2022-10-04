@@ -1,7 +1,7 @@
-import { BaseMessage } from "@aleph-sdk-ts/core-base/dist/messages";
-import { Account } from "@aleph-sdk-ts/core-base/dist/account";
+import { BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
 import axios from "axios";
-import { getSocketPath, stripTrailingSlash } from "@aleph-sdk-ts/core-base/dist/utils/url";
+import { utils } from "@aleph-sdk-ts/core-base";
 
 type SignAndBroadcastConfiguration = {
     message: BaseMessage;
@@ -19,13 +19,13 @@ export async function SignAndBroadcast(configuration: SignAndBroadcastConfigurat
 async function Broadcast(configuration: BroadcastConfiguration) {
     try {
         await axios.post(
-            `${stripTrailingSlash(configuration.APIServer)}/api/v0/ipfs/pubsub/pub`,
+            `${utils.url.stripTrailingSlash(configuration.APIServer)}/api/v0/ipfs/pubsub/pub`,
             {
                 topic: "ALEPH-TEST",
                 data: JSON.stringify(configuration.message),
             },
             {
-                socketPath: getSocketPath(),
+                socketPath: utils.url.getSocketPath(),
             },
         );
     } catch (err) {

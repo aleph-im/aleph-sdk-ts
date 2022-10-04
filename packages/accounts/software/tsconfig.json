@@ -1,31 +1,14 @@
 {
-  "extends": "../../../tsconfig.json",
-  "include": ["src"],
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist"
-  },
+  "extends": "../../../tsconfig.root.json",
   "references": [
     {
       "path": "../../core/base"
     },
     {
-      "path": "avalanche"
+      "path": "./tsconfig.cjs.json"
     },
     {
-      "path": "cosmos"
-    },
-    {
-      "path": "ethereum"
-    },
-    {
-      "path": "nuls2"
-    },
-    {
-      "path": "solana"
-    },
-    {
-      "path": "substrate"
+      "path": "./tsconfig.esm.json"
     }
   ]
 }

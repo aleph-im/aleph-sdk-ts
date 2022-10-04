@@ -5,9 +5,9 @@ import {
     Secp256k1HdWalletOptions,
     Secp256k1Wallet,
 } from "@cosmjs/amino";
-import { Account } from "@aleph-sdk-ts/core-base/dist/account";
-import { GetVerificationBuffer } from "@aleph-sdk-ts/core-base/dist/utils";
-import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/messages";
+import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
+import { utils } from "@aleph-sdk-ts/core-base";
+import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
 
 export class CosmosAccount extends Account {
     private wallet: OfflineAminoSigner;
@@ -24,7 +24,7 @@ export class CosmosAccount extends Account {
     }
 
     async Sign(message: BaseMessage): Promise<string> {
-        const buffer = GetVerificationBuffer(message);
+        const buffer = utils.GetVerificationBuffer(message);
 
         const aminoMsg = {
             type: "signutil/MsgSignText",

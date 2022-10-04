@@ -1,6 +1,6 @@
 import { post } from "@aleph-sdk-ts/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { utils } from "@aleph-sdk-ts/core-base";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 
 import { cosmos } from "@aleph-sdk-ts/accounts-software-cosmos";
@@ -27,18 +27,18 @@ describe("Cosmos accounts", () => {
 
         const msg = await post.Publish({
             account,
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             channel: "aleph-ts-sdk-testchannel",
             content,
             inlineRequested: true,
             postType: "custom_type",
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
         });
 
         await (async () => {
             const amends = await post.Get({
                 addresses: [],
-                APIServer: DEFAULT_API_V2,
+                APIServer: utils.constant.DEFAULT_API_V2,
                 hashes: [msg.item_hash],
                 page: 1,
                 pagination: 200,

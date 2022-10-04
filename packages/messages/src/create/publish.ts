@@ -1,9 +1,9 @@
 import shajs from "sha.js";
 
-import { BaseMessage, ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { BaseMessage, ItemType } from "@aleph-sdk-ts/core-base/dist/types/messages";
 import axios from "axios";
 import FormDataNode from "form-data";
-import { getSocketPath, stripTrailingSlash } from "@aleph-sdk-ts/core-base/dist/utils/url";
+import { utils } from "@aleph-sdk-ts/core-base";
 
 /**
  * message:         The message to update and then publish.
@@ -70,13 +70,15 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
 
 async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Promise<string> {
     const response = await axios.post<PushResponse>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
+        `${utils.url.stripTrailingSlash(
+            configuration.APIServer,
+        )}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
         configuration.content,
         {
             headers: {
                 "Content-Type": "application/json",
             },
-            socketPath: getSocketPath(),
+            socketPath: utils.url.getSocketPath(),
         },
     );
     return response.data.hash;
@@ -94,7 +96,9 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
         form.append("file", configuration.file, "File");
     }
     const response = await axios.post<PushResponse>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
+        `${utils.url.stripTrailingSlash(
+            configuration.APIServer,
+        )}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
         form,
         {
             headers: {
@@ -102,7 +106,7 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
                     ? undefined
                     : `multipart/form-data; boundary=${(form as FormDataNode).getBoundary()}`,
             },
-            socketPath: getSocketPath(),
+            socketPath: utils.url.getSocketPath(),
         },
     );
     return response.data.hash;

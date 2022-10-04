@@ -1,6 +1,6 @@
 import { PutContentToStorageEngine } from "../create/publish";
-import { ForgetContent, ForgetMessage, ItemType, MessageType } from "@aleph-sdk-ts/core-base/dist/messages";
-import { Account } from "@aleph-sdk-ts/core-base/dist/account";
+import { ForgetContent, ForgetMessage, ItemType, MessageType } from "@aleph-sdk-ts/core-base/dist/types/messages";
+import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
 import { SignAndBroadcast } from "../create/signature";
 
 /**

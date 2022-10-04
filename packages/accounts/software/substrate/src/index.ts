@@ -1,3 +1,1 @@
-import * as substrate from "./substrate";
-
-export { substrate };
+export * as substrate from "./substrate";

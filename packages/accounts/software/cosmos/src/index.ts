@@ -1,3 +1,1 @@
-import * as cosmos from "./cosmos";
-
-export { cosmos };
+export * as cosmos from "./cosmos";

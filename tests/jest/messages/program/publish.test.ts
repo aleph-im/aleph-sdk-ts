@@ -1,8 +1,8 @@
 import { readFileSync } from "fs";
 import { program } from "@aleph-sdk-ts/messages";
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 
 import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum";
@@ -20,9 +20,9 @@ describe("Test the program message", () => {
         const res = await program.Publish({
             account: account,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             inlineRequested: false,
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
             file: fileContent,
             entrypoint: "main:app",
         });

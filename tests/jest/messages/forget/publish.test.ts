@@ -1,6 +1,6 @@
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
+import { messageType } from "@aleph-sdk-ts/core-base";
 import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { post } from "@aleph-sdk-ts/messages";
 import { expect } from "@jest/globals";
 import { v4 as uuidv4 } from "uuid";
@@ -14,10 +14,10 @@ describe("Post publish tests", () => {
 
         expect(async () => {
             await post.Publish({
-                APIServer: DEFAULT_API_V2,
+                APIServer: utils.constant.DEFAULT_API_V2,
                 channel: "TEST",
                 inlineRequested: true,
-                storageEngine: ItemType.ipfs,
+                storageEngine: messageType.ItemType.ipfs,
                 account: account,
                 postType: "custom_type",
                 content: content,
@@ -33,10 +33,10 @@ describe("Post publish tests", () => {
             body: "Hello World",
         };
         const oldPost = await post.Publish({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
             account: account,
             postType: postType,
             content: content,
@@ -44,10 +44,10 @@ describe("Post publish tests", () => {
 
         content.body = "New content !";
         const newMessage = await post.Publish({
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: messageType.ItemType.ipfs,
             account: account,
             postType: "amend",
             content: content,
@@ -57,7 +57,7 @@ describe("Post publish tests", () => {
         await setTimeout(async () => {
             const amends = await post.Get({
                 types: "amend",
-                APIServer: DEFAULT_API_V2,
+                APIServer: utils.constant.DEFAULT_API_V2,
                 pagination: 200,
                 page: 1,
                 refs: [],

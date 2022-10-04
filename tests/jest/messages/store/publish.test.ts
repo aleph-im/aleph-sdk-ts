@@ -2,8 +2,8 @@ import { readFileSync } from "fs";
 
 import { store } from "@aleph-sdk-ts/messages";
 import { ethereum } from "@aleph-sdk-ts/accounts-software-ethereum";
-import { ItemType } from "@aleph-sdk-ts/core-base/dist/messages";
-import { DEFAULT_API_V2 } from "@aleph-sdk-ts/core-base/dist/utils/constant";
+import { messageType } from "@aleph-sdk-ts/core-base";
+import { utils } from "@aleph-sdk-ts/core-base";
 import { expect } from "@jest/globals";
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
@@ -18,15 +18,15 @@ describe("Store message publish", () => {
 
         const hash = await store.Publish({
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
             account: account,
-            storageEngine: ItemType.storage,
+            storageEngine: messageType.ItemType.storage,
             fileObject: fileContent,
         });
 
         const response = await store.Get({
             fileHash: hash.content.item_hash,
-            APIServer: DEFAULT_API_V2,
+            APIServer: utils.constant.DEFAULT_API_V2,
         });
 
         const got = ArraybufferToString(response);

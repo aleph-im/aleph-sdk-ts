@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getSocketPath, stripTrailingSlash } from "@aleph-sdk-ts/core-base/dist/utils/url";
+import { utils } from "@aleph-sdk-ts/core-base";
 
 type PostGetConfiguration = {
     types: string | string[];
@@ -81,10 +81,10 @@ export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQ
     }
 
     const response = await axios.get<PostQueryResponse<T>>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/posts.json`,
+        `${utils.url.stripTrailingSlash(configuration.APIServer)}/api/v0/posts.json`,
         {
             params,
-            socketPath: getSocketPath(),
+            socketPath: utils.url.getSocketPath(),
         },
     );
     return response.data;

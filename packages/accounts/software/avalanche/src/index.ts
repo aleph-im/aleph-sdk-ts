@@ -1,3 +1,1 @@
-import * as avalanche from "./avalanche";
-
-export { avalanche };
+export * as avalanche from "./avalanche";

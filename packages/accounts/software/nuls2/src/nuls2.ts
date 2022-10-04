@@ -2,9 +2,9 @@ import * as bip39 from "bip39";
 import * as bip32 from "bip32";
 import secp256k1 from "secp256k1";
 import { generateMnemonic } from "bip39";
-import { Account } from "@aleph-sdk-ts/core-base/dist/account";
-import { GetVerificationBuffer } from "@aleph-sdk-ts/core-base/dist/utils";
-import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/messages";
+import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
+import { utils } from "@aleph-sdk-ts/core-base";
+import { Chain, BaseMessage } from "@aleph-sdk-ts/core-base/dist/types/messages";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import bs58 from "bs58";
 import shajs from "sha.js";
@@ -65,7 +65,7 @@ export class NULS2Account extends Account {
      * @param message The Aleph message to sign, using some of its fields.
      */
     Sign(message: BaseMessage): Promise<string> {
-        const digest = NULS2Account.magicHash(GetVerificationBuffer(message));
+        const digest = NULS2Account.magicHash(utils.GetVerificationBuffer(message));
         const privateKeyBuffer = Buffer.from(this.privateKey, "hex");
 
         return new Promise((resolve) => {

@@ -4,7 +4,18 @@
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
     "author": "Aleph.im",
     "license": "MIT",
-    "main": "dist/index.js",
+    "main": "./dist/cjs/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "./dist/types/index.d.ts",
+    "exports": {
+        "require": "./dist/cjs/index.js",
+        "import": "./dist/esm/index.js",
+        "types": "./dist/types/index.d.ts"
+    },
+    "files": [
+        "dist",
+        "src"
+    ],
     "scripts": {
     "compile": "tsc -b",
         "test": "echo \"Error: Tests not implemented yet\" && exit 1"

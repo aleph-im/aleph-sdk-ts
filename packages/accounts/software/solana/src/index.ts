@@ -1,3 +1,1 @@
-import * as solana from "./solana";
-
-export { solana };
+export * as solana from "./solana";

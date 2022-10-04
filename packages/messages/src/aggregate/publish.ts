@@ -1,11 +1,11 @@
-import { Account } from "@aleph-sdk-ts/core-base/dist/account";
+import { Account } from "@aleph-sdk-ts/core-base/dist/types/account";
 import {
     MessageType,
     ItemType,
     AggregateContentKey,
     AggregateContent,
     AggregateMessage,
-} from "@aleph-sdk-ts/core-base/dist/messages";
+} from "@aleph-sdk-ts/core-base/dist/types/messages";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 
