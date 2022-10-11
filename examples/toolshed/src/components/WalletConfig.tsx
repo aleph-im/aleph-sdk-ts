@@ -1,4 +1,4 @@
-import { solana, ethereum } from '../../../../src/accounts'
+import { solana, ethereum, cosmos } from '../../../../src/accounts'
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
@@ -8,6 +8,7 @@ function WalletConfig({ dispatch, state } : dispatchAndConsume) {
   const getAccountClass = () => (
     state.selectedChain === WalletChains.Ethereum ? [ethereum, window.ethereum]
     : state.selectedChain === WalletChains.Solana ? [solana, window.phantom?.solana]
+    : state.selectedChain === WalletChains.Cosmos ? [cosmos, window.keplr]
     : [null, null]
   )
 

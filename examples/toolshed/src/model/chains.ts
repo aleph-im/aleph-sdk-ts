@@ -11,6 +11,7 @@ export enum KeypairChains {
 export enum WalletChains {
     Ethereum = "ETH",
     Solana = "SOL",
+    Cosmos = "COSMOS",
 }
 
 export type isKeypairChain = keyof typeof KeypairChains;

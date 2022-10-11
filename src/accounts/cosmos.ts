@@ -8,6 +8,7 @@ import {
 import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
+import { Keplr } from "@keplr-wallet/types";
 
 export class CosmosAccount extends Account {
     private wallet: OfflineAminoSigner;
@@ -56,6 +57,18 @@ async function getCosmosAccount(wallet: OfflineAminoSigner, accountNumber = 0): 
     } catch (err) {
         throw new RangeError("Account offset out of bound");
     }
+}
+
+/**
+ * Get an account from Keplr Web3 provider
+ *
+ * @param  {Keplr} provider
+ */
+export async function GetAccountFromProvider(provider: Keplr): Promise<CosmosAccount> {
+    await provider.enable("cosmoshub-4");
+    const signer = await provider.getOfflineSigner("cosmoshub-4");
+
+    return await getCosmosAccount(signer);
 }
 
 export async function NewAccount(

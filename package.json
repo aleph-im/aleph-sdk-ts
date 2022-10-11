@@ -2,7 +2,17 @@
     "name": "aleph-sdk-ts",
     "version": "3.0.2",
     "description": "Aleph.im Typescript SDK",
-    "keywords": ["web3", "aleph.im", "blockchain", "messages", "ethereum", "solana", "defi", "dao", "nft"],
+    "keywords": [
+        "web3",
+        "aleph.im",
+        "blockchain",
+        "messages",
+        "ethereum",
+        "solana",
+        "defi",
+        "dao",
+        "nft"
+    ],
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -32,6 +42,7 @@
     },
     "devDependencies": {
         "@airgap/beacon-types": "^3.2.0",
+        "@keplr-wallet/types": "^0.8.8",
         "@types/bs58": "^4.0.1",
         "@types/elliptic": "^6.4.13",
         "@types/jest": "^27.4.1",
