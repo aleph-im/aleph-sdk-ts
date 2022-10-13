@@ -20,7 +20,7 @@
     ],
     "scripts": {
         "build": "rm -rf dist/ && tsc",
-        "doc": "typedoc",
+        "doc": "typedoc --excludeNotDocumented --excludeInternal --excludePrivate",
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
         "prepack": "npm run test && npm run build",
