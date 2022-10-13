@@ -5,7 +5,6 @@ import { ItemType } from "../../src/messages/message";
 import { post, tezos } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { b58cencode, prefix, validateSignature } from "@taquito/utils";
-import nacl from "tweetnacl";
 
 if (!window) {
     require("localstorage-polyfill");
@@ -20,12 +19,10 @@ describe("Tezos accounts", () => {
     });
 
     it("should import an tezos accounts using a private key", async () => {
-        const keyPair = nacl.sign.keyPair();
-        const secretKey = b58cencode(keyPair.secretKey, prefix.edsk);
-        const account = await tezos.ImportAccountFromPrivateKey(secretKey);
+        const { signerAccount, privateKey } = await tezos.NewAccount();
+        const account = await tezos.ImportAccountFromPrivateKey(b58cencode(privateKey, prefix.edsk));
 
-        expect(account.address).not.toBe("");
-        expect(await account.GetPublicKey()).toBe(b58cencode(keyPair.publicKey, prefix.edpk));
+        expect(account.address).toStrictEqual(signerAccount.address);
     });
 
     it("should sign a tezos message with InMemorySigner correctly", async () => {
@@ -57,7 +54,7 @@ describe("Tezos accounts", () => {
 
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
-            channel: "ALEPH-TEST",
+            channel: "TEST",
             inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: signerAccount,

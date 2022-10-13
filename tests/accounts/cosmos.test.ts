@@ -3,12 +3,6 @@ import { DEFAULT_API_V2 } from "../../src/global";
 import { ItemType } from "../../src/messages/message";
 
 describe("Cosmos accounts", () => {
-    it("should create a new cosmos account", async () => {
-        const { account } = await cosmos.NewAccount();
-
-        expect(account.address).not.toBe("");
-    });
-
     it("should import an cosmos accounts using a mnemonic", async () => {
         const refAccount = await cosmos.NewAccount();
         const cloneAccount = await cosmos.ImportAccountFromMnemonic(refAccount.mnemonic);
@@ -25,14 +19,15 @@ describe("Cosmos accounts", () => {
         const msg = await post.Publish({
             account,
             APIServer: DEFAULT_API_V2,
-            channel: "aleph-ts-sdk-testchannel",
+            channel: "TEST",
             content,
             inlineRequested: true,
             postType: "cosmos",
             storageEngine: ItemType.ipfs,
         });
 
-        await (async () => {
+        expect(msg.item_hash).not.toBeUndefined();
+        setTimeout(async () => {
             const amends = await post.Get({
                 addresses: [],
                 APIServer: DEFAULT_API_V2,
@@ -45,6 +40,6 @@ describe("Cosmos accounts", () => {
             });
             expect(amends.posts.length).toBeGreaterThan(0);
             // expect(amends.posts[0].content).toStrictEqual(content);
-        })();
+        });
     });
 });

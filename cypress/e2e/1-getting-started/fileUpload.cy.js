@@ -1,7 +1,10 @@
 import { ethereum, store } from "../../../tests";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { ItemType } from "../../../src/messages/message";
-import { ArraybufferToString } from "../../../tests/messages/store/publish.test";
+
+function ArraybufferToString(ab) {
+    return new TextDecoder().decode(ab);
+}
 
 describe("My First Test", () => {
     it("Does not do much!", () => {

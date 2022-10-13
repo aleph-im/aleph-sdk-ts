@@ -5,7 +5,7 @@ import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 import { testsFunc } from "../index";
 import { accounts, aggregate } from "../../src";
 import { DEFAULT_API_V2 } from "../../src/global";
-import { ItemType } from "../../src/messages/message";
+import { Chain, ItemType } from "../../src/messages/message";
 
 /**
  * This is the first test of the test bach for substrate.
@@ -15,25 +15,14 @@ import { ItemType } from "../../src/messages/message";
  * If the assertion failed, you must catch the error message and display it while returning false.
  */
 async function createAccountTest(): Promise<boolean> {
-    const { account } = await accounts.substrate.NewAccount();
+    const { account, mnemonic } = await accounts.substrate.NewAccount();
+    const accountFromMnemonic = await accounts.substrate.ImportAccountFromMnemonic(mnemonic);
 
     try {
-        assert.notStrictEqual(account.address, "");
+        assert.strictEqual(account.address, accountFromMnemonic.address);
+        assert.strictEqual(account.GetChain(), Chain.DOT);
     } catch (e: unknown) {
         console.error(`createAccountTest: ${e}`);
-        return false;
-    }
-    return true;
-}
-
-async function importAccountFromMnemonicTest(): Promise<boolean> {
-    const mnemonic = bip39.generateMnemonic();
-    const account = await accounts.substrate.ImportAccountFromMnemonic(mnemonic);
-
-    try {
-        assert.notStrictEqual(account.address, "");
-    } catch (e: unknown) {
-        console.error(`importAccountFromMnemonicTest: ${e}`);
         return false;
     }
     return true;
@@ -91,22 +80,6 @@ async function PublishAggregate(): Promise<boolean> {
     return true;
 }
 
-async function encrypt(): Promise<boolean> {
-    const account = await accounts.substrate.ImportAccountFromMnemonic(
-        "immune orbit beyond retire marble clog shiver ice illegal tomorrow antenna tennis",
-    );
-    const msg = Buffer.from("Nuuullss");
-
-    try {
-        const c = account.encrypt(msg);
-        assert.notStrictEqual(c, msg);
-    } catch (e: unknown) {
-        console.error(`importAccountFromMnemonicTest: ${e}`);
-        return false;
-    }
-    return true;
-}
-
 async function encryptNDecrypt(): Promise<boolean> {
     const account = await accounts.substrate.ImportAccountFromMnemonic(
         "immune orbit beyond retire marble clog shiver ice illegal tomorrow antenna tennis",
@@ -141,10 +114,8 @@ export default async function substrateTests(): Promise<boolean> {
     let res: boolean;
     const testBatch: testsFunc[] = [
         createAccountTest,
-        importAccountFromMnemonicTest,
         importAccountFromPrivateKeyTest,
         PublishAggregate,
-        encrypt,
         encryptNDecrypt,
     ];
 

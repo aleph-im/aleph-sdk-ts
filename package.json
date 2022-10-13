@@ -2,7 +2,17 @@
     "name": "aleph-sdk-ts",
     "version": "3.0.2",
     "description": "Aleph.im Typescript SDK",
-    "keywords": ["web3", "aleph.im", "blockchain", "messages", "ethereum", "solana", "defi", "dao", "nft"],
+    "keywords": [
+        "web3",
+        "aleph.im",
+        "blockchain",
+        "messages",
+        "ethereum",
+        "solana",
+        "defi",
+        "dao",
+        "nft"
+    ],
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -15,7 +25,7 @@
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
         "prepack": "npm run test && npm run build",
         "test": "npm run test:jest && npm run test:auto",
-        "test:jest": "jest --testTimeout=60000 --maxWorkers=2 --verbose",
+        "test:jest": "jest --testTimeout=60000 --verbose --coverage",
         "test:auto": "ts-node testsAuto/entryPoint.ts "
     },
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
@@ -32,6 +42,8 @@
     },
     "devDependencies": {
         "@airgap/beacon-types": "^3.2.0",
+        "@jet-lab/e2e-react-adapter": "^0.1.3",
+        "@metamask/eth-sig-util": "^5.0.0",
         "@types/bs58": "^4.0.1",
         "@types/elliptic": "^6.4.13",
         "@types/jest": "^27.4.1",
