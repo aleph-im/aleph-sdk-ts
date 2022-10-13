@@ -19,24 +19,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Caching Nodes.js modules
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Create Doc
-        run: yarn doc
+        run: npm doc
 
       - name: Push Doc
         run: |
