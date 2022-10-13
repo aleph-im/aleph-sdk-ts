@@ -23,6 +23,14 @@ export class CosmosAccount extends Account {
         return Chain.CSDK;
     }
 
+    /**
+     * The Sign method provides a way to sign a given Aleph message using a Cosmos account.
+     * The full message is not used as the payload, only fields of the BaseMessage type are.
+     *
+     * The signMessage method uses the amino SignDoc helpers to generate the signature
+     *
+     * @param message The Aleph message to sign, using some of its fields.
+     */
     async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
 
@@ -58,6 +66,12 @@ async function getCosmosAccount(wallet: OfflineAminoSigner, accountNumber = 0): 
     }
 }
 
+/**
+ * Creates a new random Cosmos Account from a randomly generated mnemonic
+ *
+ * @param  {12|15|18|21|24} length? The length of the mnemonic
+ * @param  {Partial<Secp256k1HdWalletOptions>} options?
+ */
 export async function NewAccount(
     length?: 12 | 15 | 18 | 21 | 24,
     options?: Partial<Secp256k1HdWalletOptions>,
@@ -70,6 +84,12 @@ export async function NewAccount(
     };
 }
 
+/**
+ * Imports a Cosmos Account using a mnemonic
+ *
+ * @param  {string} mnemonic
+ * @param  {Partial<Secp256k1HdWalletOptions>} options?
+ */
 export async function ImportAccountFromMnemonic(
     mnemonic: string,
     options?: Partial<Secp256k1HdWalletOptions>,
@@ -79,6 +99,12 @@ export async function ImportAccountFromMnemonic(
     return getCosmosAccount(wallet);
 }
 
+/**
+ * Import a Cosmos Account using a private Key
+ *
+ * @param  {string} privateKey
+ * @param  {string} prefix?
+ */
 export async function ImportAccountFromPrivateKey(privateKey: string, prefix?: string): Promise<CosmosAccount> {
     const key = Buffer.from(privateKey);
     const wallet = await Secp256k1Wallet.fromKey(key, prefix);
