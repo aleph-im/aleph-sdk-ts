@@ -15,10 +15,72 @@
 <pre><code class="language-shell"><span class="hl-0">npm install aleph-sdk-ts</span>
 </code></pre>
 <ul>
-<li>An API reference <a href="https://aleph-im.github.io/aleph-sdk-ts/index.html">on the repository github pages</a> </li>
+<li>An API reference <a href="https://aleph-im.github.io/aleph-sdk-ts/index.html">on the repository github pages</a></li>
 <li>For guides and use-cases check the <a href="https://aleph-im.gitbook.io/ts-sdk/">Aleph TS SDK Gitbook</a></li>
 <li>Some examples are available in the <code>/examples</code> directory.</li>
 </ul>
+
+<a href="#supported-chains" id="supported-chains" style="color: inherit; text-decoration: none;">
+  <h2>Supported chains</h2>
+</a>
+<p>This is the list of currently supported Account types. For each of them you can:</p>
+<ul>
+<li>Retrieve an account from a private key or mnemonic (or generate one on the fly).</li>
+<li>Sign and send messages on the Aleph Network</li>
+</ul>
+<p>On top of that some accounts allow you to <strong>encrypt</strong> messages, retrieve an account from a <strong>browser based</strong> wallet (ex: Metamask), or from a <strong>Ledger</strong> wallet.</p>
+<table>
+<thead>
+<tr>
+<th>Chain</th>
+<th>Encryption</th>
+<th>Wallet</th>
+<th>Ledger</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Avalanche</td>
+<td>:heavy_check_mark:</td>
+<td>:x:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>Cosmos</td>
+<td>:x:</td>
+<td>:x:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>Ethereum</td>
+<td>:heavy_check_mark:</td>
+<td>:heavy_check_mark:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>NULS2</td>
+<td>:heavy_check_mark:</td>
+<td>:x:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>Solana</td>
+<td>:x:</td>
+<td>:heavy_check_mark:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>Substrate</td>
+<td>:heavy_check_mark:</td>
+<td>:x:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>Tezos</td>
+<td>:x:</td>
+<td>:heavy_check_mark:</td>
+<td>:x:</td>
+</tr>
+</tbody></table>
 
 <a href="#running-from-source" id="running-from-source" style="color: inherit; text-decoration: none;">
   <h2>Running from source</h2>
