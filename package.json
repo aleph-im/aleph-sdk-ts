@@ -68,6 +68,8 @@
     },
     "dependencies": {
         "@cosmjs/amino": "^0.29.0",
+        "@ledgerhq/hw-app-eth": "^6.29.9",
+        "@ledgerhq/hw-transport-webusb": "^6.27.6",
         "@polkadot/keyring": "^7.7.1",
         "@polkadot/util": "^7.7.1",
         "@polkadot/util-crypto": "^7.7.1",
