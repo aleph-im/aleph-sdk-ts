@@ -9,6 +9,7 @@ export enum KeypairChains {
 }
 
 export enum WalletChains {
+    Avalanche = "AVAX",
     Ethereum = "ETH",
     Solana = "SOL",
 }
