@@ -10,7 +10,7 @@ type AggregateGetConfiguration = {
     APIServer?: string;
     address: string;
     keys?: Array<string>;
-    limit: number;
+    limit?: number;
 };
 
 /**
@@ -19,12 +19,14 @@ type AggregateGetConfiguration = {
  *
  * @param configuration The configuration used to get the message, including the API endpoint.
  */
-export async function Get<T>({
-    APIServer = DEFAULT_API_V2,
-    address = "",
-    keys = [],
-    limit = 50,
-}: Partial<AggregateGetConfiguration>): Promise<T> {
+export async function Get<T>(
+    { APIServer = DEFAULT_API_V2, address = "", keys = [], limit = 50 }: AggregateGetConfiguration = {
+        APIServer: DEFAULT_API_V2,
+        address: "",
+        keys: [],
+        limit: 50,
+    },
+): Promise<T> {
     const response = await axios.get<AggregateGetResponse<T>>(
         `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
         {

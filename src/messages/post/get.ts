@@ -65,10 +65,10 @@ export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQ
         types: configuration.types,
         pagination: configuration.pagination,
         page: configuration.page,
-        refs: configuration.refs.join(","),
-        addresses: configuration.addresses.join(","),
-        tags: configuration.tags.join(","),
-        hashes: configuration.hashes.join(","),
+        refs: configuration.refs.join(",") || undefined,
+        addresses: configuration.addresses.join(",") || undefined,
+        tags: configuration.tags.join(",") || undefined,
+        hashes: configuration.hashes.join(",") || undefined,
     };
 
     const response = await axios.get<PostQueryResponse<T>>(
