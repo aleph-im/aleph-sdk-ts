@@ -32,8 +32,7 @@ export async function Get<T>(
         {
             socketPath: getSocketPath(),
             params: {
-                keys: keys.join(","),
-                // FIXME
+                keys: keys.join(",") || undefined,
                 limit,
             },
         },
