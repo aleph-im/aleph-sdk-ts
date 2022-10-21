@@ -65,20 +65,11 @@ export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQ
         types: configuration.types,
         pagination: configuration.pagination,
         page: configuration.page,
+        refs: configuration.refs.join(","),
+        addresses: configuration.addresses.join(","),
+        tags: configuration.tags.join(","),
+        hashes: configuration.hashes.join(","),
     };
-
-    if (configuration.refs?.length > 0) {
-        params.refs = configuration.refs.join(",");
-    }
-    if (configuration.addresses?.length > 0) {
-        params.addresses = configuration.addresses.join(",");
-    }
-    if (configuration.tags?.length > 0) {
-        params.tags = configuration.tags.join(",");
-    }
-    if (configuration.hashes?.length > 0) {
-        params.hashes = configuration.hashes.join(",");
-    }
 
     const response = await axios.get<PostQueryResponse<T>>(
         `${stripTrailingSlash(configuration.APIServer)}/api/v0/posts.json`,
