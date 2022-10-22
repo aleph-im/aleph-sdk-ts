@@ -60,4 +60,13 @@ describe("Aggregate message retrieve test", () => {
             }),
         ).rejects.toThrow();
     });
+
+    it("should print the CCN list correctly (testing #87)", async () => {
+        const message = await aggregate.Get({
+            address: "0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10",
+            keys: ["corechannel"],
+        });
+
+        expect(message).toHaveProperty("corechannel");
+    });
 });
