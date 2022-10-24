@@ -5,7 +5,7 @@ import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
-import { JsonRPCWallet } from "../providers/JsonRPCWallet";
+import { JsonRPCWallet, RpcChainType } from "../providers/JsonRPCWallet";
 import { BaseProviderWallet } from "../providers/BaseProviderWallet";
 import { providers } from "ethers";
 
@@ -141,8 +141,9 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<A
 export async function GetAccountFromProvider(provider: providers.ExternalProvider): Promise<AvalancheAccount> {
     const avaxProvider = new providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(avaxProvider);
-    await jrw.connect();
+    await jrw.changeNetwork(RpcChainType.AVAX);
 
+    await jrw.connect();
     if (jrw.address) {
         return new AvalancheAccount(jrw, jrw.address);
     }

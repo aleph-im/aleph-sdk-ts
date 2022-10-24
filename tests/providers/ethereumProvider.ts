@@ -92,6 +92,14 @@ export class EthereumProvider implements IMockProvider {
                 return Promise.resolve(decrypted);
             }
 
+            case "wallet_addEthereumChain": {
+                return Promise.resolve();
+            }
+
+            case "wallet_switchEthereumChain": {
+                return Promise.resolve();
+            }
+
             default:
                 this.log(`resquesting missing method ${method}`);
                 // eslint-disable-next-line prefer-promise-reject-errors
