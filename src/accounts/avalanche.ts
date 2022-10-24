@@ -25,7 +25,10 @@ export class AvalancheAccount extends Account {
     }
 
     override GetChain(): Chain {
-        return Chain.AVAX;
+        if (this.signer) return Chain.AVAX;
+        if (this.provider) return Chain.ETH;
+
+        throw new Error("Cannot determine chain");
     }
 
     /**
@@ -86,7 +89,7 @@ export class AvalancheAccount extends Account {
             const bintools = BinTools.getInstance();
             return bintools.cb58Encode(signatureBuffer);
         } else if (this.provider) {
-            return await this.provider.signMessage(digest);
+            return await this.provider.signMessage(buffer);
         }
 
         throw new Error("Cannot sign message");
