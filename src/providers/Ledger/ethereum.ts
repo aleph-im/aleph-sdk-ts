@@ -1,9 +1,9 @@
 import EthApp from "@ledgerhq/hw-app-eth";
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 
 import { Account } from "../../accounts/account";
 import { Chain, BaseMessage } from "../../messages/message";
 import { GetVerificationBuffer } from "../../messages";
+import { getTransport } from "./transport";
 
 const DERIVATION_PATH = "44'/60'/0'/0/0";
 
@@ -39,7 +39,7 @@ class ETHLedgerAccount extends Account {
  * This method retrieves an Ethereum account from a connected Ledger device
  */
 export async function GetAccountFromLedger(): Promise<ETHLedgerAccount> {
-    const transport = await TransportWebUSB.create();
+    const transport = await getTransport();
     const signer = new EthApp(transport);
 
     const { address } = await signer.getAddress(DERIVATION_PATH);
