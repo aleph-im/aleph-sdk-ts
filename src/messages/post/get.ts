@@ -10,6 +10,7 @@ type PostGetConfiguration = {
     addresses: string[];
     tags: string[];
     hashes: string[];
+    channels?: string[];
 };
 
 type PostQueryParams = {
@@ -20,6 +21,7 @@ type PostQueryParams = {
     addresses?: string;
     tags?: string;
     hashes?: string;
+    channels?: string;
 };
 
 type PostResponse<T> = {
@@ -69,6 +71,7 @@ export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQ
         addresses: configuration.addresses.join(",") || undefined,
         tags: configuration.tags.join(",") || undefined,
         hashes: configuration.hashes.join(",") || undefined,
+        channels: configuration.channels?.join(",") || undefined,
     };
 
     const response = await axios.get<PostQueryResponse<T>>(

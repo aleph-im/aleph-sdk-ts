@@ -2,6 +2,26 @@ import { post } from "../../index";
 import { DEFAULT_API_V2 } from "../../../src/global";
 
 describe("Post get tests", () => {
+    it("should only get post from a specific channel", async () => {
+        const channel = "TEST";
+
+        const amends = await post.Get({
+            types: "amend",
+            APIServer: DEFAULT_API_V2,
+            pagination: 5,
+            page: 1,
+            refs: [],
+            addresses: [],
+            tags: [],
+            hashes: [],
+            channels: [channel],
+        });
+
+        amends.posts.map((post) => {
+            expect(post.channel).toStrictEqual(channel);
+        });
+    });
+
     it("should get a post with specific parameters", async () => {
         const content: { body: string } = {
             body: "New content !",
@@ -17,6 +37,7 @@ describe("Post get tests", () => {
             tags: [],
             hashes: ["dda0e27123721f83898093916c0eaa91230b98002dcbdacaefb1e06a41ad2e23"],
         });
+
         expect(amends.posts[0].content).toStrictEqual(content);
     });
 });
