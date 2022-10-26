@@ -25,14 +25,31 @@ export const getRandomNode = (nodeList: any[]) => {
 
 const rl = readline.createInterface({ input, output });
 
-export const yesNo = (): Promise<boolean> => {
-    return new Promise((resolve) => {
-        rl.question("[y]es/no: ", (answer) => {
-            if (answer === "yes" || answer === "y") {
-                return resolve(true);
-            }
+type Proposition = [string, any];
 
-            return resolve(false);
+export const askChoices = (proposition: Proposition[]) => {
+    const labels = proposition.map(([x]) => x);
+
+    return new Promise((resolve, reject) => {
+        rl.question(`${labels.join("/")}: `, (answer) => {
+            const found = proposition.find(([label]) => label.toLowerCase() === answer);
+            if (found !== undefined) resolve(found[1]);
+            reject("This is not a valid option");
         });
     });
+};
+
+export const keypress = async () => {
+    process.stdin.setRawMode(true);
+    return new Promise((resolve) =>
+        process.stdin.once("data", (data) => {
+            const byteArray = [...data];
+            if (byteArray.length > 0 && byteArray[0] === 3) {
+                console.log("^C");
+                process.exit(1);
+            }
+            process.stdin.setRawMode(false);
+            resolve(true);
+        }),
+    );
 };
