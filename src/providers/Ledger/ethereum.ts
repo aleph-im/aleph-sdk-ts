@@ -42,6 +42,12 @@ export async function GetAccountFromLedger(): Promise<ETHLedgerAccount> {
     const transport = await getTransport();
     const signer = new EthApp(transport);
 
+    const { version } = await signer.getAppConfiguration();
+    const stripPatch = Number(version.replace(/(\w+\.\w+)\.\w+$/gi, "$1"));
+    if (stripPatch < 1.9) {
+        throw new Error("Outdated Ledger device firmware. PLease update");
+    }
+
     const { address } = await signer.getAddress(DERIVATION_PATH);
 
     return new ETHLedgerAccount(signer, address);
