@@ -1,41 +1,41 @@
 name: Generate Doc
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
 
 defaults:
-  run:
-    shell: bash
+    run:
+        shell: bash
 
 jobs:
-  Doc:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    Doc:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-          cache: npm
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm install
+            - name: Install dependencies
+              run: npm install
 
-      - name: Create Doc
-        run: npm doc
+            - name: Create Doc
+              run: npm run doc
 
-      - name: Push Doc
-        run: |
-          BRANCH=gh-pages
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+            - name: Push Doc
+              run: |
+                  BRANCH=gh-pages
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
 
-          git fetch origin $BRANCH
-          git reset --mixed origin/$BRANCH
-          git add -f docs
+                  git fetch origin $BRANCH
+                  git reset --mixed origin/$BRANCH
+                  git add -f docs
 
-          git commit -m "Updating documentation: $GITHUB_ACTOR"
-          git push origin HEAD:$BRANCH
+                  git commit -m "Updating documentation: $GITHUB_ACTOR"
+                  git push origin HEAD:$BRANCH
