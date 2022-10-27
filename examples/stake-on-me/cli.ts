@@ -37,14 +37,14 @@ const main = async () => {
 
     console.log();
     console.log("In order to continue you will need to authenticate using a Ledger device");
-    console.log("Your Ledger device needs to be plugged in, with the Ethereum open");
+    console.log("Your Ledger device needs to be plugged in, unlocked with the Ethereum app open");
     console.log("Press a key once it is ready (or ctrl + c to exit)");
     await keypress();
 
     const account = await GetAccountFromLedger();
     console.log(`Ledger device found, using address: ${account.address}`);
     console.log(separator);
-    console.log("Sending a stake message on selected Node");
+    console.log("Sending a stake message on selected Node. Please check your Ledger to sign the message.");
 
     const stakeMessage = await post.Publish({
         account,
@@ -60,9 +60,8 @@ const main = async () => {
         ref: nodeProposal.hash,
     });
 
-    console.log("Your request was succesfully posted, enjoy your fresh rewards!");
+    console.log("Your request was succesfully posted, enjoy your fresh rewards! :)");
     console.log(`https://explorer.aleph.im/address/ETH/${account.address}/message/POST/${stakeMessage.item_hash}`);
-    console.log(`:)`);
     process.exit();
 };
 
