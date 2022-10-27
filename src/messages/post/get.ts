@@ -10,6 +10,7 @@ type PostGetConfiguration = {
     addresses: string[];
     tags: string[];
     hashes: string[];
+    channels?: string[];
 };
 
 type PostQueryParams = {
@@ -20,6 +21,7 @@ type PostQueryParams = {
     addresses?: string;
     tags?: string;
     hashes?: string;
+    channels?: string;
 };
 
 type PostResponse<T> = {
@@ -65,20 +67,12 @@ export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQ
         types: configuration.types,
         pagination: configuration.pagination,
         page: configuration.page,
+        refs: configuration.refs.join(",") || undefined,
+        addresses: configuration.addresses.join(",") || undefined,
+        tags: configuration.tags.join(",") || undefined,
+        hashes: configuration.hashes.join(",") || undefined,
+        channels: configuration.channels?.join(",") || undefined,
     };
-
-    if (configuration.refs?.length > 0) {
-        params.refs = configuration.refs.join(",");
-    }
-    if (configuration.addresses?.length > 0) {
-        params.addresses = configuration.addresses.join(",");
-    }
-    if (configuration.tags?.length > 0) {
-        params.tags = configuration.tags.join(",");
-    }
-    if (configuration.hashes?.length > 0) {
-        params.hashes = configuration.hashes.join(",");
-    }
 
     const response = await axios.get<PostQueryResponse<T>>(
         `${stripTrailingSlash(configuration.APIServer)}/api/v0/posts.json`,

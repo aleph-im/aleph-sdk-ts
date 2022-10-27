@@ -2,11 +2,9 @@ import { ItemType } from "../../../src/messages/message";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { aggregate, ethereum } from "../../index";
 
-const mnemonic = "exit canvas recycle vault excite battle short roof unlock limb attract device";
-
 describe("Aggregate message publish test", () => {
     it("should publish an aggregate message", async () => {
-        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const { account } = ethereum.NewAccount();
         const key = "satoshi";
 
         const content: { A: number } = {

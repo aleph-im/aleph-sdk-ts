@@ -20,6 +20,7 @@ import { SignAndBroadcast } from "../create/signature";
  */
 type AggregatePublishConfiguration<T> = {
     account: Account;
+    address?: string;
     key: string | AggregateContentKey;
     content: T;
     channel: string;
@@ -44,7 +45,7 @@ type AggregatePublishConfiguration<T> = {
 export async function Publish<T>(configuration: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
     const timestamp = Date.now() / 1000;
     const content: AggregateContent<T> = {
-        address: configuration.account.address,
+        address: configuration.address ? configuration.address : configuration.account.address,
         key: configuration.key,
         time: timestamp,
         content: configuration.content,
