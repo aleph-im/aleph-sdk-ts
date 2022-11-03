@@ -1,8 +1,4 @@
 import * as accounts from "./accounts/index";
-import * as aggregate from "./messages/aggregate/index";
-import * as post from "./messages/post/index";
-import * as store from "./messages/store/index";
-import * as forget from "./messages/forget/index";
-import * as program from "./messages/program/index";
+import { messages } from "./messages";
 
-export { accounts, aggregate, post, store, forget, program };
+export { accounts, messages };
