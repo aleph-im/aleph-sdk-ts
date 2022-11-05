@@ -1,9 +1,9 @@
 import * as bip39 from "bip39";
-import assert = require("assert");
+import assert from "assert";
 import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 
 import { testsFunc } from "../index";
-import { accounts, aggregate } from "../../src";
+import { accounts, messages } from "../../src";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { Chain, ItemType } from "../../src/messages/message";
 
@@ -50,7 +50,7 @@ async function PublishAggregate(): Promise<boolean> {
         body: "Typescript sdk",
     };
 
-    await aggregate.Publish({
+    await messages.aggregate.Publish({
         account: account,
         key: key,
         content: content,
@@ -65,7 +65,7 @@ async function PublishAggregate(): Promise<boolean> {
             body: string;
         };
     };
-    const amends = await aggregate.Get<exceptedType>({
+    const amends = await messages.aggregate.Get<exceptedType>({
         APIServer: DEFAULT_API_V2,
         address: account.address,
         keys: [key],
