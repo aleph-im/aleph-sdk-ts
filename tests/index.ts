@@ -1,9 +1,9 @@
-import * as avalanche from "../src/accounts/avalanche";
-import * as cosmos from "../src/accounts/cosmos";
-import * as ethereum from "../src/accounts/ethereum";
-import * as nuls2 from "../src/accounts/nuls2";
-import * as solana from "../src/accounts/solana";
-import * as tezos from "../src/accounts/tezos";
+import * as avalanche from "../src/accounts/keypairs/avalanche";
+import * as cosmos from "../src/accounts/keypairs/cosmos";
+import * as ethereum from "../src/accounts/keypairs/ethereum";
+import * as nuls2 from "../src/accounts/keypairs/nuls2";
+import * as solana from "../src/accounts/keypairs/solana";
+import * as tezos from "../src/accounts/keypairs/tezos";
 
 import * as aggregate from "../src/messages/aggregate/index";
 import * as post from "../src/messages/post/index";

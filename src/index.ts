@@ -5,4 +5,6 @@ import * as store from "./messages/store/index";
 import * as forget from "./messages/forget/index";
 import * as program from "./messages/program/index";
 
-export { accounts, aggregate, post, store, forget, program };
+import * as Ledger from "./accounts/providers/Ledger";
+
+export { accounts, Ledger, aggregate, post, store, forget, program };

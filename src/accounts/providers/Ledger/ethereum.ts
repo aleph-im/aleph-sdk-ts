@@ -1,8 +1,8 @@
 import EthApp from "@ledgerhq/hw-app-eth";
 
-import { Account } from "../../accounts/account";
-import { Chain, BaseMessage } from "../../messages/message";
-import { GetVerificationBuffer } from "../../messages";
+import { Account } from "../../account";
+import { Chain, BaseMessage } from "../../../messages/message";
+import { GetVerificationBuffer } from "../../../messages";
 import { getTransport } from "./transport";
 
 const DERIVATION_PATH = "44'/60'/0'/0/0";

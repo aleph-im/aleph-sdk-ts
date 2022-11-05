@@ -1,6 +1,6 @@
-import { Account } from "./account";
-import { BaseMessage, Chain } from "../messages/message";
-import { GetVerificationBuffer } from "../messages";
+import { Account } from "../account";
+import { BaseMessage, Chain } from "../../messages/message";
+import { GetVerificationBuffer } from "../../messages";
 import { InMemorySigner } from "@taquito/signer";
 import { b58cdecode, b58cencode, prefix } from "@taquito/utils";
 import { getPkhfromPk, char2Bytes } from "@taquito/utils";

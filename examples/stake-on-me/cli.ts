@@ -1,6 +1,6 @@
 import { logo, separator } from "./src/logo";
 import { askChoices, getNodeList, getRandomNode, keypress } from "./src/helpers";
-import { GetAccountFromLedger } from "../../src/providers/Ledger/ethereum";
+import { GetAccountFromLedger } from "../../src/accounts/providers/Ledger/ethereum";
 import { ItemType } from "../../src/messages/message";
 import * as post from "../../src/messages/post";
 

@@ -5,9 +5,9 @@ import {
     Secp256k1HdWalletOptions,
     Secp256k1Wallet,
 } from "@cosmjs/amino";
-import { Account } from "./account";
-import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/message";
+import { Account } from "../account";
+import { GetVerificationBuffer } from "../../messages";
+import { BaseMessage, Chain } from "../../messages/message";
 
 export class CosmosAccount extends Account {
     private wallet: OfflineAminoSigner;

@@ -1,5 +1,5 @@
 import Transport from "@ledgerhq/hw-transport";
-import { isNode } from "../../utils/env";
+import { isNode } from "../../../utils/env";
 
 export async function getTransport(): Promise<Transport> {
     let transport;

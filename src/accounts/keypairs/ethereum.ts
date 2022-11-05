@@ -1,8 +1,8 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
-import { Account } from "./account";
-import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/message";
+import { Account } from "../account";
+import { GetVerificationBuffer } from "../../messages";
+import { BaseMessage, Chain } from "../../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { JsonRPCWallet } from "../providers/JsonRPCWallet";
 import { BaseProviderWallet } from "../providers/BaseProviderWallet";
