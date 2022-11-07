@@ -10,6 +10,7 @@ type PostSubmitConfiguration<T> = {
     inlineRequested: boolean;
     storageEngine: ItemType;
     account: Account;
+    address?: string;
     postType: string;
     content: T;
 };
@@ -27,7 +28,7 @@ export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Pro
     const timestamp: number = Date.now() / 1000;
     const content: PostContent<T> = {
         type: configuration.postType,
-        address: configuration.account.address,
+        address: configuration.address ? configuration.address : configuration.account.address,
         content: configuration.content,
         time: timestamp,
     };
