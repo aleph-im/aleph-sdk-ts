@@ -39,6 +39,16 @@ export class ETHAccount extends Account {
     }
 
     /**
+     * Encrypt a content for another user on the blockchain.
+     *
+     * @param delegateKey The public key that data are encrypted.
+     * @param content The content to encrypt.
+     */
+    async delegateEncrypt(delegateKey: string, content: Buffer): Promise<Buffer> {
+        return secp256k1_encrypt(delegateKey, content);
+    }
+
+    /**
      * Decrypt a given content using an ETHAccount.
      *
      * @param encryptedContent The encrypted content to decrypt.

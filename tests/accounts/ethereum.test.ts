@@ -48,6 +48,23 @@ describe("Ethereum accounts", () => {
         expect(d).toStrictEqual(msg);
     });
 
+    it("Should delegate encryption for another account Ethereum account", async () => {
+        const mnemonicA = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const mnemonicB = "omit donor guilt push electric confirm denial clever clay cabbage game boil";
+        const accountBPublicKey =
+            "0x0455d7d2ff3dff02674bc446ec2a821508d3ef0965c9eb0adc9890fecbcc44f86731002cc98fa578c6156e8e7f11b589d2524ca9f0a9be06864592d36164ad1801";
+
+        const accountA = ethereum.ImportAccountFromMnemonic(mnemonicA);
+        const accountB = ethereum.ImportAccountFromMnemonic(mnemonicB);
+        const msg = Buffer.from("Innovation");
+
+        const c = await accountA.delegateEncrypt(accountBPublicKey, msg);
+        const d = await accountB.decrypt(c);
+
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+    });
+
     it("Should encrypt and decrypt some data with a provided Ethereum account", async () => {
         const provider = new EthereumProvider({
             address: providerAddress,
