@@ -1,4 +1,4 @@
-import { solana, ethereum } from '../../../../src/accounts'
+import { solana, ethereum, avalanche } from '../../../../src/accounts'
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
@@ -6,7 +6,8 @@ import { Actions } from '../reducer'
 
 function WalletConfig({ dispatch, state } : dispatchAndConsume) {
   const getAccountClass = () => (
-    state.selectedChain === WalletChains.Ethereum ? [ethereum, window.ethereum]
+    state.selectedChain === WalletChains.Avalanche ? [avalanche, window.ethereum]
+    : state.selectedChain === WalletChains.Ethereum ? [ethereum, window.ethereum]
     : state.selectedChain === WalletChains.Solana ? [solana, window.phantom?.solana]
     : [null, null]
   )

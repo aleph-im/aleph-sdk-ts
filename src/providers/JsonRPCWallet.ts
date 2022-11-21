@@ -4,6 +4,36 @@ import { BaseProviderWallet } from "./BaseProviderWallet";
 const RPC_WARNING = `DEPRECATION WARNING: 
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`;
 
+export enum RpcChainType {
+    ETH,
+    AVAX,
+}
+
+const ChainData = {
+    [RpcChainType.AVAX]: {
+        chainId: "0xA86A",
+        rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+        chainName: "Avalanche Mainnet",
+        nativeCurrency: {
+            name: "AVAX",
+            symbol: "AVAX",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://snowtrace.io"],
+    },
+    [RpcChainType.ETH]: {
+        chainId: "0x1",
+        rpcUrls: ["https://mainnet.infura.io/v3/"],
+        chainName: "Ethereum Mainnet",
+        nativeCurrency: {
+            name: "ETH",
+            symbol: "ETH",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://etherscan.io"],
+    },
+};
+
 /**
  * Wrapper for JSON RPC Providers (ex: Metamask)
  */
@@ -50,5 +80,11 @@ export class JsonRPCWallet extends BaseProviderWallet {
     public async signMessage(data: Buffer | string): Promise<string> {
         if (!this.signer) throw new Error("Wallet not connected");
         return this.signer.signMessage(data);
+    }
+
+    public async changeNetwork(chain: RpcChainType = RpcChainType.ETH): Promise<void> {
+        if (chain === RpcChainType.ETH) {
+            await this.provider.send("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
+        } else await this.provider.send("wallet_addEthereumChain", [ChainData[chain]]);
     }
 }
