@@ -38,7 +38,7 @@ type ForgetPublishConfiguration = {
  *
  * @param configuration The configuration used to publish the forget message.
  */
-export async function publish(configuration: ForgetPublishConfiguration): Promise<ForgetMessage> {
+export async function Publish(configuration: ForgetPublishConfiguration): Promise<ForgetMessage> {
     const timestamp = Date.now() / 1000;
     const content: ForgetContent = {
         address: configuration.account.address,
