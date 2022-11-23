@@ -48,12 +48,12 @@ export class JsonRPCWallet extends BaseProviderWallet {
         this.provider = provider;
     }
 
-    public async connect() {
+    public async connect(): Promise<void> {
         try {
             await this.provider.send("wallet_requestPermissions", [{ eth_accounts: {} }]);
             this.signer = this.provider.getSigner();
             this.address = await this.signer.getAddress();
-        } catch (err: any) {
+        } catch (err: unknown) {
             throw new Error("Could not get Wallet permissions");
         }
     }
