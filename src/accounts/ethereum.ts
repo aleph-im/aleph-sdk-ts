@@ -1,11 +1,11 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
-import { Account } from "../account";
-import { GetVerificationBuffer } from "../../messages";
-import { BaseMessage, Chain } from "../../messages/message";
+import { Account } from "./account";
+import { GetVerificationBuffer } from "../messages";
+import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { JsonRPCWallet } from "../providers/JsonRPCWallet";
-import { BaseProviderWallet } from "../providers/BaseProviderWallet";
+import { JsonRPCWallet } from "./providers/JsonRPCWallet";
+import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
@@ -116,7 +116,7 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  *
  * @param  {ethers.providers.ExternalProvider} provider
  */
-export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider) {
+export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider): Promise<ETHAccount> {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(ETHprovider);
     await jrw.connect();

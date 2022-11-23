@@ -1,6 +1,6 @@
-import { Account } from "../account";
-import { BaseMessage, Chain } from "../../messages/message";
-import { GetVerificationBuffer } from "../../messages";
+import { Account } from "./account";
+import { BaseMessage, Chain } from "../messages/message";
+import { GetVerificationBuffer } from "../messages";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";

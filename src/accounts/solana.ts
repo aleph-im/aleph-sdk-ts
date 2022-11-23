@@ -1,6 +1,6 @@
-import { Account } from "../account";
-import { BaseMessage, Chain } from "../../messages/message";
-import { GetVerificationBuffer } from "../../messages";
+import { Account } from "./account";
+import { BaseMessage, Chain } from "../messages/message";
+import { GetVerificationBuffer } from "../messages";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
