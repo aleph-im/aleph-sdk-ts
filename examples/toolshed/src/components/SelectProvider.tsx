@@ -21,6 +21,7 @@ export const availableKeypairs: Option[] = [
 ]
 
 export const availableWallets: Option[] = [
+  { label: 'Avalanche (via Metamask)', value: WalletChains.Avalanche },
   { label: 'Ethereum (via Metamask)', value: WalletChains.Ethereum },
   { label: 'Solana (via Phantom)', value: WalletChains.Solana },
 ]
