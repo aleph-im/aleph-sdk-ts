@@ -7,7 +7,7 @@
   <h2>Description</h2>
 </a>
 <p>This SDK offers binding to interact with the <a href="https://aleph.im/">Aleph decentralized network</a>.</p>
-<p>Written in Typescript it is meant as a drop in replacement for the <a href="">aleph-js library</a>.</p>
+<p>Written in Typescript it is meant as a drop in replacement for the <a href="https://github.com/aleph-im/aleph-js">aleph-js library</a>. It works both in the browser, on a server using Node.js, or an Aleph Virtual Machine without internet access (using <a href="https://manpages.org/socat">socat</a>).</p>
 
 <a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
   <h2>Quick Start</h2>
@@ -54,7 +54,7 @@
 <td>Ethereum</td>
 <td>:heavy_check_mark:</td>
 <td>:heavy_check_mark:</td>
-<td>:x:</td>
+<td>:heavy_check_mark:</td>
 </tr>
 <tr>
 <td>NULS2</td>
@@ -92,6 +92,42 @@
 <p>You can run the test suite, using:</p>
 <pre><code><span class="hl-1">npm</span><span class="hl-0"> </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">test</span>
 </code></pre>
+
+<a href="#environments" id="environments" style="color: inherit; text-decoration: none;">
+  <h2>Environments</h2>
+</a>
+
+<a href="#supported-nodejs-versions" id="supported-nodejs-versions" style="color: inherit; text-decoration: none;">
+  <h3>Supported Node.js versions</h3>
+</a>
+<p>This SDK is tested and works, with the following Node.js versions:</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v14.x</td>
+<td>:heavy_check_mark: <strong>Full working support</strong></td>
+</tr>
+<tr>
+<td>v16.x</td>
+<td>:heavy_check_mark: <strong>Full working support</strong></td>
+</tr>
+<tr>
+<td>v18.x (<strong>LTS</strong>)</td>
+<td>:heavy_multiplication_x: Some feature may not work (see notes)</td>
+</tr>
+</tbody></table>
+<p>* Due to changes in OpenSSL in Node v18, some chains helper may not work. If you encounter bugs using Node v18, you might want to consider using the <code>--openssl-legacy-provider</code> feature flag while running your project.</p>
+
+<a href="#running-code-inside-the-browser" id="running-code-inside-the-browser" style="color: inherit; text-decoration: none;">
+  <h3>Running code inside the browser</h3>
+</a>
+<p>This SDK relies on several non-native browser modules (such as Streams and Buffer). While bundling your application, either using <strong>rollup</strong> (ex: <code>Vite</code>) or <strong>webpack</strong> (ex: <code>create-react-app</code>) you might have to rely on external polyfills for those features.</p>
+<p>You can check the configuration files from the <a href="./examples/toolshed/">examples/toolshed</a> directory to get started. Please note that we won&#39;t provide polyfills as part of this SDK.</p>
 
 <a href="#contribution" id="contribution" style="color: inherit; text-decoration: none;">
   <h2>Contribution</h2>
