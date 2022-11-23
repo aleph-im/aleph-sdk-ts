@@ -5,21 +5,30 @@ import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
+import { JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
+import { BaseProviderWallet } from "./providers/BaseProviderWallet";
+import { providers } from "ethers";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
 export class AvalancheAccount extends Account {
-    private signer;
+    private signer?: KeyPair;
+    private provider?: BaseProviderWallet;
 
-    constructor(signer: KeyPair) {
-        super(signer.getAddressString());
-        this.signer = signer;
+    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string) {
+        super(address);
+
+        if (signerOrProvider instanceof KeyPair) this.signer = signerOrProvider;
+        if (signerOrProvider instanceof BaseProviderWallet) this.provider = signerOrProvider;
     }
 
     override GetChain(): Chain {
-        return Chain.AVAX;
+        if (this.signer) return Chain.AVAX;
+        if (this.provider) return Chain.ETH;
+
+        throw new Error("Cannot determine chain");
     }
 
     /**
@@ -27,9 +36,11 @@ export class AvalancheAccount extends Account {
      *
      * @param content The content to encrypt.
      */
-    encrypt(content: Buffer): Buffer {
-        const publicKey = this.signer.getPublicKey().toString("hex");
-        return secp256k1_encrypt(publicKey, content);
+    async encrypt(content: Buffer): Promise<Buffer> {
+        const publicKey = this.signer?.getPublicKey().toString("hex") || (await this.provider?.getPublicKey());
+        if (publicKey) return secp256k1_encrypt(publicKey, content);
+
+        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -37,9 +48,16 @@ export class AvalancheAccount extends Account {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    decrypt(encryptedContent: Buffer): Buffer {
-        const secret = this.signer.getPrivateKey().toString("hex");
-        return secp256k1_decrypt(secret, encryptedContent);
+    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
+        if (this.signer) {
+            const secret = this.signer.getPrivateKey().toString("hex");
+            return secp256k1_decrypt(secret, encryptedContent);
+        }
+        if (this.provider) {
+            const decrypted = await this.provider.decrypt(encryptedContent);
+            return Buffer.from(decrypted);
+        }
+        throw new Error("Cannot encrypt content");
     }
 
     private async digestMessage(message: Buffer) {
@@ -63,13 +81,18 @@ export class AvalancheAccount extends Account {
         const buffer = GetVerificationBuffer(message);
         const digest = await this.digestMessage(buffer);
 
-        const digestHex = digest.toString("hex");
-        const digestBuff = AvaBuff.from(digestHex, "hex");
+        if (this.signer) {
+            const digestHex = digest.toString("hex");
+            const digestBuff = AvaBuff.from(digestHex, "hex");
+            const signatureBuffer = this.signer?.sign(digestBuff);
 
-        const signatureBuffer = this.signer.sign(digestBuff);
-        const bintools = BinTools.getInstance();
+            const bintools = BinTools.getInstance();
+            return bintools.cb58Encode(signatureBuffer);
+        } else if (this.provider) {
+            return await this.provider.signMessage(buffer);
+        }
 
-        return bintools.cb58Encode(signatureBuffer);
+        throw new Error("Cannot sign message");
     }
 }
 
@@ -107,7 +130,24 @@ export async function getKeyPair(privateKey?: string): Promise<KeyPair> {
  */
 export async function ImportAccountFromPrivateKey(privateKey: string): Promise<AvalancheAccount> {
     const keyPair = await getKeyPair(privateKey);
-    return new AvalancheAccount(keyPair);
+    return new AvalancheAccount(keyPair, keyPair.getAddressString());
+}
+
+/**
+ * Get an account from a Web3 provider (ex: Metamask)
+ *
+ * @param  {providers.ExternalProvider} provider from metamask
+ */
+export async function GetAccountFromProvider(provider: providers.ExternalProvider): Promise<AvalancheAccount> {
+    const avaxProvider = new providers.Web3Provider(provider);
+    const jrw = new JsonRPCWallet(avaxProvider);
+    await jrw.changeNetwork(RpcChainType.AVAX);
+
+    await jrw.connect();
+    if (jrw.address) {
+        return new AvalancheAccount(jrw, jrw.address);
+    }
+    throw new Error("Insufficient permissions");
 }
 
 /**
@@ -118,5 +158,5 @@ export async function NewAccount(): Promise<{ account: AvalancheAccount; private
     const keypair = await getKeyPair();
     const privateKey = keypair.getPrivateKey().toString("hex");
 
-    return { account: new AvalancheAccount(keypair), privateKey };
+    return { account: new AvalancheAccount(keypair, keypair.getAddressString()), privateKey };
 }

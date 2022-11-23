@@ -25,15 +25,15 @@ This is the list of currently supported Account types. For each of them you can:
 
 On top of that some accounts allow you to **encrypt** messages, retrieve an account from a **browser based** wallet (ex: Metamask), or from a **Ledger** wallet.
 
-| Chain     | Encryption         | Wallet             | Ledger |
-| --------- | ------------------ | ------------------ | ------ |
-| Avalanche | :heavy_check_mark: | :x:                | :x:    |
-| Cosmos    | :x:                | :x:                | :x:    |
-| Ethereum  | :heavy_check_mark: | :heavy_check_mark: | :x:    |
-| NULS2     | :heavy_check_mark: | :x:                | :x:    |
-| Solana    | :x:                | :heavy_check_mark: | :x:    |
-| Substrate | :heavy_check_mark: | :x:                | :x:    |
-| Tezos     | :x:                | :heavy_check_mark: | :x:    |
+| Chain     | Encryption         | Wallet              | Ledger |
+| --------- | ------------------ |---------------------| ------ |
+| Avalanche | :heavy_check_mark: | :heavy_check_mark:  | :x:    |
+| Cosmos    | :x:                | :x:                 | :x:    |
+| Ethereum  | :heavy_check_mark: | :heavy_check_mark:  | :x:    |
+| NULS2     | :heavy_check_mark: | :x:                 | :x:    |
+| Solana    | :x:                | :heavy_check_mark:  | :x:    |
+| Substrate | :heavy_check_mark: | :x:                 | :x:    |
+| Tezos     | :x:                | :heavy_check_mark:  | :x:    |
 
 ## Running from source
 

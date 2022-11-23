@@ -22,7 +22,7 @@ describe("Forget publish tests", () => {
             content: content,
         });
 
-        const Fres = await forget.publish({
+        const Fres = await forget.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             hashes: [res.item_hash],
