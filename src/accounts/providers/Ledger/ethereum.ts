@@ -7,7 +7,11 @@ import { getTransport } from "./transport";
 
 const DERIVATION_PATH = "44'/60'/0'/0/0";
 
-class ETHLedgerAccount extends Account {
+/**
+ * The ETHLedgerAccount represents an ETHAccount with Signing functionalities
+ * Instanciated from a Ledger device
+ */
+export class ETHLedgerAccount extends Account {
     private signer: EthApp;
 
     constructor(signer: EthApp, address: string) {
@@ -29,6 +33,10 @@ class ETHLedgerAccount extends Account {
         return `0x${r}${s}${v}`;
     }
 
+    /**
+     * Signs a message using the Ledger's Private Key
+     * @param message The message to signe
+     */
     async Sign(message: BaseMessage): Promise<string> {
         const buf = GetVerificationBuffer(message);
         return this.getSignature(buf);
