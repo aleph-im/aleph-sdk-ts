@@ -9,6 +9,10 @@ import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 
+/**
+ * CosmosAccount implements the Account class for the Cosmos protocol.
+ * It is used to represent a Cosmos account when publishing a message on the Aleph network.
+ */
 export class CosmosAccount extends Account {
     private wallet: OfflineAminoSigner;
     private accountNumber: number;
