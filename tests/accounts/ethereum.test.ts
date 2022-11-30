@@ -48,6 +48,44 @@ describe("Ethereum accounts", () => {
         expect(d).toStrictEqual(msg);
     });
 
+    it("Should delegate encryption for another account Ethereum account", async () => {
+        const mnemonicA = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const mnemonicB = "omit donor guilt push electric confirm denial clever clay cabbage game boil";
+
+        const accountA = ethereum.ImportAccountFromMnemonic(mnemonicA);
+        const accountB = ethereum.ImportAccountFromMnemonic(mnemonicB);
+        const msg = Buffer.from("Innovation");
+
+        const c = await accountA.encrypt(msg, accountB);
+        const d = await accountB.decrypt(c);
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+
+        const e = await accountA.encrypt(msg, accountB.publicKey);
+        const f = await accountB.decrypt(e);
+        expect(e).not.toBe(msg);
+        expect(f).toStrictEqual(d);
+    });
+
+    it("Should delegate encrypt and decrypt some data with a provided Ethereum account", async () => {
+        const mnemonicA = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+        const provider = new EthereumProvider({
+            address: providerAddress,
+            privateKey: providerPrivateKey,
+            networkVersion: 31,
+        });
+
+        const accountA = ethereum.ImportAccountFromMnemonic(mnemonicA);
+        const accountFromProvider = await ethereum.GetAccountFromProvider(provider);
+        const msg = Buffer.from("Innovation");
+
+        const c = await accountA.encrypt(msg, accountFromProvider);
+        const d = await accountFromProvider.decrypt(c);
+
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+    });
+
     it("Should encrypt and decrypt some data with a provided Ethereum account", async () => {
         const provider = new EthereumProvider({
             address: providerAddress,

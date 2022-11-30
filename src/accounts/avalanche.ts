@@ -1,5 +1,5 @@
 import shajs from "sha.js";
-import { Account } from "./account";
+import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
@@ -13,12 +13,12 @@ import { providers } from "ethers";
  * AvalancheAccount implements the Account class for the Avalanche protocol.
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
-export class AvalancheAccount extends Account {
+export class AvalancheAccount extends ECIESAccount {
     private signer?: KeyPair;
     private provider?: BaseProviderWallet;
 
-    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string) {
-        super(address);
+    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string, publicKey: string) {
+        super(address, publicKey);
 
         if (signerOrProvider instanceof KeyPair) this.signer = signerOrProvider;
         if (signerOrProvider instanceof BaseProviderWallet) this.provider = signerOrProvider;
@@ -35,9 +35,14 @@ export class AvalancheAccount extends Account {
      * Encrypt a content using the user's public key from the keypair
      *
      * @param content The content to encrypt.
+     * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
      */
-    async encrypt(content: Buffer): Promise<Buffer> {
-        const publicKey = this.signer?.getPublicKey().toString("hex") || (await this.provider?.getPublicKey());
+    async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
+        let publicKey: string | undefined;
+
+        if (delegateSupport)
+            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
+        else publicKey = this.publicKey;
         if (publicKey) return secp256k1_encrypt(publicKey, content);
 
         throw new Error("Cannot encrypt content");
@@ -130,7 +135,7 @@ export async function getKeyPair(privateKey?: string): Promise<KeyPair> {
  */
 export async function ImportAccountFromPrivateKey(privateKey: string): Promise<AvalancheAccount> {
     const keyPair = await getKeyPair(privateKey);
-    return new AvalancheAccount(keyPair, keyPair.getAddressString());
+    return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString("hex"));
 }
 
 /**
@@ -145,7 +150,7 @@ export async function GetAccountFromProvider(provider: providers.ExternalProvide
 
     await jrw.connect();
     if (jrw.address) {
-        return new AvalancheAccount(jrw, jrw.address);
+        return new AvalancheAccount(jrw, jrw.address, await jrw.getPublicKey());
     }
     throw new Error("Insufficient permissions");
 }
@@ -158,5 +163,8 @@ export async function NewAccount(): Promise<{ account: AvalancheAccount; private
     const keypair = await getKeyPair();
     const privateKey = keypair.getPrivateKey().toString("hex");
 
-    return { account: new AvalancheAccount(keypair, keypair.getAddressString()), privateKey };
+    return {
+        account: new AvalancheAccount(keypair, keypair.getAddressString(), keypair.getPublicKey().toString("hex")),
+        privateKey,
+    };
 }

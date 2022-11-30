@@ -2,7 +2,7 @@ import * as bip39 from "bip39";
 import * as bip32 from "bip32";
 import secp256k1 from "secp256k1";
 import { generateMnemonic } from "bip39";
-import { Account } from "./account";
+import { ECIESAccount } from "./account";
 import { BaseMessage, Chain } from "../messages/message";
 import { GetVerificationBuffer } from "../messages";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
@@ -24,14 +24,13 @@ export type NULS2ImportConfig = {
  *  NULS2Account implements the Account class for the NULS2 protocol.
  *  It is used to represent a NULS2 account when publishing a message on the Aleph network.
  */
-export class NULS2Account extends Account {
+export class NULS2Account extends ECIESAccount {
     private readonly privateKey: string;
-    private readonly publicKey: string;
 
     constructor(address: string, publicKey: string, privateKey: string) {
-        super(address);
+        super(address, publicKey);
+
         this.privateKey = privateKey;
-        this.publicKey = publicKey;
     }
 
     GetChain(): Chain {
@@ -42,9 +41,18 @@ export class NULS2Account extends Account {
      * Encrypt a content using the user's public key for a NULS2 account.
      *
      * @param content The content to encrypt.
+     * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
      */
-    encrypt(content: Buffer): Buffer {
-        return secp256k1_encrypt(this.publicKey, content);
+    encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
+        let publicKey: string;
+
+        if (delegateSupport)
+            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
+        else publicKey = this.publicKey;
+
+        return new Promise((resolve) => {
+            resolve(secp256k1_encrypt(publicKey, content));
+        });
     }
 
     /**

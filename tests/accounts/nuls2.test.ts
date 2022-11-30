@@ -70,9 +70,26 @@ describe("NULS2 accounts", () => {
         const account = await nuls2.ImportAccountFromPrivateKey(testPrivateKey);
         const msg = Buffer.from("Nuuullss2");
 
-        const c = account.encrypt(msg);
+        const c = await account.encrypt(msg);
         const d = account.decrypt(c);
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
+    });
+
+    it("Should delegate encrypt and decrypt content with NULS2", async () => {
+        const accountA = await nuls2.ImportAccountFromPrivateKey(testPrivateKey);
+        const accountB = await nuls2.ImportAccountFromPrivateKey(testPrivateKey);
+        const msg = Buffer.from("Nuuullss2");
+
+        const c = await accountA.encrypt(msg, accountB);
+        const d = accountB.decrypt(c);
+
+        const e = await accountA.encrypt(msg, accountB.publicKey);
+        const f = accountB.decrypt(c);
+
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+        expect(e).not.toBe(msg);
+        expect(d).toStrictEqual(f);
     });
 });

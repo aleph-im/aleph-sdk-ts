@@ -1,6 +1,6 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
-import { Account } from "./account";
+import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
@@ -11,12 +11,12 @@ import { BaseProviderWallet } from "./providers/BaseProviderWallet";
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
-export class ETHAccount extends Account {
+export class ETHAccount extends ECIESAccount {
     private wallet?: ethers.Wallet;
     private provider?: BaseProviderWallet;
 
-    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string) {
-        super(address);
+    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey: string) {
+        super(address, publicKey);
 
         if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider;
         else this.provider = walletOrProvider;
@@ -30,10 +30,19 @@ export class ETHAccount extends Account {
      * Encrypt a content using the user's public key for an Ethereum account.
      *
      * @param content The content to encrypt.
+     * @param delegateSupport Optional, if you want to encrypt data for another EthAccount (Can also be directly a public key)
      */
-    async encrypt(content: Buffer): Promise<Buffer> {
-        const publicKey = this.wallet?.publicKey || (await this.provider?.getPublicKey());
-        if (publicKey) return secp256k1_encrypt(publicKey, content);
+    async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
+        let publicKey: string;
+
+        if (delegateSupport)
+            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
+        else publicKey = this.publicKey;
+
+        if (publicKey)
+            return new Promise((resolve) => {
+                resolve(secp256k1_encrypt(publicKey, content));
+            });
 
         throw new Error("Cannot encrypt content");
     }
@@ -84,7 +93,7 @@ export class ETHAccount extends Account {
 export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
     const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath);
 
-    return new ETHAccount(wallet, wallet.address);
+    return new ETHAccount(wallet, wallet.address, wallet.publicKey);
 }
 
 /**
@@ -97,7 +106,7 @@ export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/
 export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
     const wallet = new ethers.Wallet(privateKey);
 
-    return new ETHAccount(wallet, wallet.address);
+    return new ETHAccount(wallet, wallet.address, wallet.publicKey);
 }
 
 /**
@@ -121,6 +130,6 @@ export async function GetAccountFromProvider(provider: ethers.providers.External
     const jrw = new JsonRPCWallet(ETHprovider);
     await jrw.connect();
 
-    if (jrw.address) return new ETHAccount(jrw, jrw.address);
+    if (jrw.address) return new ETHAccount(jrw, jrw.address, await jrw.getPublicKey());
     throw new Error("Insufficient permissions");
 }
