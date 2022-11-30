@@ -1,9 +1,10 @@
 import axios from "axios";
+import { DEFAULT_API_V2 } from "../../global";
 import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 
 type StoreGetConfiguration = {
     fileHash: string;
-    APIServer: string;
+    APIServer?: string;
 };
 
 /**
@@ -11,9 +12,9 @@ type StoreGetConfiguration = {
  *
  * @param configuration The message hash and the API Server endpoint to make the query.
  */
-export async function Get(configuration: StoreGetConfiguration): Promise<ArrayBuffer> {
+export async function Get({ fileHash = "", APIServer = DEFAULT_API_V2 }: StoreGetConfiguration): Promise<ArrayBuffer> {
     const response = await axios.get<ArrayBuffer>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/raw/${configuration.fileHash}?find`,
+        `${stripTrailingSlash(APIServer)}/api/v0/storage/raw/${fileHash}?find`,
         {
             responseType: "arraybuffer",
             socketPath: getSocketPath(),
