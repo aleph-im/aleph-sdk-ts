@@ -58,6 +58,24 @@ describe("Avalanche accounts", () => {
         expect(d).toStrictEqual(msg);
     });
 
+    it("Should delegate encryption for another account Avalanche account", async () => {
+        const PkeyB = "c5754d886b30da1368706e77d6c401e9c7c02f92200d33ad51622cf25dc62acd";
+
+        const accountA = await avalanche.ImportAccountFromPrivateKey(providerPrivateKey);
+        const accountB = await avalanche.ImportAccountFromPrivateKey(PkeyB);
+        const msg = Buffer.from("Innovation");
+
+        const c = await accountA.encrypt(msg, accountB);
+        const d = await accountB.decrypt(c);
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+
+        const e = await accountA.encrypt(msg, accountB.publicKey);
+        const f = await accountB.decrypt(e);
+        expect(e).not.toBe(msg);
+        expect(f).toStrictEqual(d);
+    });
+
     it("Should encrypt and decrypt some data with an Avalanche account from provider", async () => {
         const provider = new EthereumProvider({
             address: providerAddress,
@@ -68,6 +86,23 @@ describe("Avalanche accounts", () => {
         const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
 
         const c = await accountFromProvider.encrypt(msg);
+        const d = await accountFromProvider.decrypt(c);
+
+        expect(c).not.toBe(msg);
+        expect(d).toStrictEqual(msg);
+    });
+
+    it("Should delegate encrypt and decrypt some data with an Avalanche account from provider", async () => {
+        const provider = new EthereumProvider({
+            address: providerAddress,
+            privateKey: providerPrivateKey,
+            networkVersion: 31,
+        });
+        const accountA = await avalanche.ImportAccountFromPrivateKey(providerPrivateKey);
+        const accountFromProvider = await avalanche.GetAccountFromProvider(provider);
+        const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
+
+        const c = await accountA.encrypt(msg, accountFromProvider);
         const d = await accountFromProvider.decrypt(c);
 
         expect(c).not.toBe(msg);
