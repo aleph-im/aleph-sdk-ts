@@ -1,15 +1,16 @@
 import axios from "axios";
+import { DEFAULT_API_V2 } from "../../global";
 import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 
 type PostGetConfiguration = {
     types: string | string[];
-    APIServer: string;
-    pagination: number;
-    page: number;
-    refs: string[];
-    addresses: string[];
-    tags: string[];
-    hashes: string[];
+    APIServer?: string;
+    pagination?: number;
+    page?: number;
+    refs?: string[];
+    addresses?: string[];
+    tags?: string[];
+    hashes?: string[];
     channels?: string[];
 };
 
@@ -62,24 +63,31 @@ type PostQueryResponse<T> = {
  *
  * @param configuration The configuration used to get the message, including the API endpoint.
  */
-export async function Get<T>(configuration: PostGetConfiguration): Promise<PostQueryResponse<T>> {
+export async function Get<T>({
+    types = "",
+    pagination = 50,
+    page = 1,
+    APIServer = DEFAULT_API_V2,
+    channels = [],
+    refs = [],
+    addresses = [],
+    tags = [],
+    hashes = [],
+}: PostGetConfiguration): Promise<PostQueryResponse<T>> {
     const params: PostQueryParams = {
-        types: configuration.types,
-        pagination: configuration.pagination,
-        page: configuration.page,
-        refs: configuration.refs.join(",") || undefined,
-        addresses: configuration.addresses.join(",") || undefined,
-        tags: configuration.tags.join(",") || undefined,
-        hashes: configuration.hashes.join(",") || undefined,
-        channels: configuration.channels?.join(",") || undefined,
+        types: types,
+        pagination: pagination,
+        page: page,
+        refs: refs.join(",") || undefined,
+        addresses: addresses.join(",") || undefined,
+        tags: tags.join(",") || undefined,
+        hashes: hashes.join(",") || undefined,
+        channels: channels?.join(",") || undefined,
     };
 
-    const response = await axios.get<PostQueryResponse<T>>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/posts.json`,
-        {
-            params,
-            socketPath: getSocketPath(),
-        },
-    );
+    const response = await axios.get<PostQueryResponse<T>>(`${stripTrailingSlash(APIServer)}/api/v0/posts.json`, {
+        params,
+        socketPath: getSocketPath(),
+    });
     return response.data;
 }
