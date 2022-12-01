@@ -77,8 +77,10 @@ describe("NULS2 accounts", () => {
     });
 
     it("Should delegate encrypt and decrypt content with NULS2", async () => {
+        const accountBPrivateKey = "de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3";
+
         const accountA = await nuls2.ImportAccountFromPrivateKey(testPrivateKey);
-        const accountB = await nuls2.ImportAccountFromPrivateKey(testPrivateKey);
+        const accountB = await nuls2.ImportAccountFromPrivateKey(accountBPrivateKey);
         const msg = Buffer.from("Nuuullss2");
 
         const c = await accountA.encrypt(msg, accountB);
