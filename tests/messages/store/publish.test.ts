@@ -31,4 +31,64 @@ describe("Store message publish", () => {
 
         expect(got).toBe(expected);
     });
+
+    it("should pin a file and retrieve it correctly", async () => {
+        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
+
+        const hash = await store.Pin({
+            channel: "TEST",
+            account: account,
+            fileHash: helloWorldHash,
+        });
+
+        const response = await store.Get({
+            fileHash: hash.content.item_hash,
+            APIServer: DEFAULT_API_V2,
+        });
+
+        const got = ArraybufferToString(response);
+        const expected = "hello world!";
+
+        expect(got).toBe(expected);
+    });
+
+    it("should fail to pin a file", async () => {
+        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+
+        const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
+        const fileContent = readFileSync("./tests/messages/store/testFile.txt");
+
+        await expect(
+            store.Publish({
+                channel: "TEST",
+                APIServer: DEFAULT_API_V2,
+                account: account,
+                storageEngine: ItemType.storage,
+                fileObject: fileContent,
+                fileHash: helloWorldHash,
+            }),
+        ).rejects.toThrow("You can't pin a file and upload it at the same time.");
+
+        await expect(
+            store.Publish({
+                channel: "TEST",
+                APIServer: DEFAULT_API_V2,
+                account: account,
+                storageEngine: ItemType.storage,
+                fileHash: helloWorldHash,
+            }),
+        ).rejects.toThrow("You must choose ipfs to pin file.");
+
+        await expect(
+            store.Publish({
+                channel: "TEST",
+                APIServer: DEFAULT_API_V2,
+                account: account,
+                storageEngine: ItemType.storage,
+            }),
+        ).rejects.toThrow("You need to specify a File to upload or a Hash to pin.");
+    });
 });
