@@ -54,7 +54,7 @@ describe("Store message publish", () => {
         expect(got).toBe(expected);
     });
 
-    it("should fail to pin a file", async () => {
+    it("should fail to pin a file at runtime", async () => {
         const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
@@ -62,6 +62,8 @@ describe("Store message publish", () => {
         const fileContent = readFileSync("./tests/messages/store/testFile.txt");
 
         await expect(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             store.Publish({
                 channel: "TEST",
                 APIServer: DEFAULT_API_V2,
@@ -83,6 +85,8 @@ describe("Store message publish", () => {
         ).rejects.toThrow("You must choose ipfs to pin file.");
 
         await expect(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             store.Publish({
                 channel: "TEST",
                 APIServer: DEFAULT_API_V2,

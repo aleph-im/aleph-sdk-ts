@@ -2,6 +2,7 @@ import * as base from "../../accounts/account";
 import { ItemType, MessageType, StoreContent, StoreMessage } from "../message";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
+import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 
 type StorePublishConfiguration = {
     channel: string;
@@ -18,7 +19,9 @@ type StorePublishConfiguration = {
  *
  * @param spc The configuration used to publish a store message.
  */
-export async function Publish(spc: StorePublishConfiguration): Promise<StoreMessage> {
+export async function Publish(
+    spc: RequireOnlyOne<StorePublishConfiguration, "fileObject" | "fileHash">,
+): Promise<StoreMessage> {
     if (!spc.fileObject && !spc.fileHash) throw new Error("You need to specify a File to upload or a Hash to pin.");
     if (spc.fileObject && spc.fileHash) throw new Error("You can't pin a file and upload it at the same time.");
     if (spc.fileHash && spc.storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin file.");
