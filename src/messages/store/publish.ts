@@ -1,12 +1,14 @@
 import * as base from "../../accounts/account";
-import { MessageType, ItemType, StoreContent, StoreMessage } from "../message";
+import { ItemType, MessageType, StoreContent, StoreMessage } from "../message";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
+import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 
 type StorePublishConfiguration = {
     channel: string;
     account: base.Account;
-    fileObject: Buffer | Blob;
+    fileObject?: Buffer | Blob;
+    fileHash?: string;
     storageEngine: ItemType;
     APIServer: string;
 };
@@ -17,12 +19,22 @@ type StorePublishConfiguration = {
  *
  * @param spc The configuration used to publish a store message.
  */
-export async function Publish(spc: StorePublishConfiguration): Promise<StoreMessage> {
-    const hash = await PushFileToStorageEngine({
-        APIServer: spc.APIServer,
-        storageEngine: spc.storageEngine,
-        file: spc.fileObject,
-    });
+export async function Publish(
+    spc: RequireOnlyOne<StorePublishConfiguration, "fileObject" | "fileHash">,
+): Promise<StoreMessage> {
+    if (!spc.fileObject && !spc.fileHash) throw new Error("You need to specify a File to upload or a Hash to pin.");
+    if (spc.fileObject && spc.fileHash) throw new Error("You can't pin a file and upload it at the same time.");
+    if (spc.fileHash && spc.storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin file.");
+
+    const hash =
+        spc.fileHash ||
+        (await PushFileToStorageEngine({
+            APIServer: spc.APIServer,
+            storageEngine: spc.storageEngine,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            file: spc.fileObject,
+        }));
 
     const timestamp = Date.now() / 1000;
     const content: StoreContent = {

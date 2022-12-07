@@ -1,0 +1,28 @@
+import * as base from "../../accounts/account";
+import { ItemType, StoreMessage } from "../message";
+import { Publish } from "./publish";
+import { DEFAULT_API_V2 } from "../../global";
+
+type StorePinConfiguration = {
+    channel: string;
+    account: base.Account;
+    fileHash: string;
+    storageEngine?: ItemType;
+    APIServer?: string;
+};
+
+/**
+ * Publishes a store message, containing a hash to pin an IPFS file.
+ * You also have to provide default message properties, such as the targeted channel or the account used to sign the message.
+ *
+ * @param spc The configuration used to pin the file.
+ */
+export async function Pin(spc: StorePinConfiguration): Promise<StoreMessage> {
+    return await Publish({
+        account: spc.account,
+        channel: spc.channel,
+        fileHash: spc.fileHash,
+        APIServer: spc.APIServer || DEFAULT_API_V2,
+        storageEngine: ItemType.ipfs,
+    });
+}
