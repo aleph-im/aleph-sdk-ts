@@ -5,6 +5,8 @@ This tool is intended as a quick demo to send message on the Aleph.im network us
 ## Setup
 
 ```
+You must have install all the dependencies from the typescript sdk at the root of the project before
+
 # install dependencies
 npm install 
 
