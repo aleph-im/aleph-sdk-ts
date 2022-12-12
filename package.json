@@ -77,6 +77,8 @@
         "@ledgerhq/hw-transport-node-hid": "^6.27.6",
         "@ledgerhq/hw-transport-webusb": "^6.27.6",
         "@metamask/eth-sig-util": "^5.0.0",
+        "@polkadot/extension-dapp": "^0.44.6",
+        "@polkadot/extension-inject": "^0.44.6",
         "@polkadot/keyring": "^7.7.1",
         "@polkadot/util": "^7.7.1",
         "@polkadot/util-crypto": "^7.7.1",

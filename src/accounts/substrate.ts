@@ -1,9 +1,9 @@
 import { Account } from "./account";
+import "@polkadot/api-augment";
+
 import { BaseMessage, Chain } from "../messages/types";
 import { GetVerificationBuffer } from "../messages";
-
 import { InjectedExtension } from "@polkadot/extension-inject/types";
-
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
