@@ -8,6 +8,10 @@ export enum KeypairChains {
     Tezos = "XTC_KP",
 }
 
+export enum HardwareChains {
+    Ethereum = "ETH_HW",
+}
+
 export enum WalletChains {
     Avalanche = "AVAX",
     Ethereum = "ETH",

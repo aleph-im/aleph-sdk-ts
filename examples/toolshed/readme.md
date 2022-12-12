@@ -5,8 +5,10 @@ This tool is intended as a quick demo to send message on the Aleph.im network us
 ## Setup
 
 ```
+You must install all the dependencies from the typescript sdk at the root of the project before running it
+
 # install dependencies
-npm install 
+npm install
 
 # Launches the app in your default browser
 npm run dev

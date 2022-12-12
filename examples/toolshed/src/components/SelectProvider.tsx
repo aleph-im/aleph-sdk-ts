@@ -1,5 +1,5 @@
 import Select, { SingleValue } from 'react-select'
-import { KeypairChains, WalletChains } from '../model/chains'
+import {HardwareChains, KeypairChains, WalletChains} from '../model/chains'
 import { dispatchProps } from '../model/componentProps'
 import { Actions } from '../reducer'
 
@@ -26,7 +26,12 @@ export const availableWallets: Option[] = [
   { label: 'Solana (via Phantom)', value: WalletChains.Solana },
 ]
 
+export const availableHardware: Option[] = [
+  { label: 'Ethereum (via Ledger)', value: HardwareChains.Ethereum },
+]
+
 export const options = [
+  { label: 'Hardware', options: availableHardware },
   { label: 'Wallets', options: availableWallets },
   { label: 'Keypairs', options: availableKeypairs },
 ]

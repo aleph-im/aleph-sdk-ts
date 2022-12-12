@@ -1,5 +1,5 @@
 import { Account } from "../../../src/accounts/account";
-import { KeypairChains, WalletChains } from "./model/chains";
+import { KeypairChains, WalletChains, HardwareChains } from "./model/chains";
 
 export enum Actions {
     SELECT_CHAIN,
@@ -12,7 +12,7 @@ export type ActionType = {
 };
 
 export type AppStateType = {
-    selectedChain: KeypairChains | WalletChains;
+    selectedChain: KeypairChains | WalletChains | HardwareChains;
     account: null | Account;
 };
 
