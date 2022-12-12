@@ -12,7 +12,7 @@ import HardwareConfig from "./components/HardwareConfig";
 function App() {
   const [state, dispatch] = useReducer(reducer, initState)
 
-    const connexion = () => {
+    const connection = () => {
       if (state.account) {
           return (
               <div>
@@ -26,10 +26,9 @@ function App() {
           return (<KeypairConfig state={state} dispatch={dispatch} />)
       } else if (state.selectedChain.endsWith('_HW')) {
           return (<HardwareConfig state={state} dispatch={dispatch} />)
-      } else {
-          return (<WalletConfig state={state} dispatch={dispatch} />)
       }
-
+      
+      return (<WalletConfig state={state} dispatch={dispatch} />)
     }
 
   return (
@@ -47,7 +46,7 @@ function App() {
         </section>
         <section className="halfpage">
          <h2>Config</h2>
-            { connexion() }
+            { connection() }
         </section>
       </section>
 
