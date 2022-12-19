@@ -12,10 +12,8 @@ describe("Post publish tests", () => {
             body: "Hello World",
         };
         const oldPost = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: account,
             postType: postType,
             content: content,
@@ -25,7 +23,7 @@ describe("Post publish tests", () => {
         const amended = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
+            inlineRequested: false,
             storageEngine: ItemType.ipfs,
             account: account,
             postType: "amend",
@@ -53,10 +51,8 @@ describe("Post publish tests", () => {
         const account2 = ethereum.NewAccount();
 
         const originalPost = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
             inlineRequested: true,
-            storageEngine: ItemType.inline,
             account: account1.account,
             postType: "testing_delegate",
             content: { body: "First content" },

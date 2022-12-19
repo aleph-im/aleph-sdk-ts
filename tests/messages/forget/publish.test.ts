@@ -23,11 +23,9 @@ describe("Forget publish tests", () => {
         });
 
         const Fres = await forget.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
             hashes: [res.item_hash],
             inlineRequested: true,
-            storageEngine: ItemType.inline,
             account: account,
         });
         expect(Fres.content).not.toBeNull();

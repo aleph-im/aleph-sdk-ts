@@ -1,7 +1,5 @@
 import { readFileSync } from "fs";
 import { ethereum, program } from "../../index";
-import { DEFAULT_API_V2 } from "../../../src/global";
-import { ItemType } from "../../../src/messages/message";
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
     return new TextDecoder().decode(ab);
@@ -17,9 +15,6 @@ describe("Test the program message", () => {
         const res = await program.publish({
             account: account,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
-            inlineRequested: false,
-            storageEngine: ItemType.ipfs,
             file: fileContent,
             entrypoint: "main:app",
         });

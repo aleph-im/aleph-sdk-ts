@@ -1,10 +1,14 @@
 import { Account } from "../../accounts/account";
-import { MessageType, ItemType, AggregateContentKey, AggregateContent, AggregateMessage } from "../message";
+import { DEFAULT_API_V2 } from "../../global";
+import { AggregateContent, AggregateContentKey, AggregateMessage, ItemType, MessageType } from "../message";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
+import { MessageBuilder } from "../../utils/messageBuilder";
 
 /**
  * account:         The account used to sign the aggregate message.
+ *
+ * address:         To aggregate content for another account (Required an authorization key)
  *
  * key:             The key used to index the aggregate message.
  *
@@ -24,9 +28,9 @@ type AggregatePublishConfiguration<T> = {
     key: string | AggregateContentKey;
     content: T;
     channel: string;
-    storageEngine: ItemType;
-    inlineRequested: boolean;
-    APIServer: string;
+    storageEngine?: ItemType;
+    inlineRequested?: boolean;
+    APIServer?: string;
 };
 
 /**
@@ -42,41 +46,45 @@ type AggregatePublishConfiguration<T> = {
  *
  * @param configuration The configuration used to publish the aggregate message.
  */
-export async function Publish<T>(configuration: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
+export async function Publish<T>({
+    account,
+    address,
+    key,
+    content,
+    channel,
+    storageEngine = ItemType.storage,
+    inlineRequested = true,
+    APIServer = DEFAULT_API_V2,
+}: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
     const timestamp = Date.now() / 1000;
-    const content: AggregateContent<T> = {
-        address: configuration.address ? configuration.address : configuration.account.address,
-        key: configuration.key,
+    const aggregateContent: AggregateContent<T> = {
+        address: address || account.address,
+        key: key,
         time: timestamp,
-        content: configuration.content,
-    };
-    const message: AggregateMessage<T> = {
-        chain: configuration.account.GetChain(),
-        channel: configuration.channel,
-        sender: configuration.account.address,
-        type: MessageType.aggregate,
-        confirmed: false,
-        signature: "",
-        size: 0,
-        time: timestamp,
-        item_type: configuration.storageEngine,
-        item_content: "",
-        item_hash: "",
         content: content,
     };
 
+    const message = MessageBuilder<AggregateContent<T>, MessageType.aggregate>({
+        account,
+        channel,
+        timestamp,
+        storageEngine,
+        content: aggregateContent,
+        type: MessageType.aggregate,
+    });
+
     await PutContentToStorageEngine({
         message: message,
-        content: content,
-        inlineRequested: configuration.inlineRequested,
-        storageEngine: configuration.storageEngine,
-        APIServer: configuration.APIServer,
+        content: aggregateContent,
+        inlineRequested,
+        storageEngine,
+        APIServer,
     });
 
     await SignAndBroadcast({
         message: message,
-        account: configuration.account,
-        APIServer: configuration.APIServer,
+        account,
+        APIServer,
     });
 
     return message;

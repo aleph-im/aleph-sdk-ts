@@ -1,14 +1,16 @@
 import { Account } from "../../accounts/account";
-import { MessageType, ItemType, PostContent, PostMessage, ChainRef } from "../message";
+import { ChainRef, ItemType, MessageType, PostContent, PostMessage } from "../message";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
+import { DEFAULT_API_V2 } from "../../global";
+import { MessageBuilder } from "../../utils/messageBuilder";
 
 type PostSubmitConfiguration<T> = {
-    APIServer: string;
+    APIServer?: string;
     ref?: string | ChainRef;
     channel: string;
-    inlineRequested: boolean;
-    storageEngine: ItemType;
+    inlineRequested?: boolean;
+    storageEngine?: ItemType;
     account: Account;
     address?: string;
     postType: string;
@@ -24,46 +26,48 @@ type PostSubmitConfiguration<T> = {
  *
  * @param configuration The configuration used to publish the aggregate message.
  */
-export async function Publish<T>(configuration: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
+export async function Publish<T>({
+    account,
+    postType,
+    content,
+    inlineRequested = true,
+    channel,
+    ref,
+    address,
+    storageEngine = ItemType.storage,
+    APIServer = DEFAULT_API_V2,
+}: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
     const timestamp: number = Date.now() / 1000;
-    const content: PostContent<T> = {
-        type: configuration.postType,
-        address: configuration.address || configuration.account.address,
-        content: configuration.content,
-        time: timestamp,
-    };
-
-    if (configuration.ref !== "") {
-        content.ref = configuration.ref;
-    }
-
-    const message: PostMessage<T> = {
-        chain: configuration.account.GetChain(),
-        sender: configuration.account.address,
-        type: MessageType.post,
-        channel: configuration.channel,
-        confirmed: false,
-        signature: "",
-        size: 0,
-        time: timestamp,
-        item_type: configuration.storageEngine,
-        item_content: "",
-        item_hash: "",
+    const postContent: PostContent<T> = {
+        type: postType,
+        address: address || account.address,
         content: content,
+        time: timestamp,
     };
+
+    if (ref !== "") postContent.ref = ref;
+
+    const message = MessageBuilder<PostContent<T>, MessageType.post>({
+        account,
+        channel,
+        timestamp,
+        storageEngine,
+        content: postContent,
+        type: MessageType.post,
+    });
 
     await PutContentToStorageEngine({
         message: message,
-        content: content,
-        inlineRequested: configuration.inlineRequested,
-        storageEngine: configuration.storageEngine,
-        APIServer: configuration.APIServer,
+        content: postContent,
+        inlineRequested,
+        storageEngine,
+        APIServer,
     });
 
     await SignAndBroadcast({
         message: message,
-        account: configuration.account,
-        APIServer: configuration.APIServer,
+        account,
+        APIServer,
     });
 
     return message;

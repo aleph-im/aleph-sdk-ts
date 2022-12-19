@@ -1,4 +1,3 @@
-import { ItemType } from "../../../src/messages/message";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { aggregate, ethereum } from "../../index";
 
@@ -16,9 +15,7 @@ describe("Aggregate message publish test", () => {
             key: key,
             content: content,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
             inlineRequested: true,
-            storageEngine: ItemType.storage,
         });
 
         type T = {

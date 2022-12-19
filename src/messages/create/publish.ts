@@ -46,18 +46,13 @@ type PushFileConfiguration = {
  * @param configuration The configuration used to update & publish the message.
  */
 export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
-    if (configuration.inlineRequested) {
-        const serialized = JSON.stringify(configuration.content);
+    const serialized = JSON.stringify(configuration.content);
 
-        if (serialized.length > 150000) {
-            configuration.inlineRequested = false;
-        } else {
-            configuration.message.item_type = ItemType.inline;
-            configuration.message.item_content = serialized;
-            configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
-        }
-    }
-    if (!configuration.inlineRequested) {
+    if (serialized.length < 50000 && configuration.inlineRequested) {
+        configuration.message.item_type = ItemType.inline;
+        configuration.message.item_content = serialized;
+        configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
+    } else {
         configuration.message.item_content = undefined;
         configuration.message.item_type = configuration.storageEngine;
         configuration.message.item_hash = await PushToStorageEngine<T>({
