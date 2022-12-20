@@ -15,7 +15,6 @@ describe("Aggregate message publish test", () => {
             key: key,
             content: content,
             channel: "TEST",
-            inlineRequested: true,
         });
 
         type T = {

@@ -13,7 +13,6 @@ describe("Post publish tests", () => {
         };
         const oldPost = await post.Publish({
             channel: "TEST",
-            inlineRequested: true,
             account: account,
             postType: postType,
             content: content,
@@ -23,7 +22,6 @@ describe("Post publish tests", () => {
         const amended = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: false,
             storageEngine: ItemType.ipfs,
             account: account,
             postType: "amend",
@@ -52,7 +50,6 @@ describe("Post publish tests", () => {
 
         const originalPost = await post.Publish({
             channel: "TEST",
-            inlineRequested: true,
             account: account1.account,
             postType: "testing_delegate",
             content: { body: "First content" },
@@ -72,14 +69,12 @@ describe("Post publish tests", () => {
             },
             channel: "security",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.inline,
         });
 
         await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account2.account,
             address: account1.account.address,

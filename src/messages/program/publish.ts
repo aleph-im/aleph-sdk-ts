@@ -26,8 +26,8 @@ type ProgramPublishConfiguration = {
 export async function publish({
     account,
     channel,
-    inlineRequested = true,
-    storageEngine = ItemType.storage,
+    inlineRequested,
+    storageEngine = ItemType.inline,
     APIServer = DEFAULT_API_V2,
     file,
     entrypoint,
@@ -36,8 +36,9 @@ export async function publish({
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
 }: ProgramPublishConfiguration): Promise<ProgramMessage> {
-    const timestamp = Date.now() / 1000;
+    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
 
+    const timestamp = Date.now() / 1000;
     // Store the source code of the program and retrieve the hash.
     const programRef = await storePublish({
         channel,
@@ -93,8 +94,6 @@ export async function publish({
     await PutContentToStorageEngine({
         message: message,
         content: programContent,
-        inlineRequested,
-        storageEngine,
         APIServer,
     });
 

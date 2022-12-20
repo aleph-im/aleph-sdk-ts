@@ -46,9 +46,11 @@ export async function Publish({
     hashes,
     reason,
     channel,
-    storageEngine = ItemType.storage,
-    inlineRequested = true,
+    storageEngine = ItemType.inline,
+    inlineRequested,
 }: ForgetPublishConfiguration): Promise<ForgetMessage> {
+    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
+
     const timestamp = Date.now() / 1000;
     const forgetContent: ForgetContent = {
         address: account.address,
@@ -69,8 +71,6 @@ export async function Publish({
     await PutContentToStorageEngine({
         message: message,
         content: forgetContent,
-        inlineRequested,
-        storageEngine,
         APIServer,
     });
 

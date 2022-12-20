@@ -11,7 +11,7 @@ type StorePublishConfiguration = {
     account: base.Account;
     fileObject?: Buffer | Blob;
     fileHash?: string;
-    storageEngine?: ItemType;
+    storageEngine?: ItemType.ipfs | ItemType.storage;
     APIServer?: string;
 };
 
@@ -60,11 +60,10 @@ export async function Publish({
         type: MessageType.store,
     });
 
+    // TODO Does the message containing the hash have to be push inline or in the same storage engine as the file?
     await PutContentToStorageEngine({
         message: message,
         content: storeContent,
-        inlineRequested: true,
-        storageEngine,
         APIServer,
     });
 

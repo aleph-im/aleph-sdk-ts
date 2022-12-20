@@ -30,13 +30,15 @@ export async function Publish<T>({
     account,
     postType,
     content,
-    inlineRequested = true,
+    inlineRequested,
     channel,
     ref,
     address,
-    storageEngine = ItemType.storage,
+    storageEngine = ItemType.inline,
     APIServer = DEFAULT_API_V2,
 }: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
+    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
+
     const timestamp: number = Date.now() / 1000;
     const postContent: PostContent<T> = {
         type: postType,
@@ -59,8 +61,6 @@ export async function Publish<T>({
     await PutContentToStorageEngine({
         message: message,
         content: postContent,
-        inlineRequested,
-        storageEngine,
         APIServer,
     });
 

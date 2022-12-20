@@ -52,10 +52,12 @@ export async function Publish<T>({
     key,
     content,
     channel,
-    storageEngine = ItemType.storage,
-    inlineRequested = true,
+    storageEngine = ItemType.inline,
+    inlineRequested,
     APIServer = DEFAULT_API_V2,
 }: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
+    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
+
     const timestamp = Date.now() / 1000;
     const aggregateContent: AggregateContent<T> = {
         address: address || account.address,
@@ -76,8 +78,6 @@ export async function Publish<T>({
     await PutContentToStorageEngine({
         message: message,
         content: aggregateContent,
-        inlineRequested,
-        storageEngine,
         APIServer,
     });
 

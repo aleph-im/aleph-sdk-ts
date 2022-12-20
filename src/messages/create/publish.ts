@@ -19,8 +19,6 @@ import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 type PutConfiguration<T> = {
     message: BaseMessage;
     content: T;
-    inlineRequested: boolean;
-    storageEngine: ItemType;
     APIServer: string;
 };
 
@@ -47,18 +45,23 @@ type PushFileConfiguration = {
  */
 export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
     const serialized = JSON.stringify(configuration.content);
+    const requestedStorageEngine = configuration.message.item_type;
 
-    if (serialized.length < 50000 && configuration.inlineRequested) {
-        configuration.message.item_type = ItemType.inline;
+    if (Buffer.byteLength(serialized) < 50000 && requestedStorageEngine === ItemType.inline) {
         configuration.message.item_content = serialized;
         configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
     } else {
+        if (requestedStorageEngine === ItemType.inline) {
+            console.warn(
+                "Storage Engine warning: Due to the size of your message content, your message storage was switch from 'inline' to 'storage' ",
+            );
+            configuration.message.item_type = ItemType.storage;
+        }
         configuration.message.item_content = undefined;
-        configuration.message.item_type = configuration.storageEngine;
         configuration.message.item_hash = await PushToStorageEngine<T>({
             content: configuration.content,
             APIServer: configuration.APIServer,
-            storageEngine: configuration.storageEngine,
+            storageEngine: configuration.message.item_type,
         });
     }
 }

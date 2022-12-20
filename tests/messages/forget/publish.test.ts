@@ -15,7 +15,6 @@ describe("Forget publish tests", () => {
         const res = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
             storageEngine: ItemType.inline,
             account: account,
             postType: postType,
@@ -25,7 +24,6 @@ describe("Forget publish tests", () => {
         const Fres = await forget.Publish({
             channel: "TEST",
             hashes: [res.item_hash],
-            inlineRequested: true,
             account: account,
         });
         expect(Fres.content).not.toBeNull();
@@ -37,7 +35,6 @@ describe("Forget publish tests", () => {
         const res = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
             storageEngine: ItemType.inline,
             account: account,
             postType: postType,
@@ -47,7 +44,6 @@ describe("Forget publish tests", () => {
         const Fres = await forget.Publish({
             channel: "TEST",
             hashes: [res.item_hash],
-            inlineRequested: false,
             storageEngine: ItemType.storage,
             account: account,
         });
