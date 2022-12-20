@@ -1,16 +1,16 @@
 import { ItemType } from "../messages/message";
 import { Account } from "../accounts/account";
 
-type MessageBuilderConfig<T, C> = {
+type MessageBuilderConfig<C, T> = {
     storageEngine: ItemType;
     account: Account;
     channel: string;
     timestamp: number;
-    content: T;
-    type: C;
+    content: C;
+    type: T;
 };
 
-export function MessageBuilder<T, C>(config: MessageBuilderConfig<T, C>) {
+export function MessageBuilder<C, T>(config: MessageBuilderConfig<C, T>) {
     return {
         type: config.type,
         time: config.timestamp,
