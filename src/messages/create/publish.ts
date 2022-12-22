@@ -17,6 +17,7 @@ import { getSocketPath, stripTrailingSlash } from "../../utils/url";
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type PutConfiguration<T> = {
+    inline?: boolean;
     message: BaseMessage;
     content: T;
     APIServer: string;
@@ -47,8 +48,9 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
     const serialized = JSON.stringify(configuration.content);
     const requestedStorageEngine = configuration.message.item_type;
 
-    if (Buffer.byteLength(serialized) < 50000 && requestedStorageEngine === ItemType.inline) {
+    if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || configuration.inline)) {
         configuration.message.item_content = serialized;
+        configuration.message.item_type = ItemType.inline;
         configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
     } else {
         if (requestedStorageEngine === ItemType.inline) {

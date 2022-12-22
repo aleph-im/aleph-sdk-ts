@@ -49,7 +49,9 @@ export async function Publish({
     storageEngine = ItemType.inline,
     inlineRequested,
 }: ForgetPublishConfiguration): Promise<ForgetMessage> {
-    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
+    if (inlineRequested) console.warn("inlineRequested is deprecated and will be removed: use storageEngine.inline");
+    if (storageEngine != ItemType.inline)
+        console.warn("storageEngine for Forget message must be 'inline', other value will be deprecated");
 
     const timestamp = Date.now() / 1000;
     const forgetContent: ForgetContent = {
@@ -71,6 +73,7 @@ export async function Publish({
     await PutContentToStorageEngine({
         message: message,
         content: forgetContent,
+        inline: true,
         APIServer,
     });
 

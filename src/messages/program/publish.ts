@@ -10,7 +10,7 @@ import { MessageBuilder } from "../../utils/messageBuilder";
 type ProgramPublishConfiguration = {
     account: Account;
     channel: string;
-    storageEngine?: ItemType;
+    storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
     APIServer?: string;
     file: Buffer | Blob;
@@ -27,7 +27,7 @@ export async function publish({
     account,
     channel,
     inlineRequested,
-    storageEngine = ItemType.inline,
+    storageEngine = ItemType.storage,
     APIServer = DEFAULT_API_V2,
     file,
     entrypoint,
@@ -94,6 +94,7 @@ export async function publish({
     await PutContentToStorageEngine({
         message: message,
         content: programContent,
+        inline: true,
         APIServer,
     });
 
