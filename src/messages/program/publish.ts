@@ -7,6 +7,29 @@ import { SignAndBroadcast } from "../create/signature";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 
+/**
+ * account:         The account used to sign the aggregate message.
+ *
+ * channel:         The channel in which the message will be published.
+ *
+ * storageEngine:   The storage engine to used when storing the message in case of Max_size (IPFS or Aleph storage).
+ *
+ * inlineRequested: [Deprecated] - Will the message be inlined ?
+ *
+ * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ *
+ * file:            The source code of the program in under Zip format.
+ *
+ * entrypoint:      The entrypoint of your program.
+ *
+ * Subscription:    How to start you program? default by Http.
+ *
+ * memory:          Memory amount.
+ *
+ * runtime:         The docker image to use for the program.
+ *
+ * volumes:         mount point to use for storage.
+ */
 type ProgramPublishConfiguration = {
     account: Account;
     channel: string;
@@ -36,7 +59,7 @@ export async function publish({
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
 }: ProgramPublishConfiguration): Promise<ProgramMessage> {
-    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
+    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed");
 
     const timestamp = Date.now() / 1000;
     // Store the source code of the program and retrieve the hash.

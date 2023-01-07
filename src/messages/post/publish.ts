@@ -5,6 +5,25 @@ import { SignAndBroadcast } from "../create/signature";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 
+/**
+ * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ *
+ * ref:             A hash or message object to reference another post / transaction hash / address / ...
+ *
+ * channel:         The channel in which the message will be published.
+ *
+ * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
+ *
+ * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
+ *
+ * account:         The account used to sign the aggregate message.
+ *
+ * address:         To aggregate content for another account (Required an authorization key)
+ *
+ * postType:        string of your choice like Blog / amend / chat / comment / ...
+ *
+ * content:         The post message content.
+ */
 type PostSubmitConfiguration<T> = {
     APIServer?: string;
     ref?: string | ChainRef;

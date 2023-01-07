@@ -10,9 +10,9 @@ import { getSocketPath, stripTrailingSlash } from "../../utils/url";
  *
  * content:         The message's content to put in the message.
  *
- * inlineRequested: Will the message be inlined ?
+ * inline:          This param can't be filled by the user, it will force the message to be inline in case of size > MAX_SIZE
  *
- * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph).
+ * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
@@ -55,7 +55,7 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
     } else {
         if (requestedStorageEngine === ItemType.inline) {
             console.warn(
-                "Storage Engine warning: Due to the size of your message content, your message storage was switch from 'inline' to 'storage' ",
+                "Storage Engine warning: Due to the size of your message content, your message location was switch from 'inline' to 'storage' ",
             );
             configuration.message.item_type = ItemType.storage;
         }

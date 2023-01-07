@@ -6,6 +6,19 @@ import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 
+/**
+ * channel:         The channel in which the message will be published.
+ *
+ * account:         The account used to sign the aggregate message.
+ *
+ * fileObject:      A Blob or the content of the file you want to upload.
+ *
+ * fileHash:        The IPFS hash of the content you want to pin.
+ *
+ * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph storage).
+ *
+ * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ */
 type StorePublishConfiguration = {
     channel: string;
     account: base.Account;

@@ -16,9 +16,9 @@ import { MessageBuilder } from "../../utils/messageBuilder";
  *
  * channel:         The channel in which the message will be published.
  *
- * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph).
+ * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
- * inlineRequested: Will the message be inlined ?
+ * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */

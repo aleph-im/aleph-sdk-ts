@@ -95,4 +95,18 @@ describe("Post publish tests", () => {
         });
         expect(amends.posts[0].content).toStrictEqual({ body: "First content updated" });
     });
+
+    it("should automatically switch between inline and Aleph Storage due to the message size", async () => {
+        const { account } = ethereum.NewAccount();
+
+        const postRes = await post.Publish({
+            channel: "TEST",
+            account: account,
+            postType: "testing_oversize",
+            storageEngine: ItemType.inline,
+            content: { body: Buffer.alloc(60 * 2 ** 10, "a").toString() },
+        });
+
+        expect(postRes.item_type).toStrictEqual("storage");
+    });
 });

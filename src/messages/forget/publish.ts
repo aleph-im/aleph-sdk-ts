@@ -10,9 +10,9 @@ import { MessageBuilder } from "../../utils/messageBuilder";
  *
  * channel:         The channel in which the object will be published.
  *
- * storageEngine:   The storage engine to used when storing the object (IPFS or Aleph).
+ * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
- * inlineRequested: Will the message be inlined ?
+ * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
@@ -50,8 +50,6 @@ export async function Publish({
     inlineRequested,
 }: ForgetPublishConfiguration): Promise<ForgetMessage> {
     if (inlineRequested) console.warn("inlineRequested is deprecated and will be removed: use storageEngine.inline");
-    if (storageEngine != ItemType.inline)
-        console.warn("storageEngine for Forget message must be 'inline', other value will be deprecated");
 
     const timestamp = Date.now() / 1000;
     const forgetContent: ForgetContent = {
@@ -73,7 +71,6 @@ export async function Publish({
     await PutContentToStorageEngine({
         message: message,
         content: forgetContent,
-        inline: true,
         APIServer,
     });
 
