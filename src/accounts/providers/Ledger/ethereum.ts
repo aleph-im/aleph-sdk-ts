@@ -1,4 +1,5 @@
 import EthApp from "@ledgerhq/hw-app-eth";
+import semver from "semver";
 
 import { Account } from "../../account";
 import { Chain, BaseMessage } from "../../../messages/message";
@@ -51,8 +52,7 @@ export async function GetAccountFromLedger(): Promise<ETHLedgerAccount> {
     const signer = new EthApp(transport);
 
     const { version } = await signer.getAppConfiguration();
-    const stripPatch = Number(version.replace(/(\w+\.\w+)\.\w+$/gi, "$1"));
-    if (stripPatch < 1.9) {
+    if (semver.lt(version, "1.9.19")) {
         throw new Error("Outdated Ledger device firmware. PLease update");
     }
 
