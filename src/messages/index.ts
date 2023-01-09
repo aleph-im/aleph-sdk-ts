@@ -4,8 +4,9 @@ import * as forget from "./forget";
 import * as post from "./post";
 import * as program from "./program";
 import * as store from "./store";
+import * as search from "./search";
 
-export { aggregate, forget, post, program, store };
+export { aggregate, forget, post, program, store, search };
 
 /**
  * Extracts some fields from an Aleph message to sign it using an account.

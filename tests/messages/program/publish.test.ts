@@ -22,4 +22,33 @@ describe("Test the program message", () => {
         expect(res.content.code.entrypoint).toBe("main:app");
         expect(res.content.address).toBe(account.address);
     });
+
+    it("Spawn a program", async () => {
+        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+
+        const res = await program.spawn({
+            account: account,
+            channel: "TEST",
+            entrypoint: "main:app",
+            programRef: "560506e91349712a8338440c0df3c74c17d1b797183ffc34797887d1d4470130",
+        });
+
+        expect(res.content.code.entrypoint).toBe("main:app");
+        expect(res.content.address).toBe(account.address);
+    });
+
+    it("Should fail to Spawn a program", async () => {
+        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+
+        await expect(
+            program.spawn({
+                account: account,
+                channel: "TEST",
+                entrypoint: "main:app",
+                programRef: "unknown_program",
+            }),
+        ).rejects.toThrow("The program ref: unknown_program does not exist on Aleph network");
+    });
 });

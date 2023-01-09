@@ -1,3 +1,4 @@
 import { publish } from "./publish";
+import { spawn } from "./spawn";
 
-export { publish };
+export { publish, spawn };
