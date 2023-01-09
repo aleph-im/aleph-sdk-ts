@@ -56,7 +56,7 @@ export async function Publish({
         address: account.address,
         time: timestamp,
         hashes: hashes,
-        reason: reason || "None",
+        reason: reason || undefined,
     };
 
     const message = MessageBuilder<ForgetContent, MessageType.forget>({
