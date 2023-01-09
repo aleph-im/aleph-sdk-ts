@@ -52,7 +52,7 @@ export async function GetAccountFromLedger(): Promise<ETHLedgerAccount> {
     const signer = new EthApp(transport);
 
     const { version } = await signer.getAppConfiguration();
-    if (semver.lt(version, "1.10.0")) {
+    if (semver.lt(version, "1.9.19")) {
         throw new Error("Outdated Ledger device firmware. PLease update");
     }
 
