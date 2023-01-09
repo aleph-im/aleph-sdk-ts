@@ -14,7 +14,7 @@ import { MessageBuilder } from "../../utils/messageBuilder";
  *
  * storageEngine:   The storage engine to used when storing the message in case of Max_size (IPFS or Aleph storage).
  *
- * inlineRequested: [Deprecated] - Will the message be inlined ?
+ * inlineRequested: If set to False, the Program message will be store on the same storageEngine you picked.
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
@@ -49,8 +49,8 @@ type ProgramPublishConfiguration = {
 export async function publish({
     account,
     channel,
-    inlineRequested,
-    storageEngine = ItemType.storage,
+    inlineRequested = true,
+    storageEngine = ItemType.ipfs,
     APIServer = DEFAULT_API_V2,
     file,
     entrypoint,
@@ -59,15 +59,13 @@ export async function publish({
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
 }: ProgramPublishConfiguration): Promise<ProgramMessage> {
-    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed");
-
     const timestamp = Date.now() / 1000;
     // Store the source code of the program and retrieve the hash.
     const programRef = await storePublish({
         channel,
         APIServer,
         account,
-        storageEngine: ItemType.storage,
+        storageEngine,
         fileObject: file,
     });
 
@@ -117,7 +115,7 @@ export async function publish({
     await PutContentToStorageEngine({
         message: message,
         content: programContent,
-        inline: true,
+        inline: inlineRequested,
         APIServer,
     });
 

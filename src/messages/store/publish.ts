@@ -17,6 +17,8 @@ import { MessageBuilder } from "../../utils/messageBuilder";
  *
  * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph storage).
  *
+ * inlineRequested: If set to False, the Store message will be store on the same storageEngine you picked.
+ *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type StorePublishConfiguration = {
@@ -25,6 +27,7 @@ type StorePublishConfiguration = {
     fileObject?: Buffer | Blob;
     fileHash?: string;
     storageEngine?: ItemType.ipfs | ItemType.storage;
+    inlineRequested?: boolean;
     APIServer?: string;
 };
 
@@ -38,6 +41,7 @@ export async function Publish({
     account,
     APIServer = DEFAULT_API_V2,
     storageEngine = ItemType.storage,
+    inlineRequested = true,
     channel,
     fileHash,
     fileObject,
@@ -76,7 +80,7 @@ export async function Publish({
     await PutContentToStorageEngine({
         message: message,
         content: storeContent,
-        inline: true,
+        inline: inlineRequested,
         APIServer,
     });
 
