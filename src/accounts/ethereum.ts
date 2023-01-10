@@ -7,6 +7,9 @@ import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "ecie
 import { JsonRPCWallet } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 
+import ethUtil from "ethereumjs-util";
+import sigUtil from "@metamask/eth-sig-util";
+
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
@@ -39,10 +42,28 @@ export class ETHAccount extends ECIESAccount {
             publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
         else publicKey = this.publicKey;
 
-        if (publicKey)
+        if (publicKey && this.wallet) {
             return new Promise((resolve) => {
                 resolve(secp256k1_encrypt(publicKey, content));
             });
+        } else {
+            new Promise((resolve) => {
+                resolve(
+                    ethUtil.bufferToHex(
+                        Buffer.from(
+                            JSON.stringify(
+                                sigUtil.encrypt({
+                                    publicKey: publicKey,
+                                    data: content,
+                                    version: "x25519-xsalsa20-poly1305",
+                                }),
+                            ),
+                            "utf8",
+                        ),
+                    ),
+                );
+            });
+        }
 
         throw new Error("Cannot encrypt content");
     }

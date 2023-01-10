@@ -6,7 +6,9 @@ import SelectProvider from './components/SelectProvider'
 import KeypairConfig from './components/KeypairConfig'
 import WalletConfig from './components/WalletConfig'
 import MessageConfig from './components/MessageConfig'
+import EncryptionConfig from "./components/EncryptionConfig";
 import HardwareConfig from "./components/HardwareConfig";
+import {ECIESAccount} from "../../../src/accounts/account";
 
 
 function App() {
@@ -18,6 +20,12 @@ function App() {
               <div>
                   <p>Your address is:</p>
                   <span>{state.account.address}</span>
+                  {state.account instanceof ECIESAccount && (
+                      <>
+                        <p>Your public key is:</p>
+                        <span>{state.account.publicKey}</span>
+                      </>
+                  )}
               </div>
           )
       }
@@ -50,10 +58,18 @@ function App() {
         </section>
       </section>
 
+    <div style={{display: 'flex', flexDirection: 'column', gap: '30px'}}>
       {
         state.account &&
         <MessageConfig state={state} />
       }
+      {
+        state.account && state.account instanceof ECIESAccount &&
+        <EncryptionConfig state={state} />
+      }
+    </div>
+
+
     </main>
   )
 }

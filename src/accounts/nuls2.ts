@@ -60,8 +60,10 @@ export class NULS2Account extends ECIESAccount {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    decrypt(encryptedContent: Buffer): Buffer {
-        return secp256k1_decrypt(this.privateKey, encryptedContent);
+    decrypt(encryptedContent: Buffer): Promise<Buffer> {
+        return new Promise((resolve) => {
+            resolve(secp256k1_decrypt(this.privateKey, encryptedContent));
+        });
     }
 
     /**

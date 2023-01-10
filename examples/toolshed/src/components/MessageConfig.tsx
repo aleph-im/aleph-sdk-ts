@@ -33,7 +33,8 @@ function MessageConfig({ state }: consumeProps) {
   }
 
   return (
-    <>
+    <div>
+    <h2>Sending</h2>
     <div>
       <input value={messageContent} 
             size={55}
@@ -50,7 +51,7 @@ function MessageConfig({ state }: consumeProps) {
         Your message was succesfully posted! <a href={`https://explorer.aleph.im/address/${state.account?.GetChain()}/${state.account?.address}/message/POST/${messageHash}`} target="_blank">Check on explorer</a>
       </p>
     }
-    </>
+    </div>
   )
 }
 

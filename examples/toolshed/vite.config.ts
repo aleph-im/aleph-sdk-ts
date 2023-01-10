@@ -24,6 +24,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            crypto: "crypto-browserify",
             process: "process/browser",
             stream: "stream-browserify",
             zlib: "browserify-zlib",

@@ -31,4 +31,5 @@ export abstract class ECIESAccount extends Account {
         this.publicKey = publicKey;
     }
     abstract encrypt(content: Buffer, delegateSupport?: string | ECIESAccount): Promise<Buffer>;
+    abstract decrypt(content: Buffer): Promise<Buffer>;
 }
