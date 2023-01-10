@@ -1,11 +1,8 @@
 import { Account } from "../../accounts/account";
-import { ItemType, MessageType, ProgramMessage, StoreMessage } from "../message";
-import { Encoding, FunctionTriggers, MachineType, MachineVolume, ProgramContent } from "./programModel";
-import { PutContentToStorageEngine } from "../create/publish";
-import { SignAndBroadcast } from "../create/signature";
+import { ItemType, ProgramMessage } from "../message";
+import { Encoding, MachineVolume } from "./programModel";
 import { DEFAULT_API_V2 } from "../../global";
-import { MessageBuilder } from "../../utils/messageBuilder";
-import { GetMessage } from "../search";
+import { publish } from "./publish";
 
 /**
  * account:         The account used to sign the aggregate message.
@@ -59,76 +56,18 @@ export async function spawn({
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
 }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
-    const timestamp = Date.now() / 1000;
-
-    try {
-        const fetchCode = await GetMessage<StoreMessage>({
-            hash: programRef,
-            APIServer: DEFAULT_API_V2,
-        });
-        if (fetchCode.sender != account.address)
-            console.warn(
-                "Caution, you are not the owner of the code. Be aware that the codebase can be changed at any time by the owner.",
-            );
-    } catch (e) {
-        throw new Error(`The program ref: ${programRef} does not exist on Aleph network.`);
-    }
-
-    let triggers: FunctionTriggers = { http: true };
-    if (subscription) triggers = { ...triggers, message: subscription };
-
-    const programContent: ProgramContent = {
-        address: account.address,
-        time: timestamp,
-        type: MachineType.vm_function,
-        allow_amend: false,
-        code: {
-            encoding,
-            entrypoint: entrypoint,
-            ref: programRef,
-            use_latest: true,
-        },
-        on: triggers,
-        environment: {
-            reproducible: false,
-            internet: true,
-            aleph_api: true,
-            shared_cache: false,
-        },
-        resources: {
-            vcpus: 1,
-            memory: memory,
-            seconds: 30,
-        },
-        runtime: {
-            ref: runtime,
-            use_latest: true,
-            comment: "Aleph Alpine Linux with Python 3.8",
-        },
-        volumes,
-    };
-
-    const message = MessageBuilder<ProgramContent, MessageType.program>({
+    return await publish({
         account,
         channel,
-        timestamp,
+        inlineRequested,
         storageEngine,
-        content: programContent,
-        type: MessageType.program,
-    });
-
-    await PutContentToStorageEngine({
-        message: message,
-        content: programContent,
-        inline: inlineRequested,
         APIServer,
+        programRef,
+        entrypoint,
+        encoding,
+        subscription,
+        memory,
+        runtime,
+        volumes,
     });
-
-    await SignAndBroadcast({
-        message: message,
-        account,
-        APIServer,
-    });
-
-    return message;
 }
