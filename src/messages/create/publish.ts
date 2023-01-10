@@ -10,17 +10,16 @@ import { getSocketPath, stripTrailingSlash } from "../../utils/url";
  *
  * content:         The message's content to put in the message.
  *
- * inlineRequested: Will the message be inlined ?
+ * inline:          This param can't be filled by the user, it will force the message to be inline in case of size > MAX_SIZE
  *
- * storageEngine:   The storage engine to used when storing the message (IPFS or Aleph).
+ * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type PutConfiguration<T> = {
+    inline?: boolean;
     message: BaseMessage;
     content: T;
-    inlineRequested: boolean;
-    storageEngine: ItemType;
     APIServer: string;
 };
 
@@ -46,24 +45,25 @@ type PushFileConfiguration = {
  * @param configuration The configuration used to update & publish the message.
  */
 export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
-    if (configuration.inlineRequested) {
-        const serialized = JSON.stringify(configuration.content);
+    const serialized = JSON.stringify(configuration.content);
+    const requestedStorageEngine = configuration.message.item_type;
 
-        if (serialized.length > 150000) {
-            configuration.inlineRequested = false;
-        } else {
-            configuration.message.item_type = ItemType.inline;
-            configuration.message.item_content = serialized;
-            configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
+    if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || configuration.inline)) {
+        configuration.message.item_content = serialized;
+        configuration.message.item_type = ItemType.inline;
+        configuration.message.item_hash = new shajs.sha256().update(serialized).digest("hex");
+    } else {
+        if (requestedStorageEngine === ItemType.inline) {
+            console.warn(
+                "Storage Engine warning: Due to the size of your message content, your message location was switch from 'inline' to 'storage' ",
+            );
+            configuration.message.item_type = ItemType.storage;
         }
-    }
-    if (!configuration.inlineRequested) {
         configuration.message.item_content = undefined;
-        configuration.message.item_type = configuration.storageEngine;
         configuration.message.item_hash = await PushToStorageEngine<T>({
             content: configuration.content,
             APIServer: configuration.APIServer,
-            storageEngine: configuration.storageEngine,
+            storageEngine: configuration.message.item_type,
         });
     }
 }

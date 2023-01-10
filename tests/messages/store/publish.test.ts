@@ -15,9 +15,7 @@ describe("Store message publish", () => {
 
         const hash = await store.Publish({
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
             account: account,
-            storageEngine: ItemType.storage,
             fileObject: fileContent,
         });
 

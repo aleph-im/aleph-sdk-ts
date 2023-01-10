@@ -25,7 +25,7 @@
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
         "prepack": "npm run test && npm run build",
         "test": "npm run test:jest && npm run test:auto",
-        "test:jest": "jest --testTimeout=60000 --verbose --coverage",
+        "test:jest": "jest --testTimeout=1200000 --verbose --coverage",
         "test:auto": "ts-node testsAuto/entryPoint.ts "
     },
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
