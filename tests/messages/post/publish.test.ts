@@ -12,10 +12,7 @@ describe("Post publish tests", () => {
             body: "Hello World",
         };
         const oldPost = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: account,
             postType: postType,
             content: content,
@@ -25,7 +22,6 @@ describe("Post publish tests", () => {
         const amended = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account,
             postType: "amend",
@@ -53,10 +49,7 @@ describe("Post publish tests", () => {
         const account2 = ethereum.NewAccount();
 
         const originalPost = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
             account: account1.account,
             postType: "testing_delegate",
             content: { body: "First content" },
@@ -76,14 +69,12 @@ describe("Post publish tests", () => {
             },
             channel: "security",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.inline,
         });
 
         await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
             storageEngine: ItemType.ipfs,
             account: account2.account,
             address: account1.account.address,
@@ -103,5 +94,19 @@ describe("Post publish tests", () => {
             hashes: [originalPost.item_hash],
         });
         expect(amends.posts[0].content).toStrictEqual({ body: "First content updated" });
+    });
+
+    it("should automatically switch between inline and Aleph Storage due to the message size", async () => {
+        const { account } = ethereum.NewAccount();
+
+        const postRes = await post.Publish({
+            channel: "TEST",
+            account: account,
+            postType: "testing_oversize",
+            storageEngine: ItemType.inline,
+            content: { body: Buffer.alloc(60 * 2 ** 10, "a").toString() },
+        });
+
+        expect(postRes.item_type).toStrictEqual("storage");
     });
 });
