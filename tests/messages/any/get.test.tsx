@@ -1,9 +1,9 @@
 import { any } from "../../index";
 import { BaseMessage, Chain, MessageType, StoreMessage } from "../../../src/messages/message";
 
-describe("Test features from GetUnique", () => {
+describe("Test features from GetMessage", () => {
     it("Try by Hash with type-guard resolve", async () => {
-        const res = await any.GetUnique({
+        const res = await any.GetMessage({
             hash: "87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c",
         });
 
@@ -13,7 +13,7 @@ describe("Test features from GetUnique", () => {
     });
 
     it("Try by Hash with templating resolve", async () => {
-        const res = await any.GetUnique<StoreMessage>({
+        const res = await any.GetMessage<StoreMessage>({
             hash: "87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c",
         });
 
@@ -22,16 +22,16 @@ describe("Test features from GetUnique", () => {
 
     it("If the message can't be resolve, it should failed", async () => {
         await expect(
-            any.GetUnique({
+            any.GetMessage({
                 hash: "w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw",
             }),
         ).rejects.toThrow("No messages found for: w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw");
     });
 });
 
-describe("Test features from Get", () => {
+describe("Test features from GetMessage", () => {
     it("Try by Pagination and page", async () => {
-        const res = await any.Get({
+        const res = await any.GetMessages({
             pagination: 5,
             page: 2,
         });
@@ -41,7 +41,7 @@ describe("Test features from Get", () => {
     });
 
     it("Try by Hash", async () => {
-        const res = await any.Get({
+        const res = await any.GetMessages({
             hashes: ["87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c"],
         });
 
@@ -51,7 +51,7 @@ describe("Test features from Get", () => {
     });
 
     it("Try by Address", async () => {
-        const res = await any.Get({
+        const res = await any.GetMessages({
             addresses: ["0xEF4CdEB7e829053C3a33d5cF3Aaf01599654A11A"],
         });
 
@@ -63,7 +63,7 @@ describe("Test features from Get", () => {
 
     it("Try by channels", async () => {
         const aimedChannel = "TEST";
-        const res = await any.Get({
+        const res = await any.GetMessages({
             channels: [aimedChannel],
         });
 
@@ -75,7 +75,7 @@ describe("Test features from Get", () => {
 
     //TODO: This call is really long to resolve (~30s)
     it("Try by chains", async () => {
-        const res = await any.Get({
+        const res = await any.GetMessages({
             chains: [Chain.ETH],
         });
 
@@ -87,7 +87,7 @@ describe("Test features from Get", () => {
 
     it("Try by refs", async () => {
         let finded = false;
-        const res = await any.Get({
+        const res = await any.GetMessages({
             refs: ["02f6fe9398f7f931a3d5ed36c887783cf65878bb0e23aa74c1adac5ddf5fd293"],
         });
 
@@ -100,7 +100,7 @@ describe("Test features from Get", () => {
 
     it("Try by content type", async () => {
         const aimedType = "testing_oversize";
-        const res = await any.Get({
+        const res = await any.GetMessages({
             contentTypes: [aimedType],
             pagination: 10,
         });
@@ -114,7 +114,7 @@ describe("Test features from Get", () => {
 
     it("Try by tags", async () => {
         const aimedTag = ["Test"];
-        const res = await any.Get({
+        const res = await any.GetMessages({
             tags: aimedTag,
             pagination: 10,
         });
@@ -128,7 +128,7 @@ describe("Test features from Get", () => {
 
     it("Try by content Key", async () => {
         const aimedKey = "InterPlanetaryCloud";
-        const res = await any.Get({
+        const res = await any.GetMessages({
             contentKeys: [aimedKey],
             pagination: 10,
         });
@@ -143,7 +143,7 @@ describe("Test features from Get", () => {
     it("Try by timestamp", async () => {
         const aimedStartTime = new Date(1673882430814);
         const aimedEndTime = new Date(1673882506494);
-        const res = await any.Get({
+        const res = await any.GetMessages({
             startDate: aimedStartTime,
             endDate: aimedEndTime,
             pagination: 5,
@@ -158,7 +158,7 @@ describe("Test features from Get", () => {
 
     it("If a specific message does not exist, it should failed", async () => {
         await expect(
-            any.Get({
+            any.GetMessages({
                 hashes: ["w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw"],
             }),
         ).rejects.toThrow("No messages found");
@@ -173,20 +173,12 @@ describe("Test features from Get", () => {
             { type: MessageType.program, checker: any.is.Program },
         ];
 
-        const checkTypeList = (messagesList: BaseMessage[], fctChecker: (message: BaseMessage) => boolean): boolean => {
-            let res = true;
-            messagesList.map((message) => {
-                if (fctChecker(message) === false) {
-                    console.error(`Message type failed on type: ${message.type}`);
-                    res = false;
-                }
-            });
-            return res;
-        };
+        const checkTypeList = (messagesList: BaseMessage[], fctChecker: (message: BaseMessage) => boolean): boolean =>
+            messagesList.every(fctChecker);
 
         await Promise.all(
             typeArray.map(async (item) => {
-                const res = await any.Get({
+                const res = await any.GetMessages({
                     messageType: item.type,
                     pagination: 3,
                 });

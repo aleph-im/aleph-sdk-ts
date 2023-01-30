@@ -1,15 +1,15 @@
 import { DEFAULT_API_V2 } from "../../global";
 import { BaseMessage, MessageType } from "../message";
-import { Get } from "./get";
+import { GetMessages } from "./getMessages";
 
-type GetUniqueParams = {
+type GetMessageParams = {
     hashes: string[];
     channels?: string[];
     messageType?: MessageType;
     APIServer?: string;
 };
 
-type GetUniqueConfiguration = {
+type GetMessageConfiguration = {
     hash: string;
     channel?: string;
     messageType?: MessageType;
@@ -23,13 +23,13 @@ type GetUniqueConfiguration = {
  *
  * @param configuration The message params to make the query.
  */
-export async function GetUnique<T = BaseMessage>({
+export async function GetMessage<T = BaseMessage>({
     hash,
     channel,
     messageType,
     APIServer = DEFAULT_API_V2,
-}: GetUniqueConfiguration): Promise<T> {
-    const params: GetUniqueParams = {
+}: GetMessageConfiguration): Promise<T> {
+    const params: GetMessageParams = {
         hashes: [hash],
         channels: channel ? [channel] : undefined,
         messageType,
@@ -37,7 +37,7 @@ export async function GetUnique<T = BaseMessage>({
     };
 
     try {
-        const response = await Get(params);
+        const response = await GetMessages(params);
         return response.messages[0] as unknown as T;
     } catch {
         throw new Error(`No messages found for: ${hash}`);

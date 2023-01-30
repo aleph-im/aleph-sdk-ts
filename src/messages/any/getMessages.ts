@@ -44,14 +44,12 @@ type GetMessagesParams = {
     endDate?: number;
 };
 
-//TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
-
 /**
  * Retrieves Messages with query params.
  *
  * @param configuration The message params to make the query.
  */
-export async function Get({
+export async function GetMessages({
     pagination = 20,
     page = 1,
     addresses = [],

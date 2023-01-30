@@ -1,5 +1,5 @@
-import { Get } from "./get";
-import { GetUnique } from "./getUnique";
+import { GetMessages } from "./getMessages";
+import { GetMessage } from "./getMessage";
 import * as is from "./getType";
 
-export { Get, GetUnique, is };
+export { GetMessages, GetMessage, is };

@@ -7,7 +7,7 @@ import { SignAndBroadcast } from "../create/signature";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
-import { GetUnique } from "../any";
+import { GetMessage } from "../any";
 
 /**
  * account:         The account used to sign the aggregate message.
@@ -86,7 +86,7 @@ export async function publish({
         ).item_hash;
     } else if (programRef && !file) {
         try {
-            const fetchCode = await GetUnique<StoreMessage>({
+            const fetchCode = await GetMessage<StoreMessage>({
                 hash: programRef,
                 APIServer: DEFAULT_API_V2,
             });
