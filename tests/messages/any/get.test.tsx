@@ -73,7 +73,7 @@ describe("Test features from GetMessage", () => {
         });
     });
 
-    //TODO: This call is really long to resolve (~30s)
+    //This call is really long to resolve (~30s)
     it("Try by chains", async () => {
         const res = await any.GetMessages({
             chains: [Chain.ETH],
