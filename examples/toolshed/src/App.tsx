@@ -8,21 +8,21 @@ import WalletConfig from './components/WalletConfig'
 import MessageConfig from './components/MessageConfig'
 import EncryptionConfig from "./components/EncryptionConfig";
 import HardwareConfig from "./components/HardwareConfig";
-import {ECIESAccount} from "../../../src/accounts/account";
+import {ECIESAccount} from "aleph-sdk-ts/src/accounts/account";
 
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initState)
 
     const connection = () => {
-      if (state.account) {
+      if (state.x) {
           return (
               <div>
-                  <p>Your address is:</p>
+                  <p style={{fontWeight: "bold"}}>Your address is:</p>
                   <span>{state.account.address}</span>
                   {state.account instanceof ECIESAccount && (
                       <>
-                        <p>Your public key is:</p>
+                        <p style={{fontWeight: "bold"}}>Your public key is:</p>
                         <span>{state.account.publicKey}</span>
                       </>
                   )}

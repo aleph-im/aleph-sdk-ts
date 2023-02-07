@@ -1,4 +1,4 @@
-import { Account, ECIESAccount } from "../../../src/accounts/account";
+import { Account, ECIESAccount } from "aleph-sdk-ts/dist/accounts/account";
 import { KeypairChains, WalletChains, HardwareChains } from "./model/chains";
 
 export enum Actions {

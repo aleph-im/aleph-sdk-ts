@@ -1,16 +1,16 @@
 import { useState } from "react";
 
 import { consumeProps } from "../model/componentProps";
-import {ECIESAccount} from "../../../../src/accounts/account";
+import { ECIESAccount } from "aleph-sdk-ts/src/accounts/account";
 
-type EncyrptionFormType = {
+type EncryptionFormType = {
     rawMessage: string;
-    encryptedMessage: Buffer | string;
+    encryptedMessage: string;
     decryptedMessage: string;
 };
 
 function EncryptionConfig({ state }: consumeProps) {
-  const [encryptionContent, setEncryptionContent] = useState<EncyrptionFormType>({
+  const [encryptionContent, setEncryptionContent] = useState<EncryptionFormType>({
       encryptedMessage: "",
       decryptedMessage: "",
       rawMessage: "Did the quick brown fox jump over the lazy dog?!",
@@ -25,18 +25,16 @@ function EncryptionConfig({ state }: consumeProps) {
 
   const cryptMessage = async () => {
     if (!(state.account instanceof ECIESAccount)) return;
-    setEncryptionContent({...encryptionContent, encryptedMessage: ""})
 
     const crypted = await state.account.encrypt(Buffer.from(encryptionContent.rawMessage))
     setEncryptionContent({...encryptionContent, encryptedMessage: crypted.toString("hex")})
   }
 
   const decryptMessage = async () => {
-    if (!(state.account instanceof ECIESAccount)) return;
-    setEncryptionContent({...encryptionContent, decryptedMessage: ""})
+    if (!(state.account instanceof ECIESAccount) || !encryptionContent.encryptedMessage) return;
 
-    const decrypted = await state.account.decrypt(Buffer.from(encryptionContent.rawMessage, "hex"))
-    setEncryptionContent({...encryptionContent, decryptedMessage: decrypted.toString("hex")})
+    const decrypted = await state.account.decrypt(Buffer.from(encryptionContent.encryptedMessage, "hex"))
+    setEncryptionContent({...encryptionContent, decryptedMessage: decrypted.toString()})
   }
 
 
@@ -63,7 +61,7 @@ function EncryptionConfig({ state }: consumeProps) {
         <button onClick={async () => await decryptMessage()}>Decrypt</button>
     </div>
     {
-        encryptionContent.decryptedMessage !== "" && <p>encryptionContent.decryptedMessage </p>
+        encryptionContent.decryptedMessage !== "" && <p> <span style={{fontWeight: "bold"}}>Decrypted:</span> { encryptionContent.decryptedMessage } </p>
     }
     </div>
   )
