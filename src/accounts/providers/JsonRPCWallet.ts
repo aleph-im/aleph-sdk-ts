@@ -69,7 +69,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
         return this.publicKey;
     }
 
-    public async decrypt(data: Buffer): Promise<string> {
+    public async decrypt(data: Buffer | string): Promise<string> {
         console.warn(RPC_WARNING);
         const query = await this.provider.send("eth_decrypt", [data, this.address]);
 
@@ -86,5 +86,9 @@ export class JsonRPCWallet extends BaseProviderWallet {
         if (chain === RpcChainType.ETH) {
             await this.provider.send("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
         } else await this.provider.send("wallet_addEthereumChain", [ChainData[chain]]);
+    }
+
+    public isMetamask(): boolean {
+        return !!this.provider?.provider?.isMetaMask;
     }
 }

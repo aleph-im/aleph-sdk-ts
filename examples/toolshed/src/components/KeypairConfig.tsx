@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as accounts from 'aleph-sdk-ts/src/accounts'
+import * as accounts from '../../../../src/accounts'
 import { KeypairChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'

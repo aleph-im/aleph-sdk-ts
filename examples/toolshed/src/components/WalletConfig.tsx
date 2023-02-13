@@ -1,4 +1,4 @@
-import { solana, ethereum, avalanche } from 'aleph-sdk-ts/src/accounts'
+import { solana, ethereum, avalanche } from '../../../../src/accounts'
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'

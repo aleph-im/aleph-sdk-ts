@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { consumeProps } from "../model/componentProps";
-import { ECIESAccount } from "aleph-sdk-ts/src/accounts/account";
+import { ECIESAccount } from "../../../../src/accounts/account";
 
 type EncryptionFormType = {
     rawMessage: string;
@@ -26,8 +26,8 @@ function EncryptionConfig({ state }: consumeProps) {
   const cryptMessage = async () => {
     if (!(state.account instanceof ECIESAccount)) return;
 
-    const crypted = await state.account.encrypt(Buffer.from(encryptionContent.rawMessage))
-    setEncryptionContent({...encryptionContent, encryptedMessage: crypted.toString("hex")})
+    const encrypted = await state.account.encrypt(Buffer.from(encryptionContent.rawMessage))
+    setEncryptionContent({...encryptionContent, encryptedMessage: encrypted.toString("hex")})
   }
 
   const decryptMessage = async () => {

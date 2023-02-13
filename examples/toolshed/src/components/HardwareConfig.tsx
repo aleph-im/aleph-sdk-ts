@@ -1,4 +1,4 @@
-import { ethereum } from 'aleph-sdk-ts/src/accounts/providers/Ledger'
+import { ethereum } from '../../../../src/accounts/providers/Ledger'
 import { HardwareChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'

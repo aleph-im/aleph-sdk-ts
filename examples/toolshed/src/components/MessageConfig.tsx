@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { ItemType } from "aleph-sdk-ts/src/messages/message";
-import { Publish } from "aleph-sdk-ts/src/messages/post";
-import { DEFAULT_API_V2 } from "aleph-sdk-ts/src/global";
+import { ItemType } from "../../../../src/messages/message";
+import { Publish } from "../../../../src/messages/post";
+import { DEFAULT_API_V2 } from "../../../../src/global";
 import { consumeProps } from "../model/componentProps";
 
 function MessageConfig({ state }: consumeProps) {

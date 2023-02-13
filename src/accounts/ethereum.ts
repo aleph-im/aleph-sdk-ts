@@ -7,8 +7,8 @@ import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "ecie
 import { JsonRPCWallet } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 
-import ethUtil from "ethereumjs-util";
-import sigUtil from "@metamask/eth-sig-util";
+import { bufferToHex } from "ethereumjs-util";
+import { encrypt } from "@metamask/eth-sig-util";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
@@ -38,34 +38,33 @@ export class ETHAccount extends ECIESAccount {
     async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
         let publicKey: string;
 
+        // Does the content is encrypted for a tier?
         if (delegateSupport)
             publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
         else publicKey = this.publicKey;
 
-        if (publicKey && this.wallet) {
+        if (publicKey && !this.provider?.isMetamask()) {
+            // Wallet encryption method or non-metamask provider
             return new Promise((resolve) => {
                 resolve(secp256k1_encrypt(publicKey, content));
             });
         } else {
-            new Promise((resolve) => {
+            // metamask encryption
+            return new Promise((resolve) => {
                 resolve(
-                    ethUtil.bufferToHex(
-                        Buffer.from(
-                            JSON.stringify(
-                                sigUtil.encrypt({
-                                    publicKey: publicKey,
-                                    data: content,
-                                    version: "x25519-xsalsa20-poly1305",
-                                }),
-                            ),
-                            "utf8",
+                    Buffer.from(
+                        JSON.stringify(
+                            encrypt({
+                                publicKey: publicKey,
+                                data: content.toString(),
+                                version: "x25519-xsalsa20-poly1305",
+                            }),
                         ),
+                        "utf-8",
                     ),
                 );
             });
         }
-
-        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -79,7 +78,8 @@ export class ETHAccount extends ECIESAccount {
             return secp256k1_decrypt(secret, encryptedContent);
         }
         if (this.provider) {
-            const decrypted = await this.provider.decrypt(encryptedContent);
+            const toDecrypted = this.provider.isMetamask() ? bufferToHex(encryptedContent) : encryptedContent;
+            const decrypted = await this.provider.decrypt(toDecrypted);
             return Buffer.from(decrypted);
         }
         throw new Error("Cannot encrypt content");

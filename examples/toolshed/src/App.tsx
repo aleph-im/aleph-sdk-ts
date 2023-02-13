@@ -8,14 +8,14 @@ import WalletConfig from './components/WalletConfig'
 import MessageConfig from './components/MessageConfig'
 import EncryptionConfig from "./components/EncryptionConfig";
 import HardwareConfig from "./components/HardwareConfig";
-import {ECIESAccount} from "aleph-sdk-ts/src/accounts/account";
+import {ECIESAccount} from "../../../src/accounts/account";
 
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initState)
 
     const connection = () => {
-      if (state.x) {
+      if (state.account) {
           return (
               <div>
                   <p style={{fontWeight: "bold"}}>Your address is:</p>
