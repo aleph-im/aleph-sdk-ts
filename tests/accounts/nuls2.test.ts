@@ -71,7 +71,7 @@ describe("NULS2 accounts", () => {
         const msg = Buffer.from("Nuuullss2");
 
         const c = await account.encrypt(msg);
-        const d = account.decrypt(c);
+        const d = await account.decrypt(c);
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
     });
@@ -84,10 +84,10 @@ describe("NULS2 accounts", () => {
         const msg = Buffer.from("Nuuullss2");
 
         const c = await accountA.encrypt(msg, accountB);
-        const d = accountB.decrypt(c);
+        const d = await accountB.decrypt(c);
 
         const e = await accountA.encrypt(msg, accountB.publicKey);
-        const f = accountB.decrypt(c);
+        const f = await accountB.decrypt(c);
 
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
