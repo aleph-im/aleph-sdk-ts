@@ -1,7 +1,8 @@
-import { solana, ethereum, avalanche } from '../../../../src/accounts'
-import { WalletChains } from '../model/chains'
-import { dispatchAndConsume } from '../model/componentProps'
-import { Actions } from '../reducer'
+import {avalanche, ethereum, solana} from '../../../../src/accounts'
+import {WalletChains} from '../model/chains'
+import {dispatchAndConsume} from '../model/componentProps'
+import {Actions} from '../reducer'
+import {ChangeRpcParam, RpcChainType} from "../../../../src/accounts/providers/JsonRPCWallet";
 
 
 function WalletConfig({ dispatch, state } : dispatchAndConsume) {
@@ -12,14 +13,15 @@ function WalletConfig({ dispatch, state } : dispatchAndConsume) {
     : [null, null]
   )
 
-  const connectToMetamask = async () => {
+  const connectToMetamask = async (endpoint?: ChangeRpcParam) => {
     const [_account, provider] = getAccountClass();
 
     if(_account === null)
       return 
 
     try{
-      const account = await _account.GetAccountFromProvider(provider)
+      const account = endpoint ? await _account.GetAccountFromProvider(provider, endpoint) :
+          await _account.GetAccountFromProvider(provider)
       dispatch({
         type: Actions.SET_ACCOUNT,
         payload: account
@@ -32,7 +34,13 @@ function WalletConfig({ dispatch, state } : dispatchAndConsume) {
 
   return (
     <div>
-      <button onClick={connectToMetamask}>Connect to Provider</button>
+      <button onClick={async () => {await connectToMetamask()}}>Connect to Provider</button>
+      {state.selectedChain === WalletChains.Ethereum && <button style={{'marginLeft': '4px'}}
+          onClick={async () =>
+            {await connectToMetamask(RpcChainType.ETH_FLASHBOTS);
+      }}>
+        Connect to Provider (Flashbots endpoint)
+      </button> }
     </div>
   )
 }

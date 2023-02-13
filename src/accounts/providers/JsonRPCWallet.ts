@@ -6,10 +6,25 @@ Encryption/Decryption features may become obsolete, for more information: https:
 
 export enum RpcChainType {
     ETH,
+    ETH_FLASHBOTS,
     AVAX,
 }
 
-const ChainData = {
+export type RpcType = {
+    chainId: string;
+    rpcUrls: string[];
+    chainName: string;
+    nativeCurrency: {
+        name: string;
+        symbol: string;
+        decimals: number;
+    };
+    blockExplorerUrls: string[];
+};
+
+export type ChangeRpcParam = RpcType | RpcChainType;
+
+const ChainData: { [key: string]: RpcType } = {
     [RpcChainType.AVAX]: {
         chainId: "0xA86A",
         rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
@@ -25,6 +40,17 @@ const ChainData = {
         chainId: "0x1",
         rpcUrls: ["https://mainnet.infura.io/v3/"],
         chainName: "Ethereum Mainnet",
+        nativeCurrency: {
+            name: "ETH",
+            symbol: "ETH",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://etherscan.io"],
+    },
+    [RpcChainType.ETH_FLASHBOTS]: {
+        chainId: "0x1",
+        rpcUrls: ["https://rpc.flashbots.net/"],
+        chainName: "Ethereum Mainnet - Flashbots",
         nativeCurrency: {
             name: "ETH",
             symbol: "ETH",
@@ -82,10 +108,14 @@ export class JsonRPCWallet extends BaseProviderWallet {
         return this.signer.signMessage(data);
     }
 
-    public async changeNetwork(chain: RpcChainType = RpcChainType.ETH): Promise<void> {
-        if (chain === RpcChainType.ETH) {
-            await this.provider.send("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
-        } else await this.provider.send("wallet_addEthereumChain", [ChainData[chain]]);
+    public async changeNetwork(chainOrRpc: RpcType | RpcChainType = RpcChainType.ETH): Promise<void> {
+        if (typeof chainOrRpc === "number") {
+            if (chainOrRpc === RpcChainType.ETH) {
+                await this.provider.send("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
+            } else await this.provider.send("wallet_addEthereumChain", [ChainData[chainOrRpc]]);
+        } else {
+            await this.provider.send("wallet_switchEthereumChain", [chainOrRpc]);
+        }
     }
 
     public isMetamask(): boolean {

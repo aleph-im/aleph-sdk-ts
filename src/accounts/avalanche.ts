@@ -5,7 +5,7 @@ import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
-import { JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
 
@@ -167,11 +167,15 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<A
  * Get an account from a Web3 provider (ex: Metamask)
  *
  * @param  {providers.ExternalProvider} provider from metamask
+ * @param requestedRpc Use this params to change the RPC endpoint;
  */
-export async function GetAccountFromProvider(provider: providers.ExternalProvider): Promise<AvalancheAccount> {
+export async function GetAccountFromProvider(
+    provider: providers.ExternalProvider,
+    requestedRpc: ChangeRpcParam = RpcChainType.AVAX,
+): Promise<AvalancheAccount> {
     const avaxProvider = new providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(avaxProvider);
-    await jrw.changeNetwork(RpcChainType.AVAX);
+    await jrw.changeNetwork(requestedRpc);
 
     await jrw.connect();
     if (jrw.address) {
