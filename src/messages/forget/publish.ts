@@ -1,16 +1,18 @@
 import { PutContentToStorageEngine } from "../create/publish";
 import { ForgetContent, ForgetMessage, ItemType, MessageType } from "../message";
 import { Account } from "../../accounts/account";
+import { DEFAULT_API_V2 } from "../../global";
 import { SignAndBroadcast } from "../create/signature";
+import { MessageBuilder } from "../../utils/messageBuilder";
 
 /**
  * account:         The account used to sign the forget object.
  *
  * channel:         The channel in which the object will be published.
  *
- * storageEngine:   The storage engine to used when storing the object (IPFS or Aleph).
+ * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
- * inlineRequested: Will the message be inlined ?
+ * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
@@ -21,9 +23,9 @@ import { SignAndBroadcast } from "../create/signature";
 type ForgetPublishConfiguration = {
     account: Account;
     channel: string;
-    storageEngine: ItemType;
-    inlineRequested: boolean;
-    APIServer: string;
+    storageEngine?: ItemType;
+    inlineRequested?: boolean;
+    APIServer?: string;
     hashes: string[];
     reason?: string;
 };
@@ -38,42 +40,44 @@ type ForgetPublishConfiguration = {
  *
  * @param configuration The configuration used to publish the forget message.
  */
-export async function Publish(configuration: ForgetPublishConfiguration): Promise<ForgetMessage> {
+export async function Publish({
+    account,
+    APIServer = DEFAULT_API_V2,
+    hashes,
+    reason,
+    channel,
+    storageEngine = ItemType.inline,
+    inlineRequested,
+}: ForgetPublishConfiguration): Promise<ForgetMessage> {
+    if (inlineRequested) console.warn("inlineRequested is deprecated and will be removed: use storageEngine.inline");
+
     const timestamp = Date.now() / 1000;
-    const content: ForgetContent = {
-        address: configuration.account.address,
+    const forgetContent: ForgetContent = {
+        address: account.address,
         time: timestamp,
-        hashes: configuration.hashes,
-        reason: configuration.reason ? configuration.reason : "None",
+        hashes: hashes,
+        reason: reason || undefined,
     };
 
-    const message: ForgetMessage = {
-        chain: configuration.account.GetChain(),
-        sender: configuration.account.address,
+    const message = MessageBuilder<ForgetContent, MessageType.forget>({
+        account,
+        channel,
+        timestamp,
+        storageEngine,
+        content: forgetContent,
         type: MessageType.forget,
-        channel: configuration.channel,
-        confirmed: false,
-        signature: "",
-        size: 0,
-        time: timestamp,
-        item_type: configuration.storageEngine,
-        item_content: "",
-        item_hash: "",
-        content: content,
-    };
+    });
 
     await PutContentToStorageEngine({
         message: message,
-        content: content,
-        inlineRequested: configuration.inlineRequested,
-        storageEngine: configuration.storageEngine,
-        APIServer: configuration.APIServer,
+        content: forgetContent,
+        APIServer,
     });
 
     await SignAndBroadcast({
         message: message,
-        account: configuration.account,
-        APIServer: configuration.APIServer,
+        account,
+        APIServer,
     });
     return message;
 }

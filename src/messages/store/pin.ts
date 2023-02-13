@@ -3,6 +3,17 @@ import { ItemType, StoreMessage } from "../message";
 import { Publish } from "./publish";
 import { DEFAULT_API_V2 } from "../../global";
 
+/**
+ * channel:         The channel in which the message will be published.
+ *
+ * account:         The account used to sign the aggregate message.
+ *
+ * fileHash:        The IPFS hash of the content you want to pin.
+ *
+ * storageEngine:   [Deprecated] - The storage engine to used when storing the message.
+ *
+ * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ */
 type StorePinConfiguration = {
     channel: string;
     account: base.Account;
@@ -18,6 +29,8 @@ type StorePinConfiguration = {
  * @param spc The configuration used to pin the file.
  */
 export async function Pin(spc: StorePinConfiguration): Promise<StoreMessage> {
+    if (spc.storageEngine) console.warn("storageEngine param is deprecated and will be removed soon for pinning");
+
     return await Publish({
         account: spc.account,
         channel: spc.channel,

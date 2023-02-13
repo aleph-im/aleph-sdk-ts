@@ -15,7 +15,6 @@ describe("Forget publish tests", () => {
         const res = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
             storageEngine: ItemType.inline,
             account: account,
             postType: postType,
@@ -23,13 +22,35 @@ describe("Forget publish tests", () => {
         });
 
         const Fres = await forget.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
             hashes: [res.item_hash],
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
             account: account,
         });
         expect(Fres.content).not.toBeNull();
+    });
+
+    it("Forget a message using storage engine", async () => {
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+
+        const res = await post.Publish({
+            APIServer: DEFAULT_API_V2,
+            channel: "TEST",
+            storageEngine: ItemType.inline,
+            account: account,
+            postType: postType,
+            content: content,
+        });
+
+        const Fres = await forget.Publish({
+            channel: "TEST",
+            hashes: [res.item_hash],
+            storageEngine: ItemType.storage,
+            account: account,
+        });
+
+        const initialPost = await post.Get({ types: postType, hashes: [res.item_hash] });
+
+        expect(Fres.content).not.toBeNull();
+        expect(initialPost.posts.length).toStrictEqual(0);
     });
 });
