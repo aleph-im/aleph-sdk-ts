@@ -114,7 +114,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
                 await this.provider.send("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
             } else await this.provider.send("wallet_addEthereumChain", [ChainData[chainOrRpc]]);
         } else {
-            await this.provider.send("wallet_switchEthereumChain", [chainOrRpc]);
+            await this.provider.send("wallet_addEthereumChain", [chainOrRpc]);
         }
     }
 
