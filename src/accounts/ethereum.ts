@@ -4,7 +4,7 @@ import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { JsonRPCWallet } from "./providers/JsonRPCWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 
 import { bufferToHex } from "ethereumjs-util";
@@ -145,10 +145,15 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  * Get an account from a Web3 provider (ex: Metamask)
  *
  * @param  {ethers.providers.ExternalProvider} provider
+ * @param requestedRpc Use this params to change the RPC endpoint;
  */
-export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider): Promise<ETHAccount> {
+export async function GetAccountFromProvider(
+    provider: ethers.providers.ExternalProvider,
+    requestedRpc: ChangeRpcParam = RpcChainType.ETH,
+): Promise<ETHAccount> {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(ETHprovider);
+    await jrw.changeNetwork(requestedRpc);
     await jrw.connect();
 
     if (jrw.address) return new ETHAccount(jrw, jrw.address, await jrw.getPublicKey());
