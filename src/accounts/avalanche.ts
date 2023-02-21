@@ -9,8 +9,7 @@ import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPC
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
 
-import { bufferToHex } from "ethereumjs-util";
-import { encrypt } from "@metamask/eth-sig-util";
+import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
@@ -39,8 +38,13 @@ export class AvalancheAccount extends ECIESAccount {
      *
      * @param content The content to encrypt.
      * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
+     * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
      */
-    async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
+    async encrypt(
+        content: Buffer,
+        delegateSupport?: ECIESAccount | string,
+        encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
+    ): Promise<Buffer | string> {
         let publicKey: string;
 
         // Does the content is encrypted for a tier?
@@ -48,21 +52,13 @@ export class AvalancheAccount extends ECIESAccount {
             publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
         else publicKey = this.publicKey;
 
-        if (publicKey && !this.provider?.isMetamask()) {
+        if (!publicKey) throw new Error("Cannot encrypt content");
+        if (!this.provider) {
             // Wallet encryption method or non-metamask provider
             return secp256k1_encrypt(publicKey, content);
         } else {
-            // metamask encryption
-            return Buffer.from(
-                JSON.stringify(
-                    encrypt({
-                        publicKey: publicKey,
-                        data: content.toString(),
-                        version: "x25519-xsalsa20-poly1305",
-                    }),
-                ),
-                "utf-8",
-            );
+            // provider encryption
+            return ProviderEncryptionLib[encryptionMethod](content, publicKey);
         }
     }
 
@@ -71,14 +67,13 @@ export class AvalancheAccount extends ECIESAccount {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
+    async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
         if (this.signer) {
             const secret = this.signer.getPrivateKey().toString("hex");
-            return secp256k1_decrypt(secret, encryptedContent);
+            return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
         }
         if (this.provider) {
-            const toDecrypted = this.provider.isMetamask() ? bufferToHex(encryptedContent) : encryptedContent;
-            const decrypted = await this.provider.decrypt(toDecrypted);
+            const decrypted = await this.provider.decrypt(encryptedContent);
             return Buffer.from(decrypted);
         }
         throw new Error("Cannot encrypt content");

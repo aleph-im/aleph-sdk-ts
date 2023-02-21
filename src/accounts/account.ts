@@ -1,4 +1,5 @@
 import { BaseMessage, Chain } from "../messages/message";
+import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -30,6 +31,10 @@ export abstract class ECIESAccount extends Account {
         super(address);
         this.publicKey = publicKey;
     }
-    abstract encrypt(content: Buffer, delegateSupport?: string | ECIESAccount): Promise<Buffer>;
-    abstract decrypt(content: Buffer): Promise<Buffer>;
+    abstract encrypt(
+        content: Buffer,
+        delegateSupport?: string | ECIESAccount,
+        encryptionMethod?: ProviderEncryptionLabel,
+    ): Promise<Buffer | string>;
+    abstract decrypt(content: Buffer | string): Promise<Buffer>;
 }
