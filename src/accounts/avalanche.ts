@@ -50,25 +50,19 @@ export class AvalancheAccount extends ECIESAccount {
 
         if (publicKey && !this.provider?.isMetamask()) {
             // Wallet encryption method or non-metamask provider
-            return new Promise((resolve) => {
-                resolve(secp256k1_encrypt(publicKey, content));
-            });
+            return secp256k1_encrypt(publicKey, content);
         } else {
             // metamask encryption
-            return new Promise((resolve) => {
-                resolve(
-                    Buffer.from(
-                        JSON.stringify(
-                            encrypt({
-                                publicKey: publicKey,
-                                data: content.toString(),
-                                version: "x25519-xsalsa20-poly1305",
-                            }),
-                        ),
-                        "utf-8",
-                    ),
-                );
-            });
+            return Buffer.from(
+                JSON.stringify(
+                    encrypt({
+                        publicKey: publicKey,
+                        data: content.toString(),
+                        version: "x25519-xsalsa20-poly1305",
+                    }),
+                ),
+                "utf-8",
+            );
         }
     }
 
