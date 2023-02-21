@@ -1,27 +1,29 @@
-import {useEffect, useState} from "react";
+import { useState } from "react";
 import {AlephWebSocket} from "../../../../src/messages/any/AlephWebSocket";
-import {GetMessagesSocket} from "../../../../src/messages/any";
+import { GetMessagesSocket } from "../../../../src/messages/any";
 import {SocketResponse} from "../../../../src/messages/any/getMessagesSocket";
 
 function WebSocket() {
   const [socket, setSocket] = useState<AlephWebSocket | undefined>()
-  const [data, setData] = useState<SocketResponse[] | undefined>([]);
+  const [data, setData] = useState<SocketResponse[]>([]);
 
-  const startSocket = () => {
+  const startSocket = async () => {
     const newSocket = GetMessagesSocket({});
+
     setSocket(newSocket);
   }
 
-  const displayContent = () => {
-    setData(socket?.getData());
+  const displayContent = async () => {
+    if (!socket) return;
+    setData([...socket.data]);
   }
 
-  const clearSocket = () => {
+  const clearSocket = async () => {
     socket?.clearData();
-    displayContent();
+    await displayContent();
   }
 
-  const closeSocket = () => {
+  const closeSocket = async () => {
     socket?.closeSocket()
     setSocket(undefined);
   }
@@ -35,6 +37,7 @@ function WebSocket() {
       <button onClick={closeSocket} disabled={!socket}>Close Socket</button>
     </div>
 
+      <p>Total: {data.length}</p>
     <div>
       { !!socket ? (<table style={{marginTop: '2em'}}>
         <thead>
@@ -45,7 +48,7 @@ function WebSocket() {
           </tr>
         </thead>
         <tbody>
-          {data?.map((line, id) => {
+          {data.map((line, id) => {
             return (
                 <tr key={id}>
                   <td>{`${line.sender.substring(0, 6,)}...${line.sender.substring(line.sender.length - 4,)}`}</td>

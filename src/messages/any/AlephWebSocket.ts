@@ -4,8 +4,8 @@ import { GetMessagesSocketParams, SocketResponse } from "./getMessagesSocket";
  * This class is used to manipulate Web Socket to list Aleph Messages
  */
 export class AlephWebSocket {
-    private socket: WebSocket;
-    private data: SocketResponse[] = [];
+    private readonly socket: WebSocket;
+    public data: SocketResponse[];
 
     public isReady: boolean;
 
@@ -13,6 +13,7 @@ export class AlephWebSocket {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         this.isReady = false;
+        this.data = [];
         let queryParamString = "";
 
         Object.entries(queryParam).forEach(([key, value]) => {
@@ -22,6 +23,7 @@ export class AlephWebSocket {
         this.socket = new WebSocket(`${apiServer}/api/ws0/messages?${queryParamString}`);
 
         // ON OPEN SOCKET
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         this.socket.onopen = function (_) {
             console.log("[Aleph-webSocket] Connection established");
             self.isReady = true;
@@ -44,10 +46,6 @@ export class AlephWebSocket {
             console.log("[Aleph-webSocket]: error: ", error);
         };
     }
-
-    public getData = (): SocketResponse[] => {
-        return this.data;
-    };
 
     public getSocket = (): WebSocket => {
         return this.socket;
