@@ -1,6 +1,8 @@
 import { DEFAULT_API_WS_V2 } from "../../global";
 import { Chain, HashType, ItemType, MessageType, BaseContent } from "../message";
 import { AlephWebSocket } from "./AlephWebSocket";
+import { isNode } from "../../utils/env";
+import { AlephNodeWebSocket } from "./AlephNodeWebSocket";
 
 export type SocketResponse = {
     _id?: string;
@@ -49,8 +51,11 @@ export type GetMessagesSocketParams = {
     endDate?: number;
 };
 
+export type AlephSocket = AlephWebSocket | AlephNodeWebSocket;
+
 /**
- * Retrieves Messages with query params.
+ * Retrieves all incoming messages by opening a WebSocket.
+ * Messages can be filtered with the params.
  *
  * @param configuration The message params to make the query.
  */
@@ -67,7 +72,7 @@ export function GetMessagesSocket({
     startDate,
     endDate,
     APIServer = DEFAULT_API_WS_V2,
-}: GetMessagesSocketConfiguration): AlephWebSocket {
+}: GetMessagesSocketConfiguration): AlephSocket {
     const params: GetMessagesSocketParams = {
         addresses: addresses.join(",") || undefined,
         channels: channels.join(",") || undefined,
@@ -82,5 +87,6 @@ export function GetMessagesSocket({
         endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     };
 
-    return new AlephWebSocket(params, APIServer);
+    if (isNode()) return new AlephNodeWebSocket(params, APIServer);
+    else return new AlephWebSocket(params, APIServer);
 }

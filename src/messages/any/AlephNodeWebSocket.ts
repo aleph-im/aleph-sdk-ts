@@ -1,9 +1,10 @@
 import { GetMessagesSocketParams, SocketResponse } from "./getMessagesSocket";
+import WebSocket from "ws";
 
 /**
- * This class is used to manipulate Web Socket to list Aleph Messages
+ * This class is used to manipulate Node Web Socket to list Aleph Messages
  */
-export class AlephWebSocket {
+export class AlephNodeWebSocket {
     private readonly socket: WebSocket;
     private data: SocketResponse[];
 
@@ -24,28 +25,24 @@ export class AlephWebSocket {
 
         // ON OPEN SOCKET
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        this.socket.onopen = function (_) {
-            console.log("[Aleph-webSocket] Connection established");
+        this.socket.on("open", function open() {
+            console.log("[Aleph-NodeWebSocket] Connection established");
             self.isOpen = true;
-        };
+        });
 
         // ON RECEIVE DATA
-        this.socket.onmessage = function (event) {
-            self.data.push(JSON.parse(event.data));
-        };
+        this.socket.on("message", function message(data) {
+            self.data.push(JSON.parse(data.toString()));
+        });
 
         // ON CLOSE SOCKET
-        this.socket.onclose = function (event) {
+        this.socket.on("close", function close() {
+            console.log(`[Aleph-NodeWebSocket] Connection closed`);
             self.isOpen = false;
-            if (event.wasClean)
-                console.log(`[Aleph-webSocket] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-            else console.log("[Aleph-webSocket] Connection died");
-        };
+        });
 
         // ON ERROR
-        this.socket.onerror = function (error) {
-            console.log("[Aleph-webSocket]: error: ", error);
-        };
+        this.socket.on("error", console.error);
     }
 
     public getData = (): SocketResponse[] => {

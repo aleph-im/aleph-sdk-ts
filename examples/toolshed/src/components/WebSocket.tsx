@@ -1,10 +1,9 @@
 import { useState } from "react";
-import {AlephWebSocket} from "../../../../src/messages/any/AlephWebSocket";
 import { GetMessagesSocket } from "../../../../src/messages/any";
-import {SocketResponse} from "../../../../src/messages/any/getMessagesSocket";
+import {AlephSocket, SocketResponse} from "../../../../src/messages/any/getMessagesSocket";
 
 function WebSocket() {
-  const [socket, setSocket] = useState<AlephWebSocket | undefined>()
+  const [socket, setSocket] = useState<AlephSocket | undefined>()
   const [data, setData] = useState<SocketResponse[]>([]);
 
   const startSocket = async () => {
@@ -15,7 +14,7 @@ function WebSocket() {
 
   const displayContent = async () => {
     if (!socket) return;
-    setData([...socket.data]);
+    setData([...socket.getData()]);
   }
 
   const clearSocket = async () => {
