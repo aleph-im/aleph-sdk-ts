@@ -34,6 +34,7 @@ type GetMessagesSocketConfiguration = {
     messageType?: MessageType;
     startDate?: Date;
     endDate?: Date;
+    history?: number;
     APIServer?: string;
 };
 
@@ -49,6 +50,7 @@ export type GetMessagesSocketParams = {
     msgType?: string;
     startDate?: number;
     endDate?: number;
+    history?: number;
 };
 
 export type AlephSocket = AlephWebSocket | AlephNodeWebSocket;
@@ -71,6 +73,7 @@ export function GetMessagesSocket({
     messageType,
     startDate,
     endDate,
+    history,
     APIServer = DEFAULT_API_WS_V2,
 }: GetMessagesSocketConfiguration): AlephSocket {
     const params: GetMessagesSocketParams = {
@@ -85,6 +88,7 @@ export function GetMessagesSocket({
         msgType: messageType || undefined,
         startDate: startDate ? startDate.valueOf() / 1000 : undefined,
         endDate: endDate ? endDate.valueOf() / 1000 : undefined,
+        history: history || undefined,
     };
 
     if (isNode()) return new AlephNodeWebSocket(params, APIServer);
