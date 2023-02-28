@@ -7,6 +7,8 @@ Encryption/Decryption features may become obsolete, for more information: https:
 export enum RpcChainType {
     ETH,
     ETH_FLASHBOTS,
+    POLYGON,
+    BSC,
     AVAX,
 }
 
@@ -57,6 +59,28 @@ const ChainData: { [key: string]: RpcType } = {
             decimals: 18,
         },
         blockExplorerUrls: ["https://etherscan.io"],
+    },
+    [RpcChainType.POLYGON]: {
+        chainId: "0x89",
+        rpcUrls: ["https://polygon-rpc.com/"],
+        chainName: "Polygon Mainnet",
+        nativeCurrency: {
+            name: "MATIC",
+            symbol: "MATIC",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://polygonscan.com/"],
+    },
+    [RpcChainType.BSC]: {
+        chainId: "0x38",
+        rpcUrls: ["https://bsc-dataseed.binance.org/"],
+        chainName: "Binance Smart Chain Mainnet",
+        nativeCurrency: {
+            name: "BNB",
+            symbol: "BNB",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://bscscan.com"],
     },
 };
 
