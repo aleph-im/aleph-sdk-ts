@@ -1,14 +1,23 @@
 import Transport from "@ledgerhq/hw-transport";
 import { isNode } from "../../../utils/env";
 
-export async function getTransport(): Promise<Transport> {
-    let transport;
+export async function getTransport(overrideEnvironment?: "node" | "browser"): Promise<Transport> {
+    let p: string;
 
-    if (isNode()) {
-        transport = await import("@ledgerhq/hw-transport-node-hid");
+    if (overrideEnvironment) {
+        if (overrideEnvironment === "node") {
+            p = "@ledgerhq/hw-transport-node-hid";
+        } else {
+            p = "@ledgerhq/hw-transport-webusb";
+        }
     } else {
-        transport = await import("@ledgerhq/hw-transport-webusb");
+        if (isNode()) {
+            p = "@ledgerhq/hw-transport-node-hid";
+        } else {
+            p = "@ledgerhq/hw-transport-webusb";
+        }
     }
 
+    const transport = await import(p);
     return await transport.default.create();
 }
