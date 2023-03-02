@@ -39,6 +39,7 @@ import { GetMessage } from "../any";
 type ProgramPublishConfiguration = {
     account: Account;
     channel: string;
+    isPersistent?: boolean;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
     APIServer?: string;
@@ -57,6 +58,7 @@ type ProgramPublishConfiguration = {
 export async function publish({
     account,
     channel,
+    isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
     APIServer = DEFAULT_API_V2,
@@ -99,7 +101,7 @@ export async function publish({
         }
     }
 
-    let triggers: FunctionTriggers = { http: true };
+    let triggers: FunctionTriggers = { http: true, persistent: isPersistent };
     if (subscription) triggers = { ...triggers, message: subscription };
 
     const programContent: ProgramContent = {
