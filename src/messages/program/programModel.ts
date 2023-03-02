@@ -50,6 +50,7 @@ export type Export = {
 export type FunctionTriggers = {
     http: boolean;
     message?: Record<string, unknown>[];
+    persistent?: boolean;
 };
 
 /**
