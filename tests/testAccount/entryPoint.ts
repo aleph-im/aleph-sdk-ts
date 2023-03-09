@@ -8,8 +8,14 @@ export type EphAccount = {
     mnemonic?: string;
 };
 
+/**
+ * @eth: Main Ethereum account
+ * @eth1: Account that will receive right from the fist account to perform delegate calls
+ * @avax: Main Alavanche account
+ */
 export type EphAccountList = {
     eth: EphAccount;
+    eth1: EphAccount;
     avax: EphAccount;
 };
 

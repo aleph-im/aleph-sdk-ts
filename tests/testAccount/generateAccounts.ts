@@ -3,16 +3,21 @@ import { ethers } from "ethers";
 import { getKeyPair } from "../../src/accounts/avalanche";
 import { EphAccount } from "./entryPoint";
 
-async function createEphemeralEth(): Promise<{ eth: EphAccount }> {
-    const mnemonic = bip39.generateMnemonic();
-    const { address, publicKey, privateKey } = ethers.Wallet.fromMnemonic(mnemonic);
-    const ephemeralAccount: EphAccount = {
-        address,
-        publicKey,
-        privateKey: privateKey.substring(2),
-        mnemonic,
+async function createEphemeralEth(): Promise<{ eth: EphAccount; eth1: EphAccount }> {
+    const getAccount = (): EphAccount => {
+        const mnemonic = bip39.generateMnemonic();
+        const { address, publicKey, privateKey } = ethers.Wallet.fromMnemonic(mnemonic);
+        return {
+            address,
+            publicKey,
+            privateKey: privateKey.substring(2),
+            mnemonic,
+        };
     };
-    return { eth: ephemeralAccount };
+
+    const owner = getAccount();
+    const delegate = getAccount();
+    return { eth: owner, eth1: delegate };
 }
 
 async function createEphemeralAvax(): Promise<{ avax: EphAccount }> {

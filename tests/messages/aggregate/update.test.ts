@@ -1,10 +1,24 @@
 import { ItemType } from "../../../src/messages/message";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { aggregate, ethereum } from "../../index";
+import { EphAccountList } from "../../testAccount/entryPoint";
+import fs from "fs";
 
 describe("Aggregate message update test", () => {
+    let ephemeralAccount: EphAccountList;
+
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.eth.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
+
     it("should publish and update an aggregate message", async () => {
-        const { account } = ethereum.NewAccount();
+        const { privateKey } = ephemeralAccount.eth;
+        const account = ethereum.ImportAccountFromPrivateKey(privateKey);
         const key = "satoshi";
 
         const content: { A: number } = {
@@ -54,8 +68,8 @@ describe("Aggregate message update test", () => {
     });
 
     it("should allow an delegate call update", async () => {
-        const owner = ethereum.NewAccount();
-        const guest = ethereum.NewAccount();
+        const owner = ethereum.ImportAccountFromPrivateKey(ephemeralAccount.eth.privateKey);
+        const guest = ethereum.ImportAccountFromPrivateKey(ephemeralAccount.eth1.privateKey);
 
         const key = "satoshi";
         const content: { A: number } = {
@@ -66,7 +80,7 @@ describe("Aggregate message update test", () => {
         };
 
         await aggregate.Publish({
-            account: owner.account,
+            account: owner,
             key: key,
             content: content,
             channel: "TEST",
@@ -75,12 +89,12 @@ describe("Aggregate message update test", () => {
             storageEngine: ItemType.inline,
         });
         await aggregate.Publish({
-            account: owner.account,
+            account: owner,
             key: "security",
             content: {
                 authorizations: [
                     {
-                        address: guest.account.address,
+                        address: guest.address,
                         types: ["AGGREGATE"],
                         aggregate_keys: [key],
                     },
@@ -93,8 +107,8 @@ describe("Aggregate message update test", () => {
         });
 
         const updated = await aggregate.Publish({
-            account: guest.account,
-            address: owner.account.address,
+            account: guest,
+            address: owner.address,
             key: key,
             content: UpdatedContent,
             channel: "TEST",
@@ -110,7 +124,7 @@ describe("Aggregate message update test", () => {
         };
         const message = await aggregate.Get<T>({
             APIServer: DEFAULT_API_V2,
-            address: owner.account.address,
+            address: owner.address,
             keys: [key],
         });
 

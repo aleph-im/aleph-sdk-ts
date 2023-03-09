@@ -1,15 +1,28 @@
 import { ItemType } from "../../../src/messages/message";
 import { ethereum, forget, post } from "../../index";
 import { DEFAULT_API_V2 } from "../../../src/global";
+import { EphAccountList } from "../../testAccount/entryPoint";
+import fs from "fs";
 
 describe("Forget publish tests", () => {
-    const mnemonic = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
+    let ephemeralAccount: EphAccountList;
     const postType = "TS Forget Test";
     const content: { body: string } = {
         body: "This message will be destroyed",
     };
 
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.eth.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
+
     it("should post a message which will be forget", async () => {
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await post.Publish({
@@ -30,6 +43,8 @@ describe("Forget publish tests", () => {
     });
 
     it("Forget a message using storage engine", async () => {
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await post.Publish({
