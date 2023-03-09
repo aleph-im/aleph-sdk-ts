@@ -19,7 +19,7 @@ export class AvalancheAccount extends ECIESAccount {
     private signer?: KeyPair;
     private provider?: BaseProviderWallet;
 
-    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string, publicKey: string) {
+    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string, publicKey?: string) {
         super(address, publicKey);
 
         if (signerOrProvider instanceof KeyPair) this.signer = signerOrProvider;
@@ -34,6 +34,22 @@ export class AvalancheAccount extends ECIESAccount {
     }
 
     /**
+     * Ask for a Provider Account a read Access to its encryption publicKey
+     * If the encryption public Key is already loaded, nothing happens
+     *
+     * This method will throw if:
+     * - The account was not instanced with a provider.
+     * - The user denied the encryption public key sharing.
+     */
+    override async askPubKey(): Promise<void> {
+        if (!!this.publicKey) return;
+        if (!this.provider) throw Error("PublicKey Error: No providers are setup");
+
+        this.publicKey = await this.provider.getPublicKey();
+        return;
+    }
+
+    /**
      * Encrypt a content using the user's public key from the keypair
      *
      * @param content The content to encrypt.
@@ -45,12 +61,20 @@ export class AvalancheAccount extends ECIESAccount {
         delegateSupport?: ECIESAccount | string,
         encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
     ): Promise<Buffer | string> {
-        let publicKey: string;
+        let publicKey: string | undefined;
 
         // Does the content is encrypted for a tier?
-        if (delegateSupport)
-            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
-        else publicKey = this.publicKey;
+        if (delegateSupport instanceof ECIESAccount) {
+            if (!delegateSupport.publicKey) {
+                await delegateSupport.askPubKey();
+            }
+            publicKey = delegateSupport.publicKey;
+        } else if (delegateSupport) {
+            publicKey = delegateSupport;
+        } else {
+            await this.askPubKey();
+            publicKey = this.publicKey;
+        }
 
         if (!publicKey) throw new Error("Cannot encrypt content");
         if (!this.provider) {
@@ -168,7 +192,7 @@ export async function GetAccountFromProvider(
 
     await jrw.connect();
     if (jrw.address) {
-        return new AvalancheAccount(jrw, jrw.address, await jrw.getPublicKey());
+        return new AvalancheAccount(jrw, jrw.address);
     }
     throw new Error("Insufficient permissions");
 }
