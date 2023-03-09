@@ -108,6 +108,9 @@ dist
 .idea
 <<<<<<< HEAD
 
+# Ephemeral Account
+tests/testAccount/ephemeralAccount.json
+
 # Documentation
 docs/
 =======

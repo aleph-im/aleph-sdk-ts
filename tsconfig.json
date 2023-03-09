@@ -13,9 +13,10 @@
     "declaration": true,
     "target": "ES6",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "lib": [
       "dom",
-      "dom.iterable",
+      "dom.iterable"
     ]
   },
   "include": ["src"],

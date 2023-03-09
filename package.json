@@ -24,9 +24,11 @@
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
         "prepack": "npm run test && npm run build",
-        "test": "npm run test:jest && npm run test:auto",
+        "test": "npm run test:gen && npm run test:jest && npm run test:auto",
         "test:jest": "jest --testTimeout=1200000 --verbose --coverage",
-        "test:auto": "ts-node testsAuto/entryPoint.ts "
+        "test:auto": "ts-node testsAuto/entryPoint.ts ",
+        "test:gen": "ts-node tests/testAccount/entryPoint.ts",
+        "test:regen": "ts-node tests/testAccount/entryPoint.ts -r"
     },
     "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
     "author": "Aleph.im Team",
