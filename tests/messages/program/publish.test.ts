@@ -20,7 +20,7 @@ describe("Test the program message", () => {
 
     it("Publish a program retrieve the message", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const fileContent = readFileSync("./tests/messages/program/main.py.zip");
@@ -38,7 +38,7 @@ describe("Test the program message", () => {
 
     it("Spawn a program", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await program.Spawn({
@@ -54,7 +54,7 @@ describe("Test the program message", () => {
 
     it("Spawn a persistent program", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await program.Spawn({
@@ -69,9 +69,9 @@ describe("Test the program message", () => {
         expect(res.content.address).toBe(account.address);
     });
 
-    it("Should fail to Spawn a program", async () => {
+    it("Should throw Error to Spawn a program", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         await expect(

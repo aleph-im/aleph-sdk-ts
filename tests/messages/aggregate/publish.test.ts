@@ -17,8 +17,10 @@ describe("Aggregate message publish test", () => {
 
     it("should publish an aggregate message", async () => {
         const { privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const account = ethereum.ImportAccountFromPrivateKey(privateKey);
-        const key = "satoshi";
+        const key = "publishTest";
 
         const content: { A: number } = {
             A: 1,
@@ -32,7 +34,7 @@ describe("Aggregate message publish test", () => {
         });
 
         type T = {
-            satoshi: {
+            [key]: {
                 A: number;
             };
         };
@@ -46,7 +48,7 @@ describe("Aggregate message publish test", () => {
             A: 1,
         };
 
-        expect(message.satoshi).toStrictEqual(expected);
-        expect(message.satoshi).toStrictEqual(res.content.content);
+        expect(message.publishTest).toStrictEqual(expected);
+        expect(message.publishTest).toStrictEqual(res.content.content);
     });
 });

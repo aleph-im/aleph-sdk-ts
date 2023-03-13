@@ -24,11 +24,11 @@ describe("Avalanche accounts", () => {
             const accountFromPK = await avalanche.ImportAccountFromPrivateKey(privateKey);
             expect(account.address).toBe(accountFromPK.address);
         } else {
-            fail();
+            throw Error();
         }
     });
 
-    it("should fail to get a Keypair", async () => {
+    it("should throw Error to get a Keypair", async () => {
         const fakePrivateKey = "a";
         const fct = async () => await avalanche.ImportAccountFromPrivateKey(fakePrivateKey);
 
@@ -37,6 +37,7 @@ describe("Avalanche accounts", () => {
 
     it("should import an ethereum accounts using a provider", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,
@@ -77,6 +78,7 @@ describe("Avalanche accounts", () => {
 
     it("Should encrypt and decrypt some data with an Avalanche account from provider", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,
@@ -95,6 +97,8 @@ describe("Avalanche accounts", () => {
 
     it("Should delegate encrypt and decrypt some data with an Avalanche account from provider", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey || !ephemeralAccount.avax.privateKey)
+            throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,
@@ -114,6 +118,7 @@ describe("Avalanche accounts", () => {
 
     it("should publish a post message correctly with an account from a provider", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,
@@ -153,6 +158,7 @@ describe("Avalanche accounts", () => {
 
     it("should publish a post message correctly", async () => {
         const { privateKey } = ephemeralAccount.avax;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const account = await avalanche.ImportAccountFromPrivateKey(privateKey);
         const content: { body: string } = {

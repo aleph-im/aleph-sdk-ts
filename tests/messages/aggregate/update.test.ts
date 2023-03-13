@@ -18,8 +18,10 @@ describe("Aggregate message update test", () => {
 
     it("should publish and update an aggregate message", async () => {
         const { privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const account = ethereum.ImportAccountFromPrivateKey(privateKey);
-        const key = "satoshi";
+        const key = "updateTest";
 
         const content: { A: number } = {
             A: 1,
@@ -49,7 +51,7 @@ describe("Aggregate message update test", () => {
         });
 
         type T = {
-            satoshi: {
+            [key]: {
                 A: number;
             };
         };
@@ -63,15 +65,23 @@ describe("Aggregate message update test", () => {
             A: 10,
         };
 
-        expect(message.satoshi).toStrictEqual(expected);
-        expect(message.satoshi).toStrictEqual(updated.content.content);
+        expect(message.updateTest).toStrictEqual(expected);
+        expect(message.updateTest).toStrictEqual(updated.content.content);
     });
 
+    /**
+     * This Test is about delegation
+     * All value dedicated for the security configuration have to be specified here:
+     * createSecurityConfig() inside tests/testAccount/generateAccounts.ts
+     */
     it("should allow an delegate call update", async () => {
+        if (!ephemeralAccount.eth.privateKey || !ephemeralAccount.eth1.privateKey)
+            throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const owner = ethereum.ImportAccountFromPrivateKey(ephemeralAccount.eth.privateKey);
         const guest = ethereum.ImportAccountFromPrivateKey(ephemeralAccount.eth1.privateKey);
 
-        const key = "satoshi";
+        const key = "delegateUpdateTest";
         const content: { A: number } = {
             A: 1,
         };
@@ -95,8 +105,8 @@ describe("Aggregate message update test", () => {
                 authorizations: [
                     {
                         address: guest.address,
-                        types: ["AGGREGATE"],
-                        aggregate_keys: [key],
+                        types: ephemeralAccount.security.types,
+                        aggregate_keys: ephemeralAccount.security.aggregate_keys,
                     },
                 ],
             },
@@ -118,7 +128,7 @@ describe("Aggregate message update test", () => {
         });
 
         type T = {
-            satoshi: {
+            [key]: {
                 A: number;
             };
         };
@@ -132,7 +142,7 @@ describe("Aggregate message update test", () => {
             A: 10,
         };
 
-        expect(message.satoshi).toStrictEqual(expected);
-        expect(message.satoshi).toStrictEqual(updated.content.content);
+        expect(message.delegateUpdateTest).toStrictEqual(expected);
+        expect(message.delegateUpdateTest).toStrictEqual(updated.content.content);
     });
 });

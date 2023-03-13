@@ -1,22 +1,30 @@
-import { createEphemeralAvax, createEphemeralEth } from "./generateAccounts";
+import { createEphemeralAvax, createEphemeralEth, createEphemeralCSDK, createSecurityConfig } from "./generateAccounts";
 import fs from "fs";
 
 export type EphAccount = {
     address: string;
     publicKey: string;
-    privateKey: string;
+    privateKey?: string;
     mnemonic?: string;
+};
+
+export type SecurityConfig = {
+    types: string[];
+    aggregate_keys: string[];
 };
 
 /**
  * @eth: Main Ethereum account
  * @eth1: Account that will receive right from the fist account to perform delegate calls
  * @avax: Main Alavanche account
+ * @csdk: Main Cosmos account
  */
 export type EphAccountList = {
+    security: SecurityConfig;
     eth: EphAccount;
     eth1: EphAccount;
     avax: EphAccount;
+    csdk: EphAccount;
 };
 
 function displayUsage() {
@@ -32,10 +40,10 @@ async function main() {
     if (!!arg && arg !== "-r") displayUsage();
 
     if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json") || process.argv[2] === "-r") {
-        const genFunctions = [createEphemeralEth, createEphemeralAvax];
+        const genFunctions = [createEphemeralEth, createEphemeralAvax, createEphemeralCSDK, createSecurityConfig];
 
         const arrayOfEphAccounts = await Promise.all(
-            genFunctions.map(async (el: () => Promise<{ [key: string]: EphAccount }>) => await el()),
+            genFunctions.map(async (el: () => Promise<{ [key: string]: EphAccount | SecurityConfig }>) => await el()),
         );
         const listOfEphAccounts = Object.assign({}, ...arrayOfEphAccounts);
 

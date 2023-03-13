@@ -35,6 +35,7 @@ describe("Ethereum accounts", () => {
 
     it("should import an ethereum accounts using a provider", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,
@@ -78,6 +79,8 @@ describe("Ethereum accounts", () => {
 
     it("Should delegate encrypt and decrypt some data with a provided Ethereum account", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const provider = new EthereumProvider({
             address,
             privateKey,
@@ -97,6 +100,7 @@ describe("Ethereum accounts", () => {
 
     it("Should encrypt and decrypt some data with a provided Ethereum account", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,
@@ -115,6 +119,7 @@ describe("Ethereum accounts", () => {
 
     it("should get the same signed message for each account", async () => {
         const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
         const provider = new EthereumProvider({
             address,

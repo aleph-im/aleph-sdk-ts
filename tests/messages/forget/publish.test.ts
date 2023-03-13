@@ -22,7 +22,7 @@ describe("Forget publish tests", () => {
 
     it("should post a message which will be forget", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await post.Publish({
@@ -44,7 +44,7 @@ describe("Forget publish tests", () => {
 
     it("Forget a message using storage engine", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await post.Publish({

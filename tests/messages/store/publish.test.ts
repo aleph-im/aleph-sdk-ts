@@ -22,7 +22,7 @@ describe("Store message publish", () => {
 
     it("should store a file and retrieve it correctly", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const fileContent = readFileSync("./tests/messages/store/testFile.txt");
 
@@ -45,7 +45,7 @@ describe("Store message publish", () => {
 
     it("should pin a file and retrieve it correctly", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
 
@@ -66,9 +66,9 @@ describe("Store message publish", () => {
         expect(got).toBe(expected);
     });
 
-    it("should fail to pin a file at runtime", async () => {
+    it("should throw Error to pin a file at runtime", async () => {
         const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) fail("Can not retrieve mnemonic inside ephemeralAccount.json");
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
