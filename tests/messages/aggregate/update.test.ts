@@ -20,7 +20,6 @@ describe("Aggregate message update test", () => {
             content: content,
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.inline,
         });
 
@@ -30,7 +29,6 @@ describe("Aggregate message update test", () => {
             content: UpdatedContent,
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.inline,
         });
 
@@ -71,7 +69,6 @@ describe("Aggregate message update test", () => {
             content: content,
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.inline,
         });
         await aggregate.Publish({
@@ -88,7 +85,6 @@ describe("Aggregate message update test", () => {
             },
             channel: "security",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.inline,
         });
 
@@ -99,7 +95,6 @@ describe("Aggregate message update test", () => {
             content: UpdatedContent,
             channel: "TEST",
             APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
             storageEngine: ItemType.storage,
         });
 

@@ -55,8 +55,7 @@ async function PublishAggregate(): Promise<boolean> {
         key: key,
         content: content,
         channel: "TEST",
-        storageEngine: ItemType.ipfs,
-        inlineRequested: true,
+        storageEngine: ItemType.inline,
         APIServer: DEFAULT_API_V2,
     });
 

@@ -11,7 +11,7 @@ export abstract class BaseProviderWallet {
      * Decrypts data using the Provider
      * @param  {Buffer} data data to decrypt
      */
-    abstract decrypt(data: Buffer): Promise<string>;
+    abstract decrypt(data: Buffer | string): Promise<string>;
     /**
      * Asks the provider for a public key
      */
@@ -22,4 +22,10 @@ export abstract class BaseProviderWallet {
      * @param  {Buffer|string} data The message to sign
      */
     abstract signMessage(data: Buffer | string): Promise<string>;
+
+    /**
+     * Asks the provider if its Metamask or not.
+     * This can be false positive.
+     */
+    abstract isMetamask(): boolean;
 }

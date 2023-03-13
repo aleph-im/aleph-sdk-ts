@@ -7,6 +7,8 @@ import { MessageType, ItemType } from "../../src/messages/message";
 describe("Ethereum accounts", () => {
     const providerAddress = "0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D";
     const providerPrivateKey = "de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3";
+    const providerAddress_B = "0x967545C722B2C06bC1EF7d358f6171bbA0Cd85F5";
+    const providerPrivateKey_B = "4b20dc58d29587cccdda511d50f9d44161c4abddb191329d576c2014d3839d54";
 
     it("should import an ethereum accounts using a mnemonic", () => {
         const { account, mnemonic } = ethereum.NewAccount();
@@ -68,19 +70,23 @@ describe("Ethereum accounts", () => {
     });
 
     it("Should delegate encrypt and decrypt some data with a provided Ethereum account", async () => {
-        const mnemonicA = "mystery hole village office false satisfy divert cloth behave slim cloth carry";
         const provider = new EthereumProvider({
             address: providerAddress,
             privateKey: providerPrivateKey,
             networkVersion: 31,
         });
+        const provider_B = new EthereumProvider({
+            address: providerAddress_B,
+            privateKey: providerPrivateKey_B,
+            networkVersion: 31,
+        });
 
-        const accountA = ethereum.ImportAccountFromMnemonic(mnemonicA);
         const accountFromProvider = await ethereum.GetAccountFromProvider(provider);
+        const accountFromProvider_B = await ethereum.GetAccountFromProvider(provider_B);
         const msg = Buffer.from("Innovation");
 
-        const c = await accountA.encrypt(msg, accountFromProvider);
-        const d = await accountFromProvider.decrypt(c);
+        const c = await accountFromProvider.encrypt(msg, accountFromProvider_B);
+        const d = await accountFromProvider_B.decrypt(c);
 
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
