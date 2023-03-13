@@ -4,8 +4,9 @@ import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { JsonRPCWallet } from "./providers/JsonRPCWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
+import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
@@ -15,7 +16,7 @@ export class ETHAccount extends ECIESAccount {
     private wallet?: ethers.Wallet;
     private provider?: BaseProviderWallet;
 
-    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey: string) {
+    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey?: string) {
         super(address, publicKey);
 
         if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider;
@@ -27,24 +28,56 @@ export class ETHAccount extends ECIESAccount {
     }
 
     /**
+     * Ask for a Provider Account a read Access to its encryption publicKey
+     * If the encryption public Key is already loaded, nothing happens
+     *
+     * This method will throw if:
+     * - The account was not instanced with a provider.
+     * - The user denied the encryption public key sharing.
+     */
+    override async askPubKey(): Promise<void> {
+        if (!!this.publicKey) return;
+        if (!this.provider) throw Error("PublicKey Error: No providers are setup");
+
+        this.publicKey = await this.provider.getPublicKey();
+        return;
+    }
+
+    /**
      * Encrypt a content using the user's public key for an Ethereum account.
      *
      * @param content The content to encrypt.
      * @param delegateSupport Optional, if you want to encrypt data for another EthAccount (Can also be directly a public key)
+     * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
      */
-    async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
-        let publicKey: string;
+    async encrypt(
+        content: Buffer,
+        delegateSupport?: ECIESAccount | string,
+        encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
+    ): Promise<Buffer | string> {
+        let publicKey: string | undefined;
 
-        if (delegateSupport)
-            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
-        else publicKey = this.publicKey;
+        // Does the content is encrypted for a tier?
+        if (delegateSupport instanceof ECIESAccount) {
+            if (!delegateSupport.publicKey) {
+                await delegateSupport.askPubKey();
+            }
+            publicKey = delegateSupport.publicKey;
+        } else if (delegateSupport) {
+            publicKey = delegateSupport;
+        } else {
+            await this.askPubKey();
+            publicKey = this.publicKey;
+        }
 
-        if (publicKey)
-            return new Promise((resolve) => {
-                resolve(secp256k1_encrypt(publicKey, content));
-            });
-
-        throw new Error("Cannot encrypt content");
+        if (!publicKey) throw new Error("Cannot encrypt content");
+        if (!this.provider) {
+            // Wallet encryption method or non-metamask provider
+            return secp256k1_encrypt(publicKey, content);
+        } else {
+            // provider encryption
+            return ProviderEncryptionLib[encryptionMethod](content, publicKey);
+        }
     }
 
     /**
@@ -52,10 +85,10 @@ export class ETHAccount extends ECIESAccount {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
+    async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
         if (this.wallet) {
             const secret = this.wallet.privateKey;
-            return secp256k1_decrypt(secret, encryptedContent);
+            return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
         }
         if (this.provider) {
             const decrypted = await this.provider.decrypt(encryptedContent);
@@ -124,12 +157,17 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  * Get an account from a Web3 provider (ex: Metamask)
  *
  * @param  {ethers.providers.ExternalProvider} provider
+ * @param requestedRpc Use this params to change the RPC endpoint;
  */
-export async function GetAccountFromProvider(provider: ethers.providers.ExternalProvider): Promise<ETHAccount> {
+export async function GetAccountFromProvider(
+    provider: ethers.providers.ExternalProvider,
+    requestedRpc: ChangeRpcParam = RpcChainType.ETH,
+): Promise<ETHAccount> {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(ETHprovider);
+    await jrw.changeNetwork(requestedRpc);
     await jrw.connect();
 
-    if (jrw.address) return new ETHAccount(jrw, jrw.address, await jrw.getPublicKey());
+    if (jrw.address) return new ETHAccount(jrw, jrw.address);
     throw new Error("Insufficient permissions");
 }

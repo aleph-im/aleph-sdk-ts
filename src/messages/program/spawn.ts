@@ -30,6 +30,7 @@ import { publish } from "./publish";
 type ProgramSpawnConfiguration = {
     account: Account;
     channel: string;
+    isPersistent?: boolean;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
     APIServer?: string;
@@ -40,11 +41,14 @@ type ProgramSpawnConfiguration = {
     memory?: number;
     runtime?: string;
     volumes?: MachineVolume[];
+    metadata?: Record<string, unknown>;
 };
 
 export async function Spawn({
     account,
     channel,
+    metadata,
+    isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
     APIServer = DEFAULT_API_V2,
@@ -59,6 +63,8 @@ export async function Spawn({
     return await publish({
         account,
         channel,
+        metadata,
+        isPersistent,
         inlineRequested,
         storageEngine,
         APIServer,

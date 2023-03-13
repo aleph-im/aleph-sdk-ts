@@ -21,8 +21,7 @@ function MessageConfig({ state }: consumeProps) {
     const message = await Publish({
         APIServer: DEFAULT_API_V2,
         channel: "Typescript-SDK-Toolshed",
-        inlineRequested: true,
-        storageEngine: ItemType.ipfs,
+        storageEngine: ItemType.inline,
         account: state.account,
         postType: "Toolshed",
         content: messageContent,
@@ -33,7 +32,8 @@ function MessageConfig({ state }: consumeProps) {
   }
 
   return (
-    <>
+    <div>
+    <h2>Sending</h2>
     <div>
       <input value={messageContent} 
             size={55}
@@ -50,7 +50,7 @@ function MessageConfig({ state }: consumeProps) {
         Your message was succesfully posted! <a href={`https://explorer.aleph.im/address/${state.account?.GetChain()}/${state.account?.address}/message/POST/${messageHash}`} target="_blank">Check on explorer</a>
       </p>
     }
-    </>
+    </div>
   )
 }
 

@@ -1,4 +1,5 @@
 import { BaseMessage, Chain } from "../messages/message";
+import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -24,11 +25,18 @@ export abstract class Account {
  * All inherited classes of ECIESAccount must implement the encrypt methods and expose a publicKey.
  */
 export abstract class ECIESAccount extends Account {
-    readonly publicKey: string;
+    public publicKey: string | undefined;
 
-    protected constructor(address: string, publicKey: string) {
+    protected constructor(address: string, publicKey?: string) {
         super(address);
         this.publicKey = publicKey;
     }
-    abstract encrypt(content: Buffer, delegateSupport?: string | ECIESAccount): Promise<Buffer>;
+
+    abstract askPubKey(): Promise<void>;
+    abstract encrypt(
+        content: Buffer,
+        delegateSupport?: string | ECIESAccount,
+        encryptionMethod?: ProviderEncryptionLabel,
+    ): Promise<Buffer | string>;
+    abstract decrypt(content: Buffer | string): Promise<Buffer>;
 }

@@ -5,8 +5,7 @@
  */
 
 import { personalSign } from "@metamask/eth-sig-util";
-import { SigningKey } from "@ethersproject/signing-key";
-import { decrypt as secp256k1_decrypt } from "eciesjs";
+import { getEncryptionPublicKey, decrypt } from "@metamask/eth-sig-util/dist/encryption";
 
 type ProviderSetup = {
     address: string;
@@ -71,24 +70,21 @@ export class EthereumProvider implements IMockProvider {
             }
 
             case "eth_getEncryptionPublicKey": {
-                let privateKey = this.setup.privateKey;
-                if (privateKey.match(/^[0-9a-f]*$/i) && privateKey.length === 64) {
-                    privateKey = "0x" + privateKey;
-                }
-
-                const signKey = new SigningKey(privateKey);
-                return Promise.resolve(signKey.publicKey);
+                const privateKey = this.setup.privateKey;
+                return Promise.resolve(getEncryptionPublicKey(privateKey));
             }
 
             case "eth_decrypt": {
                 this.log("eth_decrypt", { method, params });
-                if (!params) throw Error("Nothing to decrypt");
-                let privateKey = this.setup.privateKey;
-                if (privateKey.match(/^[0-9a-f]*$/i) && privateKey.length === 64) {
-                    privateKey = "0x" + privateKey;
-                }
 
-                const decrypted: Buffer = secp256k1_decrypt(privateKey, params[0]);
+                if (!params || !params[0]) throw new Error("Provide an encrypted payload.");
+
+                const stripped = params[0].substring(2);
+                const buff = Buffer.from(stripped, "hex");
+                const encryptedData = JSON.parse(buff.toString("utf8"));
+
+                const decrypted: string = decrypt({ encryptedData, privateKey: this.setup.privateKey });
+
                 return Promise.resolve(decrypted);
             }
 

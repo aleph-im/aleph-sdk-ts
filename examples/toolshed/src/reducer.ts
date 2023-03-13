@@ -1,4 +1,4 @@
-import { Account } from "../../../src/accounts/account";
+import { Account, ECIESAccount } from "../../../src/accounts/account";
 import { KeypairChains, WalletChains, HardwareChains } from "./model/chains";
 
 export enum Actions {
@@ -13,7 +13,7 @@ export type ActionType = {
 
 export type AppStateType = {
     selectedChain: KeypairChains | WalletChains | HardwareChains;
-    account: null | Account;
+    account: null | Account | ECIESAccount;
 };
 
 export const initState: AppStateType = {
