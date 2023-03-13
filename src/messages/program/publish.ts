@@ -51,6 +51,7 @@ type ProgramPublishConfiguration = {
     memory?: number;
     runtime?: string;
     volumes?: MachineVolume[];
+    metadata?: Record<string, unknown>;
 };
 
 // TODO: Check that program_ref, runtime and data_ref exist
@@ -58,6 +59,7 @@ type ProgramPublishConfiguration = {
 export async function publish({
     account,
     channel,
+    metadata,
     isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
@@ -115,6 +117,7 @@ export async function publish({
             ref: programRef as string,
             use_latest: true,
         },
+        metadata,
         on: triggers,
         environment: {
             reproducible: false,
