@@ -21,8 +21,7 @@ function MessageConfig({ state }: consumeProps) {
     const message = await Publish({
         APIServer: DEFAULT_API_V2,
         channel: "Typescript-SDK-Toolshed",
-        inlineRequested: true,
-        storageEngine: ItemType.ipfs,
+        storageEngine: ItemType.inline,
         account: state.account,
         postType: "Toolshed",
         content: messageContent,
