@@ -1,6 +1,4 @@
 import { avalanche, post } from "../index";
-import { DEFAULT_API_V2 } from "../../src/global";
-import { ItemType } from "../../src/messages/message";
 import { EthereumProvider } from "../providers/ethereumProvider";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
@@ -131,10 +129,7 @@ describe("Avalanche accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: accountFromProvider,
             postType: "avalanche",
             content: content,
@@ -144,12 +139,6 @@ describe("Avalanche accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "avalanche",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);
@@ -166,10 +155,7 @@ describe("Avalanche accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: account,
             postType: "avalanche",
             content: content,
@@ -179,12 +165,6 @@ describe("Avalanche accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "avalanche",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);

@@ -1,4 +1,3 @@
-import { ItemType } from "../../../src/messages/message";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { aggregate, ethereum } from "../../index";
 import { EphAccountList } from "../../testAccount/entryPoint";
@@ -35,9 +34,6 @@ describe("Aggregate message update test", () => {
             key: key,
             content: content,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
         });
 
         const updated = await aggregate.Publish({
@@ -45,9 +41,6 @@ describe("Aggregate message update test", () => {
             key: key,
             content: UpdatedContent,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
         });
 
         type T = {
@@ -94,9 +87,6 @@ describe("Aggregate message update test", () => {
             key: key,
             content: content,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
         });
         await aggregate.Publish({
             account: owner,
@@ -111,9 +101,6 @@ describe("Aggregate message update test", () => {
                 ],
             },
             channel: "security",
-            APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
-            storageEngine: ItemType.inline,
         });
 
         const updated = await aggregate.Publish({
@@ -122,9 +109,6 @@ describe("Aggregate message update test", () => {
             key: key,
             content: UpdatedContent,
             channel: "TEST",
-            APIServer: DEFAULT_API_V2,
-            inlineRequested: true,
-            storageEngine: ItemType.storage,
         });
 
         type T = {
@@ -133,7 +117,6 @@ describe("Aggregate message update test", () => {
             };
         };
         const message = await aggregate.Get<T>({
-            APIServer: DEFAULT_API_V2,
             address: owner.address,
             keys: [key],
         });

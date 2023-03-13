@@ -71,10 +71,7 @@ describe("Tezos accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: signerAccount,
             postType: "tezos",
             content: content,
@@ -84,12 +81,6 @@ describe("Tezos accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "tezos",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);

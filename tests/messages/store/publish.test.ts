@@ -79,9 +79,7 @@ describe("Store message publish", () => {
             // @ts-ignore
             store.Publish({
                 channel: "TEST",
-                APIServer: DEFAULT_API_V2,
                 account: account,
-                storageEngine: ItemType.storage,
                 fileObject: fileContent,
                 fileHash: helloWorldHash,
             }),
@@ -90,9 +88,7 @@ describe("Store message publish", () => {
         await expect(
             store.Publish({
                 channel: "TEST",
-                APIServer: DEFAULT_API_V2,
                 account: account,
-                storageEngine: ItemType.storage,
                 fileHash: helloWorldHash,
             }),
         ).rejects.toThrow("You must choose ipfs to pin file.");

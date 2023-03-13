@@ -1,6 +1,4 @@
-import { ItemType } from "../../../src/messages/message";
 import { aggregate, ethereum, post } from "../../index";
-import { DEFAULT_API_V2 } from "../../../src/global";
 import { v4 as uuidv4 } from "uuid";
 import { EphAccountList } from "../../testAccount/entryPoint";
 import fs from "fs";
@@ -35,9 +33,7 @@ describe("Post publish tests", () => {
 
         content.body = "New content !";
         const amended = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.ipfs,
             account: account,
             postType: "amend",
             content: content,
@@ -47,12 +43,6 @@ describe("Post publish tests", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "amend",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [oldPost.item_hash],
-                addresses: [],
-                tags: [],
                 hashes: [amended.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);
@@ -91,14 +81,10 @@ describe("Post publish tests", () => {
                 ],
             },
             channel: "security",
-            APIServer: DEFAULT_API_V2,
-            storageEngine: ItemType.inline,
         });
 
         await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.ipfs,
             account: guest,
             address: owner.address,
             postType: "amend",
@@ -108,12 +94,6 @@ describe("Post publish tests", () => {
 
         const amends = await post.Get({
             types: "testing_delegate",
-            APIServer: DEFAULT_API_V2,
-            pagination: 200,
-            page: 1,
-            refs: [],
-            addresses: [],
-            tags: [],
             hashes: [originalPost.item_hash],
         });
         expect(amends.posts[0].content).toStrictEqual({ body: "First content updated" });
@@ -126,7 +106,6 @@ describe("Post publish tests", () => {
             channel: "TEST",
             account: account,
             postType: "testing_oversize",
-            storageEngine: ItemType.inline,
             content: { body: Buffer.alloc(60 * 2 ** 10, "a").toString() },
         });
 

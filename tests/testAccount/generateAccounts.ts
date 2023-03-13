@@ -6,6 +6,9 @@ import { Secp256k1HdWallet } from "@cosmjs/amino";
 import { nuls2, solana, tezos } from "../index";
 import * as bip32 from "bip32";
 import { b58cencode, prefix } from "@taquito/utils";
+import { Keyring } from "@polkadot/keyring";
+import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 
 async function createEphemeralEth(): Promise<{ eth: EphAccount; eth1: EphAccount }> {
     const getAccount = (): EphAccount => {
@@ -33,6 +36,21 @@ async function createEphemeralAvax(): Promise<{ avax: EphAccount }> {
         privateKey: keypair.getPrivateKey().toString("hex"),
     };
     return { avax: ephemeralAccount };
+}
+
+async function createEphemeralPolkadot(): Promise<{ polkadot: EphAccount }> {
+    const mnemonic = generateMnemonic();
+    const keyRing = new Keyring({ type: "sr25519" });
+    await cryptoWaitReady();
+
+    const account = keyRing.createFromUri(mnemonic, { name: "sr25519" });
+
+    const ephemeralAccount: EphAccount = {
+        address: account.address,
+        publicKey: "aaa",
+        mnemonic: mnemonic,
+    };
+    return { polkadot: ephemeralAccount };
 }
 
 async function createEphemeralTezos(): Promise<{ tezos: EphAccount }> {
@@ -107,4 +125,5 @@ export {
     createEphemeralSol,
     createEphemeralNULS2,
     createEphemeralTezos,
+    createEphemeralPolkadot,
 };

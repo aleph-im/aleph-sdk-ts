@@ -1,4 +1,3 @@
-import { DEFAULT_API_V2 } from "../../../src/global";
 import { aggregate, ethereum } from "../../index";
 import { EphAccountList } from "../../testAccount/entryPoint";
 import fs from "fs";
@@ -39,7 +38,6 @@ describe("Aggregate message publish test", () => {
             };
         };
         const message = await aggregate.Get<T>({
-            APIServer: DEFAULT_API_V2,
             address: account.address,
             keys: [key],
         });

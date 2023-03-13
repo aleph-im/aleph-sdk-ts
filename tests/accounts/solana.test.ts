@@ -1,6 +1,5 @@
 import { ItemType, MessageType } from "../../src/messages/message";
 import { post, solana } from "../index";
-import { DEFAULT_API_V2 } from "../../src/global";
 import { Keypair } from "@solana/web3.js";
 import { panthomLikeProvider, officialLikeProvider } from "../providers/solanaProvider";
 import { EphAccountList } from "../testAccount/entryPoint";
@@ -75,10 +74,7 @@ describe("Solana accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: account,
             postType: "solana",
             content: content,
@@ -88,12 +84,6 @@ describe("Solana accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "solana",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);

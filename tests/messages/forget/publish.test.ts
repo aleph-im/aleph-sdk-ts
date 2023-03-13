@@ -1,6 +1,4 @@
-import { ItemType } from "../../../src/messages/message";
 import { ethereum, forget, post } from "../../index";
-import { DEFAULT_API_V2 } from "../../../src/global";
 import { EphAccountList } from "../../testAccount/entryPoint";
 import fs from "fs";
 
@@ -26,9 +24,7 @@ describe("Forget publish tests", () => {
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.inline,
             account: account,
             postType: postType,
             content: content,
@@ -48,9 +44,7 @@ describe("Forget publish tests", () => {
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.inline,
             account: account,
             postType: postType,
             content: content,
@@ -59,7 +53,6 @@ describe("Forget publish tests", () => {
         const Fres = await forget.Publish({
             channel: "TEST",
             hashes: [res.item_hash],
-            storageEngine: ItemType.storage,
             account: account,
         });
 

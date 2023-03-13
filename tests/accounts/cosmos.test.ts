@@ -45,13 +45,7 @@ describe("Cosmos accounts", () => {
         expect(msg.item_hash).not.toBeUndefined();
         setTimeout(async () => {
             const amends = await post.Get({
-                addresses: [],
-                APIServer: DEFAULT_API_V2,
                 hashes: [msg.item_hash],
-                page: 1,
-                pagination: 200,
-                refs: [],
-                tags: [],
                 types: "cosmos",
             });
             expect(amends.posts.length).toBeGreaterThan(0);

@@ -1,6 +1,5 @@
 import { nuls2, post } from "../index";
-import { DEFAULT_API_V2 } from "../../src/global";
-import { ItemType, Chain } from "../../src/messages/message";
+import { Chain } from "../../src/messages/message";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
@@ -59,10 +58,7 @@ describe("NULS2 accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
             account: account,
             postType: "nuls2",
             content: content,
@@ -72,12 +68,6 @@ describe("NULS2 accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "nuls2",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);
