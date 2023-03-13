@@ -54,6 +54,26 @@ describe("Test the program message", () => {
         expect(res.content.address).toBe(account.address);
     });
 
+    it("Spawn a program with custom metadata", async () => {
+        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+
+        const res = await program.Spawn({
+            account: account,
+            channel: "TEST",
+            entrypoint: "main:app",
+            programRef: "560506e91349712a8338440c0df3c74c17d1b797183ffc34797887d1d4470130",
+            metadata: {
+                name: "My program",
+                description: "My program description",
+            },
+        });
+
+        expect(res.content.code.entrypoint).toBe("main:app");
+        expect(res.content.address).toBe(account.address);
+        expect(res.content?.metadata?.name).toBe("My program");
+    });
+
     it("Should fail to Spawn a program", async () => {
         const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
