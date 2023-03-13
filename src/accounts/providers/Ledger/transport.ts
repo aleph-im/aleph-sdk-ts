@@ -1,7 +1,7 @@
 import Transport from "@ledgerhq/hw-transport";
-import { isNode } from "../../../utils/env";
+import { isNode, JSExecutionEnvironment } from "../../../utils/env";
 
-export async function getTransport(overrideEnvironment?: "node" | "browser"): Promise<Transport> {
+export async function getTransport(overrideEnvironment?: JSExecutionEnvironment): Promise<Transport> {
     let p = "webusb";
 
     if (
