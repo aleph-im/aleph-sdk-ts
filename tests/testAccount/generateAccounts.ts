@@ -3,6 +3,8 @@ import { ethers } from "ethers";
 import { getKeyPair } from "../../src/accounts/avalanche";
 import { EphAccount, SecurityConfig } from "./entryPoint";
 import { Secp256k1HdWallet } from "@cosmjs/amino";
+import { nuls2 } from "../index";
+import * as bip32 from "bip32";
 
 async function createEphemeralEth(): Promise<{ eth: EphAccount; eth1: EphAccount }> {
     const getAccount = (): EphAccount => {
@@ -32,6 +34,23 @@ async function createEphemeralAvax(): Promise<{ avax: EphAccount }> {
     return { avax: ephemeralAccount };
 }
 
+async function createEphemeralNULS2(): Promise<{ nuls2: EphAccount }> {
+    const account = await nuls2.NewAccount();
+    const v = await bip39.mnemonicToSeed(account.mnemonic);
+    const b = bip32.fromSeed(v);
+
+    if (!b || !b.privateKey) throw new Error("could not import from mnemonic");
+    const privateKey = b.privateKey.toString("hex");
+
+    const ephemeralAccount: EphAccount = {
+        address: account.account.address,
+        publicKey: account.account.publicKey,
+        mnemonic: account.mnemonic,
+        privateKey,
+    };
+    return { nuls2: ephemeralAccount };
+}
+
 async function createEphemeralCSDK(): Promise<{ csdk: EphAccount }> {
     const wallet = await Secp256k1HdWallet.generate();
     const accounts = (await wallet.getAccounts())[0];
@@ -56,4 +75,4 @@ async function createSecurityConfig(): Promise<{ security: SecurityConfig }> {
     };
 }
 
-export { createEphemeralAvax, createEphemeralEth, createEphemeralCSDK, createSecurityConfig };
+export { createEphemeralAvax, createEphemeralEth, createEphemeralCSDK, createSecurityConfig, createEphemeralNULS2 };
