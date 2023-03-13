@@ -130,8 +130,7 @@ describe("Avalanche accounts", () => {
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.inline,
             account: accountFromProvider,
             postType: "avalanche",
             content: content,
@@ -162,8 +161,7 @@ describe("Avalanche accounts", () => {
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.inline,
             account: account,
             postType: "avalanche",
             content: content,

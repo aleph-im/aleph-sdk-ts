@@ -43,8 +43,7 @@ describe("NULS2 accounts", () => {
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.inline,
             account: account,
             postType: "nuls2",
             content: content,
