@@ -4,6 +4,8 @@ import {
     createEphemeralCSDK,
     createSecurityConfig,
     createEphemeralNULS2,
+    createEphemeralSol,
+    createEphemeralTezos,
 } from "./generateAccounts";
 import fs from "fs";
 
@@ -33,6 +35,8 @@ export type EphAccountList = {
     avax: EphAccount;
     csdk: EphAccount;
     nuls2: EphAccount;
+    sol: EphAccount;
+    tezos: EphAccount;
 };
 
 function displayUsage() {
@@ -52,6 +56,8 @@ async function main() {
             createEphemeralEth,
             createEphemeralAvax,
             createEphemeralCSDK,
+            createEphemeralSol,
+            createEphemeralTezos,
             createEphemeralNULS2,
             createSecurityConfig,
         ];

@@ -3,8 +3,9 @@ import { ethers } from "ethers";
 import { getKeyPair } from "../../src/accounts/avalanche";
 import { EphAccount, SecurityConfig } from "./entryPoint";
 import { Secp256k1HdWallet } from "@cosmjs/amino";
-import { nuls2 } from "../index";
+import { nuls2, solana, tezos } from "../index";
 import * as bip32 from "bip32";
+import { b58cencode, prefix } from "@taquito/utils";
 
 async function createEphemeralEth(): Promise<{ eth: EphAccount; eth1: EphAccount }> {
     const getAccount = (): EphAccount => {
@@ -32,6 +33,29 @@ async function createEphemeralAvax(): Promise<{ avax: EphAccount }> {
         privateKey: keypair.getPrivateKey().toString("hex"),
     };
     return { avax: ephemeralAccount };
+}
+
+async function createEphemeralTezos(): Promise<{ tezos: EphAccount }> {
+    const { signerAccount, privateKey } = await tezos.NewAccount();
+    const publicKey = await signerAccount.GetPublicKey();
+
+    const ephemeralAccount: EphAccount = {
+        address: signerAccount.address,
+        publicKey,
+        privateKey: b58cencode(privateKey, prefix.edsk),
+    };
+    return { tezos: ephemeralAccount };
+}
+
+async function createEphemeralSol(): Promise<{ sol: EphAccount }> {
+    const { account, privateKey } = solana.NewAccount();
+
+    const ephemeralAccount: EphAccount = {
+        address: account.address,
+        publicKey: account.address,
+        privateKey: Buffer.from(privateKey).toString("hex"),
+    };
+    return { sol: ephemeralAccount };
 }
 
 async function createEphemeralNULS2(): Promise<{ nuls2: EphAccount }> {
@@ -75,4 +99,12 @@ async function createSecurityConfig(): Promise<{ security: SecurityConfig }> {
     };
 }
 
-export { createEphemeralAvax, createEphemeralEth, createEphemeralCSDK, createSecurityConfig, createEphemeralNULS2 };
+export {
+    createEphemeralAvax,
+    createEphemeralEth,
+    createEphemeralCSDK,
+    createSecurityConfig,
+    createEphemeralSol,
+    createEphemeralNULS2,
+    createEphemeralTezos,
+};

@@ -3,13 +3,27 @@ import { post, solana } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { Keypair } from "@solana/web3.js";
 import { panthomLikeProvider, officialLikeProvider } from "../providers/solanaProvider";
+import { EphAccountList } from "../testAccount/entryPoint";
+import fs from "fs";
 
 describe("Solana accounts", () => {
-    it("should import an solana accounts using a private key", () => {
-        const { account, privateKey } = solana.NewAccount();
-        const accountFromPrivateKey = solana.ImportAccountFromPrivateKey(privateKey);
+    let ephemeralAccount: EphAccountList;
 
-        expect(account.address).toStrictEqual(accountFromPrivateKey.address);
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.avax.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
+
+    it("should import an solana accounts using a private key", () => {
+        const { address, privateKey } = ephemeralAccount.sol;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+        const accountFromPrivateKey = solana.ImportAccountFromPrivateKey(Buffer.from(privateKey, "hex"));
+
+        expect(address).toStrictEqual(accountFromPrivateKey.address);
     });
 
     it("should import an solana accounts using a provider", async () => {
@@ -52,7 +66,10 @@ describe("Solana accounts", () => {
     });
 
     it("should publish a post message correctly", async () => {
-        const { account } = solana.NewAccount();
+        const { privateKey } = ephemeralAccount.sol;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+        const account = solana.ImportAccountFromPrivateKey(Buffer.from(privateKey, "hex"));
+
         const content: { body: string } = {
             body: "This message was posted from the typescript-SDK test suite with SOL",
         };
