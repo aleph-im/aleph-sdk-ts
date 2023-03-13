@@ -16,7 +16,7 @@ export class ETHAccount extends ECIESAccount {
     private wallet?: ethers.Wallet;
     private provider?: BaseProviderWallet;
 
-    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey: string) {
+    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey?: string) {
         super(address, publicKey);
 
         if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider;
@@ -25,6 +25,22 @@ export class ETHAccount extends ECIESAccount {
 
     override GetChain(): Chain {
         return Chain.ETH;
+    }
+
+    /**
+     * Ask for a Provider Account a read Access to its encryption publicKey
+     * If the encryption public Key is already loaded, nothing happens
+     *
+     * This method will throw if:
+     * - The account was not instanced with a provider.
+     * - The user denied the encryption public key sharing.
+     */
+    override async askPubKey(): Promise<void> {
+        if (!!this.publicKey) return;
+        if (!this.provider) throw Error("PublicKey Error: No providers are setup");
+
+        this.publicKey = await this.provider.getPublicKey();
+        return;
     }
 
     /**
@@ -39,12 +55,20 @@ export class ETHAccount extends ECIESAccount {
         delegateSupport?: ECIESAccount | string,
         encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
     ): Promise<Buffer | string> {
-        let publicKey: string;
+        let publicKey: string | undefined;
 
         // Does the content is encrypted for a tier?
-        if (delegateSupport)
-            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
-        else publicKey = this.publicKey;
+        if (delegateSupport instanceof ECIESAccount) {
+            if (!delegateSupport.publicKey) {
+                await delegateSupport.askPubKey();
+            }
+            publicKey = delegateSupport.publicKey;
+        } else if (delegateSupport) {
+            publicKey = delegateSupport;
+        } else {
+            await this.askPubKey();
+            publicKey = this.publicKey;
+        }
 
         if (!publicKey) throw new Error("Cannot encrypt content");
         if (!this.provider) {
@@ -144,6 +168,6 @@ export async function GetAccountFromProvider(
     await jrw.changeNetwork(requestedRpc);
     await jrw.connect();
 
-    if (jrw.address) return new ETHAccount(jrw, jrw.address, await jrw.getPublicKey());
+    if (jrw.address) return new ETHAccount(jrw, jrw.address);
     throw new Error("Insufficient permissions");
 }
