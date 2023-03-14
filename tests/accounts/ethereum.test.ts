@@ -5,6 +5,7 @@ import { EthereumProvider } from "../providers/ethereumProvider";
 import { MessageType, ItemType } from "../../src/messages/types";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
+import { GetVerificationBuffer } from "../../src/messages";
 
 describe("Ethereum accounts", () => {
     let ephemeralAccount: EphAccountList;
@@ -154,5 +155,92 @@ describe("Ethereum accounts", () => {
 
         expect(account.Sign(message)).toStrictEqual(accountFromPrivate.Sign(message));
         expect(account.Sign(message)).toStrictEqual(accountFromProvider.Sign(message));
+    });
+
+    it("Should success to verif the authenticity of a signature", async () => {
+        const account = await ethereum.ImportAccountFromPrivateKey(providerPrivateKey);
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        const signature = await account.Sign(message);
+        const verif = await account.SignVerif(GetVerificationBuffer(message), signature);
+
+        expect(verif).toStrictEqual(true);
+    });
+
+    it("Should fail to verif the authenticity of a signature", async () => {
+        const account = await ethereum.ImportAccountFromPrivateKey(providerPrivateKey);
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        const fakeMessage = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.program,
+            channel: "FAKE",
+            confirmed: true,
+            signature: "FAKE",
+            size: 0,
+            time: 0,
+            item_type: ItemType.ipfs,
+            item_content: "FAKE",
+            item_hash: "FAKE",
+            content: { address: account.address, time: 0 },
+        };
+
+        const signature = await account.Sign(message);
+        const verif = await account.SignVerif(GetVerificationBuffer(fakeMessage), signature);
+
+        expect(verif).toStrictEqual(false);
+    });
+
+    it("Should be able to verify different kind of signatures type", async () => {
+        const account = await ethereum.ImportAccountFromPrivateKey(providerPrivateKey);
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        const signature = await account.Sign(message);
+
+        const verifA = await account.SignVerif(message, signature);
+        const verifB = await account.SignVerif(GetVerificationBuffer(message).toString(), signature);
+
+        expect(verifA).toStrictEqual(true);
+        expect(verifB).toStrictEqual(true);
     });
 });
