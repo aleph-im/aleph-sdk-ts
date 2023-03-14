@@ -1,10 +1,13 @@
 import Transport from "@ledgerhq/hw-transport";
-import { isNode } from "../../../utils/env";
+import { isNode, JSExecutionEnvironment } from "../../../utils/env";
 
-export async function getTransport(): Promise<Transport> {
+export async function getTransport(overrideEnvironment?: JSExecutionEnvironment): Promise<Transport> {
     let transport;
 
-    if (isNode()) {
+    if (
+        overrideEnvironment === "node" ||
+        (isNode() && overrideEnvironment !== "browser" && overrideEnvironment !== undefined)
+    ) {
         transport = await import("@ledgerhq/hw-transport-node-hid");
     } else {
         transport = await import("@ledgerhq/hw-transport-webusb");

@@ -5,9 +5,11 @@ import { BaseMessage, Chain } from "../messages/message";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
-import { JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
+
+import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
@@ -17,7 +19,7 @@ export class AvalancheAccount extends ECIESAccount {
     private signer?: KeyPair;
     private provider?: BaseProviderWallet;
 
-    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string, publicKey: string) {
+    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string, publicKey?: string) {
         super(address, publicKey);
 
         if (signerOrProvider instanceof KeyPair) this.signer = signerOrProvider;
@@ -32,20 +34,56 @@ export class AvalancheAccount extends ECIESAccount {
     }
 
     /**
+     * Ask for a Provider Account a read Access to its encryption publicKey
+     * If the encryption public Key is already loaded, nothing happens
+     *
+     * This method will throw if:
+     * - The account was not instanced with a provider.
+     * - The user denied the encryption public key sharing.
+     */
+    override async askPubKey(): Promise<void> {
+        if (!!this.publicKey) return;
+        if (!this.provider) throw Error("PublicKey Error: No providers are setup");
+
+        this.publicKey = await this.provider.getPublicKey();
+        return;
+    }
+
+    /**
      * Encrypt a content using the user's public key from the keypair
      *
      * @param content The content to encrypt.
      * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
+     * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
      */
-    async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
+    async encrypt(
+        content: Buffer,
+        delegateSupport?: ECIESAccount | string,
+        encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
+    ): Promise<Buffer | string> {
         let publicKey: string | undefined;
 
-        if (delegateSupport)
-            publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
-        else publicKey = this.publicKey;
-        if (publicKey) return secp256k1_encrypt(publicKey, content);
+        // Does the content is encrypted for a tier?
+        if (delegateSupport instanceof ECIESAccount) {
+            if (!delegateSupport.publicKey) {
+                await delegateSupport.askPubKey();
+            }
+            publicKey = delegateSupport.publicKey;
+        } else if (delegateSupport) {
+            publicKey = delegateSupport;
+        } else {
+            await this.askPubKey();
+            publicKey = this.publicKey;
+        }
 
-        throw new Error("Cannot encrypt content");
+        if (!publicKey) throw new Error("Cannot encrypt content");
+        if (!this.provider) {
+            // Wallet encryption method or non-metamask provider
+            return secp256k1_encrypt(publicKey, content);
+        } else {
+            // provider encryption
+            return ProviderEncryptionLib[encryptionMethod](content, publicKey);
+        }
     }
 
     /**
@@ -53,10 +91,10 @@ export class AvalancheAccount extends ECIESAccount {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    async decrypt(encryptedContent: Buffer): Promise<Buffer> {
+    async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
         if (this.signer) {
             const secret = this.signer.getPrivateKey().toString("hex");
-            return secp256k1_decrypt(secret, encryptedContent);
+            return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
         }
         if (this.provider) {
             const decrypted = await this.provider.decrypt(encryptedContent);
@@ -142,15 +180,19 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<A
  * Get an account from a Web3 provider (ex: Metamask)
  *
  * @param  {providers.ExternalProvider} provider from metamask
+ * @param requestedRpc Use this params to change the RPC endpoint;
  */
-export async function GetAccountFromProvider(provider: providers.ExternalProvider): Promise<AvalancheAccount> {
+export async function GetAccountFromProvider(
+    provider: providers.ExternalProvider,
+    requestedRpc: ChangeRpcParam = RpcChainType.AVAX,
+): Promise<AvalancheAccount> {
     const avaxProvider = new providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(avaxProvider);
-    await jrw.changeNetwork(RpcChainType.AVAX);
+    await jrw.changeNetwork(requestedRpc);
 
     await jrw.connect();
     if (jrw.address) {
-        return new AvalancheAccount(jrw, jrw.address, await jrw.getPublicKey());
+        return new AvalancheAccount(jrw, jrw.address);
     }
     throw new Error("Insufficient permissions");
 }

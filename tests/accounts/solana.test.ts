@@ -60,8 +60,7 @@ describe("Solana accounts", () => {
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            inlineRequested: true,
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.inline,
             account: account,
             postType: "solana",
             content: content,

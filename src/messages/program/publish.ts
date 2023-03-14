@@ -39,6 +39,7 @@ import { GetMessage } from "../any";
 type ProgramPublishConfiguration = {
     account: Account;
     channel: string;
+    isPersistent?: boolean;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
     APIServer?: string;
@@ -50,6 +51,7 @@ type ProgramPublishConfiguration = {
     memory?: number;
     runtime?: string;
     volumes?: MachineVolume[];
+    metadata?: Record<string, unknown>;
 };
 
 // TODO: Check that program_ref, runtime and data_ref exist
@@ -57,6 +59,8 @@ type ProgramPublishConfiguration = {
 export async function publish({
     account,
     channel,
+    metadata,
+    isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
     APIServer = DEFAULT_API_V2,
@@ -99,7 +103,7 @@ export async function publish({
         }
     }
 
-    let triggers: FunctionTriggers = { http: true };
+    let triggers: FunctionTriggers = { http: true, persistent: isPersistent };
     if (subscription) triggers = { ...triggers, message: subscription };
 
     const programContent: ProgramContent = {
@@ -113,6 +117,7 @@ export async function publish({
             ref: programRef as string,
             use_latest: true,
         },
+        metadata,
         on: triggers,
         environment: {
             reproducible: false,

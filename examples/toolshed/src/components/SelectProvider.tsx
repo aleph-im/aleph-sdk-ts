@@ -12,16 +12,15 @@ type Option = {
 
 export const availableKeypairs: Option[] = [
   { label: 'Avalanche', value: KeypairChains.Avalanche },
-  { label: 'Cosmos', value: 'CSDK_KP', isDisabled: true },
+  { label: 'Cosmos', value: 'CSDK_KP' },
   { label: 'Ethereum', value: KeypairChains.Ethereum },
   { label: 'NULS2', value: KeypairChains.NULS2 },
   { label: 'Polkadot/Substrate', value: KeypairChains.Polkadot },
   { label: 'Solana', value: KeypairChains.Solana },
-  { label: 'Tezos', value: KeypairChains.Tezos, isDisabled: true },
+  { label: 'Tezos', value: KeypairChains.Tezos },
 ]
 
 export const availableWallets: Option[] = [
-  { label: 'Avalanche (via Metamask)', value: WalletChains.Avalanche },
   { label: 'Ethereum (via Metamask)', value: WalletChains.Ethereum },
   { label: 'Solana (via Phantom)', value: WalletChains.Solana },
 ]

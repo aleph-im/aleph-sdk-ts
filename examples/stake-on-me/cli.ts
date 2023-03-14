@@ -50,7 +50,6 @@ const main = async () => {
         account,
         APIServer: "https://api2.aleph.im",
         channel: "FOUNDATION",
-        inlineRequested: true,
         storageEngine: ItemType.inline,
         postType: "corechan-operation",
         content: {

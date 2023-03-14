@@ -5,6 +5,7 @@ import { Account } from "../../account";
 import { Chain, BaseMessage } from "../../../messages/message";
 import { GetVerificationBuffer } from "../../../messages";
 import { getTransport } from "./transport";
+import { JSExecutionEnvironment } from "../../../utils/env";
 
 const DERIVATION_PATH = "44'/60'/0'/0/0";
 
@@ -47,8 +48,8 @@ export class ETHLedgerAccount extends Account {
 /**
  * This method retrieves an Ethereum account from a connected Ledger device
  */
-export async function GetAccountFromLedger(): Promise<ETHLedgerAccount> {
-    const transport = await getTransport();
+export async function GetAccountFromLedger(overrideEnvironment?: JSExecutionEnvironment): Promise<ETHLedgerAccount> {
+    const transport = await getTransport(overrideEnvironment);
     const signer = new EthApp(transport);
 
     const { version } = await signer.getAppConfiguration();
