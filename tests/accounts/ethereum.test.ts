@@ -78,21 +78,28 @@ describe("Ethereum accounts", () => {
     });
 
     it("Should delegate encrypt and decrypt some data with a provided Ethereum account", async () => {
-        const { address, privateKey } = ephemeralAccount.eth;
-        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+        const ephAccountA = ephemeralAccount.eth;
+        const ephAccountB = ephemeralAccount.eth1;
+        if (!ephAccountA.privateKey || !ephAccountB.privateKey)
+            throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
-        const provider = new EthereumProvider({
-            address,
-            privateKey,
+        const providerA = new EthereumProvider({
+            address: ephAccountA.address,
+            privateKey: ephAccountA.privateKey,
+            networkVersion: 31,
+        });
+        const providerB = new EthereumProvider({
+            address: ephAccountB.address,
+            privateKey: ephAccountB.privateKey,
             networkVersion: 31,
         });
 
-        const { account } = ethereum.NewAccount();
-        const accountFromProvider = await ethereum.GetAccountFromProvider(provider);
+        const accountFromProviderA = await ethereum.GetAccountFromProvider(providerA);
+        const accountFromProviderB = await ethereum.GetAccountFromProvider(providerB);
         const msg = Buffer.from("Innovation");
 
-        const c = await account.encrypt(msg, accountFromProvider);
-        const d = await accountFromProvider.decrypt(c);
+        const c = await accountFromProviderA.encrypt(msg, accountFromProviderA);
+        const d = await accountFromProviderB.decrypt(c);
 
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);

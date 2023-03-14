@@ -18,3 +18,5 @@ export function isNode(): boolean {
 
     return hasNodeVersion && hasNoWindow;
 }
+
+export type JSExecutionEnvironment = "node" | "browser";

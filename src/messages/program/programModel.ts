@@ -138,6 +138,7 @@ export type ProgramContent = BaseContent & {
     data?: DataContent;
     export?: Export;
     on: FunctionTriggers;
+    metadata?: Record<string, any>;
     environment: FunctionEnvironment;
     resources: MachineResources;
     runtime: FunctionRuntime;

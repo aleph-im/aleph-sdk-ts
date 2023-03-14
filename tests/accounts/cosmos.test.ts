@@ -37,9 +37,8 @@ describe("Cosmos accounts", () => {
             APIServer: DEFAULT_API_V2,
             channel: "TEST",
             content,
-            inlineRequested: true,
             postType: "cosmos",
-            storageEngine: ItemType.ipfs,
+            storageEngine: ItemType.inline,
         });
 
         expect(msg.item_hash).not.toBeUndefined();

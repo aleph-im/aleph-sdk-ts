@@ -41,11 +41,13 @@ type ProgramSpawnConfiguration = {
     memory?: number;
     runtime?: string;
     volumes?: MachineVolume[];
+    metadata?: Record<string, unknown>;
 };
 
 export async function Spawn({
     account,
     channel,
+    metadata,
     isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
@@ -61,6 +63,7 @@ export async function Spawn({
     return await publish({
         account,
         channel,
+        metadata,
         isPersistent,
         inlineRequested,
         storageEngine,

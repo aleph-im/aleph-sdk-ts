@@ -38,21 +38,28 @@ export class NULS2Account extends ECIESAccount {
     }
 
     /**
+     * Ask for a Provider Account a read Access to its encryption publicKey.
+     * As NULS2 currently doesn't support instantiation through a provider, this method has no effect.
+     */
+    override async askPubKey(): Promise<void> {
+        return;
+    }
+
+    /**
      * Encrypt a content using the user's public key for a NULS2 account.
      *
      * @param content The content to encrypt.
      * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
      */
-    encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
-        let publicKey: string;
+    async encrypt(content: Buffer, delegateSupport?: ECIESAccount | string): Promise<Buffer> {
+        let publicKey: string | undefined;
 
         if (delegateSupport)
             publicKey = delegateSupport instanceof ECIESAccount ? delegateSupport.publicKey : delegateSupport;
         else publicKey = this.publicKey;
 
-        return new Promise((resolve) => {
-            resolve(secp256k1_encrypt(publicKey, content));
-        });
+        if (!publicKey) throw new Error("Cannot encrypt content");
+        return secp256k1_encrypt(publicKey, content);
     }
 
     /**
@@ -60,8 +67,8 @@ export class NULS2Account extends ECIESAccount {
      *
      * @param encryptedContent The encrypted content to decrypt.
      */
-    decrypt(encryptedContent: Buffer): Buffer {
-        return secp256k1_decrypt(this.privateKey, encryptedContent);
+    async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
+        return secp256k1_decrypt(this.privateKey, Buffer.from(encryptedContent));
     }
 
     /**
