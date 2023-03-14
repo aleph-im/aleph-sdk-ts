@@ -84,6 +84,7 @@ async function createEphemeralNULS2(): Promise<{ nuls2: EphAccount }> {
     if (!b || !b.privateKey) throw new Error("could not import from mnemonic");
     const privateKey = b.privateKey.toString("hex");
 
+    if (!account.account.publicKey) throw Error("[Ephemeral Account generation] - Error while creating Nuls2 Account");
     const ephemeralAccount: EphAccount = {
         address: account.account.address,
         publicKey: account.account.publicKey,

@@ -94,21 +94,28 @@ describe("Avalanche accounts", () => {
     });
 
     it("Should delegate encrypt and decrypt some data with an Avalanche account from provider", async () => {
-        const { address, privateKey } = ephemeralAccount.eth;
-        if (!privateKey || !ephemeralAccount.avax.privateKey)
+        const accountA = ephemeralAccount.eth;
+        const accountB = ephemeralAccount.eth1;
+        if (!accountB.privateKey || !accountA.privateKey)
             throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
 
-        const provider = new EthereumProvider({
-            address,
-            privateKey,
+        const providerA = new EthereumProvider({
+            address: accountA.address,
+            privateKey: accountA.privateKey,
             networkVersion: 31,
         });
-        const accountA = await avalanche.ImportAccountFromPrivateKey(ephemeralAccount.avax.privateKey);
-        const accountFromProvider = await avalanche.GetAccountFromProvider(provider);
+        const providerB = new EthereumProvider({
+            address: accountB.address,
+            privateKey: accountB.privateKey,
+            networkVersion: 31,
+        });
+
+        const accountFromProviderA = await avalanche.GetAccountFromProvider(providerA);
+        const accountFromProviderB = await avalanche.GetAccountFromProvider(providerB);
         const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
 
-        const c = await accountA.encrypt(msg, accountFromProvider);
-        const d = await accountFromProvider.decrypt(c);
+        const c = await accountFromProviderA.encrypt(msg, accountFromProviderB);
+        const d = await accountFromProviderB.decrypt(c);
 
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);

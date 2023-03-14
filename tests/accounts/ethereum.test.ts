@@ -98,7 +98,7 @@ describe("Ethereum accounts", () => {
         const accountFromProviderB = await ethereum.GetAccountFromProvider(providerB);
         const msg = Buffer.from("Innovation");
 
-        const c = await accountFromProviderA.encrypt(msg, accountFromProviderA);
+        const c = await accountFromProviderA.encrypt(msg, accountFromProviderB);
         const d = await accountFromProviderB.decrypt(c);
 
         expect(c).not.toBe(msg);
