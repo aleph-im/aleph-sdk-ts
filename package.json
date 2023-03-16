@@ -1,6 +1,6 @@
 {
     "name": "aleph-sdk-ts",
-    "version": "3.3.2",
+    "version": "3.4.0",
     "description": "Aleph.im Typescript SDK",
     "keywords": [
         "web3",
