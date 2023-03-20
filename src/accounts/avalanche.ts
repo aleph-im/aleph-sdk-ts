@@ -11,6 +11,8 @@ import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
 import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
+import { verifAvalanche } from "../utils/signature";
+
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
@@ -129,7 +131,10 @@ export class AvalancheAccount extends ECIESAccount {
             const signatureBuffer = this.signer?.sign(digestBuff);
 
             const bintools = BinTools.getInstance();
-            return bintools.cb58Encode(signatureBuffer);
+            const signature = bintools.cb58Encode(signatureBuffer);
+            if (await verifAvalanche(buffer, signature, this.signer.getPublicKey().toString("hex"))) return signature;
+
+            throw new Error("Cannot proof the integrity of the signature");
         } else if (this.provider) {
             return await this.provider.signMessage(buffer);
         }
@@ -176,6 +181,7 @@ export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN)
  * It creates an Avalanche keypair containing information about the account, extracted in the AvalancheAccount constructor.
  *
  * @param privateKey The private key of the account to import.
+ * @param chain The Avalanche subnet to use the account with.
  */
 export async function ImportAccountFromPrivateKey(
     privateKey: string,

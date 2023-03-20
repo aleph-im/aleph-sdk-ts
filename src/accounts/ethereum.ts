@@ -1,11 +1,12 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
 import { ECIESAccount } from "./account";
+import { verifEthereum } from "../utils/signature";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
+import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
-import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
@@ -98,23 +99,6 @@ export class ETHAccount extends ECIESAccount {
     }
 
     /**
-     * Provide a way to verify the authenticity of a signature associated with a given message.
-     * This method rely on the ethers.utils.verifyMessage implementation.
-     *
-     * @param message The content of the signature to verify. It can be a String/Buffer version of the MessageVerificationBuffer or directly a BaseMessage object
-     * @param signature The signature associated with the first params of this method.
-     */
-    async SignVerif(message: string | Buffer | BaseMessage, signature: string): Promise<boolean> {
-        if (!(message instanceof Buffer) && typeof message !== "string") message = GetVerificationBuffer(message);
-        try {
-            const address = ethers.utils.verifyMessage(message, signature);
-            return address === this.address;
-        } catch (e: unknown) {
-            return false;
-        }
-    }
-
-    /**
      * The Sign method provides a way to sign a given Aleph message using an ethereum account.
      * The full message is not used as the payload, only fields of the BaseMessage type are.
      *
@@ -129,7 +113,7 @@ export class ETHAccount extends ECIESAccount {
         if (!signMethod) throw new Error("Cannot sign message");
 
         const signature = await signMethod.signMessage(buffer.toString());
-        if (await this.SignVerif(buffer, signature)) return signature;
+        if (verifEthereum(buffer, signature, this.address)) return signature;
 
         throw new Error("Cannot proof the integrity of the signature");
     }

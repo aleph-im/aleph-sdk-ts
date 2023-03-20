@@ -1,5 +1,6 @@
 import * as accounts from "./accounts/index";
 import * as messages from "./messages";
+import * as utils from "./utils/signature";
 import * as Ledger from "./accounts/providers/Ledger";
 
-export { accounts, Ledger, messages };
+export { accounts, Ledger, messages, utils };
