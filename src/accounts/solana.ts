@@ -4,6 +4,7 @@ import { GetVerificationBuffer } from "../messages";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
+import { verifSolana } from "../utils/signature";
 
 type WalletSignature = {
     signature: Uint8Array;
@@ -63,10 +64,13 @@ export class SOLAccount extends Account {
             throw new Error("Cannot sign message");
         }
 
-        return JSON.stringify({
+        const parsedSignature = JSON.stringify({
             signature: base58.encode(signature),
             publicKey: this.address,
         });
+        if (verifSolana(buffer, parsedSignature)) return parsedSignature;
+
+        throw new Error("Cannot proof the integrity of the signature");
     }
 }
 
