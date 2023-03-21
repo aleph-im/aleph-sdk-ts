@@ -4,7 +4,7 @@ import { GetVerificationBuffer } from "../messages";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import base58 from "bs58";
-import { verifSolana } from "../utils/signature";
+import { verifSolana } from "../utils/signature/verifSolana";
 
 type WalletSignature = {
     signature: Uint8Array;

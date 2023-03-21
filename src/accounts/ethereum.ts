@@ -1,9 +1,9 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
 import { ECIESAccount } from "./account";
-import { verifEthereum } from "../utils/signature";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
+import { verifEthereum } from "../utils/signature/verifEthereum";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";

@@ -11,7 +11,7 @@ import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
 import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
-import { verifAvalanche } from "../utils/signature";
+import { verifAvalanche } from "../utils/signature/verifAvalanche";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.

@@ -6,7 +6,7 @@ import { MessageType, ItemType } from "../../src/messages/types";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 import { GetVerificationBuffer } from "../../src/messages";
-import { verifEthereum } from "../../src/utils/signature";
+import { verifEthereum } from "../index";
 
 describe("Ethereum accounts", () => {
     let ephemeralAccount: EphAccountList;
