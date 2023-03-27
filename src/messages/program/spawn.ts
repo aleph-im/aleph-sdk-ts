@@ -39,6 +39,7 @@ type ProgramSpawnConfiguration = {
     encoding?: Encoding;
     subscription?: Record<string, unknown>[];
     memory?: number;
+    vcpus?: number;
     runtime?: string;
     volumes?: MachineVolume[];
     metadata?: Record<string, unknown>;
@@ -57,6 +58,7 @@ export async function Spawn({
     encoding = Encoding.zip,
     subscription,
     memory = 128,
+    vcpus = 1,
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
 }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
@@ -73,6 +75,7 @@ export async function Spawn({
         encoding,
         subscription,
         memory,
+        vcpus,
         runtime,
         volumes,
     });

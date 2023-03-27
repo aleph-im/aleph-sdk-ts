@@ -49,6 +49,7 @@ type ProgramPublishConfiguration = {
     entrypoint: string;
     subscription?: Record<string, unknown>[];
     memory?: number;
+    vcpus?: number;
     runtime?: string;
     volumes?: MachineVolume[];
     metadata?: Record<string, unknown>;
@@ -70,6 +71,7 @@ export async function publish({
     entrypoint,
     subscription,
     memory = 128,
+    vcpus = 1,
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
 }: RequireOnlyOne<ProgramPublishConfiguration, "programRef" | "file">): Promise<ProgramMessage> {
@@ -126,8 +128,8 @@ export async function publish({
             shared_cache: false,
         },
         resources: {
-            vcpus: 1,
-            memory: memory,
+            vcpus,
+            memory,
             seconds: 30,
         },
         runtime: {
