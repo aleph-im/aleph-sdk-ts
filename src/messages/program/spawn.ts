@@ -43,6 +43,7 @@ type ProgramSpawnConfiguration = {
     runtime?: string;
     volumes?: MachineVolume[];
     metadata?: Record<string, unknown>;
+    variables?: Record<string, string>;
 };
 
 export async function Spawn({
@@ -61,6 +62,7 @@ export async function Spawn({
     vcpus = 1,
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
+    variables = {},
 }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
     return await publish({
         account,
@@ -78,5 +80,6 @@ export async function Spawn({
         vcpus,
         runtime,
         volumes,
+        variables,
     });
 }

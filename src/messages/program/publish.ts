@@ -53,6 +53,7 @@ type ProgramPublishConfiguration = {
     runtime?: string;
     volumes?: MachineVolume[];
     metadata?: Record<string, unknown>;
+    variables?: Record<string, string>;
 };
 
 // TODO: Check that program_ref, runtime and data_ref exist
@@ -74,6 +75,7 @@ export async function publish({
     vcpus = 1,
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
+    variables = {},
 }: RequireOnlyOne<ProgramPublishConfiguration, "programRef" | "file">): Promise<ProgramMessage> {
     const timestamp = Date.now() / 1000;
     if (!programRef && !file) throw new Error("You need to specify a file to upload or a programRef to load.");
@@ -138,6 +140,7 @@ export async function publish({
             comment: "Aleph Alpine Linux with Python 3.8",
         },
         volumes,
+        variables,
     };
 
     const message = MessageBuilder<ProgramContent, MessageType.program>({
