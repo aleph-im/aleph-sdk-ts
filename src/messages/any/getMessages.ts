@@ -86,6 +86,5 @@ export async function GetMessages({
         socketPath: getSocketPath(),
     });
 
-    if (response.data.messages.length > 0) return response.data;
-    throw new Error(`No messages found`);
+    return response.data;
 }

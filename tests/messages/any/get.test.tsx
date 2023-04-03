@@ -156,12 +156,12 @@ describe("Test features from GetMessage", () => {
         });
     });
 
-    it("If a specific message does not exist, it should failed", async () => {
+    it("If a specific message does not exist, it should return an empty array", async () => {
         await expect(
             any.GetMessages({
                 hashes: ["w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw"],
             }),
-        ).rejects.toThrow("No messages found");
+        ).toHaveLength(0);
     });
 
     it("try by all message type", async () => {
