@@ -36,10 +36,9 @@ export async function GetMessage<T = BaseMessage>({
         APIServer,
     };
 
-    try {
-        const response = await GetMessages(params);
-        return response.messages[0] as unknown as T;
-    } catch {
+    const response = await GetMessages(params);
+    if (response.messages.length === 0) {
         throw new Error(`No messages found for: ${hash}`);
     }
+    return response.messages[0] as unknown as T;
 }
