@@ -159,7 +159,7 @@ describe("Test features from GetMessage", () => {
     it("If a specific message does not exist, it should return an empty array", async () => {
         const msg = await any.GetMessages({
             hashes: ["w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw"],
-        })
+        });
 
         expect(msg.messages.length).toStrictEqual(0);
     });
