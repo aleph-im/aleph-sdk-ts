@@ -4,8 +4,8 @@ import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 
 import { testsFunc } from "../index";
 import { accounts, messages } from "../../src";
-import { DEFAULT_API_V2 } from "../../src/global";
-import { Chain, ItemType } from "../../src/messages/message";
+import { Chain } from "../../src/messages/message";
+import fs from "fs";
 
 /**
  * This is the first test of the test bach for substrate.
@@ -44,7 +44,14 @@ async function importAccountFromPrivateKeyTest(): Promise<boolean> {
 }
 
 async function PublishAggregate(): Promise<boolean> {
-    const { account } = await accounts.substrate.NewAccount();
+    if (!fs.existsSync("tests/testAccount/ephemeralAccount.json"))
+        throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+    const ephemeralAccount = await import("../../tests/testAccount/ephemeralAccount.json");
+    if (!ephemeralAccount.avax.privateKey) throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+
+    const { mnemonic } = ephemeralAccount.polkadot;
+    if (!mnemonic) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+    const account = await accounts.substrate.ImportAccountFromMnemonic(mnemonic);
     const key = "cheer";
     const content: { body: string } = {
         body: "Typescript sdk",
@@ -55,8 +62,6 @@ async function PublishAggregate(): Promise<boolean> {
         key: key,
         content: content,
         channel: "TEST",
-        storageEngine: ItemType.inline,
-        APIServer: DEFAULT_API_V2,
     });
 
     type exceptedType = {
@@ -65,7 +70,6 @@ async function PublishAggregate(): Promise<boolean> {
         };
     };
     const amends = await messages.aggregate.Get<exceptedType>({
-        APIServer: DEFAULT_API_V2,
         address: account.address,
         keys: [key],
     });
@@ -91,7 +95,7 @@ async function encryptNDecrypt(): Promise<boolean> {
         assert.notStrictEqual(c, msg);
         assert.deepEqual(d, msg);
     } catch (e: unknown) {
-        console.error(`importAccountFromMnemonicTest: ${e}`);
+        console.error(`encryptNDecrypt: ${e}`);
         return false;
     }
     return true;

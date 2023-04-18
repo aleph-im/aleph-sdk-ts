@@ -35,7 +35,6 @@ describe("Test features from GetMessage", () => {
             pagination: 5,
             page: 2,
         });
-        console.log(res);
         expect(res.messages.length).toStrictEqual(5);
         expect(res.pagination_page).toStrictEqual(2);
     });

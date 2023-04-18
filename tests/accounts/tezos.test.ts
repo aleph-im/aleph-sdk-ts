@@ -5,12 +5,25 @@ import { ItemType } from "../../src/messages/message";
 import { post, tezos } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { b58cencode, prefix, validateSignature } from "@taquito/utils";
+import { EphAccountList } from "../testAccount/entryPoint";
+import fs from "fs";
 
 if (!window) {
     require("localstorage-polyfill");
 }
 
 describe("Tezos accounts", () => {
+    let ephemeralAccount: EphAccountList;
+
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.avax.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
+
     it("should create a new tezos accounts", async () => {
         const { signerAccount } = await tezos.NewAccount();
 
@@ -26,14 +39,18 @@ describe("Tezos accounts", () => {
     });
 
     it("should sign a tezos message with InMemorySigner correctly", async () => {
-        const { signerAccount } = await tezos.NewAccount();
+        const { privateKey } = ephemeralAccount.tezos;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
+        const signerAccount = await tezos.ImportAccountFromPrivateKey(privateKey);
         const content: { body: string } = {
             body: "Hello World InMemorySigner TEZOS",
         };
         const msg = await post.Publish({
             APIServer: DEFAULT_API_V2,
             channel: "ALEPH-TEST",
-            storageEngine: ItemType.inline,
+            inlineRequested: true,
+            storageEngine: ItemType.ipfs,
             account: signerAccount,
             postType: "tezos",
             content: content,
@@ -46,15 +63,15 @@ describe("Tezos accounts", () => {
     });
 
     it("should publish a post message correctly", async () => {
-        const { signerAccount } = await tezos.NewAccount();
+        const { privateKey } = ephemeralAccount.tezos;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+        const signerAccount = await tezos.ImportAccountFromPrivateKey(privateKey);
         const content: { body: string } = {
             body: "Hello World TEZOS",
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.inline,
             account: signerAccount,
             postType: "tezos",
             content: content,
@@ -64,12 +81,6 @@ describe("Tezos accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "tezos",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);

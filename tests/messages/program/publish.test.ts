@@ -1,13 +1,26 @@
-import { readFileSync } from "fs";
+import fs, { readFileSync } from "fs";
 import { ethereum, program } from "../../index";
+import { EphAccountList } from "../../testAccount/entryPoint";
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
     return new TextDecoder().decode(ab);
 }
 
 describe("Test the program message", () => {
+    let ephemeralAccount: EphAccountList;
+
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.eth.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
+
     it("Publish a program retrieve the message", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const fileContent = readFileSync("./tests/messages/program/main.py.zip");
@@ -24,7 +37,8 @@ describe("Test the program message", () => {
     });
 
     it("Spawn a program", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await program.Spawn({
@@ -39,7 +53,8 @@ describe("Test the program message", () => {
     });
 
     it("Spawn a persistent program", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await program.Spawn({
@@ -55,7 +70,8 @@ describe("Test the program message", () => {
     });
 
     it("Spawn a program with custom metadata", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const res = await program.Spawn({
@@ -75,7 +91,8 @@ describe("Test the program message", () => {
     });
 
     it("Should fail to Spawn a program", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         await expect(

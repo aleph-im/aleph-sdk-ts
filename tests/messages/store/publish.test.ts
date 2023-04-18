@@ -1,15 +1,28 @@
 import { ethereum, store } from "../../index";
 import { DEFAULT_API_V2 } from "../../../src/global";
 import { ItemType } from "../../../src/messages/message";
-import { readFileSync } from "fs";
+import fs, { readFileSync } from "fs";
+import { EphAccountList } from "../../testAccount/entryPoint";
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
     return new TextDecoder().decode(ab);
 }
 
 describe("Store message publish", () => {
+    let ephemeralAccount: EphAccountList;
+
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.eth.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
+
     it("should store a file and retrieve it correctly", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const fileContent = readFileSync("./tests/messages/store/testFile.txt");
 
@@ -31,7 +44,8 @@ describe("Store message publish", () => {
     });
 
     it("should pin a file and retrieve it correctly", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
 
@@ -52,8 +66,9 @@ describe("Store message publish", () => {
         expect(got).toBe(expected);
     });
 
-    it("should fail to pin a file at runtime", async () => {
-        const mnemonic = "twenty enough win warrior then fiction smoke tenant juice lift palace inherit";
+    it("should throw Error to pin a file at runtime", async () => {
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
 
         const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
@@ -64,9 +79,7 @@ describe("Store message publish", () => {
             // @ts-ignore
             store.Publish({
                 channel: "TEST",
-                APIServer: DEFAULT_API_V2,
                 account: account,
-                storageEngine: ItemType.storage,
                 fileObject: fileContent,
                 fileHash: helloWorldHash,
             }),
@@ -75,9 +88,7 @@ describe("Store message publish", () => {
         await expect(
             store.Publish({
                 channel: "TEST",
-                APIServer: DEFAULT_API_V2,
                 account: account,
-                storageEngine: ItemType.storage,
                 fileHash: helloWorldHash,
             }),
         ).rejects.toThrow("You must choose ipfs to pin file.");

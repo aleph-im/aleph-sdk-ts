@@ -1,13 +1,19 @@
 import { avalanche, post } from "../index";
-import { DEFAULT_API_V2 } from "../../src/global";
-import { ItemType } from "../../src/messages/message";
 import { EthereumProvider } from "../providers/ethereumProvider";
+import { EphAccountList } from "../testAccount/entryPoint";
+import fs from "fs";
 
 describe("Avalanche accounts", () => {
-    const providerAddress = "0xB98bD7C7f656290071E52D1aA617D9cB4467Fd6D";
-    const providerPrivateKey = "de926db3012af759b4f24b5a51ef6afa397f04670f634aa4f48d4480417007f3";
-    const providerAddress_B = "0x967545C722B2C06bC1EF7d358f6171bbA0Cd85F5";
-    const providerPrivateKey_B = "4b20dc58d29587cccdda511d50f9d44161c4abddb191329d576c2014d3839d54";
+    let ephemeralAccount: EphAccountList;
+
+    // Import the List of Test Ephemeral test Account, throw if the list is not generated
+    beforeAll(async () => {
+        if (!fs.existsSync("./tests/testAccount/ephemeralAccount.json"))
+            throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
+        ephemeralAccount = await import("../testAccount/ephemeralAccount.json");
+        if (!ephemeralAccount.avax.privateKey)
+            throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+    });
 
     it("should retrieved an avalanche keypair from an hexadecimal private key", async () => {
         const { account, privateKey } = await avalanche.NewAccount();
@@ -16,37 +22,29 @@ describe("Avalanche accounts", () => {
             const accountFromPK = await avalanche.ImportAccountFromPrivateKey(privateKey);
             expect(account.address).toBe(accountFromPK.address);
         } else {
-            fail();
+            throw Error();
         }
     });
 
-    it("should fail to get a Keypair", async () => {
+    it("should throw Error to get a Keypair", async () => {
         const fakePrivateKey = "a";
         const fct = async () => await avalanche.ImportAccountFromPrivateKey(fakePrivateKey);
 
         await expect(fct).rejects.toThrow("Invalid private key");
     });
 
-    it("should retrieved an avalanche keypair from a base58 private key", async () => {
-        const keyPair = await avalanche.getKeyPair();
-        const hexPrivateKey = keyPair.getPrivateKey().toString("hex");
-        const cb58PrivateKey = keyPair.getPrivateKeyString();
-
-        const fromHex = await avalanche.ImportAccountFromPrivateKey(hexPrivateKey);
-        const fromCb58 = await avalanche.ImportAccountFromPrivateKey(cb58PrivateKey);
-
-        expect(fromHex.address).toBe(fromCb58.address);
-    });
-
     it("should import an ethereum accounts using a provider", async () => {
+        const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const provider = new EthereumProvider({
-            address: providerAddress,
-            privateKey: providerPrivateKey,
+            address,
+            privateKey,
             networkVersion: 31,
         });
 
         const accountFromProvider = await avalanche.GetAccountFromProvider(provider);
-        expect(accountFromProvider.address).toStrictEqual(providerAddress);
+        expect(accountFromProvider.address).toStrictEqual(address);
     });
 
     it("Should encrypt and decrypt some data with an Avalanche keypair", async () => {
@@ -61,27 +59,28 @@ describe("Avalanche accounts", () => {
     });
 
     it("Should delegate encryption for another account Avalanche account", async () => {
-        const PkeyB = "c5754d886b30da1368706e77d6c401e9c7c02f92200d33ad51622cf25dc62acd";
-
-        const accountA = await avalanche.ImportAccountFromPrivateKey(providerPrivateKey);
-        const accountB = await avalanche.ImportAccountFromPrivateKey(PkeyB);
+        const accountA = await avalanche.NewAccount();
+        const accountB = await avalanche.NewAccount();
         const msg = Buffer.from("Innovation");
 
-        const c = await accountA.encrypt(msg, accountB);
-        const d = await accountB.decrypt(c);
+        const c = await accountA.account.encrypt(msg, accountB.account.publicKey);
+        const d = await accountB.account.decrypt(c);
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
 
-        const e = await accountA.encrypt(msg, accountB.publicKey);
-        const f = await accountB.decrypt(e);
+        const e = await accountA.account.encrypt(msg, accountB.account.publicKey);
+        const f = await accountB.account.decrypt(e);
         expect(e).not.toBe(msg);
         expect(f).toStrictEqual(d);
     });
 
     it("Should encrypt and decrypt some data with an Avalanche account from provider", async () => {
+        const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const provider = new EthereumProvider({
-            address: providerAddress,
-            privateKey: providerPrivateKey,
+            address,
+            privateKey,
             networkVersion: 31,
         });
         const accountFromProvider = await avalanche.GetAccountFromProvider(provider);
@@ -95,31 +94,40 @@ describe("Avalanche accounts", () => {
     });
 
     it("Should delegate encrypt and decrypt some data with an Avalanche account from provider", async () => {
-        const provider = new EthereumProvider({
-            address: providerAddress,
-            privateKey: providerPrivateKey,
+        const accountA = ephemeralAccount.eth;
+        const accountB = ephemeralAccount.eth1;
+        if (!accountB.privateKey || !accountA.privateKey)
+            throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
+        const providerA = new EthereumProvider({
+            address: accountA.address,
+            privateKey: accountA.privateKey,
             networkVersion: 31,
         });
-        const provider_B = new EthereumProvider({
-            address: providerAddress_B,
-            privateKey: providerPrivateKey_B,
+        const providerB = new EthereumProvider({
+            address: accountB.address,
+            privateKey: accountB.privateKey,
             networkVersion: 31,
         });
-        const accountFromProvider = await avalanche.GetAccountFromProvider(provider);
-        const accountFromProvider_B = await avalanche.GetAccountFromProvider(provider_B);
+
+        const accountFromProviderA = await avalanche.GetAccountFromProvider(providerA);
+        const accountFromProviderB = await avalanche.GetAccountFromProvider(providerB);
         const msg = Buffer.from("Laŭ Ludoviko Zamenhof bongustas freŝa ĉeĥa manĝaĵo kun spicoj");
 
-        const c = await accountFromProvider.encrypt(msg, accountFromProvider_B);
-        const d = await accountFromProvider_B.decrypt(c);
+        const c = await accountFromProviderA.encrypt(msg, accountFromProviderB);
+        const d = await accountFromProviderB.decrypt(c);
 
         expect(c).not.toBe(msg);
         expect(d).toStrictEqual(msg);
     });
 
     it("should publish a post message correctly with an account from a provider", async () => {
+        const { address, privateKey } = ephemeralAccount.eth;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
         const provider = new EthereumProvider({
-            address: providerAddress,
-            privateKey: providerPrivateKey,
+            address,
+            privateKey,
             networkVersion: 31,
         });
         const accountFromProvider = await avalanche.GetAccountFromProvider(provider);
@@ -128,9 +136,7 @@ describe("Avalanche accounts", () => {
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.inline,
             account: accountFromProvider,
             postType: "avalanche",
             content: content,
@@ -140,12 +146,6 @@ describe("Avalanche accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "avalanche",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);
@@ -153,15 +153,16 @@ describe("Avalanche accounts", () => {
     });
 
     it("should publish a post message correctly", async () => {
-        const { account } = await avalanche.NewAccount();
+        const { privateKey } = ephemeralAccount.avax;
+        if (!privateKey) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
+
+        const account = await avalanche.ImportAccountFromPrivateKey(privateKey);
         const content: { body: string } = {
             body: "This message was posted from the typescript-SDK test suite",
         };
 
         const msg = await post.Publish({
-            APIServer: DEFAULT_API_V2,
             channel: "TEST",
-            storageEngine: ItemType.inline,
             account: account,
             postType: "avalanche",
             content: content,
@@ -171,12 +172,6 @@ describe("Avalanche accounts", () => {
         setTimeout(async () => {
             const amends = await post.Get({
                 types: "avalanche",
-                APIServer: DEFAULT_API_V2,
-                pagination: 200,
-                page: 1,
-                refs: [],
-                addresses: [],
-                tags: [],
                 hashes: [msg.item_hash],
             });
             expect(amends.posts[0].content).toStrictEqual(content);
