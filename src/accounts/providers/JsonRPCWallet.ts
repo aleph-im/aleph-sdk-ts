@@ -100,7 +100,10 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
     public async connect(): Promise<void> {
         try {
-            await this.provider.send("wallet_requestPermissions", [{ eth_accounts: {} }]);
+            const connected = await this.isConnected();
+            if (!connected) {
+                await this.provider.send("wallet_requestPermissions", [{ eth_accounts: {} }]);
+            }
             this.signer = this.provider.getSigner();
             this.address = await this.signer.getAddress();
         } catch (err: unknown) {
@@ -144,5 +147,10 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
     public isMetamask(): boolean {
         return !!this.provider?.provider?.isMetaMask;
+    }
+
+    public async isConnected(): Promise<boolean> {
+        const accounts = await this.provider.send("eth_accounts", []);
+        return accounts.length !== 0;
     }
 }
