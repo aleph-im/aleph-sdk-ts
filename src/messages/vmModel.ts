@@ -1,4 +1,4 @@
-import { BaseContent } from "../message";
+import { BaseContent } from "./message";
 
 /**
  * Type of Encoding
@@ -130,6 +130,21 @@ export type PersistentVolume = AbstractVolume & {
 
 export type MachineVolume = ImmutableVolume | EphemeralVolume | PersistentVolume;
 
+export type ParentVolume = {
+    ref: string;
+    use_latest: boolean;
+};
+
+export type NodeRequirements = {
+    owner?: string;
+    address_regex?: string;
+};
+
+export type HostRequirements = {
+    cpu?: number;
+    node?: NodeRequirements;
+};
+
 export type ProgramContent = BaseContent & {
     type: MachineType;
     allow_amend: boolean;
@@ -144,4 +159,26 @@ export type ProgramContent = BaseContent & {
     runtime: FunctionRuntime;
     volumes: MachineVolume[];
     replaces?: string;
+};
+
+export type BaseExecutableModel = BaseContent & {
+    allow_amend: boolean;
+    metadata?: Record<string, unknown>;
+    authorized_keys?: string[];
+    variables?: Record<string, unknown>;
+    environment: FunctionEnvironment;
+    resources: MachineResources;
+    requirements?: HostRequirements;
+    volumes: MachineVolume[];
+    replaces?: string;
+};
+
+export type RootFsVolume = {
+    parent: ParentVolume;
+    persistence: VolumePersistence;
+    size_mib: number;
+};
+
+export type InstanceContent = {
+    rootfs: RootFsVolume;
 };

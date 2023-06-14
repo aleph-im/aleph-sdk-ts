@@ -1,7 +1,7 @@
 import { Account } from "../../accounts/account";
 import { ItemType, MessageType, ProgramMessage, StoreMessage } from "../message";
 import { Publish as storePublish } from "../../messages/store/index";
-import { Encoding, FunctionTriggers, MachineType, MachineVolume, ProgramContent } from "./programModel";
+import { Encoding, FunctionTriggers, MachineType, MachineVolume, ProgramContent } from "../vmModel";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 import { DEFAULT_API_V2 } from "../../global";

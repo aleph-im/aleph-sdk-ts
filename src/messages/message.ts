@@ -4,7 +4,7 @@
  *
  * Warning: Avax, CSDK, NEO are currently not supported by the TS sdk.
  */
-import { ProgramContent } from "./program/programModel";
+import { ProgramContent } from "./vmModel";
 
 export enum Chain {
     DOT = "DOT",

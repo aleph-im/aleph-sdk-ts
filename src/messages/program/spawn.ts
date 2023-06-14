@@ -1,6 +1,6 @@
 import { Account } from "../../accounts/account";
 import { ItemType, ProgramMessage } from "../message";
-import { Encoding, MachineVolume } from "./programModel";
+import { Encoding, MachineVolume } from "../vmModel";
 import { DEFAULT_API_V2 } from "../../global";
 import { publish } from "./publish";
 
