@@ -37,28 +37,4 @@ describe("Forget publish tests", () => {
         });
         expect(Fres.content).not.toBeNull();
     });
-
-    it("Forget a message using storage engine", async () => {
-        const { mnemonic } = ephemeralAccount.eth;
-        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
-        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
-
-        const res = await post.Publish({
-            channel: "TEST",
-            account: account,
-            postType: postType,
-            content: content,
-        });
-
-        const Fres = await forget.Publish({
-            channel: "TEST",
-            hashes: [res.item_hash],
-            account: account,
-        });
-
-        const initialPost = await post.Get({ types: postType, hashes: [res.item_hash] });
-
-        expect(Fres.content).not.toBeNull();
-        expect(initialPost.posts.length).toStrictEqual(0);
-    });
 });

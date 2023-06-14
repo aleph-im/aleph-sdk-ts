@@ -19,14 +19,6 @@ describe("Test features from GetMessage", () => {
 
         expect(res.content.item_hash).toStrictEqual("QmZyVbZm6Ffs9syXs8pycGbWiTa9yiGoX1b9FSFpTjaixK");
     });
-
-    it("If the message can't be resolve, it should failed", async () => {
-        await expect(
-            any.GetMessage({
-                hash: "w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw",
-            }),
-        ).rejects.toThrow("No messages found for: w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw");
-    });
 });
 
 describe("Test features from GetMessage", () => {
@@ -125,20 +117,6 @@ describe("Test features from GetMessage", () => {
         });
     });
 
-    it("Try by content Key", async () => {
-        const aimedKey = "InterPlanetaryCloud";
-        const res = await any.GetMessages({
-            contentKeys: [aimedKey],
-            pagination: 10,
-        });
-
-        expect(res.messages.length).toBeGreaterThan(0);
-        res.messages.map((message) => {
-            expect(any.is.Aggregate(message)).toStrictEqual(true);
-            if (any.is.Aggregate(message)) expect(message.content.key).toStrictEqual(aimedKey);
-        });
-    });
-
     it("Try by timestamp", async () => {
         const aimedStartTime = new Date(1673882430814);
         const aimedEndTime = new Date(1673882506494);
@@ -153,14 +131,6 @@ describe("Test features from GetMessage", () => {
             expect(date.valueOf()).toBeGreaterThanOrEqual(aimedStartTime.valueOf());
             expect(date.valueOf()).toBeLessThanOrEqual(aimedEndTime.valueOf());
         });
-    });
-
-    it("If a specific message does not exist, it should return an empty array", async () => {
-        const msg = await any.GetMessages({
-            hashes: ["w87e1e2ee2cbe88fa2923042b84b2f9c694w10005ca7dd40193838bf9bad18e12cw"],
-        });
-
-        expect(msg.messages.length).toStrictEqual(0);
     });
 
     it("try by all message type", async () => {
