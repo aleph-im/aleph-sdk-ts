@@ -1,4 +1,4 @@
-import { BaseMessage } from "../message";
+import { BaseMessage } from "../types";
 import { Account } from "../../accounts/account";
 import axios from "axios";
 import { getSocketPath, stripTrailingSlash } from "../../utils/url";

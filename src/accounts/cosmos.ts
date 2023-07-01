@@ -7,7 +7,7 @@ import {
 } from "@cosmjs/amino";
 import { Account } from "./account";
 import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/message";
+import { BaseMessage, Chain } from "../messages/types";
 
 /**
  * CosmosAccount implements the Account class for the Cosmos protocol.

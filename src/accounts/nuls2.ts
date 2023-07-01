@@ -3,7 +3,7 @@ import * as bip32 from "bip32";
 import secp256k1 from "secp256k1";
 import { generateMnemonic } from "bip39";
 import { ECIESAccount } from "./account";
-import { BaseMessage, Chain } from "../messages/message";
+import { BaseMessage, Chain } from "../messages/types";
 import { GetVerificationBuffer } from "../messages";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import bs58 from "bs58";

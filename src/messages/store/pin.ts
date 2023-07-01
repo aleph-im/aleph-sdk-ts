@@ -1,5 +1,5 @@
 import * as base from "../../accounts/account";
-import { ItemType, StoreMessage } from "../message";
+import { ItemType, StoreMessage } from "../types";
 import { Publish } from "./publish";
 import { DEFAULT_API_V2 } from "../../global";
 

@@ -1,5 +1,5 @@
 import { DEFAULT_API_V2 } from "../../global";
-import { BaseMessage, MessageType } from "../message";
+import { BaseMessage, MessageType } from "../types";
 import { GetMessages } from "./getMessages";
 
 type GetMessageParams = {

@@ -1,5 +1,5 @@
 import { Account } from "../../accounts/account";
-import { ChainRef, ItemType, MessageType, PostContent, PostMessage } from "../message";
+import { ChainRef, ItemType, MessageType, PostContent, PostMessage } from "../types";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 import { DEFAULT_API_V2 } from "../../global";

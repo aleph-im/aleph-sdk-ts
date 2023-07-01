@@ -1,5 +1,5 @@
 import * as base from "../../accounts/account";
-import { ItemType, MessageType, StoreContent, StoreMessage } from "../message";
+import { ItemType, MessageType, StoreContent, StoreMessage } from "../types";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 import { RequireOnlyOne } from "../../utils/requiredOnlyOne";

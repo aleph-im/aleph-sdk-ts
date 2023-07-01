@@ -1,7 +1,7 @@
 import shajs from "sha.js";
 import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/message";
+import { BaseMessage, Chain } from "../messages/types";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { KeyPair } from "avalanche/dist/apis/avm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";

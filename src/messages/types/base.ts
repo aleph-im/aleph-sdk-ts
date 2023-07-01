@@ -4,7 +4,7 @@
  *
  * Warning: Avax, CSDK, NEO are currently not supported by the TS sdk.
  */
-import { ProgramContent } from "./program/programModel";
+import { ProgramContent } from "../program/programModel";
 
 export enum Chain {
     DOT = "DOT",
@@ -151,3 +151,5 @@ export type ProgramMessage = BaseMessage & {
     content: ProgramContent;
     type: MessageType.program;
 };
+
+export type ItemHash = string;

@@ -2,7 +2,7 @@ import EthApp from "@ledgerhq/hw-app-eth";
 import semver from "semver";
 
 import { Account } from "../../account";
-import { Chain, BaseMessage } from "../../../messages/message";
+import { Chain, BaseMessage } from "../../../messages/types";
 import { GetVerificationBuffer } from "../../../messages";
 import { getTransport } from "./transport";
 import { JSExecutionEnvironment } from "../../../utils/env";

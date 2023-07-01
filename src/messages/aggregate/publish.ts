@@ -1,6 +1,6 @@
 import { Account } from "../../accounts/account";
 import { DEFAULT_API_V2 } from "../../global";
-import { AggregateContent, AggregateContentKey, AggregateMessage, ItemType, MessageType } from "../message";
+import { AggregateContent, AggregateContentKey, AggregateMessage, ItemType, MessageType } from "../types";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 import { MessageBuilder } from "../../utils/messageBuilder";
