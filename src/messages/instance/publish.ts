@@ -2,7 +2,7 @@ import { Account } from "../../accounts/account";
 import {
     ItemType,
     MessageType,
-    ProgramMessage,
+    InstanceMessage,
     MachineVolume,
     HostRequirements,
     FunctionEnvironment,
@@ -16,7 +16,7 @@ import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 import { defaultExecutionEnvironment, defaultResources } from "../constants";
 
-type InstancePublishConfiguration = {
+export type InstancePublishConfiguration = {
     account: Account;
     channel: string;
     metadata?: Record<string, unknown>;
@@ -24,7 +24,7 @@ type InstancePublishConfiguration = {
     authorized_keys?: string[];
     resources?: Partial<MachineResources>;
     requirements?: HostRequirements;
-    environment?: FunctionEnvironment;
+    environment?: Partial<FunctionEnvironment>;
     image?: string;
     volumes?: MachineVolume[];
     inlineRequested?: boolean;
@@ -48,11 +48,11 @@ export async function publish({
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
     APIServer = DEFAULT_API_V2,
-}: InstancePublishConfiguration): Promise<ProgramMessage> {
+}: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000;
     const { address } = account;
 
-    const programContent: InstanceContent = {
+    const instanceContent: InstanceContent = {
         address,
         time: timestamp,
         metadata,
@@ -79,18 +79,18 @@ export async function publish({
         },
     };
 
-    const message = MessageBuilder<InstanceContent, MessageType.program>({
+    const message = MessageBuilder<InstanceContent, MessageType.instance>({
         account,
         channel,
         timestamp,
         storageEngine,
-        content: programContent,
-        type: MessageType.program,
+        content: instanceContent,
+        type: MessageType.instance,
     });
 
     await PutContentToStorageEngine({
         message: message,
-        content: programContent,
+        content: instanceContent,
         inline: inlineRequested,
         APIServer,
     });
@@ -101,5 +101,5 @@ export async function publish({
         APIServer,
     });
 
-    return message as unknown as ProgramMessage;
+    return message as unknown as InstanceMessage;
 }
