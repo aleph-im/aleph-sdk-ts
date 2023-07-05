@@ -2,7 +2,7 @@ import * as bip39 from "bip39";
 import { ethers } from "ethers";
 import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/message";
+import { BaseMessage, Chain } from "../messages/types";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";

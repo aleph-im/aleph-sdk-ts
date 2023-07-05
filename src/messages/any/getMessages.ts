@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DEFAULT_API_V2 } from "../../global";
 import { getSocketPath, stripTrailingSlash } from "../../utils/url";
-import { BaseMessage, Chain, MessageType } from "../message";
+import { BaseMessage, Chain, MessageType } from "../types";
 
 type MessageQueryResponse = {
     messages: BaseMessage[];

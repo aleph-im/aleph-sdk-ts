@@ -1,5 +1,5 @@
 import { PutContentToStorageEngine } from "../create/publish";
-import { ForgetContent, ForgetMessage, ItemType, MessageType } from "../message";
+import { ForgetContent, ForgetMessage, ItemType, MessageType } from "../types";
 import { Account } from "../../accounts/account";
 import { DEFAULT_API_V2 } from "../../global";
 import { SignAndBroadcast } from "../create/signature";

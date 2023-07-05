@@ -4,7 +4,8 @@
  *
  * Warning: Avax, CSDK, NEO are currently not supported by the TS sdk.
  */
-import { ProgramContent } from "./program/programModel";
+import { InstanceContent } from "../instance/types";
+import { ProgramContent } from "../program/programModel";
 
 export enum Chain {
     DOT = "DOT",
@@ -36,6 +37,7 @@ export enum MessageType {
     store = "STORE",
     program = "PROGRAM",
     forget = "FORGET",
+    instance = "INSTANCE",
 }
 
 export enum ItemType {
@@ -151,3 +153,10 @@ export type ProgramMessage = BaseMessage & {
     content: ProgramContent;
     type: MessageType.program;
 };
+
+export type InstanceMessage = BaseMessage & {
+    content: InstanceContent;
+    type: MessageType.instance;
+};
+
+export type ItemHash = string;

@@ -1,5 +1,5 @@
 import { Account } from "./account";
-import { BaseMessage, Chain } from "../messages/message";
+import { BaseMessage, Chain } from "../messages/types";
 import { GetVerificationBuffer } from "../messages";
 import { InMemorySigner } from "@taquito/signer";
 import { b58cdecode, b58cencode, prefix } from "@taquito/utils";

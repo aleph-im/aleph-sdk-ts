@@ -1,6 +1,6 @@
 import shajs from "sha.js";
 
-import { BaseMessage, ItemType } from "../message";
+import { BaseMessage, ItemType } from "../types";
 import axios from "axios";
 import FormDataNode from "form-data";
 import { getSocketPath, stripTrailingSlash } from "../../utils/url";

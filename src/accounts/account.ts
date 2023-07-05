@@ -1,4 +1,4 @@
-import { BaseMessage, Chain } from "../messages/message";
+import { BaseMessage, Chain } from "../messages/types";
 import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
 
 /**

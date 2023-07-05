@@ -1,4 +1,4 @@
-import { AggregateMessage, BaseMessage, ForgetMessage, PostMessage, ProgramMessage, StoreMessage } from "../message";
+import { AggregateMessage, BaseMessage, ForgetMessage, PostMessage, ProgramMessage, StoreMessage } from "../types";
 
 export function Program(message: BaseMessage): message is ProgramMessage {
     if (message !== null && typeof message === "object") {
