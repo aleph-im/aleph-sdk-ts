@@ -1,6 +1,6 @@
 import { ethereum, store } from "../../../tests";
 import { DEFAULT_API_V2 } from "../../../src/global";
-import { ItemType } from "../../../src/messages/message";
+import { ItemType } from "../../../src/messages/types";
 
 function ArraybufferToString(ab) {
     return new TextDecoder().decode(ab);

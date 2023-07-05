@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ItemType } from "../../../../src/messages/message";
+import { ItemType } from "../../../../src/messages/types";
 import { Publish } from "../../../../src/messages/post";
 import { DEFAULT_API_V2 } from "../../../../src/global";
 import { consumeProps } from "../model/componentProps";

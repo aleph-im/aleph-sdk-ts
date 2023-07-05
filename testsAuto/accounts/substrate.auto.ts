@@ -4,7 +4,7 @@ import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 
 import { testsFunc } from "../index";
 import { accounts, messages } from "../../src";
-import { Chain } from "../../src/messages/message";
+import { Chain } from "../../src/messages/types";
 import fs from "fs";
 
 /**

@@ -1,5 +1,5 @@
 import { any } from "../../index";
-import { BaseMessage, Chain, MessageType, StoreMessage } from "../../../src/messages/message";
+import { BaseMessage, Chain, MessageType, StoreMessage } from "../../../src/messages/types";
 
 describe("Test features from GetMessage", () => {
     it("Try by Hash with type-guard resolve", async () => {

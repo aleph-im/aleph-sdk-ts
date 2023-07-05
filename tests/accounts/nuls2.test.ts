@@ -1,5 +1,5 @@
 import { nuls2, post } from "../index";
-import { Chain } from "../../src/messages/message";
+import { Chain } from "../../src/messages/types";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
