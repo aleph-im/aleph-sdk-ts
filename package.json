@@ -23,7 +23,7 @@
         "doc": "typedoc",
         "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
         "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-        "prepack": "npm run test && npm run build",
+        "prepack": "npm run build",
         "test": "npm run test:gen && npm run test:jest && npm run test:auto",
         "test:jest": "jest --testTimeout=1200000 --verbose --coverage",
         "test:auto": "ts-node testsAuto/entryPoint.ts ",
