@@ -1,0 +1,27 @@
+{
+  "name": "@aleph-sdk/ethereum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "@aleph-sdk/core": "^1.0.0",
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/evm": "^1.0.0",
+    "bip39": "^3.0.4",
+    "eciesjs": "^0.3.14",
+    "ethers": "^5.6.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup --bundleConfigAsCjs -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "license": "ISC"
+}

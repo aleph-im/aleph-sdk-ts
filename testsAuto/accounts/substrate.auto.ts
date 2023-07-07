@@ -1,11 +1,11 @@
-import * as bip39 from "bip39";
-import assert from "assert";
-import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
+import * as bip39 from 'bip39'
+import assert from 'assert'
+import { mnemonicToMiniSecret } from '@polkadot/util-crypto'
 
-import { testsFunc } from "../index";
-import { accounts, messages } from "../../src";
-import { Chain } from "../../src/messages/types";
-import fs from "fs";
+import { testsFunc } from '../index'
+import { accounts, messages } from '../../src'
+import { Chain } from '../../src/messages/types'
+import fs from 'fs'
 
 /**
  * This is the first test of the test bach for substrate.
@@ -15,90 +15,90 @@ import fs from "fs";
  * If the assertion failed, you must catch the error message and display it while returning false.
  */
 async function createAccountTest(): Promise<boolean> {
-    const { account, mnemonic } = await accounts.substrate.NewAccount();
-    const accountFromMnemonic = await accounts.substrate.ImportAccountFromMnemonic(mnemonic);
+  const { account, mnemonic } = await accounts.substrate.NewAccount()
+  const accountFromMnemonic = await accounts.substrate.ImportAccountFromMnemonic(mnemonic)
 
-    try {
-        assert.strictEqual(account.address, accountFromMnemonic.address);
-        assert.strictEqual(account.GetChain(), Chain.DOT);
-    } catch (e: unknown) {
-        console.error(`createAccountTest: ${e}`);
-        return false;
-    }
-    return true;
+  try {
+    assert.strictEqual(account.address, accountFromMnemonic.address)
+    assert.strictEqual(account.GetChain(), Chain.DOT)
+  } catch (e: unknown) {
+    console.error(`createAccountTest: ${e}`)
+    return false
+  }
+  return true
 }
 
 async function importAccountFromPrivateKeyTest(): Promise<boolean> {
-    const mnemonic = bip39.generateMnemonic();
-    const account = await accounts.substrate.ImportAccountFromMnemonic(mnemonic);
-    const secretKey = `0x${Buffer.from(mnemonicToMiniSecret(mnemonic)).toString("hex")}`;
-    const importedAccount = await accounts.substrate.ImportAccountFromPrivateKey(secretKey);
+  const mnemonic = bip39.generateMnemonic()
+  const account = await accounts.substrate.ImportAccountFromMnemonic(mnemonic)
+  const secretKey = `0x${Buffer.from(mnemonicToMiniSecret(mnemonic)).toString('hex')}`
+  const importedAccount = await accounts.substrate.ImportAccountFromPrivateKey(secretKey)
 
-    try {
-        assert.strictEqual(account.address, importedAccount.address);
-    } catch (e: unknown) {
-        console.error(`importAccountFromPrivateKeyTest: ${e}`);
-        return false;
-    }
-    return true;
+  try {
+    assert.strictEqual(account.address, importedAccount.address)
+  } catch (e: unknown) {
+    console.error(`importAccountFromPrivateKeyTest: ${e}`)
+    return false
+  }
+  return true
 }
 
 async function PublishAggregate(): Promise<boolean> {
-    if (!fs.existsSync("tests/testAccount/ephemeralAccount.json"))
-        throw Error("[Ephemeral Account Generation] - Error, please run: npm run test:regen");
-    const ephemeralAccount = await import("../../tests/testAccount/ephemeralAccount.json");
-    if (!ephemeralAccount.avax.privateKey) throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
+  if (!fs.existsSync('tests/testAccount/ephemeralAccount.json'))
+    throw Error('[Ephemeral Account Generation] - Error, please run: npm run test:regen')
+  const ephemeralAccount = await import('@aleph-sdk/account/tests/testAccount/ephemeralAccount.json')
+  if (!ephemeralAccount.avax.privateKey) throw Error('[Ephemeral Account Generation] - Generated Account corrupted')
 
-    const { mnemonic } = ephemeralAccount.polkadot;
-    if (!mnemonic) throw Error("Can not retrieve privateKey inside ephemeralAccount.json");
-    const account = await accounts.substrate.ImportAccountFromMnemonic(mnemonic);
-    const key = "cheer";
-    const content: { body: string } = {
-        body: "Typescript sdk",
-    };
+  const { mnemonic } = ephemeralAccount.polkadot
+  if (!mnemonic) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
+  const account = await accounts.substrate.ImportAccountFromMnemonic(mnemonic)
+  const key = 'cheer'
+  const content: { body: string } = {
+    body: 'Typescript sdk',
+  }
 
-    await messages.aggregate.Publish({
-        account: account,
-        key: key,
-        content: content,
-        channel: "TEST",
-    });
+  await messages.aggregate.Publish({
+    account: account,
+    key: key,
+    content: content,
+    channel: 'TEST',
+  })
 
-    type exceptedType = {
-        cheer: {
-            body: string;
-        };
-    };
-    const amends = await messages.aggregate.Get<exceptedType>({
-        address: account.address,
-        keys: [key],
-    });
-
-    try {
-        assert.strictEqual(amends.cheer.body, content.body);
-    } catch (e: unknown) {
-        console.error(`PublishPostMessage: ${e}`);
-        return false;
+  type exceptedType = {
+    cheer: {
+      body: string
     }
-    return true;
+  }
+  const amends = await messages.aggregate.Get<exceptedType>({
+    address: account.address,
+    keys: [key],
+  })
+
+  try {
+    assert.strictEqual(amends.cheer.body, content.body)
+  } catch (e: unknown) {
+    console.error(`PublishPostMessage: ${e}`)
+    return false
+  }
+  return true
 }
 
 async function encryptNDecrypt(): Promise<boolean> {
-    const account = await accounts.substrate.ImportAccountFromMnemonic(
-        "immune orbit beyond retire marble clog shiver ice illegal tomorrow antenna tennis",
-    );
-    const msg = Buffer.from("Innovation");
+  const account = await accounts.substrate.ImportAccountFromMnemonic(
+    'immune orbit beyond retire marble clog shiver ice illegal tomorrow antenna tennis',
+  )
+  const msg = Buffer.from('Innovation')
 
-    try {
-        const c = account.encrypt(msg);
-        const d = account.decrypt(c);
-        assert.notStrictEqual(c, msg);
-        assert.deepEqual(d, msg);
-    } catch (e: unknown) {
-        console.error(`encryptNDecrypt: ${e}`);
-        return false;
-    }
-    return true;
+  try {
+    const c = account.encrypt(msg)
+    const d = account.decrypt(c)
+    assert.notStrictEqual(c, msg)
+    assert.deepEqual(d, msg)
+  } catch (e: unknown) {
+    console.error(`encryptNDecrypt: ${e}`)
+    return false
+  }
+  return true
 }
 
 /**
@@ -113,19 +113,14 @@ async function encryptNDecrypt(): Promise<boolean> {
  * an appropriate name, import `assert` library and `testsFunc` type.
  */
 export default async function substrateTests(): Promise<boolean> {
-    let passed = true;
-    let res: boolean;
-    const testBatch: testsFunc[] = [
-        createAccountTest,
-        importAccountFromPrivateKeyTest,
-        PublishAggregate,
-        encryptNDecrypt,
-    ];
+  let passed = true
+  let res: boolean
+  const testBatch: testsFunc[] = [createAccountTest, importAccountFromPrivateKeyTest, PublishAggregate, encryptNDecrypt]
 
-    for (let i = 0; i < testBatch.length; i++) {
-        res = await testBatch[i]();
-        console.log(`Test [${i + 1}-${res ? "Success" : "Failure"}]\t${testBatch[i].name}`);
-        passed = res ? passed : false;
-    }
-    return passed;
+  for (let i = 0; i < testBatch.length; i++) {
+    res = await testBatch[i]()
+    console.log(`Test [${i + 1}-${res ? 'Success' : 'Failure'}]\t${testBatch[i].name}`)
+    passed = res ? passed : false
+  }
+  return passed
 }

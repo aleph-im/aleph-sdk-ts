@@ -1,0 +1,27 @@
+{
+  "name": "@aleph-sdk/ethereum-ledger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0",
+    "@ledgerhq/hw-app-eth": "^6.29.9",
+    "@ledgerhq/hw-transport": "^6.28.5",
+    "@ledgerhq/hw-transport-node-hid": "^6.27.6",
+    "@ledgerhq/hw-transport-webusb": "^6.27.6",
+    "semver": "^7.3.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup --bundleConfigAsCjs -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "license": "ISC"
+}
