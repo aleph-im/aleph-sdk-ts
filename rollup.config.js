@@ -6,10 +6,14 @@ import dts from 'rollup-plugin-dts'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import path from 'path'
 import process from 'process'
+import * as url from 'url'
+import { readFileSync } from 'node:fs'
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const tsconfig = path.join(__dirname, './tsconfig.json')
 const packagePath = path.join(process.cwd(), 'package.json')
-const packageJson = require(packagePath)
+const packageJson = JSON.parse(readFileSync(packagePath))
 
 export default [
   {
@@ -43,6 +47,6 @@ export default [
   {
     input: 'dist/esm/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
-    plugins: [dts.default()],
+    plugins: [dts()],
   },
 ]

@@ -40,6 +40,7 @@
   "engines": {
     "node": ">14.0.0"
   },
+  "type": "module",
   "devDependencies": {
     "@airgap/beacon-types": "^3.2.0",
     "@jet-lab/e2e-react-adapter": "^0.1.3",
