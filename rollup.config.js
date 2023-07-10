@@ -3,6 +3,8 @@ import commonjs from '@rollup/plugin-commonjs'
 import typescript from '@rollup/plugin-typescript'
 import terser from '@rollup/plugin-terser'
 import dts from 'rollup-plugin-dts'
+import sourcemaps from 'rollup-plugin-sourcemaps'
+import del from 'rollup-plugin-delete'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import path from 'path'
 import process from 'process'
@@ -22,12 +24,17 @@ export default [
       {
         file: packageJson.main,
         format: 'cjs',
-        sourcemap: true,
+        sourcemap: true
       },
       {
         file: packageJson.module,
         format: 'esm',
-        sourcemap: true,
+        sourcemap: true
+      },
+      {
+        file: packageJson.browser,
+        format: 'iife',
+        sourcemap: true
       },
     ],
     plugins: [
@@ -40,13 +47,21 @@ export default [
       commonjs(),
       typescript({
         tsconfig,
+        sourceMap: true,
+        inlineSources: false,
       }),
+      sourcemaps(),
       terser(),
     ],
   },
   {
-    input: 'dist/esm/index.d.ts',
+    input: 'dist/esm/types/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
-    plugins: [dts()],
+    plugins: [
+      dts({ tsconfig }),
+      del({ targets: 'dist/esm/types', hook: 'buildEnd' }),
+      del({ targets: 'dist/cjs/types', hook: 'buildEnd' }),
+      del({ targets: 'dist/iife/types', hook: 'buildEnd' }),
+    ],
   },
 ]
