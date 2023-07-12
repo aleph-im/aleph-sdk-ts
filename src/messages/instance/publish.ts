@@ -52,6 +52,25 @@ export async function publish({
     const timestamp = Date.now() / 1000;
     const { address } = account;
 
+    const mergedResources = {
+        ...defaultResources,
+        ...resources,
+    };
+
+    const mergedEnvironment = {
+        ...defaultExecutionEnvironment,
+        ...environment,
+    };
+
+    const rootfs = {
+        parent: {
+            ref: image,
+            use_latest: true,
+        },
+        persistence: VolumePersistence.host,
+        size_mib: mergedResources.memory * 10,
+    };
+
     const instanceContent: InstanceContent = {
         address,
         time: timestamp,
@@ -61,22 +80,9 @@ export async function publish({
         variables,
         requirements,
         allow_amend: false,
-        resources: {
-            ...defaultResources,
-            ...resources,
-        },
-        environment: {
-            ...defaultExecutionEnvironment,
-            ...environment,
-        },
-        rootfs: {
-            parent: {
-                ref: image,
-                use_latest: true,
-            },
-            persistence: VolumePersistence.host,
-            size_mib: 5000,
-        },
+        resources: mergedResources,
+        environment: mergedEnvironment,
+        rootfs,
     };
 
     const message = MessageBuilder<InstanceContent, MessageType.instance>({
