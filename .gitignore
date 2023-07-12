@@ -106,13 +106,13 @@ dist
 
 # Custom
 .idea
-<<<<<<< HEAD
 
 # Ephemeral Account
 tests/testAccount/ephemeralAccount.json
 
 # Documentation
 docs/
-=======
 .gitsigners
->>>>>>> 1108692 (add .gitsigners to .gitignore, containing some signing key)
+
+
+.DS_Store
