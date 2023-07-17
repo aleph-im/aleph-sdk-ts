@@ -7,8 +7,6 @@ yarn-error.log*
 lerna-debug.log*
 device.key
 
-.DS_Store
-
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -108,13 +106,12 @@ dist
 
 # Custom
 .idea
-<<<<<<< HEAD
 
 # Ephemeral Account
 tests/testAccount/ephemeralAccount.json
 
 # Documentation
 docs/
-=======
 .gitsigners
->>>>>>> 1108692 (add .gitsigners to .gitignore, containing some signing key)
+
+.DS_Store
