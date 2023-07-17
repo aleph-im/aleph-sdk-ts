@@ -1,2 +1,2 @@
-export { Publish } from './publish'
-export { Spawn } from './spawn'
+export { default, ProgramMessageClient } from './impl'
+export * from './types'

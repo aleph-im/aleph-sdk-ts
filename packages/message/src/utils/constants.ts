@@ -1,4 +1,4 @@
-import { FunctionEnvironment, MachineResources } from './types'
+import { FunctionEnvironment, MachineResources } from '../types'
 
 export const defaultExecutionEnvironment: FunctionEnvironment = {
   reproducible: false,

@@ -5,8 +5,6 @@
  * Warning: Avax, CSDK, NEO are currently not supported by the TS sdk.
  */
 import { Blockchain } from '@aleph-sdk/core'
-import { InstanceContent } from '../instance/types'
-import { ProgramContent } from '../program/programModel'
 
 /**
  * Supported hash functions
@@ -73,33 +71,6 @@ export type BaseContent = {
   time: number
 }
 
-export type AggregateContentKey = {
-  name: string
-}
-
-export type AggregateContent<T> = BaseContent & {
-  key: string | AggregateContentKey
-  content: T
-}
-export type PostContent<T> = BaseContent & {
-  content?: T
-  type: string
-  ref?: string | ChainRef
-}
-
-export type StoreContent = BaseContent & {
-  item_type: string
-  item_hash: string
-  size?: number
-  content_type?: string
-  ref?: string
-}
-
-export type ForgetContent = BaseContent & {
-  hashes: string[]
-  reason?: string
-}
-
 export type BaseMessage = {
   _id?: MongoDBID
   chain: Blockchain
@@ -116,36 +87,6 @@ export type BaseMessage = {
   hash_type?: HashType
   item_hash: string
   content: BaseContent
-}
-
-export type AggregateMessage<T> = BaseMessage & {
-  content: AggregateContent<T>
-  type: MessageType.aggregate
-}
-
-export type PostMessage<T> = BaseMessage & {
-  content: PostContent<T>
-  type: MessageType.post
-}
-
-export type StoreMessage = BaseMessage & {
-  content: StoreContent
-  type: MessageType.store
-}
-
-export type ForgetMessage = BaseMessage & {
-  content: ForgetContent
-  type: MessageType.forget
-}
-
-export type ProgramMessage = BaseMessage & {
-  content: ProgramContent
-  type: MessageType.program
-}
-
-export type InstanceMessage = BaseMessage & {
-  content: InstanceContent
-  type: MessageType.instance
 }
 
 export type ItemHash = string

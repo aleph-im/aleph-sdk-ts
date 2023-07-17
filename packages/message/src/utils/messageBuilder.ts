@@ -1,6 +1,6 @@
 import { Blockchain } from '@aleph-sdk/core'
 import { Account } from '@aleph-sdk/account'
-import { ItemType } from './types'
+import { ItemType } from '../types'
 
 export type MessageBuilderConfig<C, T> = {
   storageEngine: ItemType

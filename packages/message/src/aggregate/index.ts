@@ -1,2 +1,2 @@
-export { Get } from './get'
-export { Publish } from './publish'
+export { default, AggregateMessageClient } from './impl'
+export * from './types'

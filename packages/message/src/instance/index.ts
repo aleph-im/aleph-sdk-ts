@@ -1,1 +1,2 @@
-export { Publish } from './publish'
+export { default, InstanceMessageClient } from './impl'
+export * from './types'

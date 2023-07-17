@@ -1,1 +1,2 @@
-export { Publish } from './publish'
+export { default, ForgetMessageClient } from './impl'
+export * from './types'
