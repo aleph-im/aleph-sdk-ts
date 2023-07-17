@@ -13,12 +13,16 @@
     "@airgap/beacon-types": "^3.2.0"
   },
   "dependencies": {
-    "@aleph-sdk/core": "^1.0.0",
-    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^0.0.0",
+    "@aleph-sdk/account": "^0.0.0",
     "@taquito/beacon-wallet": "^14.0.0",
     "@taquito/signer": "^13.0.1",
     "@taquito/utils": "^17.0.0",
     "tweetnacl": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/core": "0.x",
+    "@aleph-sdk/account": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

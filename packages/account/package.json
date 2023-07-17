@@ -10,7 +10,10 @@
     "dist"
   ],
   "dependencies": {
-    "@aleph-sdk/core": "^1.0.0"
+    "@aleph-sdk/core": "^0.0.0"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/core": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

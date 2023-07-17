@@ -11,10 +11,14 @@
   ],
   "devDependencies": {},
   "dependencies": {
-    "@aleph-sdk/core": "^1.0.0",
-    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^0.0.0",
+    "@aleph-sdk/account": "^0.0.0",
     "@metamask/eth-sig-util": "^5.0.0",
     "ethers": "^5.6.4"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/core": "0.x",
+    "@aleph-sdk/account": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

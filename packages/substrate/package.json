@@ -11,11 +11,15 @@
   ],
   "devDependencies": {},
   "dependencies": {
-    "@aleph-sdk/core": "^1.0.0",
-    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^0.0.0",
+    "@aleph-sdk/account": "^0.0.0",
     "@polkadot/keyring": "^7.7.1",
     "@polkadot/util": "^7.7.1",
     "@polkadot/util-crypto": "^7.7.1"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/core": "0.x",
+    "@aleph-sdk/account": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

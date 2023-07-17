@@ -11,9 +11,13 @@
   ],
   "devDependencies": {},
   "dependencies": {
-    "@aleph-sdk/core": "^1.0.0",
-    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^0.0.0",
+    "@aleph-sdk/account": "^0.0.0",
     "@cosmjs/amino": "^0.29.0"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/core": "0.x",
+    "@aleph-sdk/account": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
