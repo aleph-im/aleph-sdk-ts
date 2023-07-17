@@ -4,8 +4,7 @@
  * Under MIT LICENSE
  */
 
-import { personalSign } from '@metamask/eth-sig-util'
-import { getEncryptionPublicKey, decrypt } from '@metamask/eth-sig-util/dist/encryption'
+import { decrypt, getEncryptionPublicKey, personalSign } from '@metamask/eth-sig-util'
 
 type ProviderSetup = {
   address: string

@@ -4,7 +4,7 @@ import { PutContentToStorageEngine } from "../utils/publish"
 import { SignAndBroadcast } from "../utils/signature"
 import { ProgramPublishConfiguration, ProgramSpawnConfiguration, Encoding, FunctionTriggers, ProgramContent, MachineType, ProgramMessage } from "./types"
 import { StoreMessage, StoreMessageClient } from "../store"
-import BaseMessageClient from "../base"
+import { BaseMessageClient } from "../base"
 import { ItemType, MessageType } from "../types"
 
 export class ProgramMessageClient {

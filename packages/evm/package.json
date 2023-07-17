@@ -9,11 +9,11 @@
   "files": [
     "dist"
   ],
-  "devDependencies": {},
   "dependencies": {
-    "@aleph-sdk/core": "^0.0.0",
-    "@aleph-sdk/account": "^0.0.0",
+    "@aleph-sdk/core": "0.x",
+    "@aleph-sdk/account": "0.x",
     "@metamask/eth-sig-util": "^5.0.0",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "^5.6.4"
   },
   "peerDependencies": {
