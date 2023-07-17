@@ -1,5 +1,16 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseExecutableContent, BaseMessage, FunctionEnvironment, HostRequirements, ItemType, MachineResources, MachineVolume, MessageType, ParentVolume, VolumePersistence } from '../types'
+import {
+  BaseExecutableContent,
+  BaseMessage,
+  FunctionEnvironment,
+  HostRequirements,
+  ItemType,
+  MachineResources,
+  MachineVolume,
+  MessageType,
+  ParentVolume,
+  VolumePersistence,
+} from '../types'
 
 /**
  * Root file system of a VM instance.
@@ -28,17 +39,17 @@ export type InstanceMessage = BaseMessage & {
 // ---------------- SEND -------------------
 
 export type InstancePublishConfiguration = {
-  account: Account;
-  channel: string;
-  metadata?: Record<string, unknown>;
-  variables?: Record<string, string>;
-  authorized_keys?: string[];
-  resources?: Partial<MachineResources>;
-  requirements?: HostRequirements;
-  environment?: Partial<FunctionEnvironment>;
-  image?: string;
-  volumes?: MachineVolume[];
-  inlineRequested?: boolean;
-  storageEngine?: ItemType.ipfs | ItemType.storage;
-  APIServer?: string;
-};
+  account: Account
+  channel: string
+  metadata?: Record<string, unknown>
+  variables?: Record<string, string>
+  authorized_keys?: string[]
+  resources?: Partial<MachineResources>
+  requirements?: HostRequirements
+  environment?: Partial<FunctionEnvironment>
+  image?: string
+  volumes?: MachineVolume[]
+  inlineRequested?: boolean
+  storageEngine?: ItemType.ipfs | ItemType.storage
+  APIServer?: string
+}

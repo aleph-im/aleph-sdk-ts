@@ -1,14 +1,20 @@
-import axios from "axios"
-import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from "@aleph-sdk/core"
+import axios from 'axios'
+import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 
-import { GetMessageConfiguration, GetMessageParams, GetMessagesConfiguration, GetMessagesParams, MessageQueryResponse } from "./types"
-import AggregateMessage from "../aggregate"
-import type { ForgetMessage } from "../forget/types"
-import type { InstanceMessage } from "../instance/types"
-import type { PostMessage } from "../post/types"
-import type { ProgramMessage } from "../program/types"
-import type { StoreMessage } from "../store/types"
-import { BaseMessage, MessageType } from "../types"
+import {
+  GetMessageConfiguration,
+  GetMessageParams,
+  GetMessagesConfiguration,
+  GetMessagesParams,
+  MessageQueryResponse,
+} from './types'
+import AggregateMessage from '../aggregate'
+import type { ForgetMessage } from '../forget/types'
+import type { InstanceMessage } from '../instance/types'
+import type { PostMessage } from '../post/types'
+import type { ProgramMessage } from '../program/types'
+import type { StoreMessage } from '../store/types'
+import { BaseMessage, MessageType } from '../types'
 
 export class BaseMessageClient {
   static isProgram(message: BaseMessage): message is ProgramMessage {
@@ -41,7 +47,6 @@ export class BaseMessageClient {
     return message.type === MessageType.aggregate
   }
 
-
   //TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
 
   /**
@@ -70,7 +75,6 @@ export class BaseMessageClient {
     const [message] = response.messages
     return message as unknown as T
   }
-
 
   /**
    * Retrieves Messages with query params.
@@ -116,7 +120,6 @@ export class BaseMessageClient {
 
     return response.data
   }
-
 }
 
 export default BaseMessageClient

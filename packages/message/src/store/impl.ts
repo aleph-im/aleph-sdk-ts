@@ -1,12 +1,17 @@
-import axios from "axios"
+import axios from 'axios'
 
-import { DEFAULT_API_V2, stripTrailingSlash, getSocketPath, RequireOnlyOne } from "@aleph-sdk/core"
-import { StoreContent, StoreGetConfiguration, StoreMessage, StorePinConfiguration, StorePublishConfiguration } from "./types"
-import { MessageBuilder } from "../utils/messageBuilder"
-import { PushFileToStorageEngine, PutContentToStorageEngine } from "../utils/publish"
-import { SignAndBroadcast } from "../utils/signature"
-import { ItemType, MessageType } from "../types"
-
+import { DEFAULT_API_V2, stripTrailingSlash, getSocketPath, RequireOnlyOne } from '@aleph-sdk/core'
+import {
+  StoreContent,
+  StoreGetConfiguration,
+  StoreMessage,
+  StorePinConfiguration,
+  StorePublishConfiguration,
+} from './types'
+import { MessageBuilder } from '../utils/messageBuilder'
+import { PushFileToStorageEngine, PutContentToStorageEngine } from '../utils/publish'
+import { SignAndBroadcast } from '../utils/signature'
+import { ItemType, MessageType } from '../types'
 
 export class StoreMessageClient {
   /**
@@ -105,7 +110,6 @@ export class StoreMessageClient {
       storageEngine: ItemType.ipfs,
     })
   }
-
 }
 
 export default StoreMessageClient

@@ -4,7 +4,13 @@ import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/co
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
 import { MessageBuilder } from '../utils/messageBuilder'
-import { AggregateContent, AggregateGetConfiguration, AggregateGetResponse, AggregateMessage, AggregatePublishConfiguration } from './types'
+import {
+  AggregateContent,
+  AggregateGetConfiguration,
+  AggregateGetResponse,
+  AggregateMessage,
+  AggregatePublishConfiguration,
+} from './types'
 import { ItemType, MessageType } from '../types'
 
 export class AggregateMessageClient {
@@ -36,7 +42,6 @@ export class AggregateMessageClient {
     }
     return response.data.data
   }
-
 
   /**
    * Publishes an aggregate message to the Aleph network.
@@ -94,8 +99,6 @@ export class AggregateMessageClient {
 
     return message
   }
-
-
 }
 
-export default AggregateMessage 
+export default AggregateMessage

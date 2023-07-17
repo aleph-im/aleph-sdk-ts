@@ -1,7 +1,14 @@
 import axios from 'axios'
 
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
-import { PostContent, PostGetConfiguration, PostMessage, PostQueryParams, PostQueryResponse, PostSubmitConfiguration } from './types'
+import {
+  PostContent,
+  PostGetConfiguration,
+  PostMessage,
+  PostQueryParams,
+  PostQueryResponse,
+  PostSubmitConfiguration,
+} from './types'
 import { MessageBuilder } from '../utils/messageBuilder'
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
@@ -43,7 +50,6 @@ export class PostMessageClient {
     })
     return response.data
   }
-
 
   /**
    * Publishes a post message to the Aleph network.
@@ -100,7 +106,6 @@ export class PostMessageClient {
 
     return message
   }
-
 }
 
-export default PostMessageClient 
+export default PostMessageClient

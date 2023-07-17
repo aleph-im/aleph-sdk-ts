@@ -1,5 +1,5 @@
-import { Account } from "@aleph-sdk/account"
-import { BaseContent, BaseMessage, ChainRef, ItemType, MessageType } from "../types/base"
+import { Account } from '@aleph-sdk/account'
+import { BaseContent, BaseMessage, ChainRef, ItemType, MessageType } from '../types/base'
 
 export type PostContent<T> = BaseContent & {
   content?: T
@@ -12,8 +12,7 @@ export type PostMessage<T> = BaseMessage & {
   type: MessageType.post
 }
 
-
-// ------- GET ------- 
+// ------- GET -------
 
 export type PostGetConfiguration = {
   types: string | string[]
@@ -69,7 +68,7 @@ export type PostQueryResponse<T> = {
   pagination_item: string
 }
 
-// ------- PUBLISH ------- 
+// ------- PUBLISH -------
 
 /**
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.

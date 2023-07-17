@@ -1,17 +1,25 @@
-import { DEFAULT_API_V2, RequireOnlyOne } from "@aleph-sdk/core"
-import { MessageBuilder } from "../utils/messageBuilder"
-import { PutContentToStorageEngine } from "../utils/publish"
-import { SignAndBroadcast } from "../utils/signature"
-import { ProgramPublishConfiguration, ProgramSpawnConfiguration, Encoding, FunctionTriggers, ProgramContent, MachineType, ProgramMessage } from "./types"
-import { StoreMessage, StoreMessageClient } from "../store"
-import { BaseMessageClient } from "../base"
-import { ItemType, MessageType } from "../types"
+import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
+import { MessageBuilder } from '../utils/messageBuilder'
+import { PutContentToStorageEngine } from '../utils/publish'
+import { SignAndBroadcast } from '../utils/signature'
+import {
+  ProgramPublishConfiguration,
+  ProgramSpawnConfiguration,
+  Encoding,
+  FunctionTriggers,
+  ProgramContent,
+  MachineType,
+  ProgramMessage,
+} from './types'
+import { StoreMessage, StoreMessageClient } from '../store'
+import { BaseMessageClient } from '../base'
+import { ItemType, MessageType } from '../types'
 
 export class ProgramMessageClient {
   constructor(
     protected baseMessageClient: BaseMessageClient = new BaseMessageClient(),
-    protected storeMessageClient: StoreMessageClient = new StoreMessageClient()
-  ) { }
+    protected storeMessageClient: StoreMessageClient = new StoreMessageClient(),
+  ) {}
 
   // TODO: Check that program_ref, runtime and data_ref exist
   // Guard some numbers values

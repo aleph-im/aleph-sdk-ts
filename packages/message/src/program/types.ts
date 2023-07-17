@@ -1,5 +1,13 @@
-import { Account } from "@aleph-sdk/account"
-import { BaseContent, MachineVolume, ItemType, FunctionEnvironment, MachineResources, BaseMessage, MessageType } from '../types'
+import { Account } from '@aleph-sdk/account'
+import {
+  BaseContent,
+  MachineVolume,
+  ItemType,
+  FunctionEnvironment,
+  MachineResources,
+  BaseMessage,
+  MessageType,
+} from '../types'
 
 /**
  * Type of Encoding
@@ -134,7 +142,6 @@ export type ProgramPublishConfiguration = {
 }
 
 // ----------- SPAWN ------------
-
 
 /**
  * account:         The account used to sign the aggregate message.

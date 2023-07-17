@@ -1,5 +1,5 @@
-import { Account } from "@aleph-sdk/account"
-import { BaseContent, BaseMessage, ItemType, MessageType } from "../types/base"
+import { Account } from '@aleph-sdk/account'
+import { BaseContent, BaseMessage, ItemType, MessageType } from '../types/base'
 
 export type StoreContent = BaseContent & {
   item_type: string

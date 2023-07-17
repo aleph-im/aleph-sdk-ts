@@ -1,9 +1,9 @@
-import { DEFAULT_API_V2 } from "@aleph-sdk/core"
-import { MessageBuilder } from "../utils/messageBuilder"
-import { PutContentToStorageEngine } from "../utils/publish"
-import { SignAndBroadcast } from "../utils/signature"
-import { ForgetContent, ForgetMessage, ForgetPublishConfiguration } from "./types"
-import { ItemType, MessageType } from "../types"
+import { DEFAULT_API_V2 } from '@aleph-sdk/core'
+import { MessageBuilder } from '../utils/messageBuilder'
+import { PutContentToStorageEngine } from '../utils/publish'
+import { SignAndBroadcast } from '../utils/signature'
+import { ForgetContent, ForgetMessage, ForgetPublishConfiguration } from './types'
+import { ItemType, MessageType } from '../types'
 
 export class ForgetMessageClient {
   /**
@@ -57,8 +57,6 @@ export class ForgetMessageClient {
     })
     return message
   }
-
-
 }
 
 export default ForgetMessageClient

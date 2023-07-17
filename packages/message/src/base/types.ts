@@ -1,5 +1,5 @@
-import { Blockchain } from "@aleph-sdk/core"
-import { MessageType, BaseMessage } from "../types"
+import { Blockchain } from '@aleph-sdk/core'
+import { MessageType, BaseMessage } from '../types'
 
 export type GetMessageParams = {
   hashes: string[]
@@ -16,7 +16,6 @@ export type GetMessageConfiguration = {
 }
 
 // --------- MESSAGES ------------
-
 
 export type MessageQueryResponse = {
   messages: BaseMessage[]

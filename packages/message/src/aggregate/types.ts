@@ -15,7 +15,7 @@ export type AggregateMessage<T> = BaseMessage & {
   type: MessageType.aggregate
 }
 
-// ------- GET ------- 
+// ------- GET -------
 
 export type AggregateGetResponse<T> = {
   data: T
@@ -28,7 +28,7 @@ export type AggregateGetConfiguration = {
   limit?: number
 }
 
-// ------- PUBLISH ------- 
+// ------- PUBLISH -------
 
 /**
  * account:         The account used to sign the aggregate message.
