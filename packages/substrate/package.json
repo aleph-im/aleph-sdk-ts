@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/substrate",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
