@@ -1,31 +1,47 @@
 name: Publish Packages (NPM & Github)
 on:
-    release:
-        types: [published]
+  release:
+    types: [published]
 
 jobs:
-    build-npm:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: "16.x"
-                  registry-url: "https://registry.npmjs.org"
-            - run: npm ci
-            - run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+  build-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    build-github:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: "16.x"
-                  registry-url: "https://npm.pkg.github.com"
-            - run: npm ci
-            - run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Setup node"
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@aleph-sdk'
+
+      - name: "Prepare npmrc"
+        run: envsubst  < .npmrc_ci > .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN}}
+
+      - name: "Install deps"
+        run: npm ci
+
+      - name: "Build"
+        run: npm run build
+
+      - name: "Publish package"
+        run: npm run publish
+
+  build-github:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v3
+        - uses: actions/setup-node@v3
+          with:
+              node-version: "16.x"
+              registry-url: "https://npm.pkg.github.com"
+        - run: npm ci
+        - run: npm publish
+          env:
+              NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

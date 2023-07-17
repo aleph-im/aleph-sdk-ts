@@ -1,0 +1,4 @@
+always-auth = true
+@aleph-sdk:registry=https://registry.npmjs.org/
+
+//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
