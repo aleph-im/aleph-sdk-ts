@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/cosmos",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -10,8 +10,8 @@
     "dist"
   ],
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.1",
-    "@aleph-sdk/core": "^0.0.1",
+    "@aleph-sdk/account": "^0.0.2",
+    "@aleph-sdk/core": "^0.0.2",
     "@cosmjs/amino": "^0.29.0"
   },
   "peerDependencies": {
