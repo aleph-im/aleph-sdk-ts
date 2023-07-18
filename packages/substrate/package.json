@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/substrate",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -9,17 +9,16 @@
   "files": [
     "dist"
   ],
-  "devDependencies": {},
   "dependencies": {
-    "@aleph-sdk/core": "^0.0.0",
-    "@aleph-sdk/account": "^0.0.0",
+    "@aleph-sdk/account": "^0.0.1",
+    "@aleph-sdk/core": "^0.0.1",
     "@polkadot/keyring": "^7.7.1",
     "@polkadot/util": "^7.7.1",
     "@polkadot/util-crypto": "^7.7.1"
   },
   "peerDependencies": {
-    "@aleph-sdk/core": "0.x",
-    "@aleph-sdk/account": "0.x"
+    "@aleph-sdk/account": "0.x",
+    "@aleph-sdk/core": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
