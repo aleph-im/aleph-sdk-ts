@@ -17,10 +17,11 @@
     "clean:deps": "lerna exec -- npx rimraf node_modules && npx rimraf node_modules",
     "clean:dist": "lerna exec -- npx rimraf dist && npx rimraf dist",
     "build": "npm run clean:dist && lerna run build",
+    "version": "lerna version --no-private",
+    "publish": "npm run build && lerna publish --no-private",
     "doc": "typedoc",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "prepack": "npm run build",
     "test": "npm run test:jest",
     "test:jest": "jest --testTimeout=1200000 --verbose --coverage"
   },
