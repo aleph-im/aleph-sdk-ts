@@ -1,6 +1,8 @@
 name: Publish Packages (NPM & Github)
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - feature/package-refactor
   release:
     types: [published]
 
