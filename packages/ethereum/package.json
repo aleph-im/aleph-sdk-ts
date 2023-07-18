@@ -9,6 +9,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@aleph-sdk/account": "^0.0.2",
     "@aleph-sdk/core": "^0.0.2",
