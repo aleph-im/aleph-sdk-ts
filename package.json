@@ -18,7 +18,7 @@
     "clean:dist": "lerna exec -- npx rimraf dist && npx rimraf dist",
     "build": "npm run clean:dist && lerna run build",
     "version": "lerna version --no-private",
-    "publish": "npm run build && lerna publish --no-private",
+    "publish": "npm run build && lerna publish from-git --no-private --yes",
     "doc": "typedoc",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
