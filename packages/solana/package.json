@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/solana",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -16,8 +16,8 @@
     "@types/bs58": "^4.0.1"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.2",
-    "@aleph-sdk/core": "^0.0.2",
+    "@aleph-sdk/account": "^0.0.3",
+    "@aleph-sdk/core": "^0.0.3",
     "@solana/web3.js": "^1.39.1",
     "bs58": "^5.0.0",
     "tweetnacl": "^1.0.3"

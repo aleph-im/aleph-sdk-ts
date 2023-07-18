@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/account",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -13,7 +13,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aleph-sdk/core": "^0.0.2"
+    "@aleph-sdk/core": "^0.0.3"
   },
   "peerDependencies": {
     "@aleph-sdk/core": "0.x"

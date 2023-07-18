@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/ethereum-ledger",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -13,8 +13,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.2",
-    "@aleph-sdk/core": "^0.0.2",
+    "@aleph-sdk/account": "^0.0.3",
+    "@aleph-sdk/core": "^0.0.3",
     "@ledgerhq/hw-app-eth": "^6.29.9",
     "@ledgerhq/hw-transport": "^6.28.5",
     "@ledgerhq/hw-transport-node-hid": "^6.27.6",
