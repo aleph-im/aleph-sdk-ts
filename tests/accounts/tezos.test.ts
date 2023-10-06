@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { ItemType } from "../../src/messages/message";
+import { ItemType } from "../../src/messages/types";
 import { post, tezos } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { b58cencode, prefix, validateSignature } from "@taquito/utils";

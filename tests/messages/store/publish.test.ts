@@ -1,6 +1,6 @@
 import { ethereum, store } from "../../index";
 import { DEFAULT_API_V2 } from "../../../src/global";
-import { ItemType } from "../../../src/messages/message";
+import { ItemType } from "../../../src/messages/types";
 import fs, { readFileSync } from "fs";
 import { EphAccountList } from "../../testAccount/entryPoint";
 

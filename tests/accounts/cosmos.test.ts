@@ -1,6 +1,6 @@
 import { cosmos, post } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
-import { ItemType } from "../../src/messages/message";
+import { ItemType } from "../../src/messages/types";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
