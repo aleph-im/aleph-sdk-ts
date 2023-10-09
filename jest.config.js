@@ -4,5 +4,6 @@ module.exports = {
     testPathIgnorePatterns: ["<rootDir>/cypress/"],
     moduleNameMapper: {
         '^axios$': require.resolve('axios'),
+        '^@adraffy/ens-normalize$': require.resolve('@adraffy/ens-normalize'),
     },
 };
