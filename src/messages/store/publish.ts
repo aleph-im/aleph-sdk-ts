@@ -56,31 +56,63 @@ export async function Publish({
     if (!fileObject && !fileHash) throw new Error("You need to specify a File to upload or a Hash to pin.");
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.");
     if (fileHash && storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin the file.");
-    let my_hash: string | null = null;
-    if (fileObject && storageEngine != ItemType.ipfs) {
-        my_hash = await processFileObject(fileObject);
-        if (my_hash == null) {
+
+    const myHash = await getHash(fileObject, storageEngine, fileHash, APIServer);
+
+    const message = await createAndSendStoreMessage(
+        account,
+        channel,
+        myHash,
+        storageEngine,
+        APIServer,
+        inlineRequested,
+        sync,
+        fileObject,
+    );
+
+    return message;
+}
+
+async function getHash(
+    fileObject: Buffer | Blob | null | undefined,
+    storageEngine: ItemType,
+    fileHash: string | undefined,
+    APIServer: string,
+) {
+    if (fileObject && storageEngine !== ItemType.ipfs) {
+        const hash = await processFileObject(fileObject);
+        if (hash == null) {
             throw new Error("Cannot process file");
         }
+        return hash;
+    } else if (fileObject && storageEngine === ItemType.ipfs) {
+        return await PushFileToStorageEngine({
+            APIServer,
+            storageEngine,
+            file: fileObject,
+        });
+    } else if (fileHash) {
+        return fileHash;
+    } else {
+        throw new Error("Error with File Hash");
     }
+}
 
-    const hash =
-        fileHash ||
-        (my_hash
-            ? my_hash
-            : await PushFileToStorageEngine({
-                  APIServer,
-                  storageEngine,
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  file: fileObject,
-              }));
-
+async function createAndSendStoreMessage(
+    account: base.Account,
+    channel: string,
+    myHash: string,
+    storageEngine: ItemType,
+    APIServer: string,
+    inlineRequested: boolean,
+    sync: boolean,
+    fileObject: Buffer | Blob | undefined,
+) {
     const timestamp = Date.now() / 1000;
     const storeContent: StoreContent = {
         address: account.address,
         item_type: storageEngine,
-        item_hash: hash,
+        item_hash: myHash,
         time: timestamp,
     };
 
@@ -106,9 +138,10 @@ export async function Publish({
             account,
             APIServer,
         });
+    } else if (!fileObject) {
+        throw new Error("You need to specify a File to upload or a Hash to pin.");
     } else {
-        if (!fileObject) throw new Error("You need to specify a File to upload or a Hash to pin.");
-        return await send_message(
+        return await sendMessage(
             {
                 message: message,
                 account,
@@ -121,26 +154,16 @@ export async function Publish({
 
     return message;
 }
-async function processFileObject(fileObject: Blob | Buffer | null): Promise<string | null> {
-    if (fileObject) {
-        try {
-            let hash;
-            if (fileObject instanceof Blob) {
-                const buffer = await blobToBuffer(fileObject);
-                hash = await calculateSHA256Hash(buffer);
-            } else {
-                hash = calculateSHA256Hash(fileObject);
-            }
-            return hash;
-        } catch (error) {
-            console.error("Error calculating hash:", error);
-            return null;
-        }
-    } else {
-        console.error("Error: fileObject is null");
-        return null;
+
+async function processFileObject(fileObject: Blob | Buffer | null): Promise<string> {
+    if (!fileObject) throw new Error("fileObject is null");
+
+    if (fileObject instanceof Blob) {
+        fileObject = await blobToBuffer(fileObject);
     }
+    return calculateSHA256Hash(fileObject);
 }
+
 type SignAndBroadcastConfiguration = {
     message: BaseMessage;
     account: Account;
@@ -148,32 +171,26 @@ type SignAndBroadcastConfiguration = {
     sync: boolean;
 };
 
-async function send_message(configuration: SignAndBroadcastConfiguration, fileObject: Blob | Buffer) {
-    configuration.message.signature = await configuration.account.Sign(configuration.message);
-    try {
-        const form = new FormData();
-        form.append("file", fileObject);
-        const metadata = {
-            message: configuration.message,
-            sync: configuration.sync,
-        };
+async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObject: Blob | Buffer) {
+    const form = new FormData();
+    const metadata = {
+        message: {
+            ...configuration.message,
+            signature: await configuration.account.Sign(configuration.message),
+        },
+        sync: configuration.sync,
+    };
 
-        form.append("metadata", JSON.stringify(metadata));
-        const response = await axios.post(
-            `${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`,
-            form,
-            {
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "multipart/form-data",
-                },
-            },
-        );
-        return response.data;
-    } catch (err: any) {
-        console.warn(err);
-        return err;
-    }
+    form.append("file", fileObject);
+    form.append("metadata", JSON.stringify(metadata));
+
+    const response = await axios.post(`${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`, form, {
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return response.data;
 }
 
 async function blobToBuffer(blob: Blob): Promise<Buffer> {
@@ -190,10 +207,7 @@ async function blobToBuffer(blob: Blob): Promise<Buffer> {
     });
 }
 
-function calculateSHA256Hash(data: ArrayBuffer | Buffer): Promise<string> {
-    return new Promise<string>((resolve) => {
-        const buffer = Buffer.from(data);
-        const sha256Hash = new shajs.sha256().update(buffer).digest("hex");
-        resolve(sha256Hash);
-    });
+function calculateSHA256Hash(data: ArrayBuffer | Buffer): string {
+    const buffer = Buffer.from(data);
+    return new shajs.sha256().update(buffer).digest("hex");
 }
