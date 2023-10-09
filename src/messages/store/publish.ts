@@ -6,10 +6,10 @@ import { SignAndBroadcast } from "../create/signature";
 import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
-import shajs from "sha.js";
 import { stripTrailingSlash } from "../../utils/url";
 import FormData from "form-data";
 import axios from "axios";
+import { blobToBuffer, calculateSHA256Hash } from "./utils";
 
 /**
  * channel:         The channel in which the message will be published.
@@ -81,7 +81,7 @@ async function getHash(
 ) {
     if (fileObject && storageEngine !== ItemType.ipfs) {
         const hash = await processFileObject(fileObject);
-        if (hash == null) {
+        if (hash === null || hash === undefined) {
             throw new Error("Cannot process file");
         }
         return hash;
@@ -132,7 +132,7 @@ async function createAndSendStoreMessage(
         APIServer,
     });
 
-    if (ItemType.ipfs == message.item_type) {
+    if (ItemType.ipfs === message.item_type) {
         await SignAndBroadcast({
             message: message,
             account,
@@ -191,23 +191,4 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObj
         },
     });
     return response.data;
-}
-
-async function blobToBuffer(blob: Blob): Promise<Buffer> {
-    return new Promise<Buffer>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            if (reader.result instanceof ArrayBuffer) {
-                resolve(Buffer.from(reader.result));
-            } else {
-                reject("Failed to convert Blob to Buffer.");
-            }
-        };
-        reader.readAsArrayBuffer(blob);
-    });
-}
-
-function calculateSHA256Hash(data: ArrayBuffer | Buffer): string {
-    const buffer = Buffer.from(data);
-    return new shajs.sha256().update(buffer).digest("hex");
 }
