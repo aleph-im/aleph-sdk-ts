@@ -1,4 +1,3 @@
-import * as base from "../../accounts/account";
 import { Account } from "../../accounts/account";
 import { BaseMessage, ItemType, MessageType, StoreContent, StoreMessage } from "../types";
 import { PushFileToStorageEngine, PutContentToStorageEngine } from "../create/publish";
@@ -28,7 +27,7 @@ import { blobToBuffer, calculateSHA256Hash } from "./utils";
  */
 type StorePublishConfiguration = {
     channel: string;
-    account: base.Account;
+    account: Account;
     fileObject?: Buffer | Blob;
     fileHash?: string;
     storageEngine?: ItemType.ipfs | ItemType.storage;
@@ -99,7 +98,7 @@ async function getHash(
 }
 
 async function createAndSendStoreMessage(
-    account: base.Account,
+    account: Account,
     channel: string,
     myHash: string,
     storageEngine: ItemType,
