@@ -8,7 +8,7 @@ import { MessageBuilder } from "../../utils/messageBuilder";
 import { stripTrailingSlash } from "../../utils/url";
 import FormData from "form-data";
 import axios from "axios";
-import { blobToBuffer, calculateSHA256Hash } from "./utils";
+import { calculateSHA256Hash } from "./utils";
 
 /**
  * channel:         The channel in which the message will be published.
@@ -62,7 +62,6 @@ export async function Publish({
         buffer = await processFileObject(fileObject);
         hash = await getHash(buffer, storageEngine, fileHash, APIServer);
     }
-
     const message = await createAndSendStoreMessage(
         account,
         channel,
@@ -73,7 +72,6 @@ export async function Publish({
         sync,
         buffer,
     );
-
     return message;
 }
 
@@ -131,7 +129,7 @@ async function createAndSendStoreMessage(
         APIServer,
     });
 
-    if (ItemType.ipfs === message.item_type) {
+    if (ItemType.ipfs == message.item_type) {
         await SignAndBroadcast({
             message: message,
             account,
@@ -140,7 +138,7 @@ async function createAndSendStoreMessage(
     } else if (!fileObject) {
         throw new Error("You need to specify a File to upload or a Hash to pin.");
     } else {
-        return await sendMessage(
+        await sendMessage(
             {
                 message: message,
                 account,
@@ -155,12 +153,16 @@ async function createAndSendStoreMessage(
 }
 
 async function processFileObject(fileObject: Blob | Buffer | null | undefined): Promise<Buffer> {
-    if (!fileObject) throw new Error("fileObject is null");
-
-    if (fileObject instanceof Blob) {
-        fileObject = await blobToBuffer(fileObject);
+    if (!fileObject) {
+        throw new Error("fileObject is null");
     }
-    return fileObject;
+
+    if (fileObject instanceof Buffer) {
+        return fileObject;
+    }
+
+    const arrayBuf = await fileObject.arrayBuffer();
+    return Buffer.from(arrayBuf);
 }
 
 type SignAndBroadcastConfiguration = {

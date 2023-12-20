@@ -1,8 +1,9 @@
 import { ethereum, store } from "../../index";
-import { DEFAULT_API_V2 } from "../../../src/global";
-import { ItemType } from "../../../src/messages/message";
+import { ItemType } from "../../../src/messages/types";
 import fs, { readFileSync } from "fs";
 import { EphAccountList } from "../../testAccount/entryPoint";
+import { Blob as BlobPolyfill } from "formdata-node";
+import { TextDecoder } from "util";
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
     return new TextDecoder().decode(ab);
@@ -20,25 +21,44 @@ describe("Store message publish", () => {
             throw Error("[Ephemeral Account Generation] - Generated Account corrupted");
     });
 
-    it("should store a file and retrieve it correctly", async () => {
+    it("should store a file buffer and retrieve it correctly", async () => {
         const { mnemonic } = ephemeralAccount.eth;
         if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const fileContent = readFileSync("./tests/messages/store/testFile.txt");
 
-        const hash = await store.Publish({
+        const message = await store.Publish({
             channel: "TEST",
             account: account,
             fileObject: fileContent,
         });
-
         const response = await store.Get({
-            fileHash: hash.content.item_hash,
-            APIServer: DEFAULT_API_V2,
+            fileHash: message.content.item_hash,
         });
 
         const got = ArraybufferToString(response);
         const expected = "y";
+
+        expect(got).toBe(expected);
+    });
+
+    it("should store a file BLOB and retrieve it correctly", async () => {
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const fileContent = new BlobPolyfill(["n"]);
+
+        const message = await store.Publish({
+            channel: "TEST",
+            account: account,
+            fileObject: fileContent as unknown as Blob,
+        });
+        const response = await store.Get({
+            fileHash: message.content.item_hash,
+        });
+
+        const got = ArraybufferToString(response);
+        const expected = "n";
 
         expect(got).toBe(expected);
     });
@@ -49,16 +69,16 @@ describe("Store message publish", () => {
         const account = ethereum.ImportAccountFromMnemonic(mnemonic);
         const helloWorldHash = "QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j";
 
-        const hash = await store.Pin({
+        const message = await store.Pin({
             channel: "TEST",
             account: account,
             fileHash: helloWorldHash,
         });
-
+        console.log(message);
         const response = await store.Get({
-            fileHash: hash.content.item_hash,
-            APIServer: DEFAULT_API_V2,
+            fileHash: message.content.item_hash,
         });
+        console.log(response);
 
         const got = ArraybufferToString(response);
         const expected = "hello world!";
@@ -91,14 +111,13 @@ describe("Store message publish", () => {
                 account: account,
                 fileHash: helloWorldHash,
             }),
-        ).rejects.toThrow("You must choose ipfs to pin file.");
+        ).rejects.toThrow("You must choose ipfs to pin the file.");
 
         await expect(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             store.Publish({
                 channel: "TEST",
-                APIServer: DEFAULT_API_V2,
                 account: account,
                 storageEngine: ItemType.storage,
             }),

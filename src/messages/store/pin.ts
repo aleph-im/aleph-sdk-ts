@@ -36,6 +36,7 @@ export async function Pin(spc: StorePinConfiguration): Promise<StoreMessage> {
         channel: spc.channel,
         fileHash: spc.fileHash,
         APIServer: spc.APIServer || DEFAULT_API_V2,
+        inlineRequested: false,
         storageEngine: ItemType.ipfs,
     });
 }
