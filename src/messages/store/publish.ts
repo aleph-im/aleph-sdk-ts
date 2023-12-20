@@ -98,7 +98,7 @@ async function getHash(buffer: Buffer, storageEngine: ItemType, fileHash: string
 async function createAndSendStoreMessage(
     account: Account,
     channel: string,
-    myHash: string,
+    fileHash: string,
     storageEngine: ItemType,
     APIServer: string,
     inlineRequested: boolean,
@@ -109,7 +109,7 @@ async function createAndSendStoreMessage(
     const storeContent: StoreContent = {
         address: account.address,
         item_type: storageEngine,
-        item_hash: myHash,
+        item_hash: fileHash,
         time: timestamp,
     };
 
@@ -129,7 +129,7 @@ async function createAndSendStoreMessage(
         APIServer,
     });
 
-    if (ItemType.ipfs == message.item_type) {
+    if (ItemType.ipfs == message.item_type || inlineRequested) {
         await SignAndBroadcast({
             message: message,
             account,
