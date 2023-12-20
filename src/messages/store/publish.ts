@@ -56,7 +56,8 @@ export async function Publish({
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.");
     if (fileHash && storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin the file.");
 
-    const myHash = await getHash(fileObject, storageEngine, fileHash, APIServer);
+    const fileBuffer = await processFileObject(fileObject);
+    const myHash = await getHash(fileBuffer, storageEngine, fileHash, APIServer);
 
     const message = await createAndSendStoreMessage(
         account,
@@ -66,29 +67,24 @@ export async function Publish({
         APIServer,
         inlineRequested,
         sync,
-        fileObject,
+        fileBuffer,
     );
 
     return message;
 }
 
-async function getHash(
-    fileObject: Buffer | Blob | null | undefined,
-    storageEngine: ItemType,
-    fileHash: string | undefined,
-    APIServer: string,
-) {
-    if (fileObject && storageEngine !== ItemType.ipfs) {
-        const hash = await processFileObject(fileObject);
+async function getHash(buffer: Buffer, storageEngine: ItemType, fileHash: string | undefined, APIServer: string) {
+    if (buffer && storageEngine !== ItemType.ipfs) {
+        const hash = calculateSHA256Hash(buffer);
         if (hash === null || hash === undefined) {
             throw new Error("Cannot process file");
         }
         return hash;
-    } else if (fileObject && storageEngine === ItemType.ipfs) {
+    } else if (buffer && storageEngine === ItemType.ipfs) {
         return await PushFileToStorageEngine({
             APIServer,
             storageEngine,
-            file: fileObject,
+            file: buffer,
         });
     } else if (fileHash) {
         return fileHash;
@@ -105,7 +101,7 @@ async function createAndSendStoreMessage(
     APIServer: string,
     inlineRequested: boolean,
     sync: boolean,
-    fileObject: Buffer | Blob | undefined,
+    fileObject: Buffer,
 ) {
     const timestamp = Date.now() / 1000;
     const storeContent: StoreContent = {
@@ -154,13 +150,13 @@ async function createAndSendStoreMessage(
     return message;
 }
 
-async function processFileObject(fileObject: Blob | Buffer | null): Promise<string> {
+async function processFileObject(fileObject: Blob | Buffer | null | undefined): Promise<Buffer> {
     if (!fileObject) throw new Error("fileObject is null");
 
     if (fileObject instanceof Blob) {
         fileObject = await blobToBuffer(fileObject);
     }
-    return calculateSHA256Hash(fileObject);
+    return fileObject;
 }
 
 type SignAndBroadcastConfiguration = {
@@ -170,7 +166,7 @@ type SignAndBroadcastConfiguration = {
     sync: boolean;
 };
 
-async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObject: Blob | Buffer) {
+async function sendMessage(configuration: SignAndBroadcastConfiguration, fileBuffer: Buffer) {
     const form = new FormData();
     const metadata = {
         message: {
@@ -179,8 +175,7 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObj
         },
         sync: configuration.sync,
     };
-    const length = fileObject instanceof Blob ? fileObject.size : fileObject.length;
-    form.append("file", fileObject, { knownLength: length });
+    form.append("file", fileBuffer);
     form.append("metadata", JSON.stringify(metadata));
 
     const response = await axios.post(`${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`, form, {
