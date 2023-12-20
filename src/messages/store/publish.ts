@@ -56,18 +56,22 @@ export async function Publish({
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.");
     if (fileHash && storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin the file.");
 
-    const fileBuffer = await processFileObject(fileObject);
-    const myHash = await getHash(fileBuffer, storageEngine, fileHash, APIServer);
+    let hash: string | undefined = fileHash;
+    let buffer: Buffer | undefined = undefined;
+    if (!hash) {
+        buffer = await processFileObject(fileObject);
+        hash = await getHash(buffer, storageEngine, fileHash, APIServer);
+    }
 
     const message = await createAndSendStoreMessage(
         account,
         channel,
-        myHash,
+        hash,
         storageEngine,
         APIServer,
         inlineRequested,
         sync,
-        fileBuffer,
+        buffer,
     );
 
     return message;
@@ -101,7 +105,7 @@ async function createAndSendStoreMessage(
     APIServer: string,
     inlineRequested: boolean,
     sync: boolean,
-    fileObject: Buffer,
+    fileObject: Buffer | undefined,
 ) {
     const timestamp = Date.now() / 1000;
     const storeContent: StoreContent = {
