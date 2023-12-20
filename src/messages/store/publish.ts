@@ -179,8 +179,8 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObj
         },
         sync: configuration.sync,
     };
-
-    form.append("file", fileObject);
+    const length = fileObject instanceof Blob ? fileObject.size : fileObject.length;
+    form.append("file", fileObject, { knownLength: length });
     form.append("metadata", JSON.stringify(metadata));
 
     const response = await axios.post(`${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`, form, {
