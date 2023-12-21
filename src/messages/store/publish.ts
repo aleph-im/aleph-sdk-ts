@@ -6,8 +6,8 @@ import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 import { stripTrailingSlash } from "../../utils/url";
-import axios from "axios";
-import { calculateSHA256Hash } from "./utils";
+import axios, { AxiosError } from "axios";
+import { blobToBuffer, calculateSHA256Hash } from "./utils";
 
 /**
  * channel:         The channel in which the message will be published.
@@ -184,11 +184,22 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, file: B
     form.append("file", fileBlob, fileName);
     form.append("metadata", JSON.stringify(metadata));
 
-    const response = await axios.post(`${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`, form, {
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-        },
-    });
-    return response.data;
+    try {
+        const response = await axios.post(
+            `${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`,
+            form,
+            {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data",
+                },
+            },
+        );
+        return response.data;
+    } catch (err) {
+        if (err instanceof AxiosError) {
+            console.error(err.response?.data);
+        }
+        throw err;
+    }
 }
