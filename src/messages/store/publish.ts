@@ -28,7 +28,7 @@ import { calculateSHA256Hash } from "./utils";
 type StorePublishConfiguration = {
     channel: string;
     account: Account;
-    fileObject?: Buffer | Blob;
+    fileObject?: Buffer | Blob | File;
     fileHash?: string;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
@@ -57,9 +57,8 @@ export async function Publish({
     if (fileHash && storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin the file.");
 
     let hash: string | undefined = fileHash;
-    let buffer: Buffer | undefined = undefined;
     if (!hash) {
-        buffer = await processFileObject(fileObject);
+        const buffer = await processFileObject(fileObject);
         hash = await getHash(buffer, storageEngine, fileHash, APIServer);
     }
     const message = await createAndSendStoreMessage(
@@ -70,7 +69,7 @@ export async function Publish({
         APIServer,
         inlineRequested,
         sync,
-        buffer,
+        fileObject,
     );
     return message;
 }
@@ -103,7 +102,7 @@ async function createAndSendStoreMessage(
     APIServer: string,
     inlineRequested: boolean,
     sync: boolean,
-    fileObject: Buffer | undefined,
+    fileObject: Buffer | Blob | File | undefined,
 ) {
     const timestamp = Date.now() / 1000;
     const storeContent: StoreContent = {
@@ -128,8 +127,7 @@ async function createAndSendStoreMessage(
         inline: inlineRequested,
         APIServer,
     });
-
-    if (ItemType.ipfs == message.item_type || inlineRequested) {
+    if (ItemType.ipfs == storageEngine && inlineRequested) {
         await SignAndBroadcast({
             message: message,
             account,
@@ -152,7 +150,7 @@ async function createAndSendStoreMessage(
     return message;
 }
 
-async function processFileObject(fileObject: Blob | Buffer | null | undefined): Promise<Buffer> {
+async function processFileObject(fileObject: Blob | Buffer | File | null | undefined): Promise<Buffer> {
     if (!fileObject) {
         throw new Error("fileObject is null");
     }
@@ -172,7 +170,7 @@ type SignAndBroadcastConfiguration = {
     sync: boolean;
 };
 
-async function sendMessage(configuration: SignAndBroadcastConfiguration, fileBuffer: Buffer) {
+async function sendMessage(configuration: SignAndBroadcastConfiguration, file: Buffer | Blob | File): Promise<any> {
     const form = new FormData();
     const metadata = {
         message: {
@@ -181,7 +179,10 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, fileBuf
         },
         sync: configuration.sync,
     };
-    form.append("file", fileBuffer);
+
+    const fileBlob = file instanceof Blob ? file : new Blob([file]);
+    const fileName = file instanceof File ? file.name : "File";
+    form.append("file", fileBlob, fileName);
     form.append("metadata", JSON.stringify(metadata));
 
     const response = await axios.post(`${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`, form, {
