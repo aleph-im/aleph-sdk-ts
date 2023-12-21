@@ -74,11 +74,9 @@ describe("Store message publish", () => {
             account: account,
             fileObject: fileContent as unknown as File,
         });
-        console.log(message);
         const response = await store.Get({
             fileHash: message.content.item_hash,
         });
-        console.log(response);
 
         const got = ArraybufferToString(response);
         const expected = "x";
@@ -97,11 +95,9 @@ describe("Store message publish", () => {
             account: account,
             fileHash: helloWorldHash,
         });
-        console.log(message);
         const response = await store.Get({
             fileHash: message.content.item_hash,
         });
-        console.log(response);
 
         const got = ArraybufferToString(response);
         const expected = "hello world!";

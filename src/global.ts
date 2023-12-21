@@ -1,1 +1,1 @@
-export const DEFAULT_API_V2 = "https://api2.aleph.im";
+export const DEFAULT_API_V2 = "http://127.0.0.1:4024/";

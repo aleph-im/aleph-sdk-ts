@@ -59,6 +59,11 @@ export async function Publish({
     if (!hash) {
         const buffer = await processFileObject(fileObject);
         hash = await getHash(buffer, storageEngine, fileHash, APIServer);
+        if (fileObject instanceof File) {
+            fileObject = new File([buffer], fileObject.name);
+        } else {
+            fileObject = new Blob([buffer]);
+        }
     }
     const message = await createAndSendStoreMessage(
         account,
@@ -68,7 +73,7 @@ export async function Publish({
         APIServer,
         inlineRequested,
         sync,
-        fileObject,
+        fileObject as Blob | File | undefined,
     );
     return message;
 }
@@ -101,7 +106,7 @@ async function createAndSendStoreMessage(
     APIServer: string,
     inlineRequested: boolean,
     sync: boolean,
-    fileObject: Buffer | Blob | File | undefined,
+    fileObject: Blob | File | undefined,
 ) {
     const timestamp = Date.now() / 1000;
     const storeContent: StoreContent = {
@@ -168,7 +173,7 @@ type SignAndBroadcastConfiguration = {
     sync: boolean;
 };
 
-async function sendMessage(configuration: SignAndBroadcastConfiguration, file: Buffer | Blob | File): Promise<any> {
+async function sendMessage(configuration: SignAndBroadcastConfiguration, file: Blob | File): Promise<any> {
     const form = new FormData();
     const metadata = {
         message: {
@@ -178,9 +183,7 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, file: B
         sync: configuration.sync,
     };
 
-    const fileBlob = file instanceof Blob ? file : new Blob([file]);
-    const fileName = file instanceof File ? file.name : "File";
-    form.append("file", fileBlob, fileName);
+    form.append("file", file);
     form.append("metadata", JSON.stringify(metadata));
 
     try {
