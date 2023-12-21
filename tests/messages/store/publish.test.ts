@@ -2,7 +2,7 @@ import { ethereum, store } from "../../index";
 import { ItemType } from "../../../src/messages/types";
 import fs, { readFileSync } from "fs";
 import { EphAccountList } from "../../testAccount/entryPoint";
-import { Blob as BlobPolyfill } from "formdata-node";
+import { Blob as BlobPolyfill, File as FilePolyfill } from "formdata-node";
 import { TextDecoder } from "util";
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
@@ -59,6 +59,29 @@ describe("Store message publish", () => {
 
         const got = ArraybufferToString(response);
         const expected = "n";
+
+        expect(got).toBe(expected);
+    });
+
+    it("should store a File object from browser and retrieve it correctly", async () => {
+        const { mnemonic } = ephemeralAccount.eth;
+        if (!mnemonic) throw Error("Can not retrieve mnemonic inside ephemeralAccount.json");
+        const account = ethereum.ImportAccountFromMnemonic(mnemonic);
+        const fileContent = new FilePolyfill(["x"], "testFile.txt");
+
+        const message = await store.Publish({
+            channel: "TEST",
+            account: account,
+            fileObject: fileContent as unknown as File,
+        });
+        console.log(message);
+        const response = await store.Get({
+            fileHash: message.content.item_hash,
+        });
+        console.log(response);
+
+        const got = ArraybufferToString(response);
+        const expected = "x";
 
         expect(got).toBe(expected);
     });
