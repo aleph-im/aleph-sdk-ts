@@ -6,7 +6,6 @@ import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 import { stripTrailingSlash } from "../../utils/url";
-import FormData from "form-data";
 import axios from "axios";
 import { calculateSHA256Hash } from "./utils";
 
