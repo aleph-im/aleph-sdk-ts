@@ -158,8 +158,7 @@ async function processFileObject(fileObject: Blob | Buffer | File | null | undef
         return fileObject;
     }
 
-    const arrayBuf = await fileObject.arrayBuffer();
-    return Buffer.from(arrayBuf);
+    return await blobToBuffer(fileObject);
 }
 
 type SignAndBroadcastConfiguration = {
