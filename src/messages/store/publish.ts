@@ -27,7 +27,7 @@ import { blobToBuffer, calculateSHA256Hash } from "./utils";
 type StorePublishConfiguration = {
     channel: string;
     account: Account;
-    fileObject?: Buffer | Blob | File;
+    fileObject?: Buffer | Blob | File | Uint8Array;
     fileHash?: string;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
@@ -78,7 +78,12 @@ export async function Publish({
     return message;
 }
 
-async function getHash(buffer: Buffer, storageEngine: ItemType, fileHash: string | undefined, APIServer: string) {
+async function getHash(
+    buffer: Buffer | Uint8Array,
+    storageEngine: ItemType,
+    fileHash: string | undefined,
+    APIServer: string,
+) {
     if (buffer && storageEngine !== ItemType.ipfs) {
         const hash = calculateSHA256Hash(buffer);
         if (hash === null || hash === undefined) {
@@ -154,12 +159,14 @@ async function createAndSendStoreMessage(
     return message;
 }
 
-async function processFileObject(fileObject: Blob | Buffer | File | null | undefined): Promise<Buffer> {
+async function processFileObject(
+    fileObject: Blob | Buffer | File | Uint8Array | null | undefined,
+): Promise<Buffer | Uint8Array> {
     if (!fileObject) {
         throw new Error("fileObject is null");
     }
 
-    if (fileObject instanceof Buffer) {
+    if (fileObject instanceof Buffer || fileObject instanceof Uint8Array) {
         return fileObject;
     }
 

@@ -34,7 +34,7 @@ type PushResponse = {
 };
 
 type PushFileConfiguration = {
-    file: Buffer | Blob;
+    file: Buffer | Uint8Array;
     APIServer: string;
     storageEngine: ItemType;
 };
