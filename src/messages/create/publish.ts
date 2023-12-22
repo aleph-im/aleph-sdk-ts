@@ -1,7 +1,7 @@
 import shajs from "sha.js";
 
 import { BaseMessage, ItemType } from "../types";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import FormDataNode from "form-data";
 import { getSocketPath, stripTrailingSlash } from "../../utils/url";
 
@@ -34,7 +34,7 @@ type PushResponse = {
 };
 
 type PushFileConfiguration = {
-    file: Buffer | Blob;
+    file: Buffer | Uint8Array;
     APIServer: string;
     storageEngine: ItemType;
 };
@@ -69,17 +69,26 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
 }
 
 async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Promise<string> {
-    const response = await axios.post<PushResponse>(
-        `${stripTrailingSlash(configuration.APIServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
-        configuration.content,
-        {
-            headers: {
-                "Content-Type": "application/json",
+    try {
+        const response = await axios.post<PushResponse>(
+            `${stripTrailingSlash(
+                configuration.APIServer,
+            )}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
+            configuration.content,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                socketPath: getSocketPath(),
             },
-            socketPath: getSocketPath(),
-        },
-    );
-    return response.data.hash;
+        );
+        return response.data.hash;
+    } catch (err) {
+        if (err instanceof AxiosError) {
+            console.error(err.response?.data);
+        }
+        throw err;
+    }
 }
 
 export async function PushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {

@@ -1,6 +1,12 @@
 import shajs from "sha.js";
 
-export async function blobToBuffer(blob: Blob): Promise<Buffer> {
+export async function blobToBuffer(blob: Blob | File): Promise<Buffer> {
+    const isBrowser = typeof FileReader !== "undefined";
+    if (!isBrowser) {
+        const arrayBuffer = await blob.arrayBuffer();
+        return Buffer.from(arrayBuffer);
+    }
+
     return new Promise<Buffer>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -10,6 +16,9 @@ export async function blobToBuffer(blob: Blob): Promise<Buffer> {
                 reject("Failed to convert Blob to Buffer.");
             }
         };
+        if (!(blob instanceof Blob)) {
+            console.log(blob);
+        }
         reader.readAsArrayBuffer(blob);
     });
 }

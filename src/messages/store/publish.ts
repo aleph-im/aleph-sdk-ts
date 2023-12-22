@@ -6,8 +6,7 @@ import { RequireOnlyOne } from "../../utils/requiredOnlyOne";
 import { DEFAULT_API_V2 } from "../../global";
 import { MessageBuilder } from "../../utils/messageBuilder";
 import { stripTrailingSlash } from "../../utils/url";
-import FormData from "form-data";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { blobToBuffer, calculateSHA256Hash } from "./utils";
 
 /**
@@ -28,7 +27,7 @@ import { blobToBuffer, calculateSHA256Hash } from "./utils";
 type StorePublishConfiguration = {
     channel: string;
     account: Account;
-    fileObject?: Buffer | Blob;
+    fileObject?: Buffer | Blob | File | Uint8Array;
     fileHash?: string;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     inlineRequested?: boolean;
@@ -56,39 +55,46 @@ export async function Publish({
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.");
     if (fileHash && storageEngine !== ItemType.ipfs) throw new Error("You must choose ipfs to pin the file.");
 
-    const myHash = await getHash(fileObject, storageEngine, fileHash, APIServer);
-
+    let hash: string | undefined = fileHash;
+    if (!hash) {
+        const buffer = await processFileObject(fileObject);
+        hash = await getHash(buffer, storageEngine, fileHash, APIServer);
+        if (fileObject instanceof File) {
+            fileObject = new File([buffer], fileObject.name);
+        } else {
+            fileObject = new Blob([buffer]);
+        }
+    }
     const message = await createAndSendStoreMessage(
         account,
         channel,
-        myHash,
+        hash,
         storageEngine,
         APIServer,
         inlineRequested,
         sync,
-        fileObject,
+        fileObject as Blob | File | undefined,
     );
-
     return message;
 }
 
 async function getHash(
-    fileObject: Buffer | Blob | null | undefined,
+    buffer: Buffer | Uint8Array,
     storageEngine: ItemType,
     fileHash: string | undefined,
     APIServer: string,
 ) {
-    if (fileObject && storageEngine !== ItemType.ipfs) {
-        const hash = await processFileObject(fileObject);
+    if (buffer && storageEngine !== ItemType.ipfs) {
+        const hash = calculateSHA256Hash(buffer);
         if (hash === null || hash === undefined) {
             throw new Error("Cannot process file");
         }
         return hash;
-    } else if (fileObject && storageEngine === ItemType.ipfs) {
+    } else if (buffer && storageEngine === ItemType.ipfs) {
         return await PushFileToStorageEngine({
             APIServer,
             storageEngine,
-            file: fileObject,
+            file: buffer,
         });
     } else if (fileHash) {
         return fileHash;
@@ -100,18 +106,18 @@ async function getHash(
 async function createAndSendStoreMessage(
     account: Account,
     channel: string,
-    myHash: string,
+    fileHash: string,
     storageEngine: ItemType,
     APIServer: string,
     inlineRequested: boolean,
     sync: boolean,
-    fileObject: Buffer | Blob | undefined,
+    fileObject: Blob | File | undefined,
 ) {
     const timestamp = Date.now() / 1000;
     const storeContent: StoreContent = {
         address: account.address,
         item_type: storageEngine,
-        item_hash: myHash,
+        item_hash: fileHash,
         time: timestamp,
     };
 
@@ -130,8 +136,7 @@ async function createAndSendStoreMessage(
         inline: inlineRequested,
         APIServer,
     });
-
-    if (ItemType.ipfs === message.item_type) {
+    if (ItemType.ipfs == storageEngine && inlineRequested) {
         await SignAndBroadcast({
             message: message,
             account,
@@ -140,7 +145,7 @@ async function createAndSendStoreMessage(
     } else if (!fileObject) {
         throw new Error("You need to specify a File to upload or a Hash to pin.");
     } else {
-        return await sendMessage(
+        await sendMessage(
             {
                 message: message,
                 account,
@@ -154,13 +159,18 @@ async function createAndSendStoreMessage(
     return message;
 }
 
-async function processFileObject(fileObject: Blob | Buffer | null): Promise<string> {
-    if (!fileObject) throw new Error("fileObject is null");
-
-    if (fileObject instanceof Blob) {
-        fileObject = await blobToBuffer(fileObject);
+async function processFileObject(
+    fileObject: Blob | Buffer | File | Uint8Array | null | undefined,
+): Promise<Buffer | Uint8Array> {
+    if (!fileObject) {
+        throw new Error("fileObject is null");
     }
-    return calculateSHA256Hash(fileObject);
+
+    if (fileObject instanceof Buffer || fileObject instanceof Uint8Array) {
+        return fileObject;
+    }
+
+    return await blobToBuffer(fileObject);
 }
 
 type SignAndBroadcastConfiguration = {
@@ -170,7 +180,7 @@ type SignAndBroadcastConfiguration = {
     sync: boolean;
 };
 
-async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObject: Blob | Buffer) {
+async function sendMessage(configuration: SignAndBroadcastConfiguration, file: Blob | File): Promise<any> {
     const form = new FormData();
     const metadata = {
         message: {
@@ -180,14 +190,25 @@ async function sendMessage(configuration: SignAndBroadcastConfiguration, fileObj
         sync: configuration.sync,
     };
 
-    form.append("file", fileObject);
+    form.append("file", file);
     form.append("metadata", JSON.stringify(metadata));
 
-    const response = await axios.post(`${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`, form, {
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-        },
-    });
-    return response.data;
+    try {
+        const response = await axios.post(
+            `${stripTrailingSlash(configuration.APIServer)}/api/v0/storage/add_file`,
+            form,
+            {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "multipart/form-data",
+                },
+            },
+        );
+        return response.data;
+    } catch (err) {
+        if (err instanceof AxiosError) {
+            console.error(err.response?.data);
+        }
+        throw err;
+    }
 }
