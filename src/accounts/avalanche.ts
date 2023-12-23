@@ -3,26 +3,25 @@ import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { KeyPair } from "avalanche/dist/apis/avm";
+import { KeyPair, KeyChain as AVMKeyChain } from "avalanche/dist/apis/avm";
+import { KeyChain, KeyChain as EVMKeyChain, KeyPair as EVMKeyPair } from "avalanche/dist/apis/evm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
-
+import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
-
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
 export class AvalancheAccount extends ECIESAccount {
-    private signer?: KeyPair;
+    private signer?: KeyPair | EVMKeyPair;
     private provider?: BaseProviderWallet;
-
-    constructor(signerOrProvider: KeyPair | BaseProviderWallet, address: string, publicKey?: string) {
+    constructor(signerOrProvider: KeyPair | EVMKeyPair | BaseProviderWallet, address: string, publicKey?: string) {
         super(address, publicKey);
-
         if (signerOrProvider instanceof KeyPair) this.signer = signerOrProvider;
+        if (signerOrProvider instanceof EVMKeyPair) this.signer = signerOrProvider;
         if (signerOrProvider instanceof BaseProviderWallet) this.provider = signerOrProvider;
     }
 
@@ -47,6 +46,27 @@ export class AvalancheAccount extends ECIESAccount {
 
         this.publicKey = await this.provider.getPublicKey();
         return;
+    }
+
+    /**
+     * Retrieves the EVM compatible address for the current account.
+     * This function works specifically with the C-Chain.
+     *
+     * If the current signer is not associated with the C-Chain,
+     * the function throws an error.
+     *
+     * @returns A Promise that resolves to the EVM-style address of the account
+     * @throws An error if the current signer is not associated with the C-Chain
+     */
+    async getEVMAddress(): Promise<string> {
+        if (this.signer?.getChainID() === ChainType.C_CHAIN) {
+            const pkBuf = this.signer.getPrivateKey();
+            const pkHex = pkBuf.toString("hex");
+            const pkBuffNative = Buffer.from(pkHex, "hex");
+            const ethAddress = privateToAddress(pkBuffNative).toString("hex");
+            return `0x${ethAddress}`;
+        }
+        throw new Error("Wrong chain");
     }
 
     /**
@@ -139,15 +159,22 @@ export class AvalancheAccount extends ECIESAccount {
     }
 }
 
-async function getKeyChain() {
-    const ava = new Avalanche();
-    const xChain = ava.XChain();
-
-    return xChain.keyChain();
+export enum ChainType {
+    C_CHAIN = "C",
+    X_CHAIN = "X",
 }
 
-export async function getKeyPair(privateKey?: string): Promise<KeyPair> {
-    const keyChain = await getKeyChain();
+/**
+ * Get Key Chains
+ * @param chain Avalanche chain type: c-chain | x-chain
+ * @returns key chains
+ */
+async function getKeyChain(chain = ChainType.X_CHAIN) {
+    return new KeyChain(new Avalanche().getHRP(), chain);
+}
+
+export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN): Promise<KeyPair> {
+    const keyChain = await getKeyChain(chain);
     const keyPair = keyChain.makeKey();
 
     if (privateKey) {
@@ -165,14 +192,17 @@ export async function getKeyPair(privateKey?: string): Promise<KeyPair> {
 }
 
 /**
- * Imports an Avalanche account given a private key.
+ * Imports an Avalanche account given a private key and chain
  *
  * It creates an Avalanche keypair containing information about the account, extracted in the AvalancheAccount constructor.
  *
  * @param privateKey The private key of the account to import.
  */
-export async function ImportAccountFromPrivateKey(privateKey: string): Promise<AvalancheAccount> {
-    const keyPair = await getKeyPair(privateKey);
+export async function ImportAccountFromPrivateKey(
+    privateKey: string,
+    chain = ChainType.X_CHAIN,
+): Promise<AvalancheAccount> {
+    const keyPair = await getKeyPair(privateKey, chain);
     return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString("hex"));
 }
 
@@ -201,8 +231,10 @@ export async function GetAccountFromProvider(
  * Creates a new Avalanche account using a randomly generated privateKey
  *
  */
-export async function NewAccount(): Promise<{ account: AvalancheAccount; privateKey: string }> {
-    const keypair = await getKeyPair();
+export async function NewAccount(
+    chain = ChainType.X_CHAIN,
+): Promise<{ account: AvalancheAccount; privateKey: string }> {
+    const keypair = await getKeyPair(undefined, chain);
     const privateKey = keypair.getPrivateKey().toString("hex");
 
     return {
