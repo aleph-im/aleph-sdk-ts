@@ -9,7 +9,7 @@ type AggregateGetResponse<T> = {
 type AggregateGetConfiguration = {
     APIServer?: string;
     address: string;
-    keys?: Array<string>;
+    key?: string;
     limit?: number;
 };
 
@@ -22,15 +22,15 @@ type AggregateGetConfiguration = {
 export async function Get<T>({
     APIServer = DEFAULT_API_V2,
     address = "",
-    keys = [],
     limit = 50,
+    key = undefined,
 }: AggregateGetConfiguration): Promise<T> {
     const response = await axios.get<AggregateGetResponse<T>>(
         `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
         {
             socketPath: getSocketPath(),
             params: {
-                keys: keys.join(",") || undefined,
+                key,
                 limit,
             },
         },

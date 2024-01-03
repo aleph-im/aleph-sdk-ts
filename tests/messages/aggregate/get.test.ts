@@ -7,7 +7,7 @@ describe("Aggregate message retrieve test", () => {
             await aggregate.Get({
                 APIServer: DEFAULT_API_V2,
                 address: "0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10",
-                keys: ["satoshi"],
+                key: "satoshi",
             });
             expect(true).toStrictEqual(false);
         } catch (e: any) {
@@ -18,7 +18,7 @@ describe("Aggregate message retrieve test", () => {
     it("should print the CCN list correctly (testing #87)", async () => {
         const message = await aggregate.Get({
             address: "0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10",
-            keys: ["corechannel"],
+            key: "corechannel",
         });
 
         expect(message).toHaveProperty("corechannel");
