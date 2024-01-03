@@ -1,4 +1,4 @@
-import { avalanche, ethereum, solana } from '../../../../src/accounts'
+import { solana, ethereum, avalanche, substrate } from '../../../../src/accounts'
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
@@ -24,6 +24,7 @@ function WalletConfig({ dispatch, state } : dispatchAndConsume) {
   const [customEndpoint, setCustomEndpoint] = useState<RpcChainType>(availableChains[0].value)
   const getAccountClass = () => (
     state.selectedChain === WalletChains.Avalanche ? [avalanche, window.ethereum]
+    : state.selectedChain === WalletChains.Substrate ? [substrate, null]
     : state.selectedChain === WalletChains.Ethereum ? [ethereum, window.ethereum]
     : state.selectedChain === WalletChains.Solana ? [solana, window.phantom?.solana]
     : [null, null]

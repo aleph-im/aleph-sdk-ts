@@ -1,4 +1,4 @@
-import { ItemType, MessageType } from "../../src/messages/message";
+import { ItemType, MessageType } from "../../src/messages/types";
 import { post, solana } from "../index";
 import { Keypair } from "@solana/web3.js";
 import { panthomLikeProvider, officialLikeProvider } from "../providers/solanaProvider";

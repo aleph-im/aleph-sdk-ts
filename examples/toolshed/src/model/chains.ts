@@ -14,6 +14,7 @@ export enum HardwareChains {
 
 export enum WalletChains {
     Avalanche = "AVAX",
+    Substrate = "DOT",
     Ethereum = "ETH",
     Solana = "SOL",
 }
