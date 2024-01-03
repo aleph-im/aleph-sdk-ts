@@ -2,7 +2,7 @@ import * as bip39 from "bip39";
 import { ethereum } from "../index";
 import { ethers } from "ethers";
 import { EthereumProvider } from "../providers/ethereumProvider";
-import { MessageType, ItemType } from "../../src/messages/message";
+import { MessageType, ItemType } from "../../src/messages/types";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
