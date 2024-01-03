@@ -2,10 +2,11 @@ import { useReducer } from 'react'
 
 import { initState, reducer } from './reducer'
 
-import SelectProvider from './components/SelectProvider'
-import KeypairConfig from './components/KeypairConfig'
-import WalletConfig from './components/WalletConfig'
-import MessageConfig from './components/MessageConfig'
+import SelectProvider from './components/SelectProvider';
+import KeypairConfig from './components/KeypairConfig';
+import WalletConfig from './components/WalletConfig';
+import MessageConfig from './components/MessageConfig';
+import WebSocket from './components/WebSocket';
 import EncryptionConfig from "./components/EncryptionConfig";
 import HardwareConfig from "./components/HardwareConfig";
 import {ECIESAccount} from "../../../src/accounts/account";
@@ -63,12 +64,16 @@ function App() {
         state.account &&
         <MessageConfig state={state} />
       }
+
+    <section style={{marginTop: '6em', borderStyle: 'solid', borderBottom: '0px', borderColor: 'lightgray', borderLeft: '0px', borderRight: '0px'}}>
+        <h2>WebSocket</h2>
+        <WebSocket />
+    </section>
       {
         state.account && state.account instanceof ECIESAccount &&
         <EncryptionConfig state={state} />
       }
     </div>
-
 
     </main>
   )
