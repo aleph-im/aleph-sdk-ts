@@ -1,5 +1,5 @@
 import { DEFAULT_API_WS_V2 } from "../../global";
-import { Chain, HashType, ItemType, MessageType, BaseContent } from "../message";
+import { Chain, HashType, ItemType, MessageType, BaseContent } from "../types";
 import { AlephWebSocket } from "./AlephWebSocket";
 import { isNode } from "../../utils/env";
 import { AlephNodeWebSocket } from "./AlephNodeWebSocket";
