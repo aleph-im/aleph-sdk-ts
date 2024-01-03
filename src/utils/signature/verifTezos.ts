@@ -1,4 +1,4 @@
-import { BaseMessage } from "../../messages/message";
+import { BaseMessage } from "../../messages/types";
 import { GetVerificationBuffer } from "../../messages";
 import { char2Bytes, verifySignature } from "@taquito/utils";
 

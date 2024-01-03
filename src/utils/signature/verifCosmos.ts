@@ -1,4 +1,4 @@
-import { BaseMessage } from "../../messages/message";
+import { BaseMessage } from "../../messages/types";
 import { GetVerificationBuffer } from "../../messages";
 import elliptic from "elliptic";
 
@@ -8,7 +8,6 @@ import elliptic from "elliptic";
  *
  * @param message The content of the signature to verify. It can be the result of GetVerificationBuffer() or directly a BaseMessage object.
  * @param serializedSignature The signature associated with the first params of this method.
- * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
 async function verifCosmos(message: Buffer | BaseMessage, serializedSignature: string): Promise<boolean> {
     if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);

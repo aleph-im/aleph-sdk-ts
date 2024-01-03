@@ -1,4 +1,4 @@
-import { BaseMessage } from "../../messages/message";
+import { BaseMessage } from "../../messages/types";
 import { GetVerificationBuffer } from "../../messages";
 import { signatureVerify } from "@polkadot/util-crypto";
 

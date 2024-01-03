@@ -51,7 +51,7 @@ describe("Aggregate message update test", () => {
         const message = await aggregate.Get<T>({
             APIServer: DEFAULT_API_V2,
             address: account.address,
-            keys: [key],
+            key: key,
         });
 
         const expected = {
@@ -118,7 +118,7 @@ describe("Aggregate message update test", () => {
         };
         const message = await aggregate.Get<T>({
             address: owner.address,
-            keys: [key],
+            key: key,
         });
 
         const expected = {

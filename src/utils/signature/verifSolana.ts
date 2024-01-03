@@ -1,4 +1,4 @@
-import { BaseMessage } from "../../messages/message";
+import { BaseMessage } from "../../messages/types";
 import { GetVerificationBuffer } from "../../messages";
 import nacl from "tweetnacl";
 import bs58 from "bs58";

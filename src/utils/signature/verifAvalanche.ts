@@ -1,4 +1,4 @@
-import { BaseMessage } from "../../messages/message";
+import { BaseMessage } from "../../messages/types";
 import { GetVerificationBuffer } from "../../messages";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
 import shajs from "sha.js";
