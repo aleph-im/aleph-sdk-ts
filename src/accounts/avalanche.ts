@@ -11,7 +11,7 @@ import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
 import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
-import { verifAvalanche } from "../utils/signature/verifAvalanche";
+import { verifyAvalanche } from "../utils/signature/verifyAvalanche";
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
@@ -132,7 +132,7 @@ export class AvalancheAccount extends ECIESAccount {
 
             const bintools = BinTools.getInstance();
             const signature = bintools.cb58Encode(signatureBuffer);
-            if (await verifAvalanche(buffer, signature, this.signer.getPublicKey().toString("hex"))) return signature;
+            if (await verifyAvalanche(buffer, signature, this.signer.getPublicKey().toString("hex"))) return signature;
 
             throw new Error("Cannot proof the integrity of the signature");
         } else if (this.provider) {

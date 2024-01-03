@@ -2,7 +2,7 @@ import { ItemType, MessageType } from "../../src/messages/types";
 import { post, solana } from "../index";
 import { Keypair } from "@solana/web3.js";
 import { panthomLikeProvider, officialLikeProvider } from "../providers/solanaProvider";
-import { verifSolana } from "../index";
+import { verifySolana } from "../index";
 import { GetVerificationBuffer } from "../../src/messages";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
@@ -110,8 +110,8 @@ describe("Solana accounts", () => {
             content: { address: account.address, time: 15 },
         };
         const signature = await account.Sign(message);
-        const verifA = verifSolana(message, signature);
-        const verifB = verifSolana(GetVerificationBuffer(message), signature);
+        const verifA = verifySolana(message, signature);
+        const verifB = verifySolana(GetVerificationBuffer(message), signature);
 
         expect(verifA).toStrictEqual(true);
         expect(verifB).toStrictEqual(true);
@@ -139,7 +139,7 @@ describe("Solana accounts", () => {
             item_hash: "FAKE",
         };
         const fakeSignature = await account.Sign(fakeMessage);
-        const verif = verifSolana(message, JSON.stringify({ signature: fakeSignature, publicKey: account.address }));
+        const verif = verifySolana(message, JSON.stringify({ signature: fakeSignature, publicKey: account.address }));
 
         expect(verif).toStrictEqual(false);
     });

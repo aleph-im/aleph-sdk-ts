@@ -7,7 +7,7 @@ import { DEFAULT_API_V2 } from "../../src/global";
 import { b58cencode, prefix, validateSignature } from "@taquito/utils";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
-import { verifTezos } from "../../src/utils/signature/verifTezos";
+import { verifyTezos } from "../../src/utils/signature/verifyTezos";
 
 if (!window) {
     require("localstorage-polyfill");
@@ -106,7 +106,7 @@ describe("Tezos accounts", () => {
             content: { address: signerAccount.address, time: 15 },
         };
         const signature = await signerAccount.Sign(message);
-        const verifA = await verifTezos(message, signature);
+        const verifA = await verifyTezos(message, signature);
 
         expect(verifA).toStrictEqual(true);
     });
@@ -135,8 +135,8 @@ describe("Tezos accounts", () => {
         const signature = await signerAccount.Sign(message);
         const fakeSignature = await signerAccount.Sign(fakeMessage);
 
-        const verifA = verifTezos(fakeMessage, signature);
-        const verifB = verifTezos(message, fakeSignature);
+        const verifA = verifyTezos(fakeMessage, signature);
+        const verifB = verifyTezos(message, fakeSignature);
 
         expect(verifA).toStrictEqual(false);
         expect(verifB).toStrictEqual(false);

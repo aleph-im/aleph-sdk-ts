@@ -12,9 +12,9 @@ import * as forget from "../src/messages/forget/index";
 import * as program from "../src/messages/program/index";
 import * as any from "../src/messages/any/index";
 
-import { verifEthereum } from "../src/utils/signature/verifEthereum";
-import { verifSolana } from "../src/utils/signature/verifSolana";
-import { verifAvalanche } from "../src/utils/signature/verifAvalanche";
+import { verifyEthereum } from "../src/utils/signature/verifyEthereum";
+import { verifySolana } from "../src/utils/signature/verifySolana";
+import { verifyAvalanche } from "../src/utils/signature/verifyAvalanche";
 
 export {
     avalanche,
@@ -29,7 +29,7 @@ export {
     forget,
     program,
     any,
-    verifEthereum,
-    verifSolana,
-    verifAvalanche,
+    verifyEthereum,
+    verifySolana,
+    verifyAvalanche,
 };

@@ -20,7 +20,7 @@ async function digestMessage(message: Buffer) {
  * @param signature The signature associated with the first params of this method.
  * @param signerPKey Optional, The publicKey associated with the signature to verify. It Needs to be under a hex serialized  string.
  */
-async function verifAvalanche(message: Buffer | BaseMessage, signature: string, signerPKey: string): Promise<boolean> {
+async function verifyAvalanche(message: Buffer | BaseMessage, signature: string, signerPKey: string): Promise<boolean> {
     if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
     const ava = new Avalanche();
     const keyPair = ava.XChain().keyChain().makeKey();
@@ -36,4 +36,4 @@ async function verifAvalanche(message: Buffer | BaseMessage, signature: string, 
     return signerPKey === recovered.toString("hex");
 }
 
-export { verifAvalanche };
+export { verifyAvalanche };

@@ -6,7 +6,7 @@ import { testsFunc } from "../index";
 import { accounts, messages } from "../../src";
 import { Chain, ItemType, MessageType } from "../../src/messages/types";
 import fs from "fs";
-import { verifSubstrate } from "../../src/utils/signature";
+import { verifySubstrate } from "../../src/utils/signature";
 
 /**
  * This is the first test of the test bach for substrate.
@@ -120,7 +120,7 @@ async function signatureVerif(): Promise<boolean> {
     };
     const signature = await account.Sign(message);
     try {
-        const isValid = verifSubstrate(message, signature, account.address);
+        const isValid = verifySubstrate(message, signature, account.address);
         assert.strictEqual(isValid, true);
     } catch (e: unknown) {
         return false;
@@ -153,8 +153,8 @@ async function falseSignatureVerif(): Promise<boolean> {
     const fakeSignature = await accountB.Sign(fakeMessage);
 
     try {
-        const verifA = verifSubstrate(message, fakeSignature, accountA.address);
-        const verifB = verifSubstrate(message, signature, accountB.address);
+        const verifA = verifySubstrate(message, fakeSignature, accountA.address);
+        const verifB = verifySubstrate(message, signature, accountB.address);
         assert.strictEqual(verifA, false);
         assert.strictEqual(verifB, false);
     } catch (e: unknown) {

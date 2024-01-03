@@ -10,7 +10,7 @@ import { ethers } from "ethers";
  * @param signature The signature associated with the first params of this method.
  * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
-function verifEthereum(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
+function verifyEthereum(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
     if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
 
     try {
@@ -21,4 +21,4 @@ function verifEthereum(message: Buffer | BaseMessage, signature: string, signerA
     }
 }
 
-export { verifEthereum };
+export { verifyEthereum };

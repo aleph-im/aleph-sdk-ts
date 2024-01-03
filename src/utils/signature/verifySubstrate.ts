@@ -10,7 +10,7 @@ import { signatureVerify } from "@polkadot/util-crypto";
  * @param signature The signature associated with the first params of this method.
  * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
-function verifSubstrate(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
+function verifySubstrate(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
     if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
     const parsedSignature = JSON.parse(signature);
 
@@ -23,4 +23,4 @@ function verifSubstrate(message: Buffer | BaseMessage, signature: string, signer
     }
 }
 
-export { verifSubstrate };
+export { verifySubstrate };

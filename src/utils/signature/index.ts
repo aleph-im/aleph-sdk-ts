@@ -1,8 +1,8 @@
-import { verifEthereum } from "./verifEthereum";
-import { verifAvalanche } from "./verifAvalanche";
-import { verifSolana } from "./verifSolana";
-import { verifSubstrate } from "./verifSubstrate";
-import { verifTezos } from "./verifTezos";
-import { verifCosmos } from "./verifCosmos";
+import { verifyEthereum } from "./verifyEthereum";
+import { verifyAvalanche } from "./verifyAvalanche";
+import { verifySolana } from "./verifySolana";
+import { verifySubstrate } from "./verifySubstrate";
+import { verifyTezos } from "./verifyTezos";
+import { verifyCosmos } from "./verifyCosmos";
 
-export { verifEthereum, verifAvalanche, verifSolana, verifSubstrate, verifTezos, verifCosmos };
+export { verifyEthereum, verifyAvalanche, verifySolana, verifySubstrate, verifyTezos, verifyCosmos };

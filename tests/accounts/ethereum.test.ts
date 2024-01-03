@@ -6,7 +6,7 @@ import { MessageType, ItemType } from "../../src/messages/types";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 import { GetVerificationBuffer } from "../../src/messages";
-import { verifEthereum } from "../index";
+import { verifyEthereum } from "../index";
 
 describe("Ethereum accounts", () => {
     let ephemeralAccount: EphAccountList;
@@ -176,8 +176,8 @@ describe("Ethereum accounts", () => {
             content: { address: account.address, time: 15 },
         };
         const signature = await account.Sign(message);
-        const verifA = await verifEthereum(message, signature, account.address);
-        const verifB = await verifEthereum(GetVerificationBuffer(message), signature, account.address);
+        const verifA = await verifyEthereum(message, signature, account.address);
+        const verifB = await verifyEthereum(GetVerificationBuffer(message), signature, account.address);
 
         expect(verifA).toStrictEqual(true);
         expect(verifB).toStrictEqual(true);
@@ -207,8 +207,8 @@ describe("Ethereum accounts", () => {
         };
 
         const signature = await account.Sign(message);
-        const verif = await verifEthereum(GetVerificationBuffer(fakeMessage), signature, account.address);
-        const verifB = await verifEthereum(GetVerificationBuffer(message), signature, fakeAccount.account.address);
+        const verif = await verifyEthereum(GetVerificationBuffer(fakeMessage), signature, account.address);
+        const verifB = await verifyEthereum(GetVerificationBuffer(message), signature, fakeAccount.account.address);
 
         expect(verif).toStrictEqual(false);
         expect(verifB).toStrictEqual(false);

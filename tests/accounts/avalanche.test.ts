@@ -2,7 +2,7 @@ import { avalanche, post } from "../index";
 import { ItemType, MessageType } from "../../src/messages/types";
 import { EthereumProvider } from "../providers/ethereumProvider";
 import { GetVerificationBuffer } from "../../src/messages";
-import { verifAvalanche } from "../index";
+import { verifyAvalanche } from "../index";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
@@ -200,8 +200,8 @@ describe("Avalanche accounts", () => {
         };
         if (!account.publicKey) throw Error();
         const signature = await account.Sign(message);
-        const verif = await verifAvalanche(GetVerificationBuffer(message), signature, account.publicKey);
-        const verifB = await verifAvalanche(message, signature, account.publicKey);
+        const verif = await verifyAvalanche(GetVerificationBuffer(message), signature, account.publicKey);
+        const verifB = await verifyAvalanche(message, signature, account.publicKey);
 
         expect(verif).toStrictEqual(true);
         expect(verifB).toStrictEqual(true);
@@ -231,8 +231,8 @@ describe("Avalanche accounts", () => {
         };
         if (!account.publicKey || !fakeAccount.publicKey) throw Error();
         const fakeSignature = await account.Sign(fakeMessage);
-        const verif = await verifAvalanche(GetVerificationBuffer(message), fakeSignature, account.publicKey);
-        const verifB = await verifAvalanche(fakeMessage, fakeSignature, fakeAccount.publicKey);
+        const verif = await verifyAvalanche(GetVerificationBuffer(message), fakeSignature, account.publicKey);
+        const verifB = await verifyAvalanche(fakeMessage, fakeSignature, fakeAccount.publicKey);
 
         expect(verif).toStrictEqual(false);
         expect(verifB).toStrictEqual(false);

@@ -8,7 +8,7 @@ import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
-import { verifSubstrate } from "../utils/signature/verifSubstrate";
+import { verifySubstrate } from "../utils/signature/verifySubstrate";
 import { stringToHex } from "@polkadot/util";
 
 /**
@@ -63,7 +63,7 @@ export class DOTAccount extends Account {
             curve: "sr25519",
             data: signed,
         });
-        if (verifSubstrate(message, signature, this.address)) return signature;
+        if (verifySubstrate(message, signature, this.address)) return signature;
 
         throw new Error("Cannot proof the integrity of the signature");
     }

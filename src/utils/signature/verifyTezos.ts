@@ -9,7 +9,7 @@ import { char2Bytes, verifySignature } from "@taquito/utils";
  * @param message The content of the signature to verify. It needs to be a BaseMessage object.
  * @param signature The signature associated with the first params of this method.
  */
-function verifTezos(message: BaseMessage, signature: string): boolean {
+function verifyTezos(message: BaseMessage, signature: string): boolean {
     const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature);
 
     const buffer = GetVerificationBuffer(message);
@@ -26,4 +26,4 @@ function verifTezos(message: BaseMessage, signature: string): boolean {
     return verifySignature(payloadBytes, publicKey, parsedSignature);
 }
 
-export { verifTezos };
+export { verifyTezos };
