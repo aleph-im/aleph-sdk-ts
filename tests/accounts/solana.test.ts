@@ -2,6 +2,8 @@ import { ItemType, MessageType } from "../../src/messages/types";
 import { post, solana } from "../index";
 import { Keypair } from "@solana/web3.js";
 import { panthomLikeProvider, officialLikeProvider } from "../providers/solanaProvider";
+import verifySolana from "../index";
+import { GetVerificationBuffer } from "../../src/messages";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
@@ -88,5 +90,57 @@ describe("Solana accounts", () => {
             });
             expect(amends.posts[0].content).toStrictEqual(content);
         });
+    });
+
+    it("Should success to verif the authenticity of a signature", async () => {
+        const { account } = solana.NewAccount();
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        const signature = await account.Sign(message);
+        const verifA = verifySolana(message, signature);
+        const verifB = verifySolana(GetVerificationBuffer(message), signature);
+
+        expect(verifA).toStrictEqual(true);
+        expect(verifB).toStrictEqual(true);
+    });
+
+    it("Should fail to verif the authenticity of a signature", async () => {
+        const { account } = solana.NewAccount();
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        const fakeMessage = {
+            ...message,
+            item_hash: "FAKE",
+        };
+        const fakeSignature = await account.Sign(fakeMessage);
+        const verif = verifySolana(message, JSON.stringify({ signature: fakeSignature, publicKey: account.address }));
+
+        expect(verif).toStrictEqual(false);
     });
 });

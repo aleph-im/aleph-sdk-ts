@@ -4,8 +4,9 @@ import { mnemonicToMiniSecret } from "@polkadot/util-crypto";
 
 import { testsFunc } from "../index";
 import { accounts, messages } from "../../src";
-import { Chain } from "../../src/messages/types";
+import { Chain, ItemType, MessageType } from "../../src/messages/types";
 import fs from "fs";
+import verifySubstrate from "../../src/utils/signature";
 
 /**
  * This is the first test of the test bach for substrate.
@@ -101,6 +102,67 @@ async function encryptNDecrypt(): Promise<boolean> {
     return true;
 }
 
+async function signatureVerif(): Promise<boolean> {
+    const { account } = await accounts.substrate.NewAccount();
+    const message = {
+        chain: account.GetChain(),
+        sender: account.address,
+        type: MessageType.post,
+        channel: "TEST",
+        confirmed: true,
+        signature: "signature",
+        size: 15,
+        time: 15,
+        item_type: ItemType.storage,
+        item_content: "content",
+        item_hash: "hash",
+        content: { address: account.address, time: 15 },
+    };
+    const signature = await account.Sign(message);
+    try {
+        const isValid = verifySubstrate(message, signature, account.address);
+        assert.strictEqual(isValid, true);
+    } catch (e: unknown) {
+        return false;
+    }
+    return true;
+}
+
+async function falseSignatureVerif(): Promise<boolean> {
+    const { account: accountA } = await accounts.substrate.NewAccount();
+    const { account: accountB } = await accounts.substrate.NewAccount();
+    const message = {
+        chain: accountA.GetChain(),
+        sender: accountA.address,
+        type: MessageType.post,
+        channel: "TEST",
+        confirmed: true,
+        signature: "signature",
+        size: 15,
+        time: 15,
+        item_type: ItemType.storage,
+        item_content: "content",
+        item_hash: "hash",
+        content: { address: accountA.address, time: 15 },
+    };
+    const fakeMessage = {
+        ...message,
+        item_hash: "FAKE",
+    };
+    const signature = await accountA.Sign(message);
+    const fakeSignature = await accountB.Sign(fakeMessage);
+
+    try {
+        const verifA = verifySubstrate(message, fakeSignature, accountA.address);
+        const verifB = verifySubstrate(message, signature, accountB.address);
+        assert.strictEqual(verifA, false);
+        assert.strictEqual(verifB, false);
+    } catch (e: unknown) {
+        return false;
+    }
+    return true;
+}
+
 /**
  * SubstrateTests controls the flow of your custom tests for substrate protocol.
  * Every test is represented by a function related to the `testsFunc` Type.
@@ -120,6 +182,8 @@ export default async function substrateTests(): Promise<boolean> {
         importAccountFromPrivateKeyTest,
         PublishAggregate,
         encryptNDecrypt,
+        signatureVerif,
+        falseSignatureVerif,
     ];
 
     for (let i = 0; i < testBatch.length; i++) {

@@ -6,8 +6,9 @@ import { GetVerificationBuffer } from "../messages";
 import { InjectedExtension } from "@polkadot/extension-inject/types";
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
+import verifySubstrate from "../utils/signature/verifySubstrate";
 import { stringToHex } from "@polkadot/util";
 
 /**
@@ -58,12 +59,13 @@ export class DOTAccount extends Account {
             }
         }
 
-        if (!signatureVerify(buffer, signed, this.address).isValid) throw new Error("Data can't be signed.");
-
-        return JSON.stringify({
+        const signature = JSON.stringify({
             curve: "sr25519",
             data: signed,
         });
+        if (verifySubstrate(message, signature, this.address)) return signature;
+
+        throw new Error("Cannot proof the integrity of the signature");
     }
 
     /**

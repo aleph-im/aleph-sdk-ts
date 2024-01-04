@@ -3,9 +3,10 @@ import { ethers } from "ethers";
 import { ECIESAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
+import verifyEthereum from "../utils/signature/verifyEthereum";
+import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
-import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
@@ -109,9 +110,12 @@ export class ETHAccount extends ECIESAccount {
         const buffer = GetVerificationBuffer(message);
         const signMethod = this.wallet || this.provider;
 
-        if (signMethod) return signMethod.signMessage(buffer.toString());
+        if (!signMethod) throw new Error("Cannot sign message");
 
-        throw new Error("Cannot sign message");
+        const signature = await signMethod.signMessage(buffer.toString());
+        if (verifyEthereum(buffer, signature, this.address)) return signature;
+
+        throw new Error("Cannot proof the integrity of the signature");
     }
 }
 
