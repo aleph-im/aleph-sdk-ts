@@ -27,7 +27,7 @@ export class AvalancheAccount extends ECIESAccount {
 
     override GetChain(): Chain {
         if (this.signer) return Chain.AVAX;
-        if (this.provider) return Chain.ETH;
+        if (this.provider) return Chain.AVAX;
 
         throw new Error("Cannot determine chain");
     }
@@ -46,27 +46,6 @@ export class AvalancheAccount extends ECIESAccount {
 
         this.publicKey = await this.provider.getPublicKey();
         return;
-    }
-
-    /**
-     * Retrieves the EVM compatible address for the current account.
-     * This function works specifically with the C-Chain.
-     *
-     * If the current signer is not associated with the C-Chain,
-     * the function throws an error.
-     *
-     * @returns A Promise that resolves to the EVM-style address of the account
-     * @throws An error if the current signer is not associated with the C-Chain
-     */
-    async getEVMAddress(): Promise<string> {
-        if (this.signer?.getChainID() === ChainType.C_CHAIN) {
-            const pkBuf = this.signer.getPrivateKey();
-            const pkHex = pkBuf.toString("hex");
-            const pkBuffNative = Buffer.from(pkHex, "hex");
-            const ethAddress = privateToAddress(pkBuffNative).toString("hex");
-            return `0x${ethAddress}`;
-        }
-        throw new Error("Wrong chain");
     }
 
     /**
@@ -228,6 +207,23 @@ export async function GetAccountFromProvider(
 }
 
 /**
+ * Retrieves the EVM compatible address for the current account.
+ * This function works sspecifically with the C-Chain.
+ *
+ * If the current signer is not associated with the C-Chain,
+ * the function throws an error.
+ *
+ * @returns A Promise that resolves to the EVM-style address of the account
+ * @throws An error if the current signer is not associated with the C-Chain
+ */
+function getEVMAddress(keypair: EVMKeyPair): string {
+    const pkHex = keypair.getPrivateKey().toString("hex");
+    const pkBuffNative = Buffer.from(pkHex, "hex");
+    const ethAddress = privateToAddress(pkBuffNative).toString("hex");
+    return `0x${ethAddress}`;
+}
+
+/**
  * Creates a new Avalanche account using a randomly generated privateKey
  *
  */
@@ -237,8 +233,13 @@ export async function NewAccount(
     const keypair = await getKeyPair(undefined, chain);
     const privateKey = keypair.getPrivateKey().toString("hex");
 
+    let address: string = keypair.getAddressString();
+    if (chain === ChainType.C_CHAIN) {
+        address = getEVMAddress(keypair);
+    }
+
     return {
-        account: new AvalancheAccount(keypair, keypair.getAddressString(), keypair.getPublicKey().toString("hex")),
+        account: new AvalancheAccount(keypair, address, keypair.getPublicKey().toString("hex")),
         privateKey,
     };
 }
