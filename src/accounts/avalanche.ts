@@ -20,8 +20,8 @@ export class AvalancheAccount extends ECIESAccount {
     private provider?: BaseProviderWallet;
     constructor(signerOrProvider: KeyPair | EVMKeyPair | BaseProviderWallet, address: string, publicKey?: string) {
         super(address, publicKey);
-        if (signerOrProvider instanceof KeyPair) this.signer = signerOrProvider;
-        if (signerOrProvider instanceof EVMKeyPair) this.signer = signerOrProvider;
+        if (signerOrProvider instanceof KeyPair || signerOrProvider instanceof EVMKeyPair)
+            this.signer = signerOrProvider;
         if (signerOrProvider instanceof BaseProviderWallet) this.provider = signerOrProvider;
     }
 
