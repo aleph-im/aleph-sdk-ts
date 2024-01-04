@@ -36,4 +36,4 @@ async function verifyAvalanche(message: Buffer | BaseMessage, signature: string,
     return signerPKey === recovered.toString("hex");
 }
 
-export { verifyAvalanche };
+export default verifyAvalanche;

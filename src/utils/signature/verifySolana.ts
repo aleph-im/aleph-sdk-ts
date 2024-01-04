@@ -21,4 +21,4 @@ function verifySolana(message: Buffer | BaseMessage, serializedSignature: string
     }
 }
 
-export { verifySolana };
+export default verifySolana;

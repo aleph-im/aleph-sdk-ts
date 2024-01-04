@@ -8,7 +8,7 @@ import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
-import { verifySubstrate } from "../utils/signature/verifySubstrate";
+import verifySubstrate from "../utils/signature/verifySubstrate";
 import { stringToHex } from "@polkadot/util";
 
 /**

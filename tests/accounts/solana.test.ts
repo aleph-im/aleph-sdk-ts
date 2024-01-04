@@ -2,7 +2,7 @@ import { ItemType, MessageType } from "../../src/messages/types";
 import { post, solana } from "../index";
 import { Keypair } from "@solana/web3.js";
 import { panthomLikeProvider, officialLikeProvider } from "../providers/solanaProvider";
-import { verifySolana } from "../index";
+import verifySolana from "../index";
 import { GetVerificationBuffer } from "../../src/messages";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";

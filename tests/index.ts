@@ -12,9 +12,9 @@ import * as forget from "../src/messages/forget/index";
 import * as program from "../src/messages/program/index";
 import * as any from "../src/messages/any/index";
 
-import { verifyEthereum } from "../src/utils/signature/verifyEthereum";
-import { verifySolana } from "../src/utils/signature/verifySolana";
-import { verifyAvalanche } from "../src/utils/signature/verifyAvalanche";
+import verifyEthereum from "../src/utils/signature/verifyEthereum";
+import verifySolana from "../src/utils/signature/verifySolana";
+import verifyAvalanche from "../src/utils/signature/verifyAvalanche";
 
 export {
     avalanche,

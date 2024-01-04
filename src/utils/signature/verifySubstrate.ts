@@ -23,4 +23,4 @@ function verifySubstrate(message: Buffer | BaseMessage, signature: string, signe
     }
 }
 
-export { verifySubstrate };
+export default verifySubstrate;

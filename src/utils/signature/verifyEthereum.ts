@@ -21,4 +21,4 @@ function verifyEthereum(message: Buffer | BaseMessage, signature: string, signer
     }
 }
 
-export { verifyEthereum };
+export default verifyEthereum;

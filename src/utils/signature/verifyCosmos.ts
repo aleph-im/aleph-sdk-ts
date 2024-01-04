@@ -37,4 +37,4 @@ async function verifyCosmos(message: Buffer | BaseMessage, serializedSignature: 
     }
 }
 
-export { verifyCosmos };
+export default verifyCosmos;

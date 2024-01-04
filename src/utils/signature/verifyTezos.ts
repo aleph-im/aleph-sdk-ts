@@ -26,4 +26,4 @@ function verifyTezos(message: BaseMessage, signature: string): boolean {
     return verifySignature(payloadBytes, publicKey, parsedSignature);
 }
 
-export { verifyTezos };
+export default verifyTezos;

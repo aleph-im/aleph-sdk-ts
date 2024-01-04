@@ -6,7 +6,7 @@ import { testsFunc } from "../index";
 import { accounts, messages } from "../../src";
 import { Chain, ItemType, MessageType } from "../../src/messages/types";
 import fs from "fs";
-import { verifySubstrate } from "../../src/utils/signature";
+import verifySubstrate from "../../src/utils/signature";
 
 /**
  * This is the first test of the test bach for substrate.
