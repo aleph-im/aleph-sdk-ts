@@ -1,4 +1,4 @@
-import { BaseContent } from "./base";
+import { BaseContent, Chain, PaymentType } from "./base";
 import { MachineVolume } from "./volumes";
 
 /**
@@ -48,6 +48,15 @@ export type HostRequirements = {
 };
 
 /**
+ * Payment solution
+ */
+export type Payment = {
+    chain: Chain;
+    receiver?: string;
+    type: PaymentType;
+};
+
+/**
  * Abstract content for execution messages (Instances, Programs).
  *
  * allow_amend: Allow amends to update this function
@@ -67,6 +76,7 @@ export type BaseExecutableContent = BaseContent & {
     variables?: Record<string, string>;
     environment: FunctionEnvironment;
     resources: MachineResources;
+    payment?: Payment;
     requirements?: HostRequirements;
     volumes: MachineVolume[];
     replaces?: string;

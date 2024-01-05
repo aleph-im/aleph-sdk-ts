@@ -1,5 +1,4 @@
-import { BaseContent, MachineVolume } from "../types";
-import { FunctionEnvironment, MachineResources } from "../types";
+import { BaseExecutableContent } from "./execution";
 
 /**
  * Type of Encoding
@@ -18,6 +17,14 @@ export enum MachineType {
 }
 
 /**
+ * Type of interface
+ */
+export enum InterfaceType {
+    asgi = "asgi",
+    binary = "binary",
+}
+
+/**
  * Code to execute
  */
 export type CodeContent = {
@@ -25,6 +32,8 @@ export type CodeContent = {
     entrypoint: string;
     ref: string;
     use_latest: boolean;
+    interface?: InterfaceType;
+    args?: string[];
 };
 
 /**
@@ -63,18 +72,11 @@ export type FunctionRuntime = {
     comment: string;
 };
 
-export type ProgramContent = BaseContent & {
-    type: MachineType;
-    allow_amend: boolean;
+export type ProgramContent = BaseExecutableContent & {
+    type: MachineType.vm_function;
     code: CodeContent;
-    variables?: { [key: string]: string };
+    runtime: FunctionRuntime;
     data?: DataContent;
     export?: Export;
     on: FunctionTriggers;
-    metadata?: Record<string, any>;
-    environment: FunctionEnvironment;
-    resources: MachineResources;
-    runtime: FunctionRuntime;
-    volumes: MachineVolume[];
-    replaces?: string;
 };

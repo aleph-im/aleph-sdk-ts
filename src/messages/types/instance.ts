@@ -1,4 +1,4 @@
-import { BaseExecutableContent, ParentVolume, VolumePersistence } from "../types";
+import { BaseExecutableContent, ParentVolume, VolumePersistence } from "./index";
 
 /**
  * Root file system of a VM instance.

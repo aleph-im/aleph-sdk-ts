@@ -8,8 +8,8 @@ import {
     FunctionEnvironment,
     MachineResources,
     VolumePersistence,
+    InstanceContent,
 } from "../types";
-import { InstanceContent } from "./types";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
 import { DEFAULT_API_V2 } from "../../global";
