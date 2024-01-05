@@ -1,4 +1,4 @@
-import { BaseExecutableContent, ParentVolume, VolumePersistence, Chain, PaymentType } from "../types";
+import { BaseExecutableContent, ParentVolume, VolumePersistence } from "./index";
 
 /**
  * Root file system of a VM instance.
@@ -8,12 +8,6 @@ export type RootfsVolume = {
     parent: ParentVolume;
     persistence: VolumePersistence;
     size_mib: number; //Limit to 1 GiB
-};
-
-export type Payment = {
-    chain: Chain;
-    receiver: string;
-    type: PaymentType;
 };
 
 /**
