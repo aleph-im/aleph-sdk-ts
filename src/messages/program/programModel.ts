@@ -1,5 +1,5 @@
 import { BaseContent, MachineVolume } from "../types";
-import { FunctionEnvironment, MachineResources } from "../types";
+import { FunctionEnvironment, MachineResources, Chain, PaymentType } from "../types";
 
 /**
  * Type of Encoding
@@ -25,6 +25,8 @@ export type CodeContent = {
     entrypoint: string;
     ref: string;
     use_latest: boolean;
+    interface: string;
+    args: string[];
 };
 
 /**
@@ -63,6 +65,15 @@ export type FunctionRuntime = {
     comment: string;
 };
 
+/**
+ * Payment solution
+ */
+export type Payment = {
+    chain: Chain;
+    receiver: string;
+    type: PaymentType;
+};
+
 export type ProgramContent = BaseContent & {
     type: MachineType;
     allow_amend: boolean;
@@ -76,5 +87,6 @@ export type ProgramContent = BaseContent & {
     resources: MachineResources;
     runtime: FunctionRuntime;
     volumes: MachineVolume[];
+    payment?: Payment;
     replaces?: string;
 };

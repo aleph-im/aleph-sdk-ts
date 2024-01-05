@@ -20,6 +20,14 @@ export enum Chain {
 }
 
 /**
+ * Payment Type concerning payment solution
+ */
+export enum PaymentType {
+    hold = "hold",
+    superfluid = "superfluid",
+}
+
+/**
  * Supported hash functions
  */
 export enum HashType {
