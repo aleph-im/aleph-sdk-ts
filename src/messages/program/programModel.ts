@@ -70,7 +70,7 @@ export type FunctionRuntime = {
  */
 export type Payment = {
     chain: Chain;
-    receiver: string;
+    receiver?: string;
     type: PaymentType;
 };
 
