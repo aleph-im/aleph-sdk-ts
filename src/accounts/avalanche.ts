@@ -1,5 +1,5 @@
 import shajs from "sha.js";
-import { ECIESAccount } from "./account";
+import { ECIESAccount, EVMAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
@@ -7,7 +7,6 @@ import { KeyPair, KeyChain } from "avalanche/dist/apis/avm";
 import { KeyPair as EVMKeyPair } from "avalanche/dist/apis/evm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
-import { BaseProviderWallet } from "./providers/BaseProviderWallet";
 import { providers } from "ethers";
 import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
@@ -17,19 +16,18 @@ import verifyAvalanche from "../utils/signature/verifyAvalanche";
  * AvalancheAccount implements the Account class for the Avalanche protocol.
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
-export class AvalancheAccount extends ECIESAccount {
-    private signer?: KeyPair | EVMKeyPair;
-    private provider?: BaseProviderWallet;
-    constructor(signerOrProvider: KeyPair | EVMKeyPair | BaseProviderWallet, address: string, publicKey?: string) {
+export class AvalancheAccount extends EVMAccount {
+    public override readonly wallet?: JsonRPCWallet;
+    public readonly keyPair?: KeyPair | EVMKeyPair;
+    constructor(signerOrWallet: KeyPair | EVMKeyPair | JsonRPCWallet, address: string, publicKey?: string) {
         super(address, publicKey);
-        if (signerOrProvider instanceof KeyPair || signerOrProvider instanceof EVMKeyPair)
-            this.signer = signerOrProvider;
-        if (signerOrProvider instanceof BaseProviderWallet) this.provider = signerOrProvider;
+        if (signerOrWallet instanceof KeyPair || signerOrWallet instanceof EVMKeyPair) this.keyPair = signerOrWallet;
+        if (signerOrWallet instanceof JsonRPCWallet) this.wallet = signerOrWallet;
     }
 
     override GetChain(): Chain {
-        if (this.signer) return Chain.AVAX;
-        if (this.provider) return Chain.AVAX;
+        if (this.keyPair) return Chain.AVAX;
+        if (this.wallet) return Chain.AVAX;
 
         throw new Error("Cannot determine chain");
     }
@@ -44,9 +42,8 @@ export class AvalancheAccount extends ECIESAccount {
      */
     override async askPubKey(): Promise<void> {
         if (!!this.publicKey) return;
-        if (!this.provider) throw Error("PublicKey Error: No providers are setup");
-
-        this.publicKey = await this.provider.getPublicKey();
+        if (!this.wallet) throw Error("PublicKey Error: No providers are setup");
+        this.publicKey = await this.wallet.getPublicKey();
         return;
     }
 
@@ -78,7 +75,7 @@ export class AvalancheAccount extends ECIESAccount {
         }
 
         if (!publicKey) throw new Error("Cannot encrypt content");
-        if (!this.provider) {
+        if (!this.wallet) {
             // Wallet encryption method or non-metamask provider
             return secp256k1_encrypt(publicKey, content);
         } else {
@@ -93,12 +90,12 @@ export class AvalancheAccount extends ECIESAccount {
      * @param encryptedContent The encrypted content to decrypt.
      */
     async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-        if (this.signer) {
-            const secret = this.signer.getPrivateKey().toString("hex");
+        if (this.keyPair) {
+            const secret = this.keyPair.getPrivateKey().toString("hex");
             return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
         }
-        if (this.provider) {
-            const decrypted = await this.provider.decrypt(encryptedContent);
+        if (this.wallet) {
+            const decrypted = await this.wallet.decrypt(encryptedContent);
             return Buffer.from(decrypted);
         }
         throw new Error("Cannot encrypt content");
@@ -125,18 +122,18 @@ export class AvalancheAccount extends ECIESAccount {
         const buffer = GetVerificationBuffer(message);
         const digest = await this.digestMessage(buffer);
 
-        if (this.signer) {
+        if (this.keyPair) {
             const digestHex = digest.toString("hex");
             const digestBuff = AvaBuff.from(digestHex, "hex");
-            const signatureBuffer = this.signer?.sign(digestBuff);
+            const signatureBuffer = this.keyPair?.sign(digestBuff);
 
             const bintools = BinTools.getInstance();
             const signature = bintools.cb58Encode(signatureBuffer);
-            if (await verifyAvalanche(buffer, signature, this.signer.getPublicKey().toString("hex"))) return signature;
+            if (await verifyAvalanche(buffer, signature, this.keyPair.getPublicKey().toString("hex"))) return signature;
 
             throw new Error("Cannot proof the integrity of the signature");
-        } else if (this.provider) {
-            return await this.provider.signMessage(buffer);
+        } else if (this.wallet) {
+            return await this.wallet.signMessage(buffer);
         }
 
         throw new Error("Cannot sign message");

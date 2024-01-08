@@ -1,5 +1,7 @@
 import { BaseMessage, Chain } from "../messages/types";
 import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
+import { JsonRPCWallet } from "./providers/JsonRPCWallet";
+import {ethers} from "ethers";
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -39,4 +41,8 @@ export abstract class ECIESAccount extends Account {
         encryptionMethod?: ProviderEncryptionLabel,
     ): Promise<Buffer | string>;
     abstract decrypt(content: Buffer | string): Promise<Buffer>;
+}
+
+export abstract class EVMAccount extends ECIESAccount {
+    public readonly wallet?: ethers.Wallet | JsonRPCWallet;
 }

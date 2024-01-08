@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { BaseProviderWallet } from "./BaseProviderWallet";
 
 const RPC_WARNING = `DEPRECATION WARNING: 
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`;
@@ -10,10 +9,12 @@ export enum RpcChainType {
     POLYGON,
     BSC,
     AVAX,
+    AVAX_TESTNET,
 }
 
 export type RpcType = {
-    chainId: string;
+    chainIdHex: string;
+    chainIdDec: number;
     rpcUrls: string[];
     chainName: string;
     nativeCurrency: {
@@ -26,9 +27,10 @@ export type RpcType = {
 
 export type ChangeRpcParam = RpcType | RpcChainType;
 
-const ChainData: { [key: string]: RpcType } = {
+export const ChainData: { [key: string]: RpcType } = {
     [RpcChainType.AVAX]: {
-        chainId: "0xA86A",
+        chainIdHex: "0xA86A",
+        chainIdDec: 43114,
         rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
         chainName: "Avalanche Mainnet",
         nativeCurrency: {
@@ -36,10 +38,23 @@ const ChainData: { [key: string]: RpcType } = {
             symbol: "AVAX",
             decimals: 18,
         },
-        blockExplorerUrls: ["https://snowtrace.io"],
+        blockExplorerUrls: ["https://avascan.info/"],
+    },
+    [RpcChainType.AVAX_TESTNET]: {
+        chainIdHex: "0xA869",
+        chainIdDec: 43113,
+        rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+        chainName: "Avalanche Testnet",
+        nativeCurrency: {
+            name: "AVAX",
+            symbol: "AVAX",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://testnet.avascan.info/"],
     },
     [RpcChainType.ETH]: {
-        chainId: "0x1",
+        chainIdHex: "0x1",
+        chainIdDec: 1,
         rpcUrls: ["https://mainnet.infura.io/v3/"],
         chainName: "Ethereum Mainnet",
         nativeCurrency: {
@@ -50,7 +65,8 @@ const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://etherscan.io"],
     },
     [RpcChainType.ETH_FLASHBOTS]: {
-        chainId: "0x1",
+        chainIdHex: "0x1",
+        chainIdDec: 1,
         rpcUrls: ["https://rpc.flashbots.net/"],
         chainName: "Ethereum Mainnet - Flashbots",
         nativeCurrency: {
@@ -61,7 +77,8 @@ const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://etherscan.io"],
     },
     [RpcChainType.POLYGON]: {
-        chainId: "0x89",
+        chainIdHex: "0x89",
+        chainIdDec: 137,
         rpcUrls: ["https://polygon-rpc.com/"],
         chainName: "Polygon Mainnet",
         nativeCurrency: {
@@ -72,7 +89,8 @@ const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://polygonscan.com/"],
     },
     [RpcChainType.BSC]: {
-        chainId: "0x38",
+        chainIdHex: "0x38",
+        chainIdDec: 56,
         rpcUrls: ["https://bsc-dataseed.binance.org/"],
         chainName: "Binance Smart Chain Mainnet",
         nativeCurrency: {
@@ -87,14 +105,13 @@ const ChainData: { [key: string]: RpcType } = {
 /**
  * Wrapper for JSON RPC Providers (ex: Metamask)
  */
-export class JsonRPCWallet extends BaseProviderWallet {
-    private provider: ethers.providers.Web3Provider;
+export class JsonRPCWallet {
+    public readonly provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;
     private signer?: ethers.providers.JsonRpcSigner;
     public address?: string;
     private publicKey?: string;
 
-    constructor(provider: ethers.providers.Web3Provider) {
-        super();
+    constructor(provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider) {
         this.provider = provider;
     }
 
@@ -145,8 +162,13 @@ export class JsonRPCWallet extends BaseProviderWallet {
         }
     }
 
+    public async getCurrentChainId(): Promise<number> {
+        const network = await this.provider.getNetwork();
+        return network.chainId;
+    }
+
     public isMetamask(): boolean {
-        return !!this.provider?.provider?.isMetaMask;
+        return this.provider instanceof ethers.providers.Web3Provider && !!this.provider?.provider.isMetaMask;
     }
 
     public async isConnected(): Promise<boolean> {
