@@ -1,8 +1,9 @@
-import { Framework, SuperToken } from "@superfluid-finance/sdk-core";
+import { Framework, WrapperSuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
 import { ChainData, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { ethers } from "ethers";
 import { ALEPH_SUPERFLUID_FUJI_TESTNET } from "../global";
+import { Decimal } from "decimal.js";
 
 /**
  * SuperfluidAccount implements the Account class for the Superfluid protocol.
@@ -14,7 +15,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     // @ts-ignore
     public override wallet: JsonRPCWallet;
     private framework?: Framework;
-    private alephx?: SuperToken;
+    private alephx?: WrapperSuperToken;
 
     constructor(wallet: JsonRPCWallet, address: string, publicKey?: string) {
         super(wallet, address, publicKey);
@@ -30,73 +31,126 @@ export class SuperfluidAccount extends AvalancheAccount {
         }
         if (!this.alephx) {
             if (ChainData[RpcChainType.AVAX_TESTNET].chainIdDec === (await this.wallet.getCurrentChainId())) {
-                this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
+                this.alephx = await this.framework.loadWrapperSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
             } else {
                 throw new Error("Only Fuji Testnet is supported for now");
             }
         }
     }
 
-    public async approveALEPH(receiver: string, amount: ethers.BigNumber): Promise<void> {
+    private alephToWei(alephAmount: Decimal): ethers.BigNumber {
+        return ethers.BigNumber.from(alephAmount).mul(ethers.BigNumber.from(10).pow(18));
+    }
+
+    private weiToAleph(weiAmount: ethers.BigNumber | string): Decimal {
+        return new Decimal(ethers.utils.formatEther(ethers.BigNumber.from(weiAmount)));
+    }
+
+    private alephPerHourToFlowRate(alephPerHour: Decimal): ethers.BigNumber {
+        return this.alephToWei(alephPerHour).div(ethers.BigNumber.from(3600));
+    }
+
+    private flowRateToAlephPerHour(flowRate: ethers.BigNumber | string): Decimal {
+        return new Decimal(ethers.utils.formatEther(ethers.BigNumber.from(flowRate).mul(ethers.BigNumber.from(3600))));
+    }
+
+    public async approveALEPH(receiver: string, amount: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
+        if (!this.alephx) throw new Error("Account not initialized");
         const op = this.alephx.approve({
             receiver,
-            amount: amount.toString(),
+            amount: this.alephToWei(amount).toString(),
         });
         await op.exec(this.wallet.provider.getSigner());
     }
 
-    public async getALEPHAllowance(receiver: string): Promise<ethers.BigNumber> {
+    public async getALEPHAllowance(receiver: string): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
+        if (!this.alephx) throw new Error("Account not initialized");
         const allowance = await this.alephx.allowance({
             owner: this.address,
             spender: receiver,
             providerOrSigner: this.wallet.provider,
         });
-        return ethers.BigNumber.from(allowance.toString());
+        return this.weiToAleph(allowance);
     }
 
-    public async getALEPHBalance(): Promise<ethers.BigNumber> {
+    /**
+     * Get the regular ALEPH balance of the account.
+     */
+    public async getALEPHBalance(): Promise<Decimal> {
+        // @todo: implement
+        return new Decimal(0);
+    }
+
+    public async getALEPHxBalance(): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
+        if (!this.alephx) throw new Error("Account not initialized");
         const balance = await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider });
-        return ethers.BigNumber.from(balance.toString());
+        return this.weiToAleph(balance);
     }
 
-    public async wrapALEPH(amount: ethers.BigNumber): Promise<void> {
+    public async wrapALEPH(amount: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
-        const op = await this.alephx.upgrade({
-            amount: amount.toString(),
+        if (!this.alephx) throw new Error("Account not initialized");
+        const op = this.alephx.upgrade({
+            amount: this.alephToWei(amount).toString(),
         });
         await op.exec(this.wallet.provider.getSigner());
     }
 
-    public async getALEPHFlow(receiver: string): Promise<ethers.BigNumber> {
+    public async unwrapALEPHx(amount: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
+        if (!this.alephx) throw new Error("Account not initialized");
+        const op = this.alephx.downgrade({
+            amount: this.alephToWei(amount).toString(),
+        });
+        await op.exec(this.wallet.provider.getSigner());
+    }
+
+    /**
+     * Get the ALEPHx flow rate to a given receiver in ALEPHx per hour.
+     * @param receiver The receiver address.
+     */
+    public async getALEPHxFlow(receiver: string): Promise<Decimal> {
+        if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
+        if (!this.alephx) throw new Error("Account not initialized");
         const flow = await this.alephx.getFlow({
             sender: this.address,
             receiver,
             providerOrSigner: this.wallet.provider,
         });
         if (!flow) {
-            return ethers.BigNumber.from(0);
+            return new Decimal(0);
         } else {
-            return ethers.BigNumber.from(flow.flowRate.toString());
+            return this.flowRateToAlephPerHour(flow.flowRate);
         }
     }
-
-    public async increaseALEPHFlow(receiver: string, flowRate: ethers.BigNumber): Promise<void> {
+    public async getNetALEPHxFlow(): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
+        if (!this.alephx) throw new Error("Account not initialized");
+        const flow = await this.alephx.getNetFlow({
+            account: this.address,
+            providerOrSigner: this.wallet.provider,
+        });
+        return this.flowRateToAlephPerHour(flow);
+    }
+
+    public async increaseALEPHxFlow(receiver: string, flowRate: ethers.BigNumber): Promise<void> {
+        if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
+        if (!this.alephx) throw new Error("Account is not initialized");
         const flow = await this.alephx.getFlow({
             sender: this.address,
             receiver,
             providerOrSigner: this.wallet.provider,
         });
+        // check wrapped balance, if none throw
+        const balance = ethers.BigNumber.from(
+            await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider }),
+        );
+        if (balance.lt(flowRate)) {
+            throw new Error("Not enough ALEPHx to increase flow");
+        }
         if (!flow) {
             const op = this.alephx.createFlow({
                 sender: this.address,
@@ -115,9 +169,9 @@ export class SuperfluidAccount extends AvalancheAccount {
         }
     }
 
-    public async decreaseALEPHFlow(receiver: string, flowRate: ethers.BigNumber): Promise<void> {
+    public async decreaseALEPHxFlow(receiver: string, flowRate: ethers.BigNumber): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperToken not initialized");
+        if (!this.alephx) throw new Error("Account not initialized");
         const flow = await this.alephx.getFlow({
             sender: this.address,
             receiver,
