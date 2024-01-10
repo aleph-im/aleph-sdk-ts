@@ -62,16 +62,23 @@ export class SuperfluidAccount extends AvalancheAccount {
         return new Decimal(0);
     }
 
+    /**
+     * Get the wrapped ALEPHx balance of the account.
+     */
     public async getALEPHxBalance(): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const balance = await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider });
         return this.weiToAleph(balance);
     }
 
+    /**
+     * Wrap ALEPH into ALEPHx (SuperToken).
+     * @param amount The amount of ALEPH to wrap.
+     */
     public async wrapALEPH(amount: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const op = this.alephx.upgrade({
             amount: this.alephToWei(amount).toString(),
         });
@@ -80,7 +87,7 @@ export class SuperfluidAccount extends AvalancheAccount {
 
     public async unwrapALEPHx(amount: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const op = this.alephx.downgrade({
             amount: this.alephToWei(amount).toString(),
         });
@@ -93,7 +100,7 @@ export class SuperfluidAccount extends AvalancheAccount {
      */
     public async getALEPHxFlow(receiver: string): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const flow = await this.alephx.getFlow({
             sender: this.address,
             receiver,
@@ -107,7 +114,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     }
     public async getNetALEPHxFlow(): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const flow = await this.alephx.getNetFlow({
             account: this.address,
             providerOrSigner: this.wallet.provider,
@@ -115,9 +122,14 @@ export class SuperfluidAccount extends AvalancheAccount {
         return this.flowRateToAlephPerHour(flow);
     }
 
+    /**
+     * Increase the ALEPHx flow rate to a given receiver. Creates a new flow if none exists.
+     * @param receiver The receiver address.
+     * @param alephPerHour The amount of ALEPHx per hour to increase the flow by.
+     */
     public async increaseALEPHxFlow(receiver: string, alephPerHour: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account is not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount is not initialized");
         const flow = await this.alephx.getFlow({
             sender: this.address,
             receiver,
@@ -150,9 +162,14 @@ export class SuperfluidAccount extends AvalancheAccount {
         }
     }
 
+    /**
+     * Decrease the ALEPHx flow rate to a given receiver. Deletes the flow if the new flow rate is 0.
+     * @param receiver The receiver address.
+     * @param alephPerHour The amount of ALEPHx per hour to decrease the flow by.
+     */
     public async decreaseALEPHxFlow(receiver: string, alephPerHour: Decimal): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("Account not initialized");
+        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const flow = await this.alephx.getFlow({
             sender: this.address,
             receiver,
