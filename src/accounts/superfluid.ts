@@ -1,6 +1,6 @@
 import { Framework, WrapperSuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
-import {ChainData, decToHex, JsonRPCWallet, RpcChainType} from "./providers/JsonRPCWallet";
+import { ChainData, decToHex, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
 import { ethers } from "ethers";
 import { ALEPH_SUPERFLUID_FUJI_TESTNET } from "../global";
 import { Decimal } from "decimal.js";
@@ -17,7 +17,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     private framework?: Framework;
     private alephx?: WrapperSuperToken;
 
-    constructor(wallet: JsonRPCWallet, address: string, publicKey?: string) {
+    constructor(wallet: JsonRPCWallet | ethers.providers.JsonRpcProvider, address: string, publicKey?: string) {
         super(wallet, address, publicKey);
     }
 
@@ -38,7 +38,7 @@ export class SuperfluidAccount extends AvalancheAccount {
         }
     }
 
-    private alephToWei(alephAmount: Decimal): ethers.BigNumber {
+    private alephToWei(alephAmount: Decimal | number): ethers.BigNumber {
         return ethers.BigNumber.from(alephAmount).mul(ethers.BigNumber.from(10).pow(18));
     }
 
@@ -46,7 +46,7 @@ export class SuperfluidAccount extends AvalancheAccount {
         return new Decimal(ethers.utils.formatEther(ethers.BigNumber.from(weiAmount)));
     }
 
-    private alephPerHourToFlowRate(alephPerHour: Decimal): ethers.BigNumber {
+    private alephPerHourToFlowRate(alephPerHour: Decimal | number): ethers.BigNumber {
         return this.alephToWei(alephPerHour).div(ethers.BigNumber.from(3600));
     }
 
@@ -127,7 +127,7 @@ export class SuperfluidAccount extends AvalancheAccount {
      * @param receiver The receiver address.
      * @param alephPerHour The amount of ALEPHx per hour to increase the flow by.
      */
-    public async increaseALEPHxFlow(receiver: string, alephPerHour: Decimal): Promise<void> {
+    public async increaseALEPHxFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
         if (!this.alephx) throw new Error("SuperfluidAccount is not initialized");
         const flow = await this.alephx.getFlow({
@@ -167,7 +167,7 @@ export class SuperfluidAccount extends AvalancheAccount {
      * @param receiver The receiver address.
      * @param alephPerHour The amount of ALEPHx per hour to decrease the flow by.
      */
-    public async decreaseALEPHxFlow(receiver: string, alephPerHour: Decimal): Promise<void> {
+    public async decreaseALEPHxFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
         if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const flow = await this.alephx.getFlow({
