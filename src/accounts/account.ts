@@ -1,7 +1,7 @@
 import { BaseMessage, Chain } from "../messages/types";
 import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
 import { JsonRPCWallet } from "./providers/JsonRPCWallet";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -44,5 +44,26 @@ export abstract class ECIESAccount extends Account {
 }
 
 export abstract class EVMAccount extends ECIESAccount {
-    public readonly wallet?: ethers.Wallet | JsonRPCWallet;
+    public wallet?: ethers.Wallet | JsonRPCWallet;
+
+    public async getChainId(): Promise<number> {
+        if (this.wallet instanceof JsonRPCWallet) {
+            return this.wallet.provider.network.chainId;
+        }
+        if (this.wallet instanceof ethers.Wallet) {
+            return (await this.wallet.provider.getNetwork()).chainId;
+        }
+        throw new Error("Wallet/Provider not connected");
+    }
+
+    public async switchNetwork(chainId: number): Promise<void> {
+        if ((await this.getChainId()) === chainId) return;
+        if (this.wallet instanceof JsonRPCWallet) {
+            await this.wallet.changeNetwork(chainId);
+        }
+        if (this.wallet instanceof ethers.Wallet) {
+            //await this.wallet.provider.send("wallet_switchEthereumChain", [{ chainId: chainId.toString(16) }]);
+            throw new Error("Not implemented");
+        }
+    }
 }
