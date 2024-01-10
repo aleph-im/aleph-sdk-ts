@@ -13,8 +13,7 @@ export enum RpcChainType {
 }
 
 export type RpcType = {
-    chainIdHex: string;
-    chainIdDec: number;
+    chainId: string;
     rpcUrls: string[];
     chainName: string;
     nativeCurrency: {
@@ -27,10 +26,13 @@ export type RpcType = {
 
 export type ChangeRpcParam = RpcType | RpcChainType;
 
+export function decToHex(dec: number): string {
+    return "0x" + dec.toString(16);
+}
+
 export const ChainData: { [key: string]: RpcType } = {
     [RpcChainType.AVAX]: {
-        chainIdHex: "0xA86A",
-        chainIdDec: 43114,
+        chainId: decToHex(43114),
         rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
         chainName: "Avalanche Mainnet",
         nativeCurrency: {
@@ -41,8 +43,7 @@ export const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://avascan.info/"],
     },
     [RpcChainType.AVAX_TESTNET]: {
-        chainIdHex: "0xA869",
-        chainIdDec: 43113,
+        chainId: decToHex(43113),
         rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
         chainName: "Avalanche Testnet",
         nativeCurrency: {
@@ -53,8 +54,7 @@ export const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://testnet.avascan.info/"],
     },
     [RpcChainType.ETH]: {
-        chainIdHex: "0x1",
-        chainIdDec: 1,
+        chainId: decToHex(1),
         rpcUrls: ["https://mainnet.infura.io/v3/"],
         chainName: "Ethereum Mainnet",
         nativeCurrency: {
@@ -65,8 +65,7 @@ export const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://etherscan.io"],
     },
     [RpcChainType.ETH_FLASHBOTS]: {
-        chainIdHex: "0x1",
-        chainIdDec: 1,
+        chainId: decToHex(1),
         rpcUrls: ["https://rpc.flashbots.net/"],
         chainName: "Ethereum Mainnet - Flashbots",
         nativeCurrency: {
@@ -77,8 +76,7 @@ export const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://etherscan.io"],
     },
     [RpcChainType.POLYGON]: {
-        chainIdHex: "0x89",
-        chainIdDec: 137,
+        chainId: decToHex(137),
         rpcUrls: ["https://polygon-rpc.com/"],
         chainName: "Polygon Mainnet",
         nativeCurrency: {
@@ -89,8 +87,7 @@ export const ChainData: { [key: string]: RpcType } = {
         blockExplorerUrls: ["https://polygonscan.com/"],
     },
     [RpcChainType.BSC]: {
-        chainIdHex: "0x38",
-        chainIdDec: 56,
+        chainId: decToHex(56),
         rpcUrls: ["https://bsc-dataseed.binance.org/"],
         chainName: "Binance Smart Chain Mainnet",
         nativeCurrency: {
