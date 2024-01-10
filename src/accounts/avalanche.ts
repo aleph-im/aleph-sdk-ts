@@ -7,7 +7,7 @@ import { KeyPair, KeyChain } from "avalanche/dist/apis/avm";
 import { KeyPair as EVMKeyPair } from "avalanche/dist/apis/evm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
 import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
-import { providers } from "ethers";
+import { ethers, providers } from "ethers";
 import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 import verifyAvalanche from "../utils/signature/verifyAvalanche";
@@ -19,10 +19,16 @@ import verifyAvalanche from "../utils/signature/verifyAvalanche";
 export class AvalancheAccount extends EVMAccount {
     public override readonly wallet?: JsonRPCWallet;
     public readonly keyPair?: KeyPair | EVMKeyPair;
-    constructor(signerOrWallet: KeyPair | EVMKeyPair | JsonRPCWallet, address: string, publicKey?: string) {
+    constructor(
+        signerOrWallet: KeyPair | EVMKeyPair | JsonRPCWallet | ethers.providers.JsonRpcProvider,
+        address: string,
+        publicKey?: string,
+    ) {
         super(address, publicKey);
-        if (signerOrWallet instanceof KeyPair || signerOrWallet instanceof EVMKeyPair) this.keyPair = signerOrWallet;
-        if (signerOrWallet instanceof JsonRPCWallet) this.wallet = signerOrWallet;
+        if (signerOrWallet instanceof ethers.providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(signerOrWallet);
+        else if (signerOrWallet instanceof KeyPair || signerOrWallet instanceof EVMKeyPair)
+            this.keyPair = signerOrWallet;
+        else this.wallet = signerOrWallet;
     }
 
     override GetChain(): Chain {
