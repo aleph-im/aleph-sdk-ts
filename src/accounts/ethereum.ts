@@ -5,7 +5,7 @@ import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
 import verifyEthereum from "../utils/signature/verifyEthereum";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
@@ -159,7 +159,7 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  */
 export async function GetAccountFromProvider(
     provider: ethers.providers.ExternalProvider,
-    requestedRpc: ChangeRpcParam = RpcChainType.ETH,
+    requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(ETHprovider);

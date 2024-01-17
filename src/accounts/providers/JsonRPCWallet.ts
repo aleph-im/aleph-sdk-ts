@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 const RPC_WARNING = `DEPRECATION WARNING: 
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`;
 
-export enum RpcChainType {
+export enum RpcId {
     ETH,
     ETH_FLASHBOTS,
     POLYGON,
@@ -24,14 +24,18 @@ export type RpcType = {
     blockExplorerUrls: string[];
 };
 
-export type ChangeRpcParam = RpcType | RpcChainType;
+export type ChangeRpcParam = RpcType | RpcId;
 
 export function decToHex(dec: number): string {
     return "0x" + dec.toString(16);
 }
 
-export const ChainData: { [key: string]: RpcType } = {
-    [RpcChainType.AVAX]: {
+export function hexToDec(hex: string): number {
+    return parseInt(hex.slice(2), 16);
+}
+
+export const ChainData: { [key: number]: RpcType } = {
+    [RpcId.AVAX]: {
         chainId: decToHex(43114),
         rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
         chainName: "Avalanche Mainnet",
@@ -42,7 +46,7 @@ export const ChainData: { [key: string]: RpcType } = {
         },
         blockExplorerUrls: ["https://avascan.info/"],
     },
-    [RpcChainType.AVAX_TESTNET]: {
+    [RpcId.AVAX_TESTNET]: {
         chainId: decToHex(43113),
         rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
         chainName: "Avalanche Testnet",
@@ -53,7 +57,7 @@ export const ChainData: { [key: string]: RpcType } = {
         },
         blockExplorerUrls: ["https://testnet.avascan.info/"],
     },
-    [RpcChainType.ETH]: {
+    [RpcId.ETH]: {
         chainId: decToHex(1),
         rpcUrls: ["https://mainnet.infura.io/v3/"],
         chainName: "Ethereum Mainnet",
@@ -64,7 +68,7 @@ export const ChainData: { [key: string]: RpcType } = {
         },
         blockExplorerUrls: ["https://etherscan.io"],
     },
-    [RpcChainType.ETH_FLASHBOTS]: {
+    [RpcId.ETH_FLASHBOTS]: {
         chainId: decToHex(1),
         rpcUrls: ["https://rpc.flashbots.net/"],
         chainName: "Ethereum Mainnet - Flashbots",
@@ -75,7 +79,7 @@ export const ChainData: { [key: string]: RpcType } = {
         },
         blockExplorerUrls: ["https://etherscan.io"],
     },
-    [RpcChainType.POLYGON]: {
+    [RpcId.POLYGON]: {
         chainId: decToHex(137),
         rpcUrls: ["https://polygon-rpc.com/"],
         chainName: "Polygon Mainnet",
@@ -86,7 +90,7 @@ export const ChainData: { [key: string]: RpcType } = {
         },
         blockExplorerUrls: ["https://polygonscan.com/"],
     },
-    [RpcChainType.BSC]: {
+    [RpcId.BSC]: {
         chainId: decToHex(56),
         rpcUrls: ["https://bsc-dataseed.binance.org/"],
         chainName: "Binance Smart Chain Mainnet",
@@ -99,8 +103,18 @@ export const ChainData: { [key: string]: RpcType } = {
     },
 };
 
+export async function getRpcId({ chainId, rpcUrl }: { chainId?: number; rpcUrl?: string }): Promise<RpcId> {
+    if (!chainId && !rpcUrl) throw new Error("No chainId or rpcUrl provided");
+    for (const [rpcChainType, chainData] of Object.entries(ChainData)) {
+        if (rpcUrl) if (!chainData.rpcUrls.includes(rpcUrl)) continue;
+        if (chainId) if (chainData.chainId !== decToHex(chainId)) continue;
+        return parseInt(rpcChainType);
+    }
+    throw new Error("ChainId and/or rpcUrl not found in preset chains");
+}
+
 /**
- * Wrapper for JSON RPC Providers (ex: Metamask)
+ * Wrapper for JSON RPC Providers (ex: Metamask).
  */
 export class JsonRPCWallet {
     public readonly provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider;
@@ -149,9 +163,9 @@ export class JsonRPCWallet {
         return this.signer.signMessage(data);
     }
 
-    public async changeNetwork(chainOrRpc: RpcType | RpcChainType = RpcChainType.ETH): Promise<void> {
+    public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
         if (typeof chainOrRpc === "number") {
-            if (chainOrRpc === RpcChainType.ETH) {
+            if (chainOrRpc === RpcId.ETH) {
                 await this.provider.send("wallet_switchEthereumChain", [{ chainId: "0x1" }]);
             } else await this.provider.send("wallet_addEthereumChain", [ChainData[chainOrRpc]]);
         } else {

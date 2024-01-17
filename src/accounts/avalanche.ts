@@ -6,7 +6,7 @@ import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "ecie
 import { KeyPair, KeyChain } from "avalanche/dist/apis/avm";
 import { KeyPair as EVMKeyPair } from "avalanche/dist/apis/evm";
 import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
-import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
 import { ethers, providers } from "ethers";
 import { privateToAddress } from "ethereumjs-util";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
@@ -202,7 +202,7 @@ export async function ImportAccountFromPrivateKey(
  */
 export async function GetAccountFromProvider(
     provider: providers.ExternalProvider,
-    requestedRpc: ChangeRpcParam = RpcChainType.AVAX,
+    requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<AvalancheAccount> {
     const avaxProvider = new providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(avaxProvider);

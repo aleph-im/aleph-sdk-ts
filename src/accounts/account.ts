@@ -1,6 +1,6 @@
 import { BaseMessage, Chain } from "../messages/types";
 import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
-import { JsonRPCWallet } from "./providers/JsonRPCWallet";
+import { getRpcId, JsonRPCWallet, RpcId, RpcType } from "./providers/JsonRPCWallet";
 import { ethers } from "ethers";
 
 /**

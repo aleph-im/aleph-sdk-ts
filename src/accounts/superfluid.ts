@@ -1,6 +1,6 @@
 import { Framework, WrapperSuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
-import { ChainData, decToHex, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
+import { ChainData, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
 import { ethers } from "ethers";
 import { ALEPH_SUPERFLUID_FUJI_TESTNET } from "../global";
 import { Decimal } from "decimal.js";
@@ -30,7 +30,7 @@ export class SuperfluidAccount extends AvalancheAccount {
             });
         }
         if (!this.alephx) {
-            if (ChainData[RpcChainType.AVAX_TESTNET].chainId === decToHex(await this.wallet.getCurrentChainId())) {
+            if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.wallet.getCurrentChainId())) {
                 this.alephx = await this.framework.loadWrapperSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
             } else {
                 throw new Error("Only Fuji Testnet is supported for now");
