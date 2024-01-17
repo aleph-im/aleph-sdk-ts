@@ -1,7 +1,7 @@
-import { Framework, WrapperSuperToken } from "@superfluid-finance/sdk-core";
+import { Framework, SuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
 import { ChainData, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
-import { ethers } from "ethers";
+import {BigNumber, ethers} from "ethers";
 import { ALEPH_SUPERFLUID_FUJI_TESTNET } from "../global";
 import { Decimal } from "decimal.js";
 
@@ -11,18 +11,23 @@ import { Decimal } from "decimal.js";
  */
 
 export class SuperfluidAccount extends AvalancheAccount {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     public override wallet: JsonRPCWallet;
     private framework?: Framework;
-    private alephx?: WrapperSuperToken;
+    private alephx?: SuperToken;
 
     constructor(wallet: JsonRPCWallet | ethers.providers.JsonRpcProvider, address: string, publicKey?: string) {
         super(wallet, address, publicKey);
+        if (wallet instanceof JsonRPCWallet) this.wallet = wallet;
+        else this.wallet = new JsonRPCWallet(wallet);
     }
 
     public async init(): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
+        if (!(this.wallet instanceof JsonRPCWallet)) {
+            throw new Error("SuperfluidAccount must be initialized with a JsonRpcProvider");
+        }
+        await this.changeNetwork(RpcId.AVAX_TESTNET);
+        await this.wallet.connect();
         if (!this.framework) {
             this.framework = await Framework.create({
                 chainId: await this.wallet.getCurrentChainId(),
@@ -30,8 +35,8 @@ export class SuperfluidAccount extends AvalancheAccount {
             });
         }
         if (!this.alephx) {
-            if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.wallet.getCurrentChainId())) {
-                this.alephx = await this.framework.loadWrapperSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
+            if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.getChainId())) {
+                this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
             } else {
                 throw new Error("Only Fuji Testnet is supported for now");
             }
@@ -39,7 +44,9 @@ export class SuperfluidAccount extends AvalancheAccount {
     }
 
     private alephToWei(alephAmount: Decimal | number): ethers.BigNumber {
-        return ethers.BigNumber.from(alephAmount).mul(ethers.BigNumber.from(10).pow(18));
+        // @note: Need to pre-multiply the number as Decimal in order to correctly parse as BigNumber
+        const alephAmountBN = new Decimal(alephAmount).mul(10 ** 18);
+        return ethers.BigNumber.from(alephAmountBN.toString()).mul(ethers.BigNumber.from(10));
     }
 
     private weiToAleph(weiAmount: ethers.BigNumber | string): Decimal {
@@ -70,28 +77,6 @@ export class SuperfluidAccount extends AvalancheAccount {
         if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
         const balance = await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider });
         return this.weiToAleph(balance);
-    }
-
-    /**
-     * Wrap ALEPH into ALEPHx (SuperToken).
-     * @param amount The amount of ALEPH to wrap.
-     */
-    public async wrapALEPH(amount: Decimal): Promise<void> {
-        if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
-        const op = this.alephx.upgrade({
-            amount: this.alephToWei(amount).toString(),
-        });
-        await op.exec(this.wallet.provider.getSigner());
-    }
-
-    public async unwrapALEPHx(amount: Decimal): Promise<void> {
-        if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
-        const op = this.alephx.downgrade({
-            amount: this.alephToWei(amount).toString(),
-        });
-        await op.exec(this.wallet.provider.getSigner());
     }
 
     /**
@@ -142,13 +127,16 @@ export class SuperfluidAccount extends AvalancheAccount {
         if (balance.lt(this.alephToWei(alephPerHour))) {
             throw new Error("Not enough ALEPHx to increase flow");
         }
-        if (!flow) {
+        if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
+            console.log("creating flow", this.alephPerHourToFlowRate(alephPerHour).toString());
             const op = this.alephx.createFlow({
                 sender: this.address,
                 receiver,
                 flowRate: this.alephPerHourToFlowRate(alephPerHour).toString(),
             });
-            await op.exec(this.wallet.provider.getSigner());
+            const signer = this.wallet.provider.getSigner();
+            console.log("signer", signer);
+            await op.exec(signer);
         } else {
             const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).add(
                 this.alephPerHourToFlowRate(alephPerHour),
@@ -158,7 +146,9 @@ export class SuperfluidAccount extends AvalancheAccount {
                 receiver,
                 flowRate: newFlowRate.toString(),
             });
-            await op.exec(this.wallet.provider.getSigner());
+            const signer = this.wallet.provider.getSigner();
+            console.log("signer", signer);
+            await op.exec(signer);
         }
     }
 
