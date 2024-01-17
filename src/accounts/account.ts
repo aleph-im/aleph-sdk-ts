@@ -53,17 +53,32 @@ export abstract class EVMAccount extends ECIESAccount {
         if (this.wallet instanceof ethers.Wallet) {
             return (await this.wallet.provider.getNetwork()).chainId;
         }
-        throw new Error("Wallet/Provider not connected");
+        throw new Error("EVMAccount has no connected wallet");
     }
 
-    public async switchNetwork(chainId: number): Promise<void> {
-        if ((await this.getChainId()) === chainId) return;
+    public getRpcUrl(): string {
         if (this.wallet instanceof JsonRPCWallet) {
-            await this.wallet.changeNetwork(chainId);
+            return this.wallet.provider.connection.url;
+        }
+        if (this.wallet instanceof ethers.Wallet) {
+            throw new Error("Wallet has no connected provider");
+        }
+        throw new Error("EVMAccount has no connected wallet");
+    }
+
+    public async getRpcId(): Promise<RpcId> {
+        const chainId = await this.getChainId();
+        const rpcUrl = this.getRpcUrl();
+        return getRpcId({ chainId, rpcUrl });
+    }
+
+    public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
+        if (this.wallet instanceof JsonRPCWallet) {
+            await this.wallet.changeNetwork(chainOrRpc);
         }
         if (this.wallet instanceof ethers.Wallet) {
             //await this.wallet.provider.send("wallet_switchEthereumChain", [{ chainId: chainId.toString(16) }]);
-            throw new Error("Not implemented");
+            throw new Error("Not implemented for ethers.Wallet");
         }
     }
 }
