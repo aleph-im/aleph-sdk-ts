@@ -44,7 +44,7 @@ export const ChainData: { [key: number]: RpcType } = {
             symbol: "AVAX",
             decimals: 18,
         },
-        blockExplorerUrls: ["https://avascan.info/"],
+        blockExplorerUrls: ["https://snowtrace.io/"],
     },
     [RpcId.AVAX_TESTNET]: {
         chainId: decToHex(43113),
@@ -55,7 +55,7 @@ export const ChainData: { [key: number]: RpcType } = {
             symbol: "AVAX",
             decimals: 18,
         },
-        blockExplorerUrls: ["https://testnet.avascan.info/"],
+        blockExplorerUrls: ["https://testnet.snowtrace.io/"],
     },
     [RpcId.ETH]: {
         chainId: decToHex(1),
