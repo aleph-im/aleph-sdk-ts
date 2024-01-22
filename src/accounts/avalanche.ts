@@ -32,8 +32,7 @@ export class AvalancheAccount extends EVMAccount {
     }
 
     override GetChain(): Chain {
-        if (this.keyPair) return Chain.AVAX;
-        if (this.wallet) return Chain.AVAX;
+        if (this.keyPair || this.wallet) return Chain.AVAX;
 
         throw new Error("Cannot determine chain");
     }
