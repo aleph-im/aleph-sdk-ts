@@ -1,8 +1,6 @@
 /**
  * Chain defines which account was used to publish a message.
  * It is automatically provided when publishing messages.
- *
- * Warning: Avax, CSDK, NEO are currently not supported by the TS sdk.
  */
 import { InstanceContent } from "./instance";
 import { ProgramContent } from "./program";
@@ -15,7 +13,6 @@ export enum Chain {
     NULS2 = "NULS2",
     AVAX = "AVAX",
     CSDK = "CSDK",
-    NEO = "NEO",
     TEZOS = "TEZOS",
 }
 

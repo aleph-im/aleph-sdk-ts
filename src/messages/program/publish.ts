@@ -32,9 +32,9 @@ import { GetMessage } from "../any";
  *
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
- * file:            The source code of the program in under Zip format.
+ * file:            The source code of the program in under Zip format. Not necessary if `programRef` is provided.
  *
- * programRef:      The hahs of a Store message containing the code you want to use
+ * programRef:      The hash of a Store message containing the code you want to use. Not necessary if `file` is provided.
  *
  * encoding:        Encoding system used by the codebase: plain/squashfs/zip
  *
@@ -48,26 +48,29 @@ import { GetMessage } from "../any";
  *
  * volumes:         mount point to use for storage.
  */
-type ProgramPublishConfiguration = {
-    account: Account;
-    channel: string;
-    isPersistent?: boolean;
-    storageEngine?: ItemType.ipfs | ItemType.storage;
-    inlineRequested?: boolean;
-    APIServer?: string;
-    file?: Buffer | Blob;
-    programRef?: string;
-    encoding?: Encoding;
-    entrypoint: string;
-    subscription?: Record<string, unknown>[];
-    memory?: number;
-    vcpus?: number;
-    runtime?: string;
-    volumes?: MachineVolume[];
-    metadata?: Record<string, unknown>;
-    variables?: Record<string, string>;
-    payment?: Payment;
-};
+export type ProgramPublishConfiguration = RequireOnlyOne<
+    {
+        account: Account;
+        channel: string;
+        isPersistent?: boolean;
+        storageEngine?: ItemType.ipfs | ItemType.storage;
+        inlineRequested?: boolean;
+        APIServer?: string;
+        file?: Buffer | Blob;
+        programRef?: string;
+        encoding?: Encoding;
+        entrypoint: string;
+        subscription?: Record<string, unknown>[];
+        memory?: number;
+        vcpus?: number;
+        runtime?: string;
+        volumes?: MachineVolume[];
+        metadata?: Record<string, unknown>;
+        variables?: Record<string, string>;
+        payment?: Payment;
+    },
+    "programRef" | "file"
+>;
 
 // TODO: Check that program_ref, runtime and data_ref exist
 // Guard some numbers values
@@ -93,7 +96,7 @@ export async function publish({
         chain: Chain.ETH,
         type: PaymentType.hold,
     },
-}: RequireOnlyOne<ProgramPublishConfiguration, "programRef" | "file">): Promise<ProgramMessage> {
+}: ProgramPublishConfiguration): Promise<ProgramMessage> {
     const timestamp = Date.now() / 1000;
     if (!programRef && !file) throw new Error("You need to specify a file to upload or a programRef to load.");
     if (programRef && file) throw new Error("You can't load a file and a programRef at the same time.");
