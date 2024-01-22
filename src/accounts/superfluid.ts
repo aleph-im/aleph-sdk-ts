@@ -1,7 +1,7 @@
 import { Framework, SuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
 import { ChainData, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
-import {BigNumber, ethers} from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { ALEPH_SUPERFLUID_FUJI_TESTNET } from "../global";
 import { Decimal } from "decimal.js";
 
@@ -46,7 +46,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     private alephToWei(alephAmount: Decimal | number): ethers.BigNumber {
         // @note: Need to pre-multiply the number as Decimal in order to correctly parse as BigNumber
         const alephAmountBN = new Decimal(alephAmount).mul(10 ** 18);
-        return ethers.BigNumber.from(alephAmountBN.toString()).mul(ethers.BigNumber.from(10));
+        return ethers.BigNumber.from(alephAmountBN.toString());
     }
 
     private weiToAleph(weiAmount: ethers.BigNumber | string): Decimal {
@@ -128,14 +128,12 @@ export class SuperfluidAccount extends AvalancheAccount {
             throw new Error("Not enough ALEPHx to increase flow");
         }
         if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
-            console.log("creating flow", this.alephPerHourToFlowRate(alephPerHour).toString());
             const op = this.alephx.createFlow({
                 sender: this.address,
                 receiver,
                 flowRate: this.alephPerHourToFlowRate(alephPerHour).toString(),
             });
             const signer = this.wallet.provider.getSigner();
-            console.log("signer", signer);
             await op.exec(signer);
         } else {
             const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).add(
@@ -147,7 +145,6 @@ export class SuperfluidAccount extends AvalancheAccount {
                 flowRate: newFlowRate.toString(),
             });
             const signer = this.wallet.provider.getSigner();
-            console.log("signer", signer);
             await op.exec(signer);
         }
     }
