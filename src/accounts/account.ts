@@ -1,5 +1,7 @@
 import { BaseMessage, Chain } from "../messages/types";
 import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
+import { getRpcId, JsonRPCWallet, RpcId, RpcType } from "./providers/JsonRPCWallet";
+import { ethers } from "ethers";
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -39,4 +41,44 @@ export abstract class ECIESAccount extends Account {
         encryptionMethod?: ProviderEncryptionLabel,
     ): Promise<Buffer | string>;
     abstract decrypt(content: Buffer | string): Promise<Buffer>;
+}
+
+export abstract class EVMAccount extends ECIESAccount {
+    public wallet?: ethers.Wallet | JsonRPCWallet;
+
+    public async getChainId(): Promise<number> {
+        if (this.wallet instanceof JsonRPCWallet) {
+            return this.wallet.provider.network.chainId;
+        }
+        if (this.wallet instanceof ethers.Wallet) {
+            return (await this.wallet.provider.getNetwork()).chainId;
+        }
+        throw new Error("EVMAccount has no connected wallet");
+    }
+
+    public getRpcUrl(): string {
+        if (this.wallet instanceof JsonRPCWallet) {
+            return this.wallet.provider.connection.url;
+        }
+        if (this.wallet instanceof ethers.Wallet) {
+            throw new Error("Wallet has no connected provider");
+        }
+        throw new Error("EVMAccount has no connected wallet");
+    }
+
+    public async getRpcId(): Promise<RpcId> {
+        const chainId = await this.getChainId();
+        const rpcUrl = this.getRpcUrl();
+        return getRpcId({ chainId, rpcUrl });
+    }
+
+    public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
+        if (this.wallet instanceof JsonRPCWallet) {
+            await this.wallet.changeNetwork(chainOrRpc);
+        }
+        if (this.wallet instanceof ethers.Wallet) {
+            //await this.wallet.provider.send("wallet_switchEthereumChain", [{ chainId: chainId.toString(16) }]);
+            throw new Error("Not implemented for ethers.Wallet");
+        }
+    }
 }

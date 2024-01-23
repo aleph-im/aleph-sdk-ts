@@ -1,5 +1,5 @@
 import { Account } from "../../accounts/account";
-import { ItemType, ProgramMessage, MachineVolume } from "../types";
+import { ItemType, ProgramMessage, MachineVolume, Payment, Chain, PaymentType } from "../types";
 import { Encoding } from "../types/program";
 import { DEFAULT_API_V2 } from "../../global";
 import { publish } from "./publish";
@@ -26,6 +26,8 @@ import { publish } from "./publish";
  * runtime:         The docker image to use for the program.
  *
  * volumes:         mount point to use for storage.
+ *
+ * payment:         The payment configuration for the program.
  */
 type ProgramSpawnConfiguration = {
     account: Account;
@@ -44,6 +46,7 @@ type ProgramSpawnConfiguration = {
     volumes?: MachineVolume[];
     metadata?: Record<string, unknown>;
     variables?: Record<string, string>;
+    payment?: Payment;
 };
 
 export async function Spawn({
@@ -63,6 +66,10 @@ export async function Spawn({
     runtime = "bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4",
     volumes = [],
     variables = {},
+    payment = {
+        chain: Chain.ETH,
+        type: PaymentType.hold,
+    },
 }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
     return await publish({
         account,
@@ -81,5 +88,6 @@ export async function Spawn({
         runtime,
         volumes,
         variables,
+        payment,
     });
 }

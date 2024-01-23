@@ -9,6 +9,10 @@ import {
     MachineResources,
     VolumePersistence,
     InstanceContent,
+    Payment,
+    PaymentType,
+    Chain,
+    MachineType,
 } from "../types";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
@@ -30,6 +34,7 @@ export type InstancePublishConfiguration = {
     inlineRequested?: boolean;
     storageEngine?: ItemType.ipfs | ItemType.storage;
     APIServer?: string;
+    payment?: Payment;
 };
 
 // TODO: Check that program_ref, runtime and data_ref exist
@@ -48,6 +53,10 @@ export async function publish({
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
     APIServer = DEFAULT_API_V2,
+    payment = {
+        chain: Chain.ETH,
+        type: PaymentType.hold,
+    },
 }: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000;
     const { address } = account;
@@ -72,6 +81,7 @@ export async function publish({
     };
 
     const instanceContent: InstanceContent = {
+        type: MachineType.vm_instance,
         address,
         time: timestamp,
         metadata,
@@ -83,6 +93,7 @@ export async function publish({
         resources: mergedResources,
         environment: mergedEnvironment,
         rootfs,
+        payment,
     };
 
     const message = MessageBuilder<InstanceContent, MessageType.instance>({

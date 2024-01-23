@@ -81,3 +81,8 @@ export type BaseExecutableContent = BaseContent & {
     volumes: MachineVolume[];
     replaces?: string;
 };
+
+export enum MachineType {
+    vm_function = "vm-function",
+    vm_instance = "vm-instance",
+}

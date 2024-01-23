@@ -1,32 +1,16 @@
-import { BaseExecutableContent } from "./execution";
+import { BaseExecutableContent, MachineType } from "./execution";
 
-/**
- * Type of Encoding
- */
 export enum Encoding {
     plain = "plain",
     zip = "zip",
     squashfs = "squashfs",
 }
 
-/**
- * Type of execution
- */
-export enum MachineType {
-    vm_function = "vm-function",
-}
-
-/**
- * Type of interface
- */
 export enum InterfaceType {
     asgi = "asgi",
     binary = "binary",
 }
 
-/**
- * Code to execute
- */
 export type CodeContent = {
     encoding: Encoding;
     entrypoint: string;

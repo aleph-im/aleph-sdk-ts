@@ -1,4 +1,5 @@
-import { BaseExecutableContent, ParentVolume, VolumePersistence } from "./index";
+import { ParentVolume, VolumePersistence } from "./volumes";
+import { BaseExecutableContent, MachineType } from "./execution";
 
 /**
  * Root file system of a VM instance.
@@ -16,5 +17,6 @@ export type RootfsVolume = {
  * rootfs: Root filesystem of the system, will be booted by the kernel"
  */
 export type InstanceContent = BaseExecutableContent & {
+    type: MachineType.vm_instance;
     rootfs: RootfsVolume;
 };

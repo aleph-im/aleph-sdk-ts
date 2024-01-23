@@ -8,4 +8,6 @@ import * as solana from "./solana";
 import * as substrate from "./substrate";
 import * as tezos from "./tezos";
 
-export { base, avalanche, cosmos, ethereum, solana, substrate, nuls2, tezos };
+import * as superfluid from "./superfluid";
+
+export { base, avalanche, cosmos, ethereum, solana, substrate, nuls2, tezos, superfluid };

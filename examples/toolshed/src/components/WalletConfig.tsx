@@ -2,7 +2,7 @@ import { solana, ethereum, avalanche, substrate } from '../../../../src/accounts
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
-import { RpcChainType } from "../../../../src/accounts/providers/JsonRPCWallet";
+import { RpcId } from "../../../../src/accounts/providers/JsonRPCWallet";
 import Select, { SingleValue } from "react-select";
 import { useState } from "react";
 
@@ -13,15 +13,15 @@ type Option = {
 }
 
 const availableChains: Option[] = [
-  { label: 'Ethereum Mainnet', value: RpcChainType.ETH },
-  { label: 'Ethereum Mainnet (FLASHBOT)', value: RpcChainType.ETH_FLASHBOTS },
-  { label: 'Avalanche Mainnet', value: RpcChainType.AVAX },
-  { label: 'Polygon Mainnet', value: RpcChainType.POLYGON },
-  { label: 'BSC Mainnet', value: RpcChainType.BSC },
+  { label: 'Ethereum Mainnet', value: RpcId.ETH },
+  { label: 'Ethereum Mainnet (FLASHBOT)', value: RpcId.ETH_FLASHBOTS },
+  { label: 'Avalanche Mainnet', value: RpcId.AVAX },
+  { label: 'Polygon Mainnet', value: RpcId.POLYGON },
+  { label: 'BSC Mainnet', value: RpcId.BSC },
 ]
 
 function WalletConfig({ dispatch, state } : dispatchAndConsume) {
-  const [customEndpoint, setCustomEndpoint] = useState<RpcChainType>(availableChains[0].value)
+  const [customEndpoint, setCustomEndpoint] = useState<RpcId>(availableChains[0].value)
   const getAccountClass = () => (
     state.selectedChain === WalletChains.Avalanche ? [avalanche, window.ethereum]
     : state.selectedChain === WalletChains.Substrate ? [substrate, null]
