@@ -162,7 +162,7 @@ export class SuperfluidAccount extends AvalancheAccount {
             receiver,
             providerOrSigner: this.wallet.provider,
         });
-        if (!flow) {
+        if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
             throw new Error("Flow does not exist");
         } else {
             const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).sub(
