@@ -1,8 +1,8 @@
 import { Framework, SuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
-import { ChainData, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
-import { BigNumber, ethers } from "ethers";
-import { ALEPH_SUPERFLUID_FUJI_TESTNET } from "../global";
+import { ChainData, ChangeRpcParam, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
+import { BigNumber, ethers, providers } from "ethers";
+import { ALEPH_SUPERFLUID_FUJI_TESTNET, ALEPH_SUPERFLUID_MAINNET } from "../global";
 import { Decimal } from "decimal.js";
 
 /**
@@ -23,10 +23,6 @@ export class SuperfluidAccount extends AvalancheAccount {
 
     public async init(): Promise<void> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
-        if (!(this.wallet instanceof JsonRPCWallet)) {
-            throw new Error("SuperfluidAccount must be initialized with a JsonRpcProvider");
-        }
-        await this.changeNetwork(RpcId.AVAX_TESTNET);
         await this.wallet.connect();
         if (!this.framework) {
             this.framework = await Framework.create({
@@ -37,9 +33,11 @@ export class SuperfluidAccount extends AvalancheAccount {
         if (!this.alephx) {
             if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.getChainId())) {
                 this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
-            } else {
-                throw new Error("Only Fuji Testnet is supported for now");
             }
+            if (ChainData[RpcId.AVAX].chainId === decToHex(await this.getChainId())) {
+                this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_MAINNET);
+            }
+            throw new Error(`ChainID ${await this.getChainId()} not supported`);
         }
     }
 
@@ -97,6 +95,10 @@ export class SuperfluidAccount extends AvalancheAccount {
             return this.flowRateToAlephPerHour(flow.flowRate);
         }
     }
+
+    /**
+     * Get the net ALEPHx flow rate of the account in ALEPHx per hour.
+     */
     public async getNetALEPHxFlow(): Promise<Decimal> {
         if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
         if (!this.alephx) throw new Error("SuperfluidAccount not initialized");
@@ -198,4 +200,17 @@ export function createFromAvalancheAccount(account: AvalancheAccount, rpc?: stri
     const rpcProvider = new ethers.providers.JsonRpcProvider(rpc);
     const provider = new JsonRPCWallet(rpcProvider);
     return new SuperfluidAccount(provider, account.address, account.publicKey);
+}
+
+export async function GetAccountFromProvider(
+    provider: providers.ExternalProvider,
+    requestedRpc: ChangeRpcParam = RpcId.AVAX,
+): Promise<SuperfluidAccount> {
+    const web3Provider = new providers.Web3Provider(provider);
+    const wallet = new JsonRPCWallet(web3Provider);
+    if (!wallet.address) throw Error("PublicKey Error: No providers are set up");
+    const account = new SuperfluidAccount(wallet, wallet.address);
+    await account.changeNetwork(requestedRpc);
+    await account.init();
+    return account;
 }
