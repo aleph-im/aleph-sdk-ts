@@ -1,6 +1,6 @@
 import { Framework, SuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
-import { ChainData, ChangeRpcParam, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
+import { ChainData, ChangeRpcParam, decToHex, hexToDec, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
 import { BigNumber, ethers, providers } from "ethers";
 import {
     ALEPH_SUPERFLUID_FUJI_TESTNET,
@@ -38,11 +38,11 @@ export class SuperfluidAccount extends AvalancheAccount {
         if (!this.alephx) {
             if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.getChainId())) {
                 this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET);
-            }
-            if (ChainData[RpcId.AVAX].chainId === decToHex(await this.getChainId())) {
+            } else if (ChainData[RpcId.AVAX].chainId === decToHex(await this.getChainId())) {
                 this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_MAINNET);
+            } else {
+                throw new Error(`ChainID ${await this.getChainId()} not supported`);
             }
-            throw new Error(`ChainID ${await this.getChainId()} not supported`);
         }
     }
 
@@ -299,9 +299,16 @@ export async function GetAccountFromProvider(
     provider: providers.ExternalProvider,
     requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<SuperfluidAccount> {
-    const web3Provider = new providers.Web3Provider(provider);
+    let networkInfo: number;
+    if (typeof requestedRpc === "number") {
+        networkInfo = hexToDec(ChainData[requestedRpc].chainId);
+    } else {
+        networkInfo = hexToDec(requestedRpc.chainId);
+    }
+    const web3Provider = new providers.Web3Provider(provider, networkInfo);
     const wallet = new JsonRPCWallet(web3Provider);
-    if (!wallet.address) throw Error("PublicKey Error: No providers are set up");
+    if (!wallet.address) await wallet.connect();
+    if (!wallet.address) throw new Error("PublicKey Error: No providers are set up");
     const account = new SuperfluidAccount(wallet, wallet.address);
     await account.changeNetwork(requestedRpc);
     await account.init();
