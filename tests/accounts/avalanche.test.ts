@@ -2,7 +2,7 @@ import { avalanche, post } from "../index";
 import { ItemType, MessageType } from "../../src/messages/types";
 import { EthereumProvider } from "../providers/ethereumProvider";
 import { GetVerificationBuffer } from "../../src/messages";
-import verifyAvalanche from "../index";
+import { verifyAvalanche } from "../index";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 

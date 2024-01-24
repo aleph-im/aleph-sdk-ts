@@ -7,7 +7,7 @@ import { DEFAULT_API_V2 } from "../../src/global";
 import { b58cencode, prefix, validateSignature } from "@taquito/utils";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
-import verifyTezos from "../../src/utils/signature/verifyTezos";
+import { verifyTezos } from "../index";
 
 if (!window) {
     require("localstorage-polyfill");

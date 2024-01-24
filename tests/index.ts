@@ -15,6 +15,7 @@ import * as any from "../src/messages/any/index";
 import verifyEthereum from "../src/utils/signature/verifyEthereum";
 import verifySolana from "../src/utils/signature/verifySolana";
 import verifyAvalanche from "../src/utils/signature/verifyAvalanche";
+import verifyTezos from "../src/utils/signature/verifyTezos";
 
 export {
     avalanche,
@@ -32,4 +33,5 @@ export {
     verifyEthereum,
     verifySolana,
     verifyAvalanche,
+    verifyTezos,
 };
