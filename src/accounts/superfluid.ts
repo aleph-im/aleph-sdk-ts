@@ -2,7 +2,12 @@ import { Framework, SuperToken } from "@superfluid-finance/sdk-core";
 import { AvalancheAccount } from "./avalanche";
 import { ChainData, ChangeRpcParam, decToHex, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
 import { BigNumber, ethers, providers } from "ethers";
-import { ALEPH_SUPERFLUID_FUJI_TESTNET, ALEPH_SUPERFLUID_MAINNET } from "../global";
+import {
+    ALEPH_SUPERFLUID_FUJI_TESTNET,
+    ALEPH_SUPERFLUID_MAINNET,
+    SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL,
+    SUPERFLUID_MAINNET_SUBGRAPH_URL,
+} from "../global";
 import { Decimal } from "decimal.js";
 
 /**
@@ -107,6 +112,94 @@ export class SuperfluidAccount extends AvalancheAccount {
             providerOrSigner: this.wallet.provider,
         });
         return this.flowRateToAlephPerHour(flow);
+    }
+
+    public async getAllALEPHxOutflows(): Promise<Record<string, Decimal>> {
+        if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
+        if (!this.framework || !this.alephx) throw new Error("SuperfluidAccount not initialized");
+        // make a graphql query to Superfluid Subgraph
+        const query = `
+            query {
+              accounts(where: {outflows_: {sender: ${this.address}}}) {
+                id
+                outflows(where: {currentFlowRate_not: "0"}) {
+                  sender {
+                    id
+                  }
+                  receiver {
+                    id
+                  }
+                  createdAtTimestamp
+                  currentFlowRate
+                }
+              }
+            }
+        `;
+        const data = await this.querySubgraph(query);
+        const accounts = data.data.accounts;
+        const outflows: Record<string, Decimal> = {};
+        for (const account of accounts) {
+            for (const outflow of account.outflows) {
+                const flowRate = this.flowRateToAlephPerHour(outflow.currentFlowRate);
+                if (outflow.sender.id === this.address) {
+                    outflows[outflow.sender.id] = flowRate;
+                }
+            }
+        }
+        return outflows;
+    }
+
+    private async querySubgraph(query: string) {
+        const response = await fetch(await this.getSubgraphUrl(), {
+            method: "POST",
+            body: JSON.stringify({ query }),
+        });
+        return await response.json();
+    }
+
+    public async getAllALEPHxInflows(): Promise<Record<string, Decimal>> {
+        if (!this.wallet) throw Error("PublicKey Error: No providers are set up");
+        if (!this.framework || !this.alephx) throw new Error("SuperfluidAccount not initialized");
+        // make a graphql query to Superfluid Subgraph
+        const query = `
+            query {
+              accounts(where: {inflows_: {receiver: ${this.address}}}) {
+                id
+                inflows(where: {currentFlowRate_not: "0"}) {
+                  sender {
+                    id
+                  }
+                  receiver {
+                    id
+                  }
+                  createdAtTimestamp
+                  currentFlowRate
+                }
+              }
+            }
+        `;
+        const data = await this.querySubgraph(query);
+        const accounts = data.data.accounts;
+        const inflows: Record<string, Decimal> = {};
+        for (const account of accounts) {
+            for (const inflow of account.inflows) {
+                const flowRate = this.flowRateToAlephPerHour(inflow.currentFlowRate);
+                if (inflow.receiver.id === this.address) {
+                    inflows[inflow.sender.id] = flowRate;
+                }
+            }
+        }
+        return inflows;
+    }
+
+    private async getSubgraphUrl() {
+        if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.getChainId())) {
+            return SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL;
+        } else if (ChainData[RpcId.AVAX].chainId === decToHex(await this.getChainId())) {
+            return SUPERFLUID_MAINNET_SUBGRAPH_URL;
+        } else {
+            throw new Error(`ChainID ${await this.getChainId()} not supported`);
+        }
     }
 
     /**
