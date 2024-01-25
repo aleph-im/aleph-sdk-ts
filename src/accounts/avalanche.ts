@@ -32,7 +32,8 @@ export class AvalancheAccount extends EVMAccount {
     }
 
     override GetChain(): Chain {
-        if (this.keyPair || this.wallet) return Chain.AVAX;
+        if (this.keyPair) return Chain.AVAX;
+        if (this.wallet) return Chain.ETH;
 
         throw new Error("Cannot determine chain");
     }
@@ -216,7 +217,7 @@ export async function GetAccountFromProvider(
 
 /**
  * Retrieves the EVM compatible address for the current account.
- * This function works sspecifically with the C-Chain.
+ * This function works specifically with the C-Chain.
  *
  * If the current signer is not associated with the C-Chain,
  * the function throws an error.
@@ -233,7 +234,6 @@ function getEVMAddress(keypair: EVMKeyPair): string {
 
 /**
  * Creates a new Avalanche account using a randomly generated privateKey
- *
  */
 export async function NewAccount(
     chain = ChainType.X_CHAIN,
