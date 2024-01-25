@@ -1,12 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-import { ItemType } from "../../src/messages/message";
+import { ItemType, MessageType } from "../../src/messages/types";
 import { post, tezos } from "../index";
 import { DEFAULT_API_V2 } from "../../src/global";
 import { b58cencode, prefix, validateSignature } from "@taquito/utils";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
+import { verifyTezos } from "../index";
 
 if (!window) {
     require("localstorage-polyfill");
@@ -85,5 +86,59 @@ describe("Tezos accounts", () => {
             });
             expect(amends.posts[0].content).toStrictEqual(content);
         });
+    });
+
+    it("Should success to verif the authenticity of a signature", async () => {
+        const { signerAccount } = await tezos.NewAccount();
+
+        const message = {
+            chain: signerAccount.GetChain(),
+            sender: signerAccount.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: signerAccount.address, time: 15 },
+        };
+        const signature = await signerAccount.Sign(message);
+        const verifA = await verifyTezos(message, signature);
+
+        expect(verifA).toStrictEqual(true);
+    });
+
+    it("Should fail to verif the authenticity of a signature", async () => {
+        const { signerAccount } = await tezos.NewAccount();
+
+        const message = {
+            chain: signerAccount.GetChain(),
+            sender: signerAccount.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: signerAccount.address, time: 15 },
+        };
+        const fakeMessage = {
+            ...message,
+            item_hash: "FAKE",
+        };
+        const signature = await signerAccount.Sign(message);
+        const fakeSignature = await signerAccount.Sign(fakeMessage);
+
+        const verifA = verifyTezos(fakeMessage, signature);
+        const verifB = verifyTezos(message, fakeSignature);
+
+        expect(verifA).toStrictEqual(false);
+        expect(verifB).toStrictEqual(false);
     });
 });

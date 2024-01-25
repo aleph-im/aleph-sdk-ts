@@ -1,26 +1,23 @@
 import * as bip39 from "bip39";
 import { ethers } from "ethers";
-import { ECIESAccount } from "./account";
+import { ECIESAccount, EVMAccount } from "./account";
 import { GetVerificationBuffer } from "../messages";
 import { BaseMessage, Chain } from "../messages/types";
+import verifyEthereum from "../utils/signature/verifyEthereum";
 import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { ChangeRpcParam, JsonRPCWallet, RpcChainType } from "./providers/JsonRPCWallet";
-import { BaseProviderWallet } from "./providers/BaseProviderWallet";
+import { ChangeRpcParam, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
 import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
-export class ETHAccount extends ECIESAccount {
-    private wallet?: ethers.Wallet;
-    private provider?: BaseProviderWallet;
+export class ETHAccount extends EVMAccount {
+    public override readonly wallet: ethers.Wallet | JsonRPCWallet;
 
-    constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey?: string) {
+    public constructor(wallet: ethers.Wallet | JsonRPCWallet, address: string, publicKey?: string) {
         super(address, publicKey);
-
-        if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider;
-        else this.provider = walletOrProvider;
+        this.wallet = wallet;
     }
 
     override GetChain(): Chain {
@@ -37,9 +34,13 @@ export class ETHAccount extends ECIESAccount {
      */
     override async askPubKey(): Promise<void> {
         if (!!this.publicKey) return;
-        if (!this.provider) throw Error("PublicKey Error: No providers are setup");
+        if (!this.wallet) throw Error("PublicKey Error: No providers are setup");
 
-        this.publicKey = await this.provider.getPublicKey();
+        if (this.wallet instanceof ethers.Wallet) {
+            this.publicKey = this.wallet.publicKey;
+            return;
+        }
+        this.publicKey = await this.wallet.getPublicKey();
         return;
     }
 
@@ -71,7 +72,7 @@ export class ETHAccount extends ECIESAccount {
         }
 
         if (!publicKey) throw new Error("Cannot encrypt content");
-        if (!this.provider) {
+        if (this.wallet instanceof ethers.Wallet) {
             // Wallet encryption method or non-metamask provider
             return secp256k1_encrypt(publicKey, content);
         } else {
@@ -86,15 +87,13 @@ export class ETHAccount extends ECIESAccount {
      * @param encryptedContent The encrypted content to decrypt.
      */
     async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-        if (this.wallet) {
+        if (this.wallet instanceof ethers.Wallet) {
             const secret = this.wallet.privateKey;
             return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
-        }
-        if (this.provider) {
-            const decrypted = await this.provider.decrypt(encryptedContent);
+        } else {
+            const decrypted = await this.wallet.decrypt(encryptedContent);
             return Buffer.from(decrypted);
         }
-        throw new Error("Cannot encrypt content");
     }
 
     /**
@@ -107,11 +106,10 @@ export class ETHAccount extends ECIESAccount {
      */
     async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        const signMethod = this.wallet || this.provider;
+        const signature = await this.wallet.signMessage(buffer.toString());
+        if (verifyEthereum(buffer, signature, this.address)) return signature;
 
-        if (signMethod) return signMethod.signMessage(buffer.toString());
-
-        throw new Error("Cannot sign message");
+        throw new Error("Cannot proof the integrity of the signature");
     }
 }
 
@@ -161,7 +159,7 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  */
 export async function GetAccountFromProvider(
     provider: ethers.providers.ExternalProvider,
-    requestedRpc: ChangeRpcParam = RpcChainType.ETH,
+    requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {
     const ETHprovider = new ethers.providers.Web3Provider(provider);
     const jrw = new JsonRPCWallet(ETHprovider);

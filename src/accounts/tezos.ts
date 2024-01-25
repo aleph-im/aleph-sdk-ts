@@ -79,6 +79,7 @@ export class TEZOSAccount extends Account {
         } else {
             signature = (await this.wallet.sign(payloadBytes)).sig;
         }
+
         return JSON.stringify({
             signature: signature,
             publicKey: await this.GetPublicKey(),

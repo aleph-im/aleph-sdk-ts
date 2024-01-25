@@ -1,5 +1,8 @@
 import { avalanche, post } from "../index";
+import { ItemType, MessageType } from "../../src/messages/types";
 import { EthereumProvider } from "../providers/ethereumProvider";
+import { GetVerificationBuffer } from "../../src/messages";
+import { verifyAvalanche } from "../index";
 import { EphAccountList } from "../testAccount/entryPoint";
 import fs from "fs";
 
@@ -176,5 +179,62 @@ describe("Avalanche accounts", () => {
             });
             expect(amends.posts[0].content).toStrictEqual(content);
         });
+    });
+
+    it("Should success to verif the authenticity of a signature", async () => {
+        const { account } = await avalanche.NewAccount();
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        if (!account.publicKey) throw Error();
+        const signature = await account.Sign(message);
+        const verif = await verifyAvalanche(GetVerificationBuffer(message), signature, account.publicKey);
+        const verifB = await verifyAvalanche(message, signature, account.publicKey);
+
+        expect(verif).toStrictEqual(true);
+        expect(verifB).toStrictEqual(true);
+    });
+
+    it("Should fail to verif the authenticity of a signature", async () => {
+        const { account: account } = await avalanche.NewAccount();
+        const { account: fakeAccount } = await avalanche.NewAccount();
+
+        const message = {
+            chain: account.GetChain(),
+            sender: account.address,
+            type: MessageType.post,
+            channel: "TEST",
+            confirmed: true,
+            signature: "signature",
+            size: 15,
+            time: 15,
+            item_type: ItemType.storage,
+            item_content: "content",
+            item_hash: "hash",
+            content: { address: account.address, time: 15 },
+        };
+        const fakeMessage = {
+            ...message,
+            item_hash: "FAKE",
+        };
+        if (!account.publicKey || !fakeAccount.publicKey) throw Error();
+        const fakeSignature = await account.Sign(fakeMessage);
+        const verif = await verifyAvalanche(GetVerificationBuffer(message), fakeSignature, account.publicKey);
+        const verifB = await verifyAvalanche(fakeMessage, fakeSignature, fakeAccount.publicKey);
+
+        expect(verif).toStrictEqual(false);
+        expect(verifB).toStrictEqual(false);
     });
 });

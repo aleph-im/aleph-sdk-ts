@@ -1,21 +1,32 @@
 import { Account } from "./account";
+import "@polkadot/api-augment";
+
 import { BaseMessage, Chain } from "../messages/types";
 import { GetVerificationBuffer } from "../messages";
-
+import { InjectedExtension } from "@polkadot/extension-inject/types";
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { generateMnemonic } from "@polkadot/util-crypto/mnemonic/bip39";
+import verifySubstrate from "../utils/signature/verifySubstrate";
+import { stringToHex } from "@polkadot/util";
 
 /**
  * DOTAccount implements the Account class for the substrate protocol.
  *  It is used to represent a substrate account when publishing a message on the Aleph network.
  */
 export class DOTAccount extends Account {
-    private pair: KeyringPair;
-    constructor(pair: KeyringPair) {
-        super(pair.address);
-        this.pair = pair;
+    private pair?: KeyringPair;
+    private injector?: InjectedExtension;
+
+    constructor(pair: KeyringPair | InjectedExtension, address: string) {
+        super(address);
+
+        if ("address" in pair) {
+            this.pair = pair;
+        } else {
+            this.injector = pair;
+        }
     }
 
     GetChain(): Chain {
@@ -30,18 +41,31 @@ export class DOTAccount extends Account {
      *
      * @param message The Aleph message to sign, using some of its fields.
      */
-    Sign(message: BaseMessage): Promise<string> {
+    async Sign(message: BaseMessage): Promise<string> {
         const buffer = GetVerificationBuffer(message);
-        return new Promise((resolve) => {
-            const signed = `0x${Buffer.from(this.pair.sign(buffer)).toString("hex")}`;
+        let signed = "";
 
-            resolve(
-                JSON.stringify({
-                    curve: "sr25519",
-                    data: signed,
-                }),
-            );
+        if (this.pair) {
+            signed = `0x${Buffer.from(this.pair.sign(buffer)).toString("hex")}`;
+        } else {
+            const signRaw = this.injector?.signer?.signRaw;
+            if (signRaw) {
+                const { signature } = await signRaw({
+                    address: this.address,
+                    data: stringToHex(buffer.toString()),
+                    type: "bytes",
+                });
+                signed = signature;
+            }
+        }
+
+        const signature = JSON.stringify({
+            curve: "sr25519",
+            data: signed,
         });
+        if (verifySubstrate(message, signature, this.address)) return signature;
+
+        throw new Error("Cannot proof the integrity of the signature");
     }
 
     /**
@@ -50,7 +74,8 @@ export class DOTAccount extends Account {
      * @param content The content to encrypt.
      */
     encrypt(content: Buffer): Buffer {
-        return Buffer.from(this.pair.encryptMessage(content, this.pair.address));
+        if (this.pair) return Buffer.from(this.pair.encryptMessage(content, this.pair.address));
+        throw "Error: Can not encrypt";
     }
 
     /**
@@ -59,8 +84,10 @@ export class DOTAccount extends Account {
      * @param encryptedContent The encrypted content to decrypt.
      */
     decrypt(encryptedContent: Buffer): Buffer | null {
-        const res = this.pair.decryptMessage(encryptedContent, this.pair.address);
-        if (res) return Buffer.from(res);
+        if (this.pair) {
+            const res = this.pair.decryptMessage(encryptedContent, this.pair.address);
+            if (res) return Buffer.from(res);
+        }
 
         throw "Error: This message can't be decoded";
     }
@@ -86,7 +113,8 @@ export async function ImportAccountFromMnemonic(mnemonic: string): Promise<DOTAc
     const keyRing = new Keyring({ type: "sr25519" });
 
     await cryptoWaitReady();
-    return new DOTAccount(keyRing.createFromUri(mnemonic, { name: "sr25519" }));
+    const keyRingPair = keyRing.createFromUri(mnemonic, { name: "sr25519" });
+    return new DOTAccount(keyRingPair, keyRingPair.address);
 }
 
 /**
@@ -100,5 +128,33 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<D
     const keyRing = new Keyring({ type: "sr25519" });
 
     await cryptoWaitReady();
-    return new DOTAccount(keyRing.createFromUri(privateKey, { name: "sr25519" }));
+    const keyRingPair = keyRing.createFromUri(privateKey, { name: "sr25519" });
+    return new DOTAccount(keyRingPair, keyRingPair.address);
+}
+
+/**
+ * Get an account from polkadot.js provider
+ * This function can only be called inside a browser.
+ * @param  {string} address that can refer an account to connect, by default connect account number 0
+ */
+export async function GetAccountFromProvider(address?: string): Promise<DOTAccount> {
+    let web3Bundle: typeof import("@polkadot/extension-dapp");
+
+    try {
+        web3Bundle = await import("@polkadot/extension-dapp");
+    } catch (e: any) {
+        throw new Error("Substrate provider can only be instanced in the browser.");
+    }
+
+    const extensions = await web3Bundle.web3Enable("Aleph Ts-Sdk");
+    let injector: InjectedExtension;
+
+    if (extensions.length === 0) {
+        throw new Error("Error: No provider installed");
+    }
+
+    const allAccounts = await web3Bundle.web3Accounts();
+    if (address) injector = await web3Bundle.web3FromAddress(address);
+    else injector = await web3Bundle.web3FromAddress(allAccounts[0].address);
+    return new DOTAccount(injector, (await injector.accounts.get())[0].address);
 }
