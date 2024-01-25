@@ -12,7 +12,6 @@ import {
     Payment,
     PaymentType,
     Chain,
-    MachineType,
 } from "../types";
 import { PutContentToStorageEngine } from "../create/publish";
 import { SignAndBroadcast } from "../create/signature";
@@ -81,7 +80,6 @@ export async function publish({
     };
 
     const instanceContent: InstanceContent = {
-        type: MachineType.vm_instance,
         address,
         time: timestamp,
         metadata,
