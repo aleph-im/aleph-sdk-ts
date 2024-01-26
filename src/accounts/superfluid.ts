@@ -222,13 +222,13 @@ export class SuperfluidAccount extends AvalancheAccount {
         if (balance.lt(this.alephToWei(alephPerHour))) {
             throw new Error("Not enough ALEPHx to increase flow");
         }
+        const signer = this.wallet.provider.getSigner();
         if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
             const op = this.alephx.createFlow({
                 sender: this.address,
                 receiver,
                 flowRate: this.alephPerHourToFlowRate(alephPerHour).toString(),
             });
-            const signer = this.wallet.provider.getSigner();
             await op.exec(signer);
         } else {
             const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).add(
@@ -239,7 +239,6 @@ export class SuperfluidAccount extends AvalancheAccount {
                 receiver,
                 flowRate: newFlowRate.toString(),
             });
-            const signer = this.wallet.provider.getSigner();
             await op.exec(signer);
         }
     }
@@ -257,26 +256,24 @@ export class SuperfluidAccount extends AvalancheAccount {
             receiver,
             providerOrSigner: this.wallet.provider,
         });
-        if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
-            throw new Error("Flow does not exist");
+        if (!flow || BigNumber.from(flow.flowRate).eq(0)) return;
+        const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).sub(
+            this.alephPerHourToFlowRate(alephPerHour),
+        );
+        const signer = this.wallet.provider.getSigner();
+        if (newFlowRate.lte(0)) {
+            const op = this.alephx.deleteFlow({
+                sender: this.address,
+                receiver,
+            });
+            await op.exec(signer);
         } else {
-            const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).sub(
-                this.alephPerHourToFlowRate(alephPerHour),
-            );
-            if (newFlowRate.lte(0)) {
-                const op = this.alephx.deleteFlow({
-                    sender: this.address,
-                    receiver,
-                });
-                await op.exec(this.wallet.provider.getSigner());
-            } else {
-                const op = this.alephx.updateFlow({
-                    sender: this.address,
-                    receiver,
-                    flowRate: newFlowRate.toString(),
-                });
-                await op.exec(this.wallet.provider.getSigner());
-            }
+            const op = this.alephx.updateFlow({
+                sender: this.address,
+                receiver,
+                flowRate: newFlowRate.toString(),
+            });
+            await op.exec(signer);
         }
     }
 }
