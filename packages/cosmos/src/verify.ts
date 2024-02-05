@@ -1,5 +1,4 @@
-import { BaseMessage } from '../../messages/types'
-import { GetVerificationBuffer } from '../../messages'
+import { SignableMessage } from '@aleph-sdk/account'
 import elliptic from 'elliptic'
 
 /**
@@ -9,8 +8,12 @@ import elliptic from 'elliptic'
  * @param message The content of the signature to verify. It can be the result of GetVerificationBuffer() or directly a BaseMessage object.
  * @param serializedSignature The signature associated with the first params of this method.
  */
-async function verifyCosmos(message: Buffer | BaseMessage, serializedSignature: string): Promise<boolean> {
-  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+export async function verifyCosmos(message: Buffer | SignableMessage, serializedSignature: string): Promise<boolean> {
+  if (!(message instanceof Buffer)) {
+    if (typeof message.GetVerificationBuffer !== 'function')
+      throw new Error("message doesn't have a valid GetVerificationBuffer method")
+    message = message.GetVerificationBuffer()
+  }
 
   const { signature, pub_key } = JSON.parse(serializedSignature)
   const secp256k1 = new elliptic.ec('secp256k1')
@@ -36,5 +39,3 @@ async function verifyCosmos(message: Buffer | BaseMessage, serializedSignature: 
     return false
   }
 }
-
-export default verifyCosmos

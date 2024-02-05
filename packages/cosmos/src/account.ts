@@ -7,6 +7,7 @@ import {
 } from '@cosmjs/amino'
 import { Blockchain } from '@aleph-sdk/core'
 import { Account, SignableMessage } from '@aleph-sdk/account'
+import { verifyCosmos } from './verify'
 
 /**
  * CosmosAccount implements the Account class for the Cosmos protocol.
@@ -50,8 +51,9 @@ export class CosmosAccount extends Account {
 
     const signDoc = makeSignDoc([aminoMsg], { amount: [], gas: '0' }, 'signed-message-v1', '', this.accountNumber, '0')
     const { signature } = await this.wallet.signAmino(this.address, signDoc)
+    if (await verifyCosmos(buffer, JSON.stringify(signature))) return JSON.stringify(signature)
 
-    return JSON.stringify(signature)
+    throw new Error('Cannot proof the integrity of the signature')
   }
 }
 
@@ -68,8 +70,8 @@ async function getCosmosAccount(wallet: OfflineAminoSigner, accountNumber = 0): 
 /**
  * Creates a new random Cosmos Account from a randomly generated mnemonic
  *
- * @param  {12|15|18|21|24} length? The length of the mnemonic
- * @param  {Partial<Secp256k1HdWalletOptions>} options?
+ * @param length The length of the mnemonic
+ * @param options The options to generate the wallet
  */
 export async function NewAccount(
   length?: 12 | 15 | 18 | 21 | 24,
@@ -86,8 +88,8 @@ export async function NewAccount(
 /**
  * Imports a Cosmos Account using a mnemonic
  *
- * @param  {string} mnemonic
- * @param  {Partial<Secp256k1HdWalletOptions>} options?
+ * @param mnemonic The mnemonic to import
+ * @param options The options to generate the wallet
  */
 export async function ImportAccountFromMnemonic(
   mnemonic: string,
@@ -101,8 +103,8 @@ export async function ImportAccountFromMnemonic(
 /**
  * Import a Cosmos Account using a private Key
  *
- * @param  {string} privateKey
- * @param  {string} prefix?
+ * @param privateKey The private key to import
+ * @param prefix The prefix of the network
  */
 export async function ImportAccountFromPrivateKey(privateKey: string, prefix?: string): Promise<CosmosAccount> {
   const key = Buffer.from(privateKey)
