@@ -1,14 +1,15 @@
 import { Framework, SuperToken } from '@superfluid-finance/sdk-core'
-import { AvalancheAccount } from './avalanche'
-import { ChainData, ChangeRpcParam, decToHex, hexToDec, JsonRPCWallet, RpcId } from './providers/JsonRPCWallet'
+import { AvalancheAccount } from '@aleph-sdk/avalanche'
+import { ChainData, ChangeRpcParam, decToHex, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
 import { BigNumber, ethers, providers } from 'ethers'
 import {
   ALEPH_SUPERFLUID_FUJI_TESTNET,
   ALEPH_SUPERFLUID_MAINNET,
   SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL,
   SUPERFLUID_MAINNET_SUBGRAPH_URL,
-} from '../global'
+} from '@aleph-sdk/core'
 import { Decimal } from 'decimal.js'
+import { BaseProviderWallet } from '@aleph-sdk/account'
 
 /**
  * SuperfluidAccount implements the Account class for the Superfluid protocol.
@@ -20,10 +21,11 @@ export class SuperfluidAccount extends AvalancheAccount {
   private framework?: Framework
   private alephx?: SuperToken
 
-  constructor(wallet: JsonRPCWallet | ethers.providers.JsonRpcProvider, address: string, publicKey?: string) {
+  constructor(wallet: BaseProviderWallet | ethers.providers.JsonRpcProvider, address: string, publicKey?: string) {
     super(wallet, address, publicKey)
     if (wallet instanceof JsonRPCWallet) this.wallet = wallet
-    else this.wallet = new JsonRPCWallet(wallet)
+    else if (wallet instanceof ethers.providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(wallet)
+    else throw new Error('Unsupported wallet type')
   }
 
   public async init(): Promise<void> {

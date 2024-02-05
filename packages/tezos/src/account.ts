@@ -6,6 +6,7 @@ import nacl from 'tweetnacl'
 
 import { Blockchain } from '@aleph-sdk/core'
 import { Account, SignableMessage } from '@aleph-sdk/account'
+import { verifyTezos } from './verify'
 
 // The data to format
 export const STANDARD_DAPP_URL = 'https://aleph.im'
@@ -81,12 +82,17 @@ export class TEZOSAccount extends Account {
     } else {
       signature = (await this.wallet.sign(payloadBytes)).sig
     }
-    return JSON.stringify({
-      signature: signature,
-      publicKey: await this.GetPublicKey(),
-      signingType: SigningType.MICHELINE.toLowerCase(),
-      dAppUrl: this.dAppUrl,
-    })
+    if (
+      verifyTezos(message, JSON.stringify({ signature, publicKey: await this.GetPublicKey(), dAppUrl: this.dAppUrl }))
+    ) {
+      return JSON.stringify({
+        signature: signature,
+        publicKey: await this.GetPublicKey(),
+        signingType: SigningType.MICHELINE.toLowerCase(),
+        dAppUrl: this.dAppUrl,
+      })
+    }
+    throw new Error('Cannot proof the integrity of the signature')
   }
 }
 
@@ -123,7 +129,7 @@ export async function ImportAccountFromFundraiserInfo(
   password: string,
   mnemonic: string,
 ): Promise<TEZOSAccount> {
-  const wallet: InMemorySigner = await InMemorySigner.fromFundraiser(email, password, mnemonic)
+  const wallet: InMemorySigner = InMemorySigner.fromFundraiser(email, password, mnemonic)
 
   return new TEZOSAccount(await wallet.publicKeyHash(), wallet)
 }

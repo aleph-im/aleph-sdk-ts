@@ -30,7 +30,7 @@
   "contributors": [
     "PtitLuca <luca.georges-francois@epitech.eu>",
     "Roman Gascoin <roman.gascoin@gmail.com>",
-    "Mike Hukiewitz <m.h.hukiewitz@students.uu.nl>",
+    "Mike Hukiewitz <mike.hukiewitz@robotter.ai>",
     "Kelian Christophe <BjrInt@users.noreply.github.com>",
     "Angel Manzano <amalcaraz89@gmail.com>"
   ],
@@ -86,6 +86,7 @@
     "packages/solana",
     "packages/tezos",
     "packages/substrate",
-    "packages/evm"
+    "packages/evm",
+    "packages/superfluid"
   ]
 }

@@ -1,5 +1,4 @@
-import { BaseMessage } from '../../messages/types'
-import { GetVerificationBuffer } from '../../messages'
+import { SignableMessage } from "@aleph-sdk/account";
 import { char2Bytes, verifySignature } from '@taquito/utils'
 
 /**
@@ -9,10 +8,12 @@ import { char2Bytes, verifySignature } from '@taquito/utils'
  * @param message The content of the signature to verify. It needs to be a BaseMessage object.
  * @param signature The signature associated with the first params of this method.
  */
-function verifyTezos(message: BaseMessage, signature: string): boolean {
-  const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature)
+export function verifyTezos(message: SignableMessage, signature: string): boolean {
+  if (typeof message.GetVerificationBuffer !== 'function')
+    throw new Error("message doesn't have a valid GetVerificationBuffer method")
+  const buffer = message.GetVerificationBuffer()
 
-  const buffer = GetVerificationBuffer(message)
+  const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature)
   const ISO8601formattedTimestamp = new Date(message.time).toISOString()
   const formattedInput: string = ['Tezos Signed Message:', dAppUrl, ISO8601formattedTimestamp, buffer.toString()].join(
     ' ',
@@ -22,5 +23,3 @@ function verifyTezos(message: BaseMessage, signature: string): boolean {
 
   return verifySignature(payloadBytes, publicKey, parsedSignature)
 }
-
-export default verifyTezos

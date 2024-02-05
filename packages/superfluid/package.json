@@ -1,5 +1,5 @@
 {
-  "name": "@aleph-sdk/cosmos",
+  "name": "@aleph-sdk/superfluid",
   "version": "0.0.3",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
@@ -12,15 +12,22 @@
   "publishConfig": {
     "access": "public"
   },
+  "devDependencies": {
+    "@types/sha.js": "^2.4.0"
+  },
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.3",
     "@aleph-sdk/core": "^0.0.3",
-    "@cosmjs/amino": "^0.29.0",
-    "elliptic": "^6.5.4"
+    "@aleph-sdk/evm": "^0.0.3",
+    "@aleph-sdk/avalanche": "^0.0.3",
+    "@superfluid-finance/sdk-core": "^0.6.12",
+    "ethers": "^5.6.4",
+    "decimal.js": "^10.3.1"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "0.x",
-    "@aleph-sdk/core": "0.x"
+    "@aleph-sdk/core": "0.x",
+    "@aleph-sdk/evm": "0.x",
+    "@aleph-sdk/avalanche": "0.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

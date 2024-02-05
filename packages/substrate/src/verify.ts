@@ -1,5 +1,4 @@
-import { BaseMessage } from '../../messages/types'
-import { GetVerificationBuffer } from '../../messages'
+import { SignableMessage } from '@aleph-sdk/account'
 import { signatureVerify } from '@polkadot/util-crypto'
 
 /**
@@ -10,8 +9,12 @@ import { signatureVerify } from '@polkadot/util-crypto'
  * @param signature The signature associated with the first params of this method.
  * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
-function verifySubstrate(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
-  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+export function verifySubstrate(message: Buffer | SignableMessage, signature: string, signerAddress: string): boolean {
+  if (!(message instanceof Buffer)) {
+    if (typeof message.GetVerificationBuffer !== 'function')
+      throw new Error("message doesn't have a valid GetVerificationBuffer method")
+    message = message.GetVerificationBuffer()
+  }
   const parsedSignature = JSON.parse(signature)
 
   try {
@@ -22,5 +25,3 @@ function verifySubstrate(message: Buffer | BaseMessage, signature: string, signe
     return false
   }
 }
-
-export default verifySubstrate

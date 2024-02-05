@@ -32,4 +32,9 @@ export abstract class BaseProviderWallet {
    * This can be false positive.
    */
   abstract isMetamask(): boolean
+
+  /**
+   * Gets the currently selected network chainID
+   */
+  abstract getCurrentChainId(): Promise<number>
 }
