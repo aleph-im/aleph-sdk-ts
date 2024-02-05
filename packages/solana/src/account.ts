@@ -4,6 +4,7 @@ import nacl from 'tweetnacl'
 
 import { Blockchain } from '@aleph-sdk/core'
 import { Account, SignableMessage } from '@aleph-sdk/account'
+import { verifySolana } from './verify'
 
 type WalletSignature = {
   signature: Uint8Array
@@ -18,11 +19,11 @@ interface MessageSigner {
 
 /**
  * SOLAccount implements the Account class for the Solana protocol.
- * It is used to represent an solana account when publishing a message on the Aleph network.
+ * It is used to represent a solana account when publishing a message on the Aleph network.
  */
 export class SOLAccount extends Account {
-  private wallet?: MessageSigner
-  private keypair?: Keypair
+  private readonly wallet?: MessageSigner
+  private readonly keypair?: Keypair
   public isKeypair: boolean
 
   constructor(publicKey: PublicKey, walletOrKeypair: Keypair | MessageSigner) {
@@ -67,17 +68,20 @@ export class SOLAccount extends Account {
       throw new Error('Cannot sign message')
     }
 
-    return JSON.stringify({
-      signature: base58.encode(signature),
-      publicKey: this.address,
-    })
+    if (verifySolana(buffer, JSON.stringify({ signature, publicKey: this.address }))) {
+      return JSON.stringify({
+        signature: base58.encode(signature),
+        publicKey: this.address,
+      })
+    }
+    throw new Error('Cannot proof the integrity of the signature')
   }
 }
 
 /**
- * Imports an solana account given a private key and the Keypair solana/web3js package's class.
+ * Imports a solana account given a private key and the Keypair solana/web3.js package's class.
  *
- * It creates an solana wallet containing information about the account, extracted in the SOLAccount constructor.
+ * It creates a solana wallet containing information about the account, extracted in the SOLAccount constructor.
  *
  * @param privateKey The private key of the account to import.
  */
