@@ -1,17 +1,17 @@
-import axios from "axios";
-import { DEFAULT_API_V2 } from "../../global";
-import { getSocketPath, stripTrailingSlash } from "../../utils/url";
+import axios from 'axios'
+import { DEFAULT_API_V2 } from '../../global'
+import { getSocketPath, stripTrailingSlash } from '../../utils/url'
 
 type AggregateGetResponse<T> = {
-    data: T;
-};
+  data: T
+}
 
 type AggregateGetConfiguration = {
-    APIServer?: string;
-    address: string;
-    key?: string;
-    limit?: number;
-};
+  APIServer?: string
+  address: string
+  key?: string
+  limit?: number
+}
 
 /**
  * Retrieves an aggregate message on from the Aleph network.
@@ -20,24 +20,24 @@ type AggregateGetConfiguration = {
  * @param configuration The configuration used to get the message, including the API endpoint.
  */
 export async function Get<T>({
-    APIServer = DEFAULT_API_V2,
-    address = "",
-    limit = 50,
-    key = undefined,
+  APIServer = DEFAULT_API_V2,
+  address = '',
+  limit = 50,
+  key = undefined,
 }: AggregateGetConfiguration): Promise<T> {
-    const response = await axios.get<AggregateGetResponse<T>>(
-        `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
-        {
-            socketPath: getSocketPath(),
-            params: {
-                key,
-                limit,
-            },
-        },
-    );
+  const response = await axios.get<AggregateGetResponse<T>>(
+    `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
+    {
+      socketPath: getSocketPath(),
+      params: {
+        key,
+        limit,
+      },
+    },
+  )
 
-    if (!response.data.data) {
-        throw new Error("no aggregate found");
-    }
-    return response.data.data;
+  if (!response.data.data) {
+    throw new Error('no aggregate found')
+  }
+  return response.data.data
 }

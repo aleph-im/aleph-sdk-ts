@@ -1,3 +1,3 @@
-import { Publish } from "./publish";
+import { Publish } from './publish'
 
-export { Publish };
+export { Publish }

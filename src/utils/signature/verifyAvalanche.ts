@@ -1,15 +1,15 @@
-import { BaseMessage } from "../../messages/types";
-import { GetVerificationBuffer } from "../../messages";
-import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
-import shajs from "sha.js";
+import { BaseMessage } from '../../messages/types'
+import { GetVerificationBuffer } from '../../messages'
+import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
+import shajs from 'sha.js'
 
 async function digestMessage(message: Buffer) {
-    const msgSize = Buffer.alloc(4);
-    msgSize.writeUInt32BE(message.length, 0);
-    const msgStr = message.toString("utf-8");
-    const msgBuf = Buffer.from(`\x1AAvalanche Signed Message:\n${msgSize}${msgStr}`, "utf8");
+  const msgSize = Buffer.alloc(4)
+  msgSize.writeUInt32BE(message.length, 0)
+  const msgStr = message.toString('utf-8')
+  const msgBuf = Buffer.from(`\x1AAvalanche Signed Message:\n${msgSize}${msgStr}`, 'utf8')
 
-    return new shajs.sha256().update(msgBuf).digest();
+  return new shajs.sha256().update(msgBuf).digest()
 }
 
 /**
@@ -21,19 +21,19 @@ async function digestMessage(message: Buffer) {
  * @param signerPKey Optional, The publicKey associated with the signature to verify. It Needs to be under a hex serialized  string.
  */
 async function verifyAvalanche(message: Buffer | BaseMessage, signature: string, signerPKey: string): Promise<boolean> {
-    if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
-    const ava = new Avalanche();
-    const keyPair = ava.XChain().keyChain().makeKey();
+  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+  const ava = new Avalanche()
+  const keyPair = ava.XChain().keyChain().makeKey()
 
-    const bintools = BinTools.getInstance();
-    const readableSignature = bintools.cb58Decode(signature);
+  const bintools = BinTools.getInstance()
+  const readableSignature = bintools.cb58Decode(signature)
 
-    const digest = await digestMessage(message);
-    const digestHex = digest.toString("hex");
-    const digestBuff = AvaBuff.from(digestHex, "hex");
+  const digest = await digestMessage(message)
+  const digestHex = digest.toString('hex')
+  const digestBuff = AvaBuff.from(digestHex, 'hex')
 
-    const recovered = keyPair.recover(digestBuff, readableSignature);
-    return signerPKey === recovered.toString("hex");
+  const recovered = keyPair.recover(digestBuff, readableSignature)
+  return signerPKey === recovered.toString('hex')
 }
 
-export default verifyAvalanche;
+export default verifyAvalanche

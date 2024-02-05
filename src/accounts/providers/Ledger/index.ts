@@ -1,3 +1,3 @@
-import * as ethereum from "./ethereum";
+import * as ethereum from './ethereum'
 
-export { ethereum };
+export { ethereum }

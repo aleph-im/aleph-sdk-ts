@@ -1,7 +1,7 @@
-import { BaseMessage, Chain } from "../messages/types";
-import { ProviderEncryptionLabel } from "./providers/ProviderEncryptionLib";
-import { getRpcId, JsonRPCWallet, RpcId, RpcType } from "./providers/JsonRPCWallet";
-import { ethers } from "ethers";
+import { BaseMessage, Chain } from '../messages/types'
+import { ProviderEncryptionLabel } from './providers/ProviderEncryptionLib'
+import { getRpcId, JsonRPCWallet, RpcId, RpcType } from './providers/JsonRPCWallet'
+import { ethers } from 'ethers'
 
 /**
  * The Account class is used to implement protocols related accounts - Ethereum, Solana, ...
@@ -10,14 +10,14 @@ import { ethers } from "ethers";
  * All inherited classes of account must implement the GetChain and Sign methods.
  */
 export abstract class Account {
-    readonly address: string;
+  readonly address: string
 
-    protected constructor(address: string) {
-        this.address = address;
-    }
+  protected constructor(address: string) {
+    this.address = address
+  }
 
-    abstract GetChain(): Chain;
-    abstract Sign(message: BaseMessage): Promise<string>;
+  abstract GetChain(): Chain
+  abstract Sign(message: BaseMessage): Promise<string>
 }
 
 /**
@@ -27,58 +27,58 @@ export abstract class Account {
  * All inherited classes of ECIESAccount must implement the encrypt methods and expose a publicKey.
  */
 export abstract class ECIESAccount extends Account {
-    public publicKey: string | undefined;
+  public publicKey: string | undefined
 
-    protected constructor(address: string, publicKey?: string) {
-        super(address);
-        this.publicKey = publicKey;
-    }
+  protected constructor(address: string, publicKey?: string) {
+    super(address)
+    this.publicKey = publicKey
+  }
 
-    abstract askPubKey(): Promise<void>;
-    abstract encrypt(
-        content: Buffer,
-        delegateSupport?: string | ECIESAccount,
-        encryptionMethod?: ProviderEncryptionLabel,
-    ): Promise<Buffer | string>;
-    abstract decrypt(content: Buffer | string): Promise<Buffer>;
+  abstract askPubKey(): Promise<void>
+  abstract encrypt(
+    content: Buffer,
+    delegateSupport?: string | ECIESAccount,
+    encryptionMethod?: ProviderEncryptionLabel,
+  ): Promise<Buffer | string>
+  abstract decrypt(content: Buffer | string): Promise<Buffer>
 }
 
 export abstract class EVMAccount extends ECIESAccount {
-    public wallet?: ethers.Wallet | JsonRPCWallet;
+  public wallet?: ethers.Wallet | JsonRPCWallet
 
-    public async getChainId(): Promise<number> {
-        if (this.wallet instanceof JsonRPCWallet) {
-            return this.wallet.provider.network.chainId;
-        }
-        if (this.wallet instanceof ethers.Wallet) {
-            return (await this.wallet.provider.getNetwork()).chainId;
-        }
-        throw new Error("EVMAccount has no connected wallet");
+  public async getChainId(): Promise<number> {
+    if (this.wallet instanceof JsonRPCWallet) {
+      return this.wallet.provider.network.chainId
     }
+    if (this.wallet instanceof ethers.Wallet) {
+      return (await this.wallet.provider.getNetwork()).chainId
+    }
+    throw new Error('EVMAccount has no connected wallet')
+  }
 
-    public getRpcUrl(): string {
-        if (this.wallet instanceof JsonRPCWallet) {
-            return this.wallet.provider.connection.url;
-        }
-        if (this.wallet instanceof ethers.Wallet) {
-            throw new Error("Wallet has no connected provider");
-        }
-        throw new Error("EVMAccount has no connected wallet");
+  public getRpcUrl(): string {
+    if (this.wallet instanceof JsonRPCWallet) {
+      return this.wallet.provider.connection.url
     }
+    if (this.wallet instanceof ethers.Wallet) {
+      throw new Error('Wallet has no connected provider')
+    }
+    throw new Error('EVMAccount has no connected wallet')
+  }
 
-    public async getRpcId(): Promise<RpcId> {
-        const chainId = await this.getChainId();
-        const rpcUrl = this.getRpcUrl();
-        return getRpcId({ chainId, rpcUrl });
-    }
+  public async getRpcId(): Promise<RpcId> {
+    const chainId = await this.getChainId()
+    const rpcUrl = this.getRpcUrl()
+    return getRpcId({ chainId, rpcUrl })
+  }
 
-    public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
-        if (this.wallet instanceof JsonRPCWallet) {
-            await this.wallet.changeNetwork(chainOrRpc);
-        }
-        if (this.wallet instanceof ethers.Wallet) {
-            //await this.wallet.provider.send("wallet_switchEthereumChain", [{ chainId: chainId.toString(16) }]);
-            throw new Error("Not implemented for ethers.Wallet");
-        }
+  public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
+    if (this.wallet instanceof JsonRPCWallet) {
+      await this.wallet.changeNetwork(chainOrRpc)
     }
+    if (this.wallet instanceof ethers.Wallet) {
+      //await this.wallet.provider.send("wallet_switchEthereumChain", [{ chainId: chainId.toString(16) }]);
+      throw new Error('Not implemented for ethers.Wallet')
+    }
+  }
 }

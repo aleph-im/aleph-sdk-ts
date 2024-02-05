@@ -1,9 +1,9 @@
-import { Account } from "../../accounts/account";
-import { DEFAULT_API_V2 } from "../../global";
-import { AggregateContent, AggregateContentKey, AggregateMessage, ItemType, MessageType } from "../types";
-import { PutContentToStorageEngine } from "../create/publish";
-import { SignAndBroadcast } from "../create/signature";
-import { MessageBuilder } from "../../utils/messageBuilder";
+import { Account } from '../../accounts/account'
+import { DEFAULT_API_V2 } from '../../global'
+import { AggregateContent, AggregateContentKey, AggregateMessage, ItemType, MessageType } from '../types'
+import { PutContentToStorageEngine } from '../create/publish'
+import { SignAndBroadcast } from '../create/signature'
+import { MessageBuilder } from '../../utils/messageBuilder'
 
 /**
  * account:         The account used to sign the aggregate message.
@@ -23,15 +23,15 @@ import { MessageBuilder } from "../../utils/messageBuilder";
  * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type AggregatePublishConfiguration<T> = {
-    account: Account;
-    address?: string;
-    key: string | AggregateContentKey;
-    content: T;
-    channel: string;
-    storageEngine?: ItemType;
-    inlineRequested?: boolean;
-    APIServer?: string;
-};
+  account: Account
+  address?: string
+  key: string | AggregateContentKey
+  content: T
+  channel: string
+  storageEngine?: ItemType
+  inlineRequested?: boolean
+  APIServer?: string
+}
 
 /**
  * Publishes an aggregate message to the Aleph network.
@@ -47,45 +47,45 @@ type AggregatePublishConfiguration<T> = {
  * @param configuration The configuration used to publish the aggregate message.
  */
 export async function Publish<T>({
-    account,
-    address,
-    key,
-    content,
-    channel,
-    storageEngine = ItemType.inline,
-    inlineRequested,
-    APIServer = DEFAULT_API_V2,
+  account,
+  address,
+  key,
+  content,
+  channel,
+  storageEngine = ItemType.inline,
+  inlineRequested,
+  APIServer = DEFAULT_API_V2,
 }: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
-    if (inlineRequested) console.warn("Inline requested is deprecated and will be removed: use storageEngine.inline");
+  if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
 
-    const timestamp = Date.now() / 1000;
-    const aggregateContent: AggregateContent<T> = {
-        address: address || account.address,
-        key: key,
-        time: timestamp,
-        content: content,
-    };
+  const timestamp = Date.now() / 1000
+  const aggregateContent: AggregateContent<T> = {
+    address: address || account.address,
+    key: key,
+    time: timestamp,
+    content: content,
+  }
 
-    const message = MessageBuilder<AggregateContent<T>, MessageType.aggregate>({
-        account,
-        channel,
-        timestamp,
-        storageEngine,
-        content: aggregateContent,
-        type: MessageType.aggregate,
-    });
+  const message = MessageBuilder<AggregateContent<T>, MessageType.aggregate>({
+    account,
+    channel,
+    timestamp,
+    storageEngine,
+    content: aggregateContent,
+    type: MessageType.aggregate,
+  })
 
-    await PutContentToStorageEngine({
-        message: message,
-        content: aggregateContent,
-        APIServer,
-    });
+  await PutContentToStorageEngine({
+    message: message,
+    content: aggregateContent,
+    APIServer,
+  })
 
-    await SignAndBroadcast({
-        message: message,
-        account,
-        APIServer,
-    });
+  await SignAndBroadcast({
+    message: message,
+    account,
+    APIServer,
+  })
 
-    return message;
+  return message
 }

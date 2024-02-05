@@ -1,8 +1,8 @@
-import * as accountTests from "./accounts/index";
+import * as accountTests from './accounts/index'
 
-type testsFunc = () => Promise<boolean>;
+type testsFunc = () => Promise<boolean>
 
 /**
  * Export all your customs tests here
  */
-export { testsFunc, accountTests };
+export { testsFunc, accountTests }

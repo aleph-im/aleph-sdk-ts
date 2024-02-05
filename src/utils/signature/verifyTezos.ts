@@ -1,6 +1,6 @@
-import { BaseMessage } from "../../messages/types";
-import { GetVerificationBuffer } from "../../messages";
-import { char2Bytes, verifySignature } from "@taquito/utils";
+import { BaseMessage } from '../../messages/types'
+import { GetVerificationBuffer } from '../../messages'
+import { char2Bytes, verifySignature } from '@taquito/utils'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
@@ -10,20 +10,17 @@ import { char2Bytes, verifySignature } from "@taquito/utils";
  * @param signature The signature associated with the first params of this method.
  */
 function verifyTezos(message: BaseMessage, signature: string): boolean {
-    const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature);
+  const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature)
 
-    const buffer = GetVerificationBuffer(message);
-    const ISO8601formattedTimestamp = new Date(message.time).toISOString();
-    const formattedInput: string = [
-        "Tezos Signed Message:",
-        dAppUrl,
-        ISO8601formattedTimestamp,
-        buffer.toString(),
-    ].join(" ");
-    const bytes = char2Bytes(formattedInput);
-    const payloadBytes = "05" + "0100" + char2Bytes(String(bytes.length)) + bytes;
+  const buffer = GetVerificationBuffer(message)
+  const ISO8601formattedTimestamp = new Date(message.time).toISOString()
+  const formattedInput: string = ['Tezos Signed Message:', dAppUrl, ISO8601formattedTimestamp, buffer.toString()].join(
+    ' ',
+  )
+  const bytes = char2Bytes(formattedInput)
+  const payloadBytes = '05' + '0100' + char2Bytes(String(bytes.length)) + bytes
 
-    return verifySignature(payloadBytes, publicKey, parsedSignature);
+  return verifySignature(payloadBytes, publicKey, parsedSignature)
 }
 
-export default verifyTezos;
+export default verifyTezos

@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
     "lib": [
-      "esnext",
+      "ESNext",
       "DOM"
     ],
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
     "outDir": "dist",
@@ -22,15 +22,16 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "importHelpers": true,
+    "declarationDir": "types"
   },
-  "include": [
-    "src"
-  ],
   "exclude": [
-    "node_modules",
-    "tests",
-    "dist",
-    "scripts",
+    "**/node_modules",
+    "**/dist",
+    "**/scripts",
+    "**/tests",
     "**/*.spec.ts",
     "**/*.test.ts",
     "**/__tests__",

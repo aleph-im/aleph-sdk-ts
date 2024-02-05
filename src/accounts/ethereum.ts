@@ -1,116 +1,116 @@
-import * as bip39 from "bip39";
-import { ethers } from "ethers";
-import { ECIESAccount, EVMAccount } from "./account";
-import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/types";
-import verifyEthereum from "../utils/signature/verifyEthereum";
-import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { ChangeRpcParam, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
-import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
+import * as bip39 from 'bip39'
+import { ethers } from 'ethers'
+import { ECIESAccount, EVMAccount } from './account'
+import { GetVerificationBuffer } from '../messages'
+import { BaseMessage, Chain } from '../messages/types'
+import verifyEthereum from '../utils/signature/verifyEthereum'
+import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from 'eciesjs'
+import { ChangeRpcParam, JsonRPCWallet, RpcId } from './providers/JsonRPCWallet'
+import { ProviderEncryptionLabel, ProviderEncryptionLib } from './providers/ProviderEncryptionLib'
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 export class ETHAccount extends EVMAccount {
-    public override readonly wallet: ethers.Wallet | JsonRPCWallet;
+  public override readonly wallet: ethers.Wallet | JsonRPCWallet
 
-    public constructor(wallet: ethers.Wallet | JsonRPCWallet, address: string, publicKey?: string) {
-        super(address, publicKey);
-        this.wallet = wallet;
+  public constructor(wallet: ethers.Wallet | JsonRPCWallet, address: string, publicKey?: string) {
+    super(address, publicKey)
+    this.wallet = wallet
+  }
+
+  override GetChain(): Chain {
+    return Chain.ETH
+  }
+
+  /**
+   * Ask for a Provider Account a read Access to its encryption publicKey
+   * If the encryption public Key is already loaded, nothing happens
+   *
+   * This method will throw if:
+   * - The account was not instanced with a provider.
+   * - The user denied the encryption public key sharing.
+   */
+  override async askPubKey(): Promise<void> {
+    if (this.publicKey) return
+    if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
+
+    if (this.wallet instanceof ethers.Wallet) {
+      this.publicKey = this.wallet.publicKey
+      return
+    }
+    this.publicKey = await this.wallet.getPublicKey()
+    return
+  }
+
+  /**
+   * Encrypt a content using the user's public key for an Ethereum account.
+   *
+   * @param content The content to encrypt.
+   * @param delegateSupport Optional, if you want to encrypt data for another EthAccount (Can also be directly a public key)
+   * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
+   */
+  async encrypt(
+    content: Buffer,
+    delegateSupport?: ECIESAccount | string,
+    encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
+  ): Promise<Buffer | string> {
+    let publicKey: string | undefined
+
+    // Does the content is encrypted for a tier?
+    if (delegateSupport instanceof ECIESAccount) {
+      if (!delegateSupport.publicKey) {
+        await delegateSupport.askPubKey()
+      }
+      publicKey = delegateSupport.publicKey
+    } else if (delegateSupport) {
+      publicKey = delegateSupport
+    } else {
+      await this.askPubKey()
+      publicKey = this.publicKey
     }
 
-    override GetChain(): Chain {
-        return Chain.ETH;
+    if (!publicKey) throw new Error('Cannot encrypt content')
+    if (this.wallet instanceof ethers.Wallet) {
+      // Wallet encryption method or non-metamask provider
+      return secp256k1_encrypt(publicKey, content)
+    } else {
+      // provider encryption
+      return ProviderEncryptionLib[encryptionMethod](content, publicKey)
     }
+  }
 
-    /**
-     * Ask for a Provider Account a read Access to its encryption publicKey
-     * If the encryption public Key is already loaded, nothing happens
-     *
-     * This method will throw if:
-     * - The account was not instanced with a provider.
-     * - The user denied the encryption public key sharing.
-     */
-    override async askPubKey(): Promise<void> {
-        if (!!this.publicKey) return;
-        if (!this.wallet) throw Error("PublicKey Error: No providers are setup");
-
-        if (this.wallet instanceof ethers.Wallet) {
-            this.publicKey = this.wallet.publicKey;
-            return;
-        }
-        this.publicKey = await this.wallet.getPublicKey();
-        return;
+  /**
+   * Decrypt a given content using an ETHAccount.
+   *
+   * @param encryptedContent The encrypted content to decrypt.
+   */
+  async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
+    if (this.wallet instanceof ethers.Wallet) {
+      const secret = this.wallet.privateKey
+      return secp256k1_decrypt(secret, Buffer.from(encryptedContent))
+    } else {
+      const decrypted = await this.wallet.decrypt(encryptedContent)
+      return Buffer.from(decrypted)
     }
+  }
 
-    /**
-     * Encrypt a content using the user's public key for an Ethereum account.
-     *
-     * @param content The content to encrypt.
-     * @param delegateSupport Optional, if you want to encrypt data for another EthAccount (Can also be directly a public key)
-     * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
-     */
-    async encrypt(
-        content: Buffer,
-        delegateSupport?: ECIESAccount | string,
-        encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
-    ): Promise<Buffer | string> {
-        let publicKey: string | undefined;
+  /**
+   * The Sign method provides a way to sign a given Aleph message using an ethereum account.
+   * The full message is not used as the payload, only fields of the BaseMessage type are.
+   *
+   * The signMessage method of the package 'ethers' is used as the signature method.
+   *
+   * @param message The Aleph message to sign, using some of its fields.
+   */
+  async Sign(message: BaseMessage): Promise<string> {
+    const buffer = GetVerificationBuffer(message)
+    const signature = await this.wallet.signMessage(buffer.toString())
+    if (verifyEthereum(buffer, signature, this.address)) return signature
 
-        // Does the content is encrypted for a tier?
-        if (delegateSupport instanceof ECIESAccount) {
-            if (!delegateSupport.publicKey) {
-                await delegateSupport.askPubKey();
-            }
-            publicKey = delegateSupport.publicKey;
-        } else if (delegateSupport) {
-            publicKey = delegateSupport;
-        } else {
-            await this.askPubKey();
-            publicKey = this.publicKey;
-        }
-
-        if (!publicKey) throw new Error("Cannot encrypt content");
-        if (this.wallet instanceof ethers.Wallet) {
-            // Wallet encryption method or non-metamask provider
-            return secp256k1_encrypt(publicKey, content);
-        } else {
-            // provider encryption
-            return ProviderEncryptionLib[encryptionMethod](content, publicKey);
-        }
-    }
-
-    /**
-     * Decrypt a given content using an ETHAccount.
-     *
-     * @param encryptedContent The encrypted content to decrypt.
-     */
-    async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-        if (this.wallet instanceof ethers.Wallet) {
-            const secret = this.wallet.privateKey;
-            return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
-        } else {
-            const decrypted = await this.wallet.decrypt(encryptedContent);
-            return Buffer.from(decrypted);
-        }
-    }
-
-    /**
-     * The Sign method provides a way to sign a given Aleph message using an ethereum account.
-     * The full message is not used as the payload, only fields of the BaseMessage type are.
-     *
-     * The signMessage method of the package 'ethers' is used as the signature method.
-     *
-     * @param message The Aleph message to sign, using some of its fields.
-     */
-    async Sign(message: BaseMessage): Promise<string> {
-        const buffer = GetVerificationBuffer(message);
-        const signature = await this.wallet.signMessage(buffer.toString());
-        if (verifyEthereum(buffer, signature, this.address)) return signature;
-
-        throw new Error("Cannot proof the integrity of the signature");
-    }
+    throw new Error('Cannot proof the integrity of the signature')
+  }
 }
 
 /**
@@ -122,9 +122,9 @@ export class ETHAccount extends EVMAccount {
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  */
 export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
-    const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath);
+  const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
 
-    return new ETHAccount(wallet, wallet.address, wallet.publicKey);
+  return new ETHAccount(wallet, wallet.address, wallet.publicKey)
 }
 
 /**
@@ -135,9 +135,9 @@ export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/
  * @param privateKey The private key of the account to import.
  */
 export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
-    const wallet = new ethers.Wallet(privateKey);
+  const wallet = new ethers.Wallet(privateKey)
 
-    return new ETHAccount(wallet, wallet.address, wallet.publicKey);
+  return new ETHAccount(wallet, wallet.address, wallet.publicKey)
 }
 
 /**
@@ -146,9 +146,9 @@ export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
  * @param derivationPath
  */
 export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHAccount; mnemonic: string } {
-    const mnemonic = bip39.generateMnemonic();
+  const mnemonic = bip39.generateMnemonic()
 
-    return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic };
+  return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic }
 }
 
 /**
@@ -158,14 +158,14 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function GetAccountFromProvider(
-    provider: ethers.providers.ExternalProvider,
-    requestedRpc: ChangeRpcParam = RpcId.ETH,
+  provider: ethers.providers.ExternalProvider,
+  requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {
-    const ETHprovider = new ethers.providers.Web3Provider(provider);
-    const jrw = new JsonRPCWallet(ETHprovider);
-    await jrw.changeNetwork(requestedRpc);
-    await jrw.connect();
+  const ETHprovider = new ethers.providers.Web3Provider(provider)
+  const jrw = new JsonRPCWallet(ETHprovider)
+  await jrw.changeNetwork(requestedRpc)
+  await jrw.connect()
 
-    if (jrw.address) return new ETHAccount(jrw, jrw.address);
-    throw new Error("Insufficient permissions");
+  if (jrw.address) return new ETHAccount(jrw, jrw.address)
+  throw new Error('Insufficient permissions')
 }

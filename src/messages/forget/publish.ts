@@ -1,9 +1,9 @@
-import { PutContentToStorageEngine } from "../create/publish";
-import { ForgetContent, ForgetMessage, ItemType, MessageType } from "../types";
-import { Account } from "../../accounts/account";
-import { DEFAULT_API_V2 } from "../../global";
-import { SignAndBroadcast } from "../create/signature";
-import { MessageBuilder } from "../../utils/messageBuilder";
+import { PutContentToStorageEngine } from '../create/publish'
+import { ForgetContent, ForgetMessage, ItemType, MessageType } from '../types'
+import { Account } from '../../accounts/account'
+import { DEFAULT_API_V2 } from '../../global'
+import { SignAndBroadcast } from '../create/signature'
+import { MessageBuilder } from '../../utils/messageBuilder'
 
 /**
  * account:         The account used to sign the forget object.
@@ -21,14 +21,14 @@ import { MessageBuilder } from "../../utils/messageBuilder";
  * reason:          An optional reason to justify this action (default value: "None").
  */
 type ForgetPublishConfiguration = {
-    account: Account;
-    channel: string;
-    storageEngine?: ItemType;
-    inlineRequested?: boolean;
-    APIServer?: string;
-    hashes: string[];
-    reason?: string;
-};
+  account: Account
+  channel: string
+  storageEngine?: ItemType
+  inlineRequested?: boolean
+  APIServer?: string
+  hashes: string[]
+  reason?: string
+}
 
 /**
  * Submit a forget object to remove content from a Post message on the network.
@@ -41,43 +41,43 @@ type ForgetPublishConfiguration = {
  * @param configuration The configuration used to publish the forget message.
  */
 export async function Publish({
-    account,
-    APIServer = DEFAULT_API_V2,
-    hashes,
-    reason,
-    channel,
-    storageEngine = ItemType.inline,
-    inlineRequested,
+  account,
+  APIServer = DEFAULT_API_V2,
+  hashes,
+  reason,
+  channel,
+  storageEngine = ItemType.inline,
+  inlineRequested,
 }: ForgetPublishConfiguration): Promise<ForgetMessage> {
-    if (inlineRequested) console.warn("inlineRequested is deprecated and will be removed: use storageEngine.inline");
+  if (inlineRequested) console.warn('inlineRequested is deprecated and will be removed: use storageEngine.inline')
 
-    const timestamp = Date.now() / 1000;
-    const forgetContent: ForgetContent = {
-        address: account.address,
-        time: timestamp,
-        hashes: hashes,
-        reason: reason || undefined,
-    };
+  const timestamp = Date.now() / 1000
+  const forgetContent: ForgetContent = {
+    address: account.address,
+    time: timestamp,
+    hashes: hashes,
+    reason: reason || undefined,
+  }
 
-    const message = MessageBuilder<ForgetContent, MessageType.forget>({
-        account,
-        channel,
-        timestamp,
-        storageEngine,
-        content: forgetContent,
-        type: MessageType.forget,
-    });
+  const message = MessageBuilder<ForgetContent, MessageType.forget>({
+    account,
+    channel,
+    timestamp,
+    storageEngine,
+    content: forgetContent,
+    type: MessageType.forget,
+  })
 
-    await PutContentToStorageEngine({
-        message: message,
-        content: forgetContent,
-        APIServer,
-    });
+  await PutContentToStorageEngine({
+    message: message,
+    content: forgetContent,
+    APIServer,
+  })
 
-    await SignAndBroadcast({
-        message: message,
-        account,
-        APIServer,
-    });
-    return message;
+  await SignAndBroadcast({
+    message: message,
+    account,
+    APIServer,
+  })
+  return message
 }

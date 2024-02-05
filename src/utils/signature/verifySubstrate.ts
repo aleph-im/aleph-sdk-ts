@@ -1,6 +1,6 @@
-import { BaseMessage } from "../../messages/types";
-import { GetVerificationBuffer } from "../../messages";
-import { signatureVerify } from "@polkadot/util-crypto";
+import { BaseMessage } from '../../messages/types'
+import { GetVerificationBuffer } from '../../messages'
+import { signatureVerify } from '@polkadot/util-crypto'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
@@ -11,16 +11,16 @@ import { signatureVerify } from "@polkadot/util-crypto";
  * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
 function verifySubstrate(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
-    if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
-    const parsedSignature = JSON.parse(signature);
+  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+  const parsedSignature = JSON.parse(signature)
 
-    try {
-        const result = signatureVerify(message, parsedSignature.data, signerAddress);
+  try {
+    const result = signatureVerify(message, parsedSignature.data, signerAddress)
 
-        return result.isValid;
-    } catch (e: unknown) {
-        return false;
-    }
+    return result.isValid
+  } catch (e: unknown) {
+    return false
+  }
 }
 
-export default verifySubstrate;
+export default verifySubstrate

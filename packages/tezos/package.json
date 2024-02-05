@@ -1,0 +1,37 @@
+{
+  "name": "@aleph-sdk/tezos",
+  "version": "0.0.3",
+  "description": "",
+  "main": "dist/cjs/index.min.cjs",
+  "module": "dist/esm/index.min.mjs",
+  "browser": "dist/iife/index.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@airgap/beacon-types": "^3.2.0"
+  },
+  "dependencies": {
+    "@aleph-sdk/account": "^0.0.3",
+    "@aleph-sdk/core": "^0.0.3",
+    "@taquito/beacon-wallet": "^14.0.0",
+    "@taquito/signer": "^13.0.1",
+    "@taquito/utils": "^17.0.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/account": "0.x",
+    "@aleph-sdk/core": "0.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup  -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "license": "ISC"
+}

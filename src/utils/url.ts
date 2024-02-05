@@ -4,7 +4,7 @@
  * @param  {string} url
  */
 export function stripTrailingSlash(url: string): string {
-    return url.replace(/\/*\s*$/gi, "");
+  return url.replace(/\/*\s*$/gi, '')
 }
 
 /**
@@ -12,9 +12,9 @@ export function stripTrailingSlash(url: string): string {
  * or undefined.
  */
 export function getSocketPath(): string | undefined {
-    try {
-        return process?.env?.ALEPH_API_UNIX_SOCKET;
-    } catch {
-        return undefined;
-    }
+  try {
+    return process?.env?.ALEPH_API_UNIX_SOCKET
+  } catch {
+    return undefined
+  }
 }

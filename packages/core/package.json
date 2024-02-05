@@ -1,0 +1,22 @@
+{
+  "name": "@aleph-sdk/core",
+  "version": "0.0.3",
+  "description": "",
+  "main": "dist/cjs/index.min.cjs",
+  "module": "dist/esm/index.min.mjs",
+  "browser": "dist/iife/index.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup  -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "license": "ISC"
+}

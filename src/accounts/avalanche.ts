@@ -1,154 +1,153 @@
-import shajs from "sha.js";
-import { ECIESAccount, EVMAccount } from "./account";
-import { GetVerificationBuffer } from "../messages";
-import { BaseMessage, Chain } from "../messages/types";
-import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from "eciesjs";
-import { KeyPair, KeyChain } from "avalanche/dist/apis/avm";
-import { KeyPair as EVMKeyPair } from "avalanche/dist/apis/evm";
-import { Avalanche, BinTools, Buffer as AvaBuff } from "avalanche";
-import { ChangeRpcParam, JsonRPCWallet, RpcId } from "./providers/JsonRPCWallet";
-import { ethers, providers } from "ethers";
-import { privateToAddress } from "ethereumjs-util";
-import { ProviderEncryptionLabel, ProviderEncryptionLib } from "./providers/ProviderEncryptionLib";
-import verifyAvalanche from "../utils/signature/verifyAvalanche";
+import shajs from 'sha.js'
+import { ECIESAccount, EVMAccount } from './account'
+import { GetVerificationBuffer } from '../messages'
+import { BaseMessage, Chain } from '../messages/types'
+import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from 'eciesjs'
+import { KeyPair, KeyChain } from 'avalanche/dist/apis/avm'
+import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
+import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
+import { ChangeRpcParam, JsonRPCWallet, RpcId } from './providers/JsonRPCWallet'
+import { ethers, providers } from 'ethers'
+import { privateToAddress } from 'ethereumjs-util'
+import { ProviderEncryptionLabel, ProviderEncryptionLib } from './providers/ProviderEncryptionLib'
+import verifyAvalanche from '../utils/signature/verifyAvalanche'
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
 export class AvalancheAccount extends EVMAccount {
-    public override readonly wallet?: JsonRPCWallet;
-    public readonly keyPair?: KeyPair | EVMKeyPair;
-    constructor(
-        signerOrWallet: KeyPair | EVMKeyPair | JsonRPCWallet | ethers.providers.JsonRpcProvider,
-        address: string,
-        publicKey?: string,
-    ) {
-        super(address, publicKey);
-        if (signerOrWallet instanceof ethers.providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(signerOrWallet);
-        else if (signerOrWallet instanceof KeyPair || signerOrWallet instanceof EVMKeyPair)
-            this.keyPair = signerOrWallet;
-        else this.wallet = signerOrWallet;
+  public override readonly wallet?: JsonRPCWallet
+  public readonly keyPair?: KeyPair | EVMKeyPair
+  constructor(
+    signerOrWallet: KeyPair | EVMKeyPair | JsonRPCWallet | ethers.providers.JsonRpcProvider,
+    address: string,
+    publicKey?: string,
+  ) {
+    super(address, publicKey)
+    if (signerOrWallet instanceof ethers.providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(signerOrWallet)
+    else if (signerOrWallet instanceof KeyPair || signerOrWallet instanceof EVMKeyPair) this.keyPair = signerOrWallet
+    else this.wallet = signerOrWallet
+  }
+
+  override GetChain(): Chain {
+    if (this.keyPair) return Chain.AVAX
+    if (this.wallet) return Chain.ETH
+
+    throw new Error('Cannot determine chain')
+  }
+
+  /**
+   * Ask for a Provider Account a read Access to its encryption publicKey
+   * If the encryption public Key is already loaded, nothing happens
+   *
+   * This method will throw if:
+   * - The account was not instanced with a provider.
+   * - The user denied the encryption public key sharing.
+   */
+  override async askPubKey(): Promise<void> {
+    if (this.publicKey) return
+    if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
+    this.publicKey = await this.wallet.getPublicKey()
+    return
+  }
+
+  /**
+   * Encrypt a content using the user's public key from the keypair
+   *
+   * @param content The content to encrypt.
+   * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
+   * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
+   */
+  async encrypt(
+    content: Buffer,
+    delegateSupport?: ECIESAccount | string,
+    encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
+  ): Promise<Buffer | string> {
+    let publicKey: string | undefined
+
+    // Does the content is encrypted for a tier?
+    if (delegateSupport instanceof ECIESAccount) {
+      if (!delegateSupport.publicKey) {
+        await delegateSupport.askPubKey()
+      }
+      publicKey = delegateSupport.publicKey
+    } else if (delegateSupport) {
+      publicKey = delegateSupport
+    } else {
+      await this.askPubKey()
+      publicKey = this.publicKey
     }
 
-    override GetChain(): Chain {
-        if (this.keyPair) return Chain.AVAX;
-        if (this.wallet) return Chain.ETH;
+    if (!publicKey) throw new Error('Cannot encrypt content')
+    if (!this.wallet) {
+      // Wallet encryption method or non-metamask provider
+      return secp256k1_encrypt(publicKey, content)
+    } else {
+      // provider encryption
+      return ProviderEncryptionLib[encryptionMethod](content, publicKey)
+    }
+  }
 
-        throw new Error("Cannot determine chain");
+  /**
+   * Decrypt a given content using the private key from the keypair.
+   *
+   * @param encryptedContent The encrypted content to decrypt.
+   */
+  async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
+    if (this.keyPair) {
+      const secret = this.keyPair.getPrivateKey().toString('hex')
+      return secp256k1_decrypt(secret, Buffer.from(encryptedContent))
+    }
+    if (this.wallet) {
+      const decrypted = await this.wallet.decrypt(encryptedContent)
+      return Buffer.from(decrypted)
+    }
+    throw new Error('Cannot encrypt content')
+  }
+
+  private async digestMessage(message: Buffer) {
+    const msgSize = Buffer.alloc(4)
+    msgSize.writeUInt32BE(message.length, 0)
+    const msgStr = message.toString('utf-8')
+    const msgBuf = Buffer.from(`\x1AAvalanche Signed Message:\n${msgSize}${msgStr}`, 'utf8')
+
+    return new shajs.sha256().update(msgBuf).digest()
+  }
+
+  /**
+   * The Sign method provides a way to sign a given Aleph message using an avalanche keypair.
+   * The full message is not used as the payload, only fields of the BaseMessage type are.
+   *
+   * The sign method of the keypair is used as the signature method.
+   *
+   * @param message The Aleph message to sign, using some of its fields.
+   */
+  async Sign(message: BaseMessage): Promise<string> {
+    const buffer = GetVerificationBuffer(message)
+    const digest = await this.digestMessage(buffer)
+
+    if (this.keyPair) {
+      const digestHex = digest.toString('hex')
+      const digestBuff = AvaBuff.from(digestHex, 'hex')
+      const signatureBuffer = this.keyPair?.sign(digestBuff)
+
+      const bintools = BinTools.getInstance()
+      const signature = bintools.cb58Encode(signatureBuffer)
+      if (await verifyAvalanche(buffer, signature, this.keyPair.getPublicKey().toString('hex'))) return signature
+
+      throw new Error('Cannot proof the integrity of the signature')
+    } else if (this.wallet) {
+      return await this.wallet.signMessage(buffer)
     }
 
-    /**
-     * Ask for a Provider Account a read Access to its encryption publicKey
-     * If the encryption public Key is already loaded, nothing happens
-     *
-     * This method will throw if:
-     * - The account was not instanced with a provider.
-     * - The user denied the encryption public key sharing.
-     */
-    override async askPubKey(): Promise<void> {
-        if (!!this.publicKey) return;
-        if (!this.wallet) throw Error("PublicKey Error: No providers are setup");
-        this.publicKey = await this.wallet.getPublicKey();
-        return;
-    }
-
-    /**
-     * Encrypt a content using the user's public key from the keypair
-     *
-     * @param content The content to encrypt.
-     * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
-     * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
-     */
-    async encrypt(
-        content: Buffer,
-        delegateSupport?: ECIESAccount | string,
-        encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
-    ): Promise<Buffer | string> {
-        let publicKey: string | undefined;
-
-        // Does the content is encrypted for a tier?
-        if (delegateSupport instanceof ECIESAccount) {
-            if (!delegateSupport.publicKey) {
-                await delegateSupport.askPubKey();
-            }
-            publicKey = delegateSupport.publicKey;
-        } else if (delegateSupport) {
-            publicKey = delegateSupport;
-        } else {
-            await this.askPubKey();
-            publicKey = this.publicKey;
-        }
-
-        if (!publicKey) throw new Error("Cannot encrypt content");
-        if (!this.wallet) {
-            // Wallet encryption method or non-metamask provider
-            return secp256k1_encrypt(publicKey, content);
-        } else {
-            // provider encryption
-            return ProviderEncryptionLib[encryptionMethod](content, publicKey);
-        }
-    }
-
-    /**
-     * Decrypt a given content using the private key from the keypair.
-     *
-     * @param encryptedContent The encrypted content to decrypt.
-     */
-    async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-        if (this.keyPair) {
-            const secret = this.keyPair.getPrivateKey().toString("hex");
-            return secp256k1_decrypt(secret, Buffer.from(encryptedContent));
-        }
-        if (this.wallet) {
-            const decrypted = await this.wallet.decrypt(encryptedContent);
-            return Buffer.from(decrypted);
-        }
-        throw new Error("Cannot encrypt content");
-    }
-
-    private async digestMessage(message: Buffer) {
-        const msgSize = Buffer.alloc(4);
-        msgSize.writeUInt32BE(message.length, 0);
-        const msgStr = message.toString("utf-8");
-        const msgBuf = Buffer.from(`\x1AAvalanche Signed Message:\n${msgSize}${msgStr}`, "utf8");
-
-        return new shajs.sha256().update(msgBuf).digest();
-    }
-
-    /**
-     * The Sign method provides a way to sign a given Aleph message using an avalanche keypair.
-     * The full message is not used as the payload, only fields of the BaseMessage type are.
-     *
-     * The sign method of the keypair is used as the signature method.
-     *
-     * @param message The Aleph message to sign, using some of its fields.
-     */
-    async Sign(message: BaseMessage): Promise<string> {
-        const buffer = GetVerificationBuffer(message);
-        const digest = await this.digestMessage(buffer);
-
-        if (this.keyPair) {
-            const digestHex = digest.toString("hex");
-            const digestBuff = AvaBuff.from(digestHex, "hex");
-            const signatureBuffer = this.keyPair?.sign(digestBuff);
-
-            const bintools = BinTools.getInstance();
-            const signature = bintools.cb58Encode(signatureBuffer);
-            if (await verifyAvalanche(buffer, signature, this.keyPair.getPublicKey().toString("hex"))) return signature;
-
-            throw new Error("Cannot proof the integrity of the signature");
-        } else if (this.wallet) {
-            return await this.wallet.signMessage(buffer);
-        }
-
-        throw new Error("Cannot sign message");
-    }
+    throw new Error('Cannot sign message')
+  }
 }
 
 export enum ChainType {
-    C_CHAIN = "C",
-    X_CHAIN = "X",
+  C_CHAIN = 'C',
+  X_CHAIN = 'X',
 }
 
 /**
@@ -157,25 +156,25 @@ export enum ChainType {
  * @returns key chains
  */
 async function getKeyChain(chain = ChainType.X_CHAIN) {
-    return new KeyChain(new Avalanche().getHRP(), chain);
+  return new KeyChain(new Avalanche().getHRP(), chain)
 }
 
 export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN): Promise<KeyPair> {
-    const keyChain = await getKeyChain(chain);
-    const keyPair = keyChain.makeKey();
+  const keyChain = await getKeyChain(chain)
+  const keyPair = keyChain.makeKey()
 
-    if (privateKey) {
-        let keyBuff: AvaBuff;
-        if (privateKey.startsWith("PrivateKey-")) {
-            const bintools = BinTools.getInstance();
-            keyBuff = bintools.cb58Decode(privateKey.split("-")[1]);
-        } else {
-            keyBuff = AvaBuff.from(privateKey, "hex");
-        }
-        if (keyPair.importKey(keyBuff)) return keyPair;
-        throw new Error("Invalid private key");
+  if (privateKey) {
+    let keyBuff: AvaBuff
+    if (privateKey.startsWith('PrivateKey-')) {
+      const bintools = BinTools.getInstance()
+      keyBuff = bintools.cb58Decode(privateKey.split('-')[1])
+    } else {
+      keyBuff = AvaBuff.from(privateKey, 'hex')
     }
-    return keyPair;
+    if (keyPair.importKey(keyBuff)) return keyPair
+    throw new Error('Invalid private key')
+  }
+  return keyPair
 }
 
 /**
@@ -187,11 +186,11 @@ export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN)
  * @param chain The Avalanche subnet to use the account with.
  */
 export async function ImportAccountFromPrivateKey(
-    privateKey: string,
-    chain = ChainType.X_CHAIN,
+  privateKey: string,
+  chain = ChainType.X_CHAIN,
 ): Promise<AvalancheAccount> {
-    const keyPair = await getKeyPair(privateKey, chain);
-    return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString("hex"));
+  const keyPair = await getKeyPair(privateKey, chain)
+  return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString('hex'))
 }
 
 /**
@@ -201,18 +200,18 @@ export async function ImportAccountFromPrivateKey(
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function GetAccountFromProvider(
-    provider: providers.ExternalProvider,
-    requestedRpc: ChangeRpcParam = RpcId.AVAX,
+  provider: providers.ExternalProvider,
+  requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<AvalancheAccount> {
-    const avaxProvider = new providers.Web3Provider(provider);
-    const jrw = new JsonRPCWallet(avaxProvider);
-    await jrw.changeNetwork(requestedRpc);
+  const avaxProvider = new providers.Web3Provider(provider)
+  const jrw = new JsonRPCWallet(avaxProvider)
+  await jrw.changeNetwork(requestedRpc)
 
-    await jrw.connect();
-    if (jrw.address) {
-        return new AvalancheAccount(jrw, jrw.address);
-    }
-    throw new Error("Insufficient permissions");
+  await jrw.connect()
+  if (jrw.address) {
+    return new AvalancheAccount(jrw, jrw.address)
+  }
+  throw new Error('Insufficient permissions')
 }
 
 /**
@@ -226,28 +225,28 @@ export async function GetAccountFromProvider(
  * @throws An error if the current signer is not associated with the C-Chain
  */
 function getEVMAddress(keypair: EVMKeyPair): string {
-    const pkHex = keypair.getPrivateKey().toString("hex");
-    const pkBuffNative = Buffer.from(pkHex, "hex");
-    const ethAddress = privateToAddress(pkBuffNative).toString("hex");
-    return `0x${ethAddress}`;
+  const pkHex = keypair.getPrivateKey().toString('hex')
+  const pkBuffNative = Buffer.from(pkHex, 'hex')
+  const ethAddress = privateToAddress(pkBuffNative).toString('hex')
+  return `0x${ethAddress}`
 }
 
 /**
  * Creates a new Avalanche account using a randomly generated privateKey
  */
 export async function NewAccount(
-    chain = ChainType.X_CHAIN,
+  chain = ChainType.X_CHAIN,
 ): Promise<{ account: AvalancheAccount; privateKey: string }> {
-    const keypair = await getKeyPair(undefined, chain);
-    const privateKey = keypair.getPrivateKey().toString("hex");
+  const keypair = await getKeyPair(undefined, chain)
+  const privateKey = keypair.getPrivateKey().toString('hex')
 
-    let address: string = keypair.getAddressString();
-    if (chain === ChainType.C_CHAIN) {
-        address = getEVMAddress(keypair);
-    }
+  let address: string = keypair.getAddressString()
+  if (chain === ChainType.C_CHAIN) {
+    address = getEVMAddress(keypair)
+  }
 
-    return {
-        account: new AvalancheAccount(keypair, address, keypair.getPublicKey().toString("hex")),
-        privateKey,
-    };
+  return {
+    account: new AvalancheAccount(keypair, address, keypair.getPublicKey().toString('hex')),
+    privateKey,
+  }
 }

@@ -1,7 +1,7 @@
-import { BaseMessage } from "../../messages/types";
-import { GetVerificationBuffer } from "../../messages";
-import nacl from "tweetnacl";
-import bs58 from "bs58";
+import { BaseMessage } from '../../messages/types'
+import { GetVerificationBuffer } from '../../messages'
+import nacl from 'tweetnacl'
+import bs58 from 'bs58'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
@@ -11,14 +11,14 @@ import bs58 from "bs58";
  * @param serializedSignature The signature associated with the first params of this method.
  */
 function verifySolana(message: Buffer | BaseMessage, serializedSignature: string): boolean {
-    if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
-    const { signature, publicKey } = JSON.parse(serializedSignature);
+  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+  const { signature, publicKey } = JSON.parse(serializedSignature)
 
-    try {
-        return nacl.sign.detached.verify(message, bs58.decode(signature), bs58.decode(publicKey));
-    } catch (e: unknown) {
-        return false;
-    }
+  try {
+    return nacl.sign.detached.verify(message, bs58.decode(signature), bs58.decode(publicKey))
+  } catch (e: unknown) {
+    return false
+  }
 }
 
-export default verifySolana;
+export default verifySolana

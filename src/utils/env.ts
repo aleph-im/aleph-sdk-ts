@@ -5,18 +5,18 @@
  * if window is already defined
  */
 export function isNode(): boolean {
-    const hasNodeVersion = process?.version !== undefined;
-    let hasNoWindow = true;
+  const hasNodeVersion = process?.version !== undefined
+  let hasNoWindow = true
 
-    try {
-        // should fail in strict mode
-        const window = {};
-        window;
-    } catch (error) {
-        hasNoWindow = false;
-    }
+  try {
+    // should fail in strict mode
+    const window = {}
+    window
+  } catch (error) {
+    hasNoWindow = false
+  }
 
-    return hasNodeVersion && hasNoWindow;
+  return hasNodeVersion && hasNoWindow
 }
 
-export type JSExecutionEnvironment = "node" | "browser";
+export type JSExecutionEnvironment = 'node' | 'browser'

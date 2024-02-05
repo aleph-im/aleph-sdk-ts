@@ -1,6 +1,6 @@
-import { BaseMessage } from "../../messages/types";
-import { GetVerificationBuffer } from "../../messages";
-import { ethers } from "ethers";
+import { BaseMessage } from '../../messages/types'
+import { GetVerificationBuffer } from '../../messages'
+import { ethers } from 'ethers'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
@@ -11,14 +11,14 @@ import { ethers } from "ethers";
  * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
 function verifyEthereum(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
-    if (!(message instanceof Buffer)) message = GetVerificationBuffer(message);
+  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
 
-    try {
-        const address = ethers.utils.verifyMessage(message, signature);
-        return address === signerAddress;
-    } catch (e: unknown) {
-        return false;
-    }
+  try {
+    const address = ethers.utils.verifyMessage(message, signature)
+    return address === signerAddress
+  } catch (e: unknown) {
+    return false
+  }
 }
 
-export default verifyEthereum;
+export default verifyEthereum
