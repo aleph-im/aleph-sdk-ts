@@ -1,9 +1,8 @@
-import { BaseMessage } from '../../messages/types'
-import { GetVerificationBuffer } from '../../messages'
+import { SignableMessage } from '@aleph-sdk/account'
 import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
 import shajs from 'sha.js'
 
-async function digestMessage(message: Buffer) {
+export function digestMessage(message: Buffer): Buffer {
   const msgSize = Buffer.alloc(4)
   msgSize.writeUInt32BE(message.length, 0)
   const msgStr = message.toString('utf-8')
@@ -20,8 +19,16 @@ async function digestMessage(message: Buffer) {
  * @param signature The signature associated with the first params of this method.
  * @param signerPKey Optional, The publicKey associated with the signature to verify. It Needs to be under a hex serialized  string.
  */
-async function verifyAvalanche(message: Buffer | BaseMessage, signature: string, signerPKey: string): Promise<boolean> {
-  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+export async function verifyAvalanche(
+  message: Buffer | SignableMessage,
+  signature: string,
+  signerPKey: string,
+): Promise<boolean> {
+  if (!(message instanceof Buffer)) {
+    if (typeof message.GetVerificationBuffer !== 'function')
+      throw new Error("message doesn't have a valid GetVerificationBuffer method")
+    message = message.GetVerificationBuffer()
+  }
   const ava = new Avalanche()
   const keyPair = ava.XChain().keyChain().makeKey()
 
@@ -35,5 +42,3 @@ async function verifyAvalanche(message: Buffer | BaseMessage, signature: string,
   const recovered = keyPair.recover(digestBuff, readableSignature)
   return signerPKey === recovered.toString('hex')
 }
-
-export default verifyAvalanche

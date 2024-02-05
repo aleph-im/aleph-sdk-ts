@@ -9,22 +9,20 @@ import {
   ProviderEncryptionLib,
   ChangeRpcParam,
   JsonRPCWallet,
-  RpcChainType,
+  RpcId,
+  EVMAccount,
 } from '@aleph-sdk/evm'
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
-export class ETHAccount extends ECIESAccount {
-  private wallet?: ethers.Wallet
-  private provider?: BaseProviderWallet
+export class ETHAccount extends EVMAccount {
+  public override readonly wallet: ethers.Wallet | BaseProviderWallet
 
-  constructor(walletOrProvider: ethers.Wallet | BaseProviderWallet, address: string, publicKey?: string) {
+  public constructor(wallet: ethers.Wallet | BaseProviderWallet, address: string, publicKey?: string) {
     super(address, publicKey)
-
-    if (walletOrProvider instanceof ethers.Wallet) this.wallet = walletOrProvider
-    else this.provider = walletOrProvider
+    this.wallet = wallet
   }
 
   override GetChain(): Blockchain {
@@ -41,9 +39,13 @@ export class ETHAccount extends ECIESAccount {
    */
   override async askPubKey(): Promise<void> {
     if (this.publicKey) return
-    if (!this.provider) throw Error('PublicKey Error: No providers are setup')
+    if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
 
-    this.publicKey = await this.provider.getPublicKey()
+    if (this.wallet instanceof ethers.Wallet) {
+      this.publicKey = this.wallet.publicKey
+      return
+    }
+    this.publicKey = await this.wallet.getPublicKey()
     return
   }
 
@@ -75,7 +77,7 @@ export class ETHAccount extends ECIESAccount {
     }
 
     if (!publicKey) throw new Error('Cannot encrypt content')
-    if (!this.provider) {
+    if (this.wallet instanceof ethers.Wallet) {
       // Wallet encryption method or non-metamask provider
       return secp256k1_encrypt(publicKey, content)
     } else {
@@ -90,15 +92,13 @@ export class ETHAccount extends ECIESAccount {
    * @param encryptedContent The encrypted content to decrypt.
    */
   async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-    if (this.wallet) {
+    if (this.wallet instanceof ethers.Wallet) {
       const secret = this.wallet.privateKey
       return secp256k1_decrypt(secret, Buffer.from(encryptedContent))
-    }
-    if (this.provider) {
-      const decrypted = await this.provider.decrypt(encryptedContent)
+    } else {
+      const decrypted = await this.wallet.decrypt(encryptedContent)
       return Buffer.from(decrypted)
     }
-    throw new Error('Cannot encrypt content')
   }
 
   /**
@@ -114,12 +114,7 @@ export class ETHAccount extends ECIESAccount {
       throw new Error("message doesn't have a valid GetVerificationBuffer method")
 
     const buffer = message.GetVerificationBuffer()
-
-    const signMethod = this.wallet || this.provider
-
-    if (signMethod) return signMethod.signMessage(buffer.toString())
-
-    throw new Error('Cannot sign message')
+    return this.wallet.signMessage(buffer.toString())
   }
 }
 
@@ -169,7 +164,7 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  */
 export async function GetAccountFromProvider(
   provider: ethers.providers.ExternalProvider,
-  requestedRpc: ChangeRpcParam = RpcChainType.ETH,
+  requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {
   const ETHprovider = new ethers.providers.Web3Provider(provider)
   const jrw = new JsonRPCWallet(ETHprovider)

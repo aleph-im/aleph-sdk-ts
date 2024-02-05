@@ -3,6 +3,10 @@
  */
 export abstract class BaseProviderWallet {
   /**
+   * Provider property
+   */
+  public readonly provider: unknown
+  /**
    * Connects the Provider and fetch an account
    */
   abstract connect(): Promise<void>

@@ -1,5 +1,4 @@
-import { BaseMessage } from '../../messages/types'
-import { GetVerificationBuffer } from '../../messages'
+import { SignableMessage } from '@aleph-sdk/account'
 import { ethers } from 'ethers'
 
 /**
@@ -10,8 +9,13 @@ import { ethers } from 'ethers'
  * @param signature The signature associated with the first params of this method.
  * @param signerAddress Optional, The address associated with the signature to verify. The current account address is used by default.
  */
-function verifyEthereum(message: Buffer | BaseMessage, signature: string, signerAddress: string): boolean {
-  if (!(message instanceof Buffer)) message = GetVerificationBuffer(message)
+export function verifyEthereum(message: Buffer | SignableMessage, signature: string, signerAddress: string): boolean {
+  if (!(message instanceof Buffer)) {
+    if (typeof message.GetVerificationBuffer !== 'function') {
+      throw new Error("message doesn't have a valid GetVerificationBuffer method")
+    }
+    message = message.GetVerificationBuffer()
+  }
 
   try {
     const address = ethers.utils.verifyMessage(message, signature)
@@ -20,5 +24,3 @@ function verifyEthereum(message: Buffer | BaseMessage, signature: string, signer
     return false
   }
 }
-
-export default verifyEthereum
