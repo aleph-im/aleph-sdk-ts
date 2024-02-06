@@ -1,4 +1,4 @@
-import { SignableMessage } from "@aleph-sdk/account";
+import { SignableMessage } from '@aleph-sdk/account'
 import { char2Bytes, verifySignature } from '@taquito/utils'
 
 /**
