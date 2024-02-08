@@ -1,5 +1,5 @@
 {
-  "name": "aleph-sdk-ts",
+  "name": "@aleph-sdk/monorepo",
   "version": "0.0.0",
   "description": "Aleph.im Typescript SDK",
   "keywords": [
@@ -23,7 +23,7 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "npm run test:jest",
-    "test:jest": "jest --testTimeout=1200000 --verbose --coverage"
+    "test:jest": "jest --testTimeout=1200000 --verbose --coverage ./packages"
   },
   "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
   "author": "Aleph.im Team",
@@ -88,5 +88,8 @@
     "packages/substrate",
     "packages/evm",
     "packages/superfluid"
-  ]
+  ],
+  "dependencies": {
+    "jasmine-unit-test-generator": "^1.3.1"
+  }
 }

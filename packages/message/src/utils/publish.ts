@@ -48,9 +48,11 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
   const serialized = JSON.stringify(configuration.content)
   const requestedStorageEngine = configuration.message.item_type
 
+  // @todo: Separate assignment and push to storage engine
   if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || configuration.inline)) {
     configuration.message.item_content = serialized
     configuration.message.item_type = ItemType.inline
+    // @todo: Replace with standard crypto library
     configuration.message.item_hash = new shajs.sha256().update(serialized).digest('hex')
   } else {
     if (requestedStorageEngine === ItemType.inline) {

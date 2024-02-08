@@ -1,9 +1,9 @@
 import { DEFAULT_API_V2 } from '@aleph-sdk/core'
-import { MessageBuilder } from '../utils/messageBuilder'
+import { ForgetMessageBuilder } from '../utils/messageBuilder'
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
 import { ForgetContent, ForgetMessage, ForgetPublishConfiguration } from './types'
-import { ItemType, MessageType } from '../types'
+import { ItemType } from '../types'
 
 export class ForgetMessageClient {
   /**
@@ -35,13 +35,12 @@ export class ForgetMessageClient {
       reason: reason || undefined,
     }
 
-    const message = MessageBuilder<ForgetContent, MessageType.forget>({
+    const message = ForgetMessageBuilder({
       account,
       channel,
       timestamp,
       storageEngine,
       content: forgetContent,
-      type: MessageType.forget,
     })
 
     await PutContentToStorageEngine({

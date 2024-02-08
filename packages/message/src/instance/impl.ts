@@ -1,10 +1,10 @@
 import { DEFAULT_API_V2 } from '@aleph-sdk/core'
 import { defaultResources, defaultExecutionEnvironment } from '../utils/constants'
-import { MessageBuilder } from '../utils/messageBuilder'
+import { InstanceMessageBuilder } from '../utils/messageBuilder'
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
 import { InstancePublishConfiguration, InstanceContent, InstanceMessage } from './types'
-import { ItemType, VolumePersistence, MessageType } from '../types'
+import { ItemType, VolumePersistence } from '../types'
 
 export class InstanceMessageClient {
   // TODO: Check that program_ref, runtime and data_ref exist
@@ -60,13 +60,12 @@ export class InstanceMessageClient {
       rootfs,
     }
 
-    const message = MessageBuilder<InstanceContent, MessageType.instance>({
+    const message = InstanceMessageBuilder({
       account,
       channel,
       timestamp,
       storageEngine,
       content: instanceContent,
-      type: MessageType.instance,
     })
 
     await PutContentToStorageEngine({

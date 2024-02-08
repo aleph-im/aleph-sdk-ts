@@ -1,5 +1,5 @@
 import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
-import { MessageBuilder } from '../utils/messageBuilder'
+import { ProgramMessageBuilder } from '../utils/messageBuilder'
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
 import {
@@ -13,7 +13,7 @@ import {
 } from './types'
 import { StoreMessage, StoreMessageClient } from '../store'
 import { BaseMessageClient } from '../base'
-import { ItemType, MessageType } from '../types'
+import { ItemType } from '../types'
 
 export class ProgramMessageClient {
   constructor(
@@ -108,13 +108,12 @@ export class ProgramMessageClient {
       variables,
     }
 
-    const message = MessageBuilder<ProgramContent, MessageType.program>({
+    const message = ProgramMessageBuilder({
       account,
       channel,
       timestamp,
       storageEngine,
       content: programContent,
-      type: MessageType.program,
     })
 
     await PutContentToStorageEngine({

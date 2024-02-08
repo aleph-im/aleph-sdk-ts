@@ -1,5 +1,7 @@
-import { DEFAULT_API_V2 } from '../../../src/global'
-import { aggregate, ethereum } from '@aleph-sdk/account/tests'
+import { DEFAULT_API_V2 } from '@aleph-sdk/core'
+import ethereum from '@aleph-sdk/ethereum'
+import { AggregateMessageClient } from '@aleph-sdk/message'
+
 import { EphAccountList } from '@aleph-sdk/account/tests/testAccoun/entryPoint'
 import fs from 'fs'
 
@@ -28,7 +30,7 @@ describe('Aggregate message update test', () => {
       A: 10,
     }
 
-    await aggregate.Publish({
+    await AggregateMessageClient.Publish({
       account: account,
       key: key,
       content: content,

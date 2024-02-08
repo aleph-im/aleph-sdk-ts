@@ -38,9 +38,6 @@ export class ETHLedgerAccount extends Account {
    * @param message The message to signe
    */
   async Sign(message: SignableMessage): Promise<string> {
-    if (message.GetVerificationBuffer === undefined)
-      throw new Error("message doesn't have a valid GetVerificationBuffer method")
-
     const buffer = message.GetVerificationBuffer()
 
     return this.getSignature(buffer)

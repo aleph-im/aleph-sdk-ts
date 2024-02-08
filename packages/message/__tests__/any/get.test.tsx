@@ -1,9 +1,9 @@
-import { any } from '../../index'
-import { BaseMessage, Chain, MessageType, StoreMessage } from '../../../src/messages/types'
+import { BaseMessage, MessageType, StoreMessage, BaseMessageClient } from '@aleph-sdk/message'
 
 describe('Test features from GetMessage', () => {
   it('Try by Hash with type-guard resolve', async () => {
-    const res = await any.GetMessage({
+    const client = new BaseMessageClient()
+    const res = await client.get({
       hash: '87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c',
     })
 

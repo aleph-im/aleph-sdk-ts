@@ -3,6 +3,9 @@ import { Keypair } from '@solana/web3.js'
 import * as solana from '../src/account'
 import { PanthomMockProvider, OfficialMockProvider } from './solanaProvider'
 import { EphAccount } from '@aleph-sdk/account'
+import { PostMessageBuilder } from '@aleph-sdk/message'
+import { ItemType } from '@aleph-sdk/message/src'
+import { NewAccount, SOLAccount } from '@aleph-sdk/solana'
 
 async function createEphemeralSol(): Promise<EphAccount> {
   const { account, privateKey } = solana.NewAccount()
@@ -49,20 +52,13 @@ describe('Solana accounts', () => {
     const accountPhantom = await solana.GetAccountFromProvider(providerPhantom)
     const accountOfficial = await solana.GetAccountFromProvider(providerOfficial)
 
-    const message = {
-      chain: accountSecretKey.GetChain(),
-      sender: accountSecretKey.address,
-      type: 'post',
+    const message = PostMessageBuilder({
+      account: accountSecretKey,
       channel: 'TEST',
-      confirmed: true,
-      signature: 'signature',
-      size: 15,
-      time: 15,
-      item_type: 'storage',
-      item_content: 'content',
-      item_hash: 'hash',
-      content: { address: accountSecretKey.address, time: 15 },
-    }
+      storageEngine: ItemType.inline,
+      timestamp: Date.now() / 1000,
+      content: { address: accountSecretKey.address, time: 15, type: '' },
+    })
 
     expect(accountSecretKey.Sign(message)).toStrictEqual(accountPhantom.Sign(message))
     expect(accountOfficial.Sign(message)).toStrictEqual(accountPhantom.Sign(message))
@@ -95,4 +91,14 @@ describe('Solana accounts', () => {
   //     expect(amends.posts[0].content).toStrictEqual(content)
   //   })
   // })
+})
+
+describe('NewAccount', () => {
+  it('should create a new account with a private key and address', () => {
+    const { account, privateKey } = NewAccount()
+
+    expect(account).toBeInstanceOf(SOLAccount)
+    expect(privateKey).toBeInstanceOf(Uint8Array)
+    expect(privateKey.length).toBeGreaterThan(0)
+  })
 })

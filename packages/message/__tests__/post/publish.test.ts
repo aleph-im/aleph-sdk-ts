@@ -1,4 +1,4 @@
-import { aggregate, ethereum, post } from '../../index'
+import {  } from '@aleph-sdk/message'
 import { v4 as uuidv4 } from 'uuid'
 import { EphAccountList } from '../../testAccount/entryPoint'
 import fs from 'fs'

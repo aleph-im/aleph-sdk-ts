@@ -6,7 +6,6 @@ import nacl from 'tweetnacl'
 
 import { Blockchain } from '@aleph-sdk/core'
 import { Account, SignableMessage } from '@aleph-sdk/account'
-import { verifyTezos } from './verify'
 
 // The data to format
 export const STANDARD_DAPP_URL = 'https://aleph.im'
@@ -53,9 +52,6 @@ export class TEZOSAccount extends Account {
    * @param message The Aleph message to sign, using some of its fields.
    */
   override async Sign(message: SignableMessage): Promise<string> {
-    if (message.GetVerificationBuffer === undefined)
-      throw new Error("message doesn't have a valid GetVerificationBuffer method")
-
     const buffer = message.GetVerificationBuffer()
 
     const ISO8601formattedTimestamp = new Date(message.time).toISOString()
@@ -82,17 +78,12 @@ export class TEZOSAccount extends Account {
     } else {
       signature = (await this.wallet.sign(payloadBytes)).sig
     }
-    if (
-      verifyTezos(message, JSON.stringify({ signature, publicKey: await this.GetPublicKey(), dAppUrl: this.dAppUrl }))
-    ) {
-      return JSON.stringify({
-        signature: signature,
-        publicKey: await this.GetPublicKey(),
-        signingType: SigningType.MICHELINE.toLowerCase(),
-        dAppUrl: this.dAppUrl,
-      })
-    }
-    throw new Error('Cannot proof the integrity of the signature')
+    return JSON.stringify({
+      signature: signature,
+      publicKey: await this.GetPublicKey(),
+      signingType: SigningType.MICHELINE.toLowerCase(),
+      dAppUrl: this.dAppUrl,
+    })
   }
 }
 
@@ -129,7 +120,7 @@ export async function ImportAccountFromFundraiserInfo(
   password: string,
   mnemonic: string,
 ): Promise<TEZOSAccount> {
-  const wallet: InMemorySigner = InMemorySigner.fromFundraiser(email, password, mnemonic)
+  const wallet: InMemorySigner = await InMemorySigner.fromFundraiser(email, password, mnemonic)
 
   return new TEZOSAccount(await wallet.publicKeyHash(), wallet)
 }

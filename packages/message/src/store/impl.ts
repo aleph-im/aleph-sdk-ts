@@ -8,10 +8,10 @@ import {
   StorePinConfiguration,
   StorePublishConfiguration,
 } from './types'
-import { MessageBuilder } from '../utils/messageBuilder'
+import { StoreMessageBuilder } from '../utils/messageBuilder'
 import { PushFileToStorageEngine, PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
-import { ItemType, MessageType } from '../types'
+import { ItemType } from '../types'
 
 export class StoreMessageClient {
   /**
@@ -68,13 +68,12 @@ export class StoreMessageClient {
       time: timestamp,
     }
 
-    const message = MessageBuilder<StoreContent, MessageType.store>({
+    const message = StoreMessageBuilder({
       account,
       channel,
       timestamp,
       storageEngine,
       content: storeContent,
-      type: MessageType.store,
     })
 
     await PutContentToStorageEngine({

@@ -10,8 +10,6 @@ import elliptic from 'elliptic'
  */
 export async function verifyCosmos(message: Buffer | SignableMessage, serializedSignature: string): Promise<boolean> {
   if (!(message instanceof Buffer)) {
-    if (typeof message.GetVerificationBuffer !== 'function')
-      throw new Error("message doesn't have a valid GetVerificationBuffer method")
     message = message.GetVerificationBuffer()
   }
 

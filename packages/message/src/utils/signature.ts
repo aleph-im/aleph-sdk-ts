@@ -2,19 +2,29 @@ import axios from 'axios'
 
 import { getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import { Account } from '@aleph-sdk/account'
+import { BuiltMessage } from './messageBuilder'
 import { BaseMessage } from '../types'
 
 type SignAndBroadcastConfiguration = {
-  message: BaseMessage
+  message: BuiltMessage<any, any>
   account: Account
   APIServer: string
 }
 
-type BroadcastConfiguration = SignAndBroadcastConfiguration
+type BroadcastConfiguration = Omit<SignAndBroadcastConfiguration, 'message'> & {
+  message: BaseMessage
+}
 
 export async function SignAndBroadcast(configuration: SignAndBroadcastConfiguration): Promise<void> {
-  configuration.message.signature = await configuration.account.Sign(configuration.message)
-  await Broadcast(configuration)
+  const signedMessage: BroadcastConfiguration = {
+    account: configuration.account,
+    APIServer: configuration.APIServer,
+    message: {
+      ...configuration.message,
+      signature: await configuration.account.Sign(configuration.message),
+    },
+  }
+  await Broadcast(signedMessage)
 }
 
 async function Broadcast(configuration: BroadcastConfiguration) {

@@ -3,7 +3,7 @@ import axios from 'axios'
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
-import { MessageBuilder } from '../utils/messageBuilder'
+import { AggregateMessageBuilder } from '../utils/messageBuilder'
 import {
   AggregateContent,
   AggregateGetConfiguration,
@@ -11,7 +11,7 @@ import {
   AggregateMessage,
   AggregatePublishConfiguration,
 } from './types'
-import { ItemType, MessageType } from '../types'
+import { ItemType } from '../types'
 
 export class AggregateMessageClient {
   /**
@@ -76,13 +76,12 @@ export class AggregateMessageClient {
       content: content,
     }
 
-    const message = MessageBuilder<AggregateContent<T>, MessageType.aggregate>({
+    const message = AggregateMessageBuilder({
       account,
       channel,
       timestamp,
       storageEngine,
       content: aggregateContent,
-      type: MessageType.aggregate,
     })
 
     await PutContentToStorageEngine({

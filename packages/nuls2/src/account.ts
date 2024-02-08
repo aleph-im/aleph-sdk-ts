@@ -80,9 +80,6 @@ export class NULS2Account extends ECIESAccount {
    * @param message The Aleph message to sign, using some of its fields.
    */
   Sign(message: SignableMessage): Promise<string> {
-    if (message.GetVerificationBuffer === undefined)
-      throw new Error("message doesn't have a valid GetVerificationBuffer method")
-
     const buffer = message.GetVerificationBuffer()
     const digest = NULS2Account.magicHash(buffer)
     const privateKeyBuffer = Buffer.from(this.privateKey, 'hex')

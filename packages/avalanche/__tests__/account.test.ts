@@ -1,6 +1,7 @@
 import { EthereumMockProvider } from '@aleph-sdk/evm'
-import * as avalanche from '../src/account'
+import * as avalanche from '../src'
 import { EphAccount } from '@aleph-sdk/account'
+import { ItemType, PostMessageBuilder } from '@aleph-sdk/message'
 
 async function createEphemeralAvax(): Promise<EphAccount> {
   const keypair = await avalanche.getKeyPair()
@@ -183,4 +184,47 @@ describe('Avalanche accounts', () => {
   //     expect(amends.posts[0].content).toStrictEqual(content)
   //   })
   // })
+
+  it('Should success to verif the authenticity of a signature', async () => {
+    const { account } = await avalanche.NewAccount()
+
+    const message = PostMessageBuilder({
+      account,
+      channel: 'TEST',
+      storageEngine: ItemType.inline,
+      timestamp: Date.now() / 1000,
+      content: { address: account.address, time: 15, type: '' },
+    })
+    if (!account.publicKey) throw Error()
+    const signature = await account.Sign(message)
+    const verif = await avalanche.verifyAvalanche(message.GetVerificationBuffer(), signature, account.publicKey)
+    const verifB = await avalanche.verifyAvalanche(message, signature, account.publicKey)
+
+    expect(verif).toStrictEqual(true)
+    expect(verifB).toStrictEqual(true)
+  })
+
+  it('Should fail to verif the authenticity of a signature', async () => {
+    const { account: account } = await avalanche.NewAccount()
+    const { account: fakeAccount } = await avalanche.NewAccount()
+
+    const message = PostMessageBuilder({
+      account,
+      channel: 'TEST',
+      timestamp: 15,
+      storageEngine: ItemType.storage,
+      content: { address: account.address, time: 15, type: '' },
+    })
+    const fakeMessage = {
+      ...message,
+      item_hash: 'FAKE',
+    }
+    if (!account.publicKey || !fakeAccount.publicKey) throw Error()
+    const fakeSignature = await account.Sign(fakeMessage)
+    const verif = await avalanche.verifyAvalanche(message, fakeSignature, account.publicKey)
+    const verifB = await avalanche.verifyAvalanche(fakeMessage, fakeSignature, fakeAccount.publicKey)
+
+    expect(verif).toStrictEqual(false)
+    expect(verifB).toStrictEqual(false)
+  })
 })

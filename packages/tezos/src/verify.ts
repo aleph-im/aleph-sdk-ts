@@ -9,8 +9,6 @@ import { char2Bytes, verifySignature } from '@taquito/utils'
  * @param signature The signature associated with the first params of this method.
  */
 export function verifyTezos(message: SignableMessage, signature: string): boolean {
-  if (typeof message.GetVerificationBuffer !== 'function')
-    throw new Error("message doesn't have a valid GetVerificationBuffer method")
   const buffer = message.GetVerificationBuffer()
 
   const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature)

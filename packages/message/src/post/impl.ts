@@ -9,10 +9,10 @@ import {
   PostQueryResponse,
   PostSubmitConfiguration,
 } from './types'
-import { MessageBuilder } from '../utils/messageBuilder'
+import { PostMessageBuilder } from '../utils/messageBuilder'
 import { PutContentToStorageEngine } from '../utils/publish'
 import { SignAndBroadcast } from '../utils/signature'
-import { ItemType, MessageType } from '../types'
+import { ItemType } from '../types'
 
 export class PostMessageClient {
   /**
@@ -83,13 +83,12 @@ export class PostMessageClient {
 
     if (ref !== '') postContent.ref = ref
 
-    const message = MessageBuilder<PostContent<T>, MessageType.post>({
+    const message = PostMessageBuilder({
       account,
       channel,
       timestamp,
       storageEngine,
       content: postContent,
-      type: MessageType.post,
     })
 
     await PutContentToStorageEngine({

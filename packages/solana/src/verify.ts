@@ -11,8 +11,6 @@ import bs58 from 'bs58'
  */
 export function verifySolana(message: Buffer | SignableMessage, serializedSignature: string): boolean {
   if (!(message instanceof Buffer)) {
-    if (typeof message.GetVerificationBuffer !== 'function')
-      throw new Error("message doesn't have a valid GetVerificationBuffer method")
     message = message.GetVerificationBuffer()
   }
   const { signature, publicKey } = JSON.parse(serializedSignature)

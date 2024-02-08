@@ -1,5 +1,5 @@
 import fs, { readFileSync } from 'fs'
-import { ethereum, program } from '../../index'
+import ethereum from '@aleph-sdk/ethereum'
 import { EphAccountList } from '../../testAccount/entryPoint'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {

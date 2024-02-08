@@ -1,3 +1,7 @@
+import { EphAccount } from '@aleph-sdk/account'
+import { ethers } from 'ethers'
+import bip39 from 'bip39'
+
 export async function createEphemeralEth(): Promise<EphAccount> {
   const mnemonic = bip39.generateMnemonic()
   const { address, publicKey, privateKey } = ethers.Wallet.fromMnemonic(mnemonic)

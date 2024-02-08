@@ -110,9 +110,6 @@ export class ETHAccount extends EVMAccount {
    * @param message The Aleph message to sign, using some of its fields.
    */
   async Sign(message: SignableMessage): Promise<string> {
-    if (message.GetVerificationBuffer === undefined)
-      throw new Error("message doesn't have a valid GetVerificationBuffer method")
-
     const buffer = message.GetVerificationBuffer()
     return this.wallet.signMessage(buffer.toString())
   }
