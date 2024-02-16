@@ -33,7 +33,7 @@ export class NULS2Account extends ECIESAccount {
     this.privateKey = privateKey
   }
 
-  GetChain(): Blockchain {
+  getChain(): Blockchain {
     return Blockchain.NULS2
   }
 
@@ -79,8 +79,8 @@ export class NULS2Account extends ECIESAccount {
    *
    * @param message The Aleph message to sign, using some of its fields.
    */
-  Sign(message: SignableMessage): Promise<string> {
-    const buffer = message.GetVerificationBuffer()
+  sign(message: SignableMessage): Promise<string> {
+    const buffer = message.getVerificationBuffer()
     const digest = NULS2Account.magicHash(buffer)
     const privateKeyBuffer = Buffer.from(this.privateKey, 'hex')
 

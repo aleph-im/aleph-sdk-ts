@@ -1,7 +1,7 @@
 export type SignableMessage = {
   time: number
   sender: string
-  GetVerificationBuffer: () => Buffer
+  getVerificationBuffer: () => Buffer
 }
 
 // -------- Tests utils

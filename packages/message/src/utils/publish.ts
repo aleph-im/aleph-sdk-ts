@@ -3,7 +3,7 @@ import shajs from 'sha.js'
 import FormDataNode from 'form-data'
 
 import { getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
-import { BaseMessage, ItemType } from '../types'
+import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
 
 /**
  * message:         The message to update and then publish.
@@ -14,18 +14,18 @@ import { BaseMessage, ItemType } from '../types'
  *
  * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
-type PutConfiguration<T> = {
+type PutConfiguration<C extends MessageContent> = {
   inline?: boolean
-  message: BaseMessage
-  content: T
-  APIServer: string
+  message: BuiltMessage<C>
+  content: C
+  apiServer: string
 }
 
 type PushConfiguration<T> = {
   content: T
-  APIServer: string
+  apiServer: string
   storageEngine: ItemType
 }
 
@@ -35,7 +35,7 @@ type PushResponse = {
 
 type PushFileConfiguration = {
   file: Buffer | Blob
-  APIServer: string
+  apiServer: string
   storageEngine: ItemType
 }
 
@@ -44,16 +44,21 @@ type PushFileConfiguration = {
  *
  * @param configuration The configuration used to update & publish the message.
  */
-export async function PutContentToStorageEngine<T>(configuration: PutConfiguration<T>): Promise<void> {
+export async function prepareAlephMessage<C extends MessageContent>(
+  configuration: PutConfiguration<C>,
+): Promise<HashedMessage<C>> {
   const serialized = JSON.stringify(configuration.content)
   const requestedStorageEngine = configuration.message.item_type
 
   // @todo: Separate assignment and push to storage engine
   if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || configuration.inline)) {
-    configuration.message.item_content = serialized
-    configuration.message.item_type = ItemType.inline
-    // @todo: Replace with standard crypto library
-    configuration.message.item_hash = new shajs.sha256().update(serialized).digest('hex')
+    return new HashedMessage<C>({
+      ...configuration.message,
+      item_content: serialized,
+      item_type: ItemType.inline,
+      // @todo: Replace with standard crypto library
+      item_hash: new shajs.sha256().update(serialized).digest('hex'),
+    })
   } else {
     if (requestedStorageEngine === ItemType.inline) {
       console.warn(
@@ -61,18 +66,22 @@ export async function PutContentToStorageEngine<T>(configuration: PutConfigurati
       )
       configuration.message.item_type = ItemType.storage
     }
-    configuration.message.item_content = undefined
-    configuration.message.item_hash = await PushToStorageEngine<T>({
-      content: configuration.content,
-      APIServer: configuration.APIServer,
+    const hash = await pushJsonToStorageEngine({
+      content: serialized,
+      apiServer: configuration.apiServer,
       storageEngine: configuration.message.item_type,
+    })
+    return new HashedMessage<C>({
+      ...configuration.message,
+      item_content: undefined,
+      item_hash: hash,
     })
   }
 }
 
-async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Promise<string> {
+async function pushJsonToStorageEngine<T>(configuration: PushConfiguration<T>): Promise<string> {
   const response = await axios.post<PushResponse>(
-    `${stripTrailingSlash(configuration.APIServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
+    `${stripTrailingSlash(configuration.apiServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
     configuration.content,
     {
       headers: {
@@ -84,7 +93,7 @@ async function PushToStorageEngine<T>(configuration: PushConfiguration<T>): Prom
   return response.data.hash
 }
 
-export async function PushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {
+export async function pushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {
   const isBrowser = typeof FormData !== 'undefined'
   let form: FormDataNode | FormData
 
@@ -96,7 +105,7 @@ export async function PushFileToStorageEngine(configuration: PushFileConfigurati
     form.append('file', configuration.file, 'File')
   }
   const response = await axios.post<PushResponse>(
-    `${stripTrailingSlash(configuration.APIServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
+    `${stripTrailingSlash(configuration.apiServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_file`,
     form,
     {
       headers: {

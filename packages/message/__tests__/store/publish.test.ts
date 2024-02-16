@@ -33,7 +33,7 @@ describe('Store message publish', () => {
 
     const response = await store.Get({
       fileHash: hash.content.item_hash,
-      APIServer: DEFAULT_API_V2,
+      apiServer: DEFAULT_API_V2,
     })
 
     const got = ArraybufferToString(response)
@@ -56,7 +56,7 @@ describe('Store message publish', () => {
 
     const response = await store.Get({
       fileHash: hash.content.item_hash,
-      APIServer: DEFAULT_API_V2,
+      apiServer: DEFAULT_API_V2,
     })
 
     const got = ArraybufferToString(response)
@@ -97,7 +97,7 @@ describe('Store message publish', () => {
       // @ts-ignore
       store.Publish({
         channel: 'TEST',
-        APIServer: DEFAULT_API_V2,
+        apiServer: DEFAULT_API_V2,
         account: account,
         storageEngine: ItemType.storage,
       }),

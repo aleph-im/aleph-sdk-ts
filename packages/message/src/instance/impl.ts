@@ -1,8 +1,8 @@
 import { DEFAULT_API_V2 } from '@aleph-sdk/core'
 import { defaultResources, defaultExecutionEnvironment } from '../utils/constants'
-import { InstanceMessageBuilder } from '../utils/messageBuilder'
-import { PutContentToStorageEngine } from '../utils/publish'
-import { SignAndBroadcast } from '../utils/signature'
+import { buildInstanceMessage } from '../utils/messageBuilder'
+import { prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
 import { InstancePublishConfiguration, InstanceContent, InstanceMessage } from './types'
 import { ItemType, VolumePersistence } from '../types'
 
@@ -22,7 +22,7 @@ export class InstanceMessageClient {
     volumes = [],
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
   }: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000
     const { address } = account
@@ -60,7 +60,7 @@ export class InstanceMessageClient {
       rootfs,
     }
 
-    const message = InstanceMessageBuilder({
+    const builtMessage = buildInstanceMessage({
       account,
       channel,
       timestamp,
@@ -68,20 +68,20 @@ export class InstanceMessageClient {
       content: instanceContent,
     })
 
-    await PutContentToStorageEngine({
-      message: message,
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
       content: instanceContent,
       inline: inlineRequested,
-      APIServer,
+      apiServer,
     })
 
-    await SignAndBroadcast({
-      message: message,
+    const { message } = await broadcast({
+      message: hashedMessage,
       account,
-      APIServer,
+      apiServer: apiServer,
     })
 
-    return message as unknown as InstanceMessage
+    return message
   }
 }
 

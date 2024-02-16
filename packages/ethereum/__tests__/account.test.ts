@@ -155,7 +155,7 @@ describe('Ethereum accounts', () => {
       content: { address: account.address, time: 15, type: '' },
     })
 
-    expect(account.Sign(message)).toStrictEqual(accountFromPrivate.Sign(message))
-    expect(account.Sign(message)).toStrictEqual(accountFromProvider.Sign(message))
+    expect(account.sign(message)).toStrictEqual(accountFromPrivate.sign(message))
+    expect(account.sign(message)).toStrictEqual(accountFromProvider.sign(message))
   })
 })

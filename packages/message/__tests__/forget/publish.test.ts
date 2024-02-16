@@ -1,5 +1,4 @@
-import { ethereum, forget, post } from '../../index'
-import { EphAccountList } from '../../testAccount/entryPoint'
+import { ForgetMessageClient, PostMessageClient } from '@aleph-sdk/message'
 import fs from 'fs'
 
 describe('Forget publish tests', () => {
@@ -8,6 +7,8 @@ describe('Forget publish tests', () => {
   const content: { body: string } = {
     body: 'This message will be destroyed',
   }
+  const post = new PostMessageClient()
+  const forget = new ForgetMessageClient()
 
   // Import the List of Test Ephemeral test Account, throw if the list is not generated
   beforeAll(async () => {
@@ -22,7 +23,7 @@ describe('Forget publish tests', () => {
     if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
     const account = ethereum.ImportAccountFromMnemonic(mnemonic)
 
-    const res = await post.Publish({
+    const res = await post.send({
       channel: 'TEST',
       account: account,
       postType: postType,

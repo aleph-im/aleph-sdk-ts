@@ -1,7 +1,7 @@
 import { DEFAULT_API_V2 } from '@aleph-sdk/core'
-import { ForgetMessageBuilder } from '../utils/messageBuilder'
-import { PutContentToStorageEngine } from '../utils/publish'
-import { SignAndBroadcast } from '../utils/signature'
+import { buildForgetMessage } from '../utils/messageBuilder'
+import { prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
 import { ForgetContent, ForgetMessage, ForgetPublishConfiguration } from './types'
 import { ItemType } from '../types'
 
@@ -18,7 +18,7 @@ export class ForgetMessageClient {
    */
   async send({
     account,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
     hashes,
     reason,
     channel,
@@ -35,7 +35,7 @@ export class ForgetMessageClient {
       reason: reason || undefined,
     }
 
-    const message = ForgetMessageBuilder({
+    const builtMessage = buildForgetMessage({
       account,
       channel,
       timestamp,
@@ -43,16 +43,16 @@ export class ForgetMessageClient {
       content: forgetContent,
     })
 
-    await PutContentToStorageEngine({
-      message: message,
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
       content: forgetContent,
-      APIServer,
+      apiServer,
     })
 
-    await SignAndBroadcast({
-      message: message,
+    const { message } = await broadcast({
+      message: hashedMessage,
       account,
-      APIServer,
+      apiServer: apiServer,
     })
     return message
   }

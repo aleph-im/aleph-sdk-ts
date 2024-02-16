@@ -196,7 +196,7 @@ describe('Avalanche accounts', () => {
       content: { address: account.address, time: 15, type: '' },
     })
     if (!account.publicKey) throw Error()
-    const signature = await account.Sign(message)
+    const signature = await account.sign(message)
     const verif = await avalanche.verifyAvalanche(message.GetVerificationBuffer(), signature, account.publicKey)
     const verifB = await avalanche.verifyAvalanche(message, signature, account.publicKey)
 
@@ -220,7 +220,7 @@ describe('Avalanche accounts', () => {
       item_hash: 'FAKE',
     }
     if (!account.publicKey || !fakeAccount.publicKey) throw Error()
-    const fakeSignature = await account.Sign(fakeMessage)
+    const fakeSignature = await account.sign(fakeMessage)
     const verif = await avalanche.verifyAvalanche(message, fakeSignature, account.publicKey)
     const verifB = await avalanche.verifyAvalanche(fakeMessage, fakeSignature, fakeAccount.publicKey)
 

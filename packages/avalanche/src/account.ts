@@ -36,7 +36,7 @@ export class AvalancheAccount extends EVMAccount {
     else this.wallet = signerOrWallet
   }
 
-  override GetChain(): Blockchain {
+  override getChain(): Blockchain {
     if (this.keyPair) return Blockchain.AVAX
     if (this.wallet) return Blockchain.ETH
 
@@ -120,8 +120,8 @@ export class AvalancheAccount extends EVMAccount {
    *
    * @param message The Aleph message to sign, using some of its fields.
    */
-  async Sign(message: SignableMessage): Promise<string> {
-    const buffer = message.GetVerificationBuffer()
+  async sign(message: SignableMessage): Promise<string> {
+    const buffer = message.getVerificationBuffer()
 
     const digest = digestMessage(buffer)
 

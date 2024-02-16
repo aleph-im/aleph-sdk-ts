@@ -4,14 +4,12 @@ import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/co
 import {
   PostContent,
   PostGetConfiguration,
-  PostMessage,
   PostQueryParams,
   PostQueryResponse,
   PostSubmitConfiguration,
+  PostMessage,
 } from './types'
-import { PostMessageBuilder } from '../utils/messageBuilder'
-import { PutContentToStorageEngine } from '../utils/publish'
-import { SignAndBroadcast } from '../utils/signature'
+import { PostMessageBuilder, prepareAlephMessage, broadcast } from '../utils'
 import { ItemType } from '../types'
 
 export class PostMessageClient {
@@ -26,7 +24,7 @@ export class PostMessageClient {
     types = '',
     pagination = 50,
     page = 1,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
     channels = [],
     refs = [],
     addresses = [],
@@ -44,7 +42,7 @@ export class PostMessageClient {
       channels: channels?.join(',') || undefined,
     }
 
-    const response = await axios.get<PostQueryResponse<T>>(`${stripTrailingSlash(APIServer)}/api/v0/posts.json`, {
+    const response = await axios.get<PostQueryResponse<T>>(`${stripTrailingSlash(apiServer)}/api/v0/posts.json`, {
       params,
       socketPath: getSocketPath(),
     })
@@ -69,7 +67,7 @@ export class PostMessageClient {
     ref,
     address,
     storageEngine = ItemType.inline,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
   }: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
     if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
 
@@ -83,7 +81,7 @@ export class PostMessageClient {
 
     if (ref !== '') postContent.ref = ref
 
-    const message = PostMessageBuilder({
+    const builtMessage = PostMessageBuilder({
       account,
       channel,
       timestamp,
@@ -91,16 +89,16 @@ export class PostMessageClient {
       content: postContent,
     })
 
-    await PutContentToStorageEngine({
-      message: message,
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
       content: postContent,
-      APIServer,
+      apiServer,
     })
 
-    await SignAndBroadcast({
-      message: message,
+    const { message } = await broadcast({
+      message: hashedMessage,
       account,
-      APIServer,
+      apiServer: apiServer,
     })
 
     return message

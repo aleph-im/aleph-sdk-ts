@@ -17,12 +17,12 @@ describe('Cosmos SDK', () => {
     const message: SignableMessage = {
       time: Date.now(),
       sender: cosmosAccount.address,
-      GetVerificationBuffer: () => {
+      getVerificationBuffer: () => {
         return Buffer.from('Test message')
       },
     }
 
-    const signature = await cosmosAccount.Sign(message)
+    const signature = await cosmosAccount.sign(message)
     const verified = await verifyCosmos(message, signature)
     expect(verified).toBe(true)
   })

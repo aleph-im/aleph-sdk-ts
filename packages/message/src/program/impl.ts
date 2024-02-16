@@ -1,7 +1,7 @@
 import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
-import { ProgramMessageBuilder } from '../utils/messageBuilder'
-import { PutContentToStorageEngine } from '../utils/publish'
-import { SignAndBroadcast } from '../utils/signature'
+import { buildProgramMessage } from '../utils/messageBuilder'
+import { prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
 import {
   ProgramPublishConfiguration,
   ProgramSpawnConfiguration,
@@ -30,7 +30,7 @@ export class ProgramMessageClient {
     isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
     file,
     programRef,
     encoding = Encoding.zip,
@@ -51,7 +51,7 @@ export class ProgramMessageClient {
       programRef = (
         await this.storeMessageClient.send({
           channel,
-          APIServer,
+          apiServer,
           account,
           storageEngine,
           fileObject: file,
@@ -61,7 +61,7 @@ export class ProgramMessageClient {
       try {
         const fetchCode = await this.baseMessageClient.get<StoreMessage>({
           hash: programRef,
-          APIServer: DEFAULT_API_V2,
+          apiServer: DEFAULT_API_V2,
         })
         if (fetchCode.sender != account.address)
           console.warn(
@@ -108,7 +108,7 @@ export class ProgramMessageClient {
       variables,
     }
 
-    const message = ProgramMessageBuilder({
+    const builtMessage = buildProgramMessage({
       account,
       channel,
       timestamp,
@@ -116,17 +116,17 @@ export class ProgramMessageClient {
       content: programContent,
     })
 
-    await PutContentToStorageEngine({
-      message: message,
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
       content: programContent,
       inline: inlineRequested,
-      APIServer,
+      apiServer,
     })
 
-    await SignAndBroadcast({
-      message: message,
+    const { message } = await broadcast({
+      message: hashedMessage,
       account,
-      APIServer,
+      apiServer: apiServer,
     })
 
     return message
@@ -139,7 +139,7 @@ export class ProgramMessageClient {
     isPersistent = false,
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
     programRef,
     entrypoint,
     encoding = Encoding.zip,
@@ -157,7 +157,7 @@ export class ProgramMessageClient {
       isPersistent,
       inlineRequested,
       storageEngine,
-      APIServer,
+      apiServer,
       programRef,
       entrypoint,
       encoding,

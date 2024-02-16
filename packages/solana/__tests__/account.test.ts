@@ -60,8 +60,8 @@ describe('Solana accounts', () => {
       content: { address: accountSecretKey.address, time: 15, type: '' },
     })
 
-    expect(accountSecretKey.Sign(message)).toStrictEqual(accountPhantom.Sign(message))
-    expect(accountOfficial.Sign(message)).toStrictEqual(accountPhantom.Sign(message))
+    expect(accountSecretKey.sign(message)).toStrictEqual(accountPhantom.sign(message))
+    expect(accountOfficial.sign(message)).toStrictEqual(accountPhantom.sign(message))
   })
 
   // @todo: Fix this test! We should unit test the cosmos account features, not to send messages to the network and if so, at least mock the backend....

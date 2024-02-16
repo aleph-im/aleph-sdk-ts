@@ -37,7 +37,7 @@ describe('NULS2 accounts', () => {
     const accountFromMnemoic = await nuls2.ImportAccountFromMnemonic(mnemonic)
 
     expect(accountFromMnemoic.address).toStrictEqual(address)
-    expect(accountFromMnemoic.GetChain()).toStrictEqual(Blockchain.NULS2)
+    expect(accountFromMnemoic.getChain()).toStrictEqual(Blockchain.NULS2)
   })
 
   it('should import a NULS2 accounts using a private key', async () => {
@@ -45,7 +45,7 @@ describe('NULS2 accounts', () => {
     if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
     const account = await nuls2.ImportAccountFromPrivateKey(privateKey)
 
-    expect(account.GetChain()).toStrictEqual(Blockchain.NULS2)
+    expect(account.getChain()).toStrictEqual(Blockchain.NULS2)
     expect(account.address).toStrictEqual(address)
   })
 

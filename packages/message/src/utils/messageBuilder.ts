@@ -1,108 +1,56 @@
-import { Blockchain } from '@aleph-sdk/core'
 import { Account } from '@aleph-sdk/account'
-import { ItemType, MessageType } from '../types'
+import { BuiltMessage, ItemType, MessageContent, MessageType } from '../types'
 import { PostContent } from '../post'
 import { AggregateContent } from '../aggregate'
 import { StoreContent } from '../store'
 import { ProgramContent } from '../program'
 import { InstanceContent } from '../instance'
-import { ForgetContent } from '../forget'
+import {ForgetContent} from "../forget";
 
-export type MessageBuilderConfig<C, T> = {
+export type MessageBuilderConfig<C> = {
   storageEngine: ItemType
   account: Account
   channel: string
   timestamp: number
   content: C
-  type: T
 }
 
-export type BuiltMessage<C, T> = {
-  type: T
-  time: number
-  channel: string
-  content: C
-  item_type: ItemType
-  sender: string
-  chain: Blockchain
-  size: 0
-  item_hash: ''
-  signature: ''
-  item_content: ''
-  confirmed: false
-  GetVerificationBuffer: () => Buffer
-}
-
-export function MessageBuilder<C, T>(config: MessageBuilderConfig<C, T>): BuiltMessage<C, T> {
-  return {
-    type: config.type,
-    time: config.timestamp,
-    channel: config.channel,
-    content: config.content,
-    item_type: config.storageEngine,
+function buildMessage<C extends MessageContent>(config: MessageBuilderConfig<C>, type: MessageType): BuiltMessage<C> {
+  return new BuiltMessage<C>({
+    chain: config.account.getChain(),
     sender: config.account.address,
-    chain: config.account.GetChain(),
-    size: 0,
-    item_hash: '',
-    signature: '',
-    item_content: '',
-    confirmed: false,
-    GetVerificationBuffer: function () {
-      return Buffer.from(`${this.chain}\n${this.sender}\n${this.type}\n${this.item_hash}`)
-    },
-  }
+    channel: config.channel,
+    time: config.timestamp,
+    item_type: config.storageEngine,
+    content: config.content,
+    type,
+  })
 }
 
 export function PostMessageBuilder<T = unknown>(
-  config: Omit<MessageBuilderConfig<PostContent<T>, MessageType.post>, 'type'>,
-): BuiltMessage<PostContent<T>, MessageType.post> {
-  return MessageBuilder<PostContent<T>, MessageType.post>({
-    ...config,
-    type: MessageType.post,
-  })
+  config: MessageBuilderConfig<PostContent<T>>,
+): BuiltMessage<PostContent<T>> {
+  return buildMessage<PostContent<T>>(config, MessageType.post) as BuiltMessage<PostContent<T>>
 }
 
-export function AggregateMessageBuilder<T = unknown>(
-  config: Omit<MessageBuilderConfig<AggregateContent<T>, MessageType.aggregate>, 'type'>,
-): BuiltMessage<AggregateContent<T>, MessageType.aggregate> {
-  return MessageBuilder<AggregateContent<T>, MessageType.aggregate>({
-    ...config,
-    type: MessageType.aggregate,
-  })
+export function buildAggregateMessage<T>(
+  config: MessageBuilderConfig<AggregateContent<T>>,
+): BuiltMessage<AggregateContent<T>> {
+  return buildMessage<AggregateContent<T>>(config, MessageType.aggregate) as BuiltMessage<AggregateContent<T>>
 }
 
-export function StoreMessageBuilder(
-  config: Omit<MessageBuilderConfig<StoreContent, MessageType.store>, 'type'>,
-): BuiltMessage<StoreContent, MessageType.store> {
-  return MessageBuilder<StoreContent, MessageType.store>({
-    ...config,
-    type: MessageType.store,
-  })
+export function buildStoreMessage(config: MessageBuilderConfig<StoreContent>): BuiltMessage<StoreContent> {
+  return buildMessage<StoreContent>(config, MessageType.store) as BuiltMessage<StoreContent>
 }
 
-export function ProgramMessageBuilder(
-  config: Omit<MessageBuilderConfig<ProgramContent, MessageType.program>, 'type'>,
-): BuiltMessage<ProgramContent, MessageType.program> {
-  return MessageBuilder<ProgramContent, MessageType.program>({
-    ...config,
-    type: MessageType.program,
-  })
+export function buildProgramMessage(config: MessageBuilderConfig<ProgramContent>): BuiltMessage<ProgramContent> {
+  return buildMessage<ProgramContent>(config, MessageType.program) as BuiltMessage<ProgramContent>
 }
 
-export function InstanceMessageBuilder(
-  config: Omit<MessageBuilderConfig<InstanceContent, MessageType.instance>, 'type'>,
-): BuiltMessage<InstanceContent, MessageType.instance> {
-  return MessageBuilder<InstanceContent, MessageType.instance>({
-    ...config,
-    type: MessageType.instance,
-  })
+export function buildForgetMessage(config: MessageBuilderConfig<ForgetContent>): BuiltMessage<ForgetContent> {
+  return buildMessage<ForgetContent>(config, MessageType.forget) as BuiltMessage<ForgetContent>
 }
 
-export function ForgetMessageBuilder(
-  config: Omit<MessageBuilderConfig<ForgetContent, MessageType.forget>, 'type'>,
-): BuiltMessage<ForgetContent, MessageType.forget> {
-  return MessageBuilder<ForgetContent, MessageType.forget>({
-    ...config,
-    type: MessageType.forget,
-  })
+export function buildInstanceMessage(config: MessageBuilderConfig<InstanceContent>): BuiltMessage<InstanceContent> {
+  return buildMessage<InstanceContent>(config, MessageType.instance) as BuiltMessage<InstanceContent>
 }

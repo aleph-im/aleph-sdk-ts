@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
-import { PutContentToStorageEngine } from '../utils/publish'
-import { SignAndBroadcast } from '../utils/signature'
-import { AggregateMessageBuilder } from '../utils/messageBuilder'
+import { prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
+import { buildAggregateMessage } from '../utils/messageBuilder'
 import {
   AggregateContent,
   AggregateGetConfiguration,
@@ -21,13 +21,13 @@ export class AggregateMessageClient {
    * @param configuration The configuration used to get the message, including the API endpoint.
    */
   async get<T>({
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
     address = '',
     keys = [],
     limit = 50,
   }: AggregateGetConfiguration): Promise<T> {
     const response = await axios.get<AggregateGetResponse<T>>(
-      `${stripTrailingSlash(APIServer)}/api/v0/aggregates/${address}.json`,
+      `${stripTrailingSlash(apiServer)}/api/v0/aggregates/${address}.json`,
       {
         socketPath: getSocketPath(),
         params: {
@@ -64,7 +64,7 @@ export class AggregateMessageClient {
     channel,
     storageEngine = ItemType.inline,
     inlineRequested,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
   }: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
     if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
 
@@ -76,7 +76,7 @@ export class AggregateMessageClient {
       content: content,
     }
 
-    const message = AggregateMessageBuilder({
+    const builtMessage = buildAggregateMessage({
       account,
       channel,
       timestamp,
@@ -84,16 +84,16 @@ export class AggregateMessageClient {
       content: aggregateContent,
     })
 
-    await PutContentToStorageEngine({
-      message: message,
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
       content: aggregateContent,
-      APIServer,
+      apiServer,
     })
 
-    await SignAndBroadcast({
-      message: message,
+    const { message } = await broadcast({
+      message: hashedMessage,
       account,
-      APIServer,
+      apiServer: apiServer,
     })
 
     return message

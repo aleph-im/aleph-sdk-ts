@@ -11,7 +11,7 @@ import { ethers } from 'ethers'
  */
 export function verifyEthereum(message: Buffer | SignableMessage, signature: string, signerAddress: string): boolean {
   if (!(message instanceof Buffer)) {
-    message = message.GetVerificationBuffer()
+    message = message.getVerificationBuffer()
   }
 
   try {

@@ -8,9 +8,9 @@ import {
   StorePinConfiguration,
   StorePublishConfiguration,
 } from './types'
-import { StoreMessageBuilder } from '../utils/messageBuilder'
-import { PushFileToStorageEngine, PutContentToStorageEngine } from '../utils/publish'
-import { SignAndBroadcast } from '../utils/signature'
+import { buildStoreMessage } from '../utils/messageBuilder'
+import { pushFileToStorageEngine, prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
 import { ItemType } from '../types'
 
 export class StoreMessageClient {
@@ -19,9 +19,9 @@ export class StoreMessageClient {
    *
    * @param configuration The message hash and the API Server endpoint to make the query.
    */
-  async get({ fileHash = '', APIServer = DEFAULT_API_V2 }: StoreGetConfiguration): Promise<ArrayBuffer> {
+  async get({ fileHash = '', apiServer = DEFAULT_API_V2 }: StoreGetConfiguration): Promise<ArrayBuffer> {
     const response = await axios.get<ArrayBuffer>(
-      `${stripTrailingSlash(APIServer)}/api/v0/storage/raw/${fileHash}?find`,
+      `${stripTrailingSlash(apiServer)}/api/v0/storage/raw/${fileHash}?find`,
       {
         responseType: 'arraybuffer',
         socketPath: getSocketPath(),
@@ -39,7 +39,7 @@ export class StoreMessageClient {
    */
   async send({
     account,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
     storageEngine = ItemType.storage,
     inlineRequested = true,
     channel,
@@ -52,8 +52,8 @@ export class StoreMessageClient {
 
     const hash =
       fileHash ||
-      (await PushFileToStorageEngine({
-        APIServer,
+      (await pushFileToStorageEngine({
+        apiServer,
         storageEngine,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
@@ -68,7 +68,7 @@ export class StoreMessageClient {
       time: timestamp,
     }
 
-    const message = StoreMessageBuilder({
+    const builtMessage = buildStoreMessage({
       account,
       channel,
       timestamp,
@@ -76,17 +76,17 @@ export class StoreMessageClient {
       content: storeContent,
     })
 
-    await PutContentToStorageEngine({
-      message: message,
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
       content: storeContent,
       inline: inlineRequested,
-      APIServer,
+      apiServer,
     })
 
-    await SignAndBroadcast({
-      message: message,
+    const { message } = await broadcast({
+      message: hashedMessage,
       account,
-      APIServer,
+      apiServer: apiServer,
     })
 
     return message
@@ -105,7 +105,7 @@ export class StoreMessageClient {
       account: spc.account,
       channel: spc.channel,
       fileHash: spc.fileHash,
-      APIServer: spc.APIServer || DEFAULT_API_V2,
+      apiServer: spc.apiServer || DEFAULT_API_V2,
       storageEngine: ItemType.ipfs,
     })
   }

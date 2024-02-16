@@ -27,7 +27,7 @@ export class DOTAccount extends Account {
     }
   }
 
-  GetChain(): Blockchain {
+  getChain(): Blockchain {
     return Blockchain.DOT
   }
 
@@ -39,8 +39,8 @@ export class DOTAccount extends Account {
    *
    * @param message The Aleph message to sign, using some of its fields.
    */
-  async Sign(message: SignableMessage): Promise<string> {
-    const buffer = message.GetVerificationBuffer()
+  async sign(message: SignableMessage): Promise<string> {
+    const buffer = message.getVerificationBuffer()
     let signed = ''
 
     if (this.pair) {

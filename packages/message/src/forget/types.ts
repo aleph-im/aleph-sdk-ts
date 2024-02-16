@@ -1,14 +1,11 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, BaseMessage, ItemType, MessageType } from '../types/base'
+import { BaseContent, ItemType, SignedMessage } from '../types/messages'
+
+export type ForgetMessage = SignedMessage<ForgetContent>
 
 export type ForgetContent = BaseContent & {
   hashes: string[]
   reason?: string
-}
-
-export type ForgetMessage = BaseMessage & {
-  content: ForgetContent
-  type: MessageType.forget
 }
 
 // ---------- SEND ---------
@@ -22,7 +19,7 @@ export type ForgetMessage = BaseMessage & {
  *
  * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
  * hashes:          The Hashes of the Aleph's message to forget.
  *
@@ -33,7 +30,7 @@ export type ForgetPublishConfiguration = {
   channel: string
   storageEngine?: ItemType
   inlineRequested?: boolean
-  APIServer?: string
+  apiServer?: string
   hashes: string[]
   reason?: string
 }

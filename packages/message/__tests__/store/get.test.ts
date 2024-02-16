@@ -9,7 +9,7 @@ describe('Store message retrieval', () => {
   it('should retrieve a store message correctly', async () => {
     const response = await store.Get({
       fileHash: 'QmQkv43jguT5HLC8TPbYJi2iEmr4MgLgu4nmBoR4zjYb3L',
-      APIServer: DEFAULT_API_V2,
+      apiServer: DEFAULT_API_V2,
     })
 
     const got = ArraybufferToString(response)
@@ -18,7 +18,7 @@ describe('Store message retrieval', () => {
     expect(got).toBe(expected)
   })
 
-  it('should retrieve a store message without an APIServer argument', async () => {
+  it('should retrieve a store message without an apiServer argument', async () => {
     const response = await store.Get({
       fileHash: 'QmQkv43jguT5HLC8TPbYJi2iEmr4MgLgu4nmBoR4zjYb3L',
     })

@@ -1,5 +1,7 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, BaseMessage, ItemType, MessageType } from '../types/base'
+import { BaseContent, ItemType, SignedMessage } from '../types/messages'
+
+export type StoreMessage = SignedMessage<StoreContent>
 
 export type StoreContent = BaseContent & {
   item_type: string
@@ -9,16 +11,11 @@ export type StoreContent = BaseContent & {
   ref?: string
 }
 
-export type StoreMessage = BaseMessage & {
-  content: StoreContent
-  type: MessageType.store
-}
-
 // -------- GET ----------
 
 export type StoreGetConfiguration = {
   fileHash: string
-  APIServer?: string
+  apiServer?: string
 }
 
 // -------- PIN ----------
@@ -32,14 +29,14 @@ export type StoreGetConfiguration = {
  *
  * storageEngine:   [Deprecated] - The storage engine to used when storing the message.
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 export type StorePinConfiguration = {
   channel: string
   account: Account
   fileHash: string
   storageEngine?: ItemType
-  APIServer?: string
+  apiServer?: string
 }
 
 // -------- SEND -----------
@@ -57,7 +54,7 @@ export type StorePinConfiguration = {
  *
  * inlineRequested: If set to False, the Store message will be store on the same storageEngine you picked.
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 export type StorePublishConfiguration = {
   channel: string
@@ -66,5 +63,5 @@ export type StorePublishConfiguration = {
   fileHash?: string
   storageEngine?: ItemType.ipfs | ItemType.storage
   inlineRequested?: boolean
-  APIServer?: string
+  apiServer?: string
 }

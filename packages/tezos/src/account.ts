@@ -30,7 +30,7 @@ export class TEZOSAccount extends Account {
     this.dAppUrl = dAppUrl || STANDARD_DAPP_URL
   }
 
-  override GetChain(): Blockchain {
+  override getChain(): Blockchain {
     return Blockchain.TEZOS
   }
 
@@ -51,8 +51,8 @@ export class TEZOSAccount extends Account {
    *
    * @param message The Aleph message to sign, using some of its fields.
    */
-  override async Sign(message: SignableMessage): Promise<string> {
-    const buffer = message.GetVerificationBuffer()
+  override async sign(message: SignableMessage): Promise<string> {
+    const buffer = message.getVerificationBuffer()
 
     const ISO8601formattedTimestamp = new Date(message.time).toISOString()
     // The full string

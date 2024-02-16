@@ -3,7 +3,7 @@ import { ForgetMessageClient, ItemType } from '@aleph-sdk/message'
 import * as publishUtils from '@aleph-sdk/message/src/utils/publish'
 import * as signatureUtils from '@aleph-sdk/message/src/utils/signature'
 import { Account } from '@aleph-sdk/account'
-import { ForgetContent, ForgetMessage, ForgetPublishConfiguration } from '@aleph-sdk/message/src/forget/types'
+import { ForgetContent, ForgetPublishConfiguration, ForgetMessage } from '@aleph-sdk/message'
 import { MessageType } from '../../src'
 
 jest.mock('@aleph-sdk/core')
@@ -30,11 +30,11 @@ describe('ForgetMessageClient', () => {
       channel: 'test-channel',
       hashes: ['hash1', 'hash2'],
       reason: 'Some reason',
-      APIServer: DEFAULT_API_V2,
+      apiServer: DEFAULT_API_V2,
     }
     const dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => 1609459200000) // Mock Date to 2021-01-01
     const expectedForgetMsg: ForgetMessage = {
-      chain: mockAccount.GetChain(),
+      chain: mockAccount.getChain(),
       sender: mockAccount.address,
       type: MessageType.forget,
       channel: forgetConfiguration.channel,
@@ -51,8 +51,8 @@ describe('ForgetMessageClient', () => {
         hashes: forgetConfiguration.hashes,
       } as ForgetContent,
     }
-    const putContentToStorageEngineSpy = jest.spyOn(publishUtils, 'PutContentToStorageEngine').mockResolvedValue()
-    const signAndBroadcastSpy = jest.spyOn(signatureUtils, 'SignAndBroadcast').mockResolvedValue()
+    const putContentToStorageEngineSpy = jest.spyOn(publishUtils, 'prepareAlephMessage').mockResolvedValue()
+    const signAndBroadcastSpy = jest.spyOn(signatureUtils, 'broadcast').mockResolvedValue()
     const result = await forgetMessageClient.send(forgetConfiguration)
     expect(putContentToStorageEngineSpy).toHaveBeenCalledWith(expect.objectContaining({ message: expectedForgetMsg }))
     expect(signAndBroadcastSpy).toHaveBeenCalledWith(expect.objectContaining({ message: expectedForgetMsg }))

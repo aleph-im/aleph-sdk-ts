@@ -1,5 +1,7 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, BaseMessage, ChainRef, ItemType, MessageType } from '../types/base'
+import { BaseContent, ChainRef, ItemType, SignedMessage } from '../types/messages'
+
+export type PostMessage<T> = SignedMessage<PostContent<T>>
 
 export type PostContent<T> = BaseContent & {
   content?: T
@@ -7,16 +9,11 @@ export type PostContent<T> = BaseContent & {
   ref?: string | ChainRef
 }
 
-export type PostMessage<T> = BaseMessage & {
-  content: PostContent<T>
-  type: MessageType.post
-}
-
 // ------- GET -------
 
 export type PostGetConfiguration = {
   types: string | string[]
-  APIServer?: string
+  apiServer?: string
   pagination?: number
   page?: number
   refs?: string[]
@@ -71,7 +68,7 @@ export type PostQueryResponse<T> = {
 // ------- PUBLISH -------
 
 /**
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
  * ref:             A hash or message object to reference another post / transaction hash / address / ...
  *
@@ -90,7 +87,7 @@ export type PostQueryResponse<T> = {
  * content:         The post message content.
  */
 export type PostSubmitConfiguration<T> = {
-  APIServer?: string
+  apiServer?: string
   ref?: string | ChainRef
   channel: string
   inlineRequested?: boolean

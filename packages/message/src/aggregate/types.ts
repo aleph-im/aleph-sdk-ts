@@ -1,5 +1,7 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, BaseMessage, ItemType, MessageType } from '../types/base'
+import { BaseContent, ItemType, SignedMessage } from '../types/messages'
+
+export type AggregateMessage<T> = SignedMessage<AggregateContent<T>>
 
 export type AggregateContentKey = {
   name: string
@@ -10,11 +12,6 @@ export type AggregateContent<T> = BaseContent & {
   content: T
 }
 
-export type AggregateMessage<T> = BaseMessage & {
-  content: AggregateContent<T>
-  type: MessageType.aggregate
-}
-
 // ------- GET -------
 
 export type AggregateGetResponse<T> = {
@@ -22,7 +19,7 @@ export type AggregateGetResponse<T> = {
 }
 
 export type AggregateGetConfiguration = {
-  APIServer?: string
+  apiServer?: string
   address: string
   keys?: Array<string>
   limit?: number
@@ -45,7 +42,7 @@ export type AggregateGetConfiguration = {
  *
  * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 export type AggregatePublishConfiguration<T> = {
   account: Account
@@ -55,5 +52,5 @@ export type AggregatePublishConfiguration<T> = {
   channel: string
   storageEngine?: ItemType
   inlineRequested?: boolean
-  APIServer?: string
+  apiServer?: string
 }

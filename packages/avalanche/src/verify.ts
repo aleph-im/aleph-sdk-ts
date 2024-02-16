@@ -25,7 +25,7 @@ export async function verifyAvalanche(
   signerPKey: string,
 ): Promise<boolean> {
   if (!(message instanceof Buffer)) {
-    message = message.GetVerificationBuffer()
+    message = message.getVerificationBuffer()
   }
   const ava = new Avalanche()
   const keyPair = ava.XChain().keyChain().makeKey()

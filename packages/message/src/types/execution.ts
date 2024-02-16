@@ -1,4 +1,4 @@
-import { BaseContent } from './base'
+import { BaseContent } from './messages'
 import { MachineVolume } from './volumes'
 
 /**

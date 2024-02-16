@@ -9,7 +9,7 @@ import { char2Bytes, verifySignature } from '@taquito/utils'
  * @param signature The signature associated with the first params of this method.
  */
 export function verifyTezos(message: SignableMessage, signature: string): boolean {
-  const buffer = message.GetVerificationBuffer()
+  const buffer = message.getVerificationBuffer()
 
   const { signature: parsedSignature, publicKey, dAppUrl } = JSON.parse(signature)
   const ISO8601formattedTimestamp = new Date(message.time).toISOString()

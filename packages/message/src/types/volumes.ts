@@ -1,4 +1,4 @@
-import { ItemHash } from './base'
+import { ItemHash } from './messages'
 
 export type AbstractVolume = {
   comment?: string[]

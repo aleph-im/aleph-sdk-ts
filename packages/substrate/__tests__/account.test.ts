@@ -34,7 +34,7 @@ describe('substrate accounts', () => {
     const accountFromMnemoic = await substrate.ImportAccountFromMnemonic(mnemonic)
 
     expect(accountFromMnemoic.address).toStrictEqual(address)
-    expect(accountFromMnemoic.GetChain()).toStrictEqual(Blockchain.DOT)
+    expect(accountFromMnemoic.getChain()).toStrictEqual(Blockchain.DOT)
   })
 
   it('should import a substrate accounts using a private key', async () => {
@@ -42,7 +42,7 @@ describe('substrate accounts', () => {
     if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
     const account = await substrate.ImportAccountFromPrivateKey(privateKey)
 
-    expect(account.GetChain()).toStrictEqual(Blockchain.DOT)
+    expect(account.getChain()).toStrictEqual(Blockchain.DOT)
     expect(account.address).toStrictEqual(address)
   })
 

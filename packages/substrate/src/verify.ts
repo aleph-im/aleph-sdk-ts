@@ -11,7 +11,7 @@ import { signatureVerify } from '@polkadot/util-crypto'
  */
 export function verifySubstrate(message: Buffer | SignableMessage, signature: string, signerAddress: string): boolean {
   if (!(message instanceof Buffer)) {
-    message = message.GetVerificationBuffer()
+    message = message.getVerificationBuffer()
   }
   const parsedSignature = JSON.parse(signature)
 

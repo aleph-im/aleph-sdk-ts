@@ -1,13 +1,14 @@
 import { BaseMessage, MessageType, StoreMessage, BaseMessageClient } from '@aleph-sdk/message'
 
 describe('Test features from GetMessage', () => {
+  const client = new BaseMessageClient()
+
   it('Try by Hash with type-guard resolve', async () => {
-    const client = new BaseMessageClient()
     const res = await client.get({
       hash: '87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c',
     })
 
-    expect(any.is.Store(res)).toStrictEqual(true)
+    expect(res).toStrictEqual(true)
     if (any.is.Store(res)) expect(res.content.item_hash).toStrictEqual('QmZyVbZm6Ffs9syXs8pycGbWiTa9yiGoX1b9FSFpTjaixK')
   })
 

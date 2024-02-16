@@ -10,7 +10,7 @@ import elliptic from 'elliptic'
  */
 export async function verifyCosmos(message: Buffer | SignableMessage, serializedSignature: string): Promise<boolean> {
   if (!(message instanceof Buffer)) {
-    message = message.GetVerificationBuffer()
+    message = message.getVerificationBuffer()
   }
 
   const { signature, pub_key } = JSON.parse(serializedSignature)

@@ -23,7 +23,7 @@ export class CosmosAccount extends Account {
     this.accountNumber = accountNumber
   }
 
-  GetChain(): Blockchain {
+  getChain(): Blockchain {
     return Blockchain.CSDK
   }
 
@@ -35,8 +35,8 @@ export class CosmosAccount extends Account {
    *
    * @param message The Aleph message to sign, using some of its fields.
    */
-  async Sign(message: SignableMessage): Promise<string> {
-    const buffer = message.GetVerificationBuffer()
+  async sign(message: SignableMessage): Promise<string> {
+    const buffer = message.getVerificationBuffer()
 
     const aminoMsg = {
       type: 'signutil/MsgSignText',

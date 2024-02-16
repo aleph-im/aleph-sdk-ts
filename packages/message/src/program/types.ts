@@ -1,13 +1,7 @@
 import { Account } from '@aleph-sdk/account'
-import {
-  BaseContent,
-  MachineVolume,
-  ItemType,
-  FunctionEnvironment,
-  MachineResources,
-  BaseMessage,
-  MessageType,
-} from '../types'
+import { BaseContent, MachineVolume, ItemType, FunctionEnvironment, MachineResources, SignedMessage } from '../types'
+
+export type ProgramMessage = SignedMessage<ProgramContent>
 
 /**
  * Type of Encoding
@@ -87,11 +81,6 @@ export type ProgramContent = BaseContent & {
   replaces?: string
 }
 
-export type ProgramMessage = BaseMessage & {
-  content: ProgramContent
-  type: MessageType.program
-}
-
 // ------------- SEND -------------------
 
 /**
@@ -103,7 +92,7 @@ export type ProgramMessage = BaseMessage & {
  *
  * inlineRequested: If set to False, the Program message will be store on the same storageEngine you picked.
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
  * file:            The source code of the program in under Zip format.
  *
@@ -127,7 +116,7 @@ export type ProgramPublishConfiguration = {
   isPersistent?: boolean
   storageEngine?: ItemType.ipfs | ItemType.storage
   inlineRequested?: boolean
-  APIServer?: string
+  apiServer?: string
   file?: Buffer | Blob
   programRef?: string
   encoding?: Encoding
@@ -152,7 +141,7 @@ export type ProgramPublishConfiguration = {
  *
  * inlineRequested: If set to False, the Program message will be store on the same storageEngine you picked.
  *
- * APIServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  *
  * file:            The source code of the program in under Zip format.
  *
@@ -172,7 +161,7 @@ export type ProgramSpawnConfiguration = {
   isPersistent?: boolean
   storageEngine?: ItemType.ipfs | ItemType.storage
   inlineRequested?: boolean
-  APIServer?: string
+  apiServer?: string
   programRef: string
   entrypoint: string
   encoding?: Encoding

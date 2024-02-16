@@ -14,8 +14,8 @@ export abstract class Account {
     this.address = address
   }
 
-  abstract GetChain(): Blockchain
-  abstract Sign(message: SignableMessage): Promise<string>
+  abstract getChain(): Blockchain
+  abstract sign(message: SignableMessage): Promise<string>
 }
 
 /**

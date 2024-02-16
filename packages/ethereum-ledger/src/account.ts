@@ -19,7 +19,7 @@ export class ETHLedgerAccount extends Account {
     this.signer = signer
   }
 
-  GetChain(): Blockchain {
+  getChain(): Blockchain {
     return Blockchain.ETH
   }
 
@@ -37,8 +37,8 @@ export class ETHLedgerAccount extends Account {
    * Signs a message using the Ledger's Private Key
    * @param message The message to signe
    */
-  async Sign(message: SignableMessage): Promise<string> {
-    const buffer = message.GetVerificationBuffer()
+  async sign(message: SignableMessage): Promise<string> {
+    const buffer = message.getVerificationBuffer()
 
     return this.getSignature(buffer)
   }

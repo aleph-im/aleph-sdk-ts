@@ -8,45 +8,9 @@ import {
   GetMessagesParams,
   MessageQueryResponse,
 } from './types'
-import AggregateMessage from '../aggregate'
-import type { ForgetMessage } from '../forget/types'
-import type { InstanceMessage } from '../instance/types'
-import type { PostMessage } from '../post/types'
-import type { ProgramMessage } from '../program/types'
-import type { StoreMessage } from '../store/types'
-import { BaseMessage, MessageType } from '../types'
+import { BuiltMessage, MessageContent } from '../types'
 
 export class BaseMessageClient {
-  static isProgram(message: BaseMessage): message is ProgramMessage {
-    if (message === null || typeof message !== 'object') return false
-    return message.type === MessageType.program
-  }
-
-  static isInstance(message: BaseMessage): message is InstanceMessage {
-    if (message === null || typeof message !== 'object') return false
-    return message.type === MessageType.instance
-  }
-
-  static isStore(message: BaseMessage): message is StoreMessage {
-    if (message === null || typeof message !== 'object') return false
-    return message.type === MessageType.store
-  }
-
-  static isForget(message: BaseMessage): message is ForgetMessage {
-    if (message === null || typeof message !== 'object') return false
-    return message.type === MessageType.forget
-  }
-
-  static isPost<T>(message: BaseMessage): message is PostMessage<T> {
-    if (message === null || typeof message !== 'object') return false
-    return message.type === MessageType.post
-  }
-
-  static isAggregate<T>(message: BaseMessage): message is AggregateMessage<T> {
-    if (message === null || typeof message !== 'object') return false
-    return message.type === MessageType.aggregate
-  }
-
   //TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
 
   /**
@@ -54,17 +18,17 @@ export class BaseMessageClient {
    *
    * @param configuration The message params to make the query.
    */
-  async get<T = BaseMessage>({
+  async get<T = BuiltMessage<MessageContent>>({
     hash,
     channel,
     messageType,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
   }: GetMessageConfiguration): Promise<T> {
     const params: GetMessageParams = {
       hashes: [hash],
       channels: channel ? [channel] : undefined,
       messageType,
-      APIServer,
+      apiServer,
     }
 
     const response = await this.getAll(params)
@@ -95,7 +59,7 @@ export class BaseMessageClient {
     messageType,
     startDate,
     endDate,
-    APIServer = DEFAULT_API_V2,
+    apiServer = DEFAULT_API_V2,
   }: GetMessagesConfiguration): Promise<MessageQueryResponse> {
     const params: GetMessagesParams = {
       pagination,
@@ -113,7 +77,7 @@ export class BaseMessageClient {
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }
 
-    const response = await axios.get<MessageQueryResponse>(`${stripTrailingSlash(APIServer)}/api/v0/messages.json`, {
+    const response = await axios.get<MessageQueryResponse>(`${stripTrailingSlash(apiServer)}/api/v0/messages.json`, {
       params,
       socketPath: getSocketPath(),
     })
