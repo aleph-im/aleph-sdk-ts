@@ -8,7 +8,7 @@ import {
   GetMessagesParams,
   MessageQueryResponse,
 } from './types'
-import { BuiltMessage, MessageContent } from '../types'
+import { MessageContent, PublishedMessage } from '../types'
 
 export class BaseMessageClient {
   //TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
@@ -18,7 +18,7 @@ export class BaseMessageClient {
    *
    * @param configuration The message params to make the query.
    */
-  async get<T = BuiltMessage<MessageContent>>({
+  async get<T = PublishedMessage<MessageContent>>({
     hash,
     channel,
     messageType,

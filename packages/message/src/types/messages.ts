@@ -82,7 +82,7 @@ export type MessageContent<Content = unknown> =
  * Message types supported by Aleph
  * Some message types come with a content field that can is of a generic type.
  */
-export interface MessageTypeMap<Content = unknown> {
+export interface MessageTypeMap<Content = any> {
   [MessageType.post]: PostContent<Content>
   [MessageType.aggregate]: AggregateContent<Content>
   [MessageType.store]: StoreContent
@@ -120,10 +120,7 @@ export class BuiltMessage<C extends MessageContent> {
     this.type = props.type
   }
 
-  isOfType<C extends MessageContent>(
-    this: BuiltMessage<C>,
-    type: keyof MessageTypeMap<C>,
-  ): this is MessageTypeMap<C>[keyof MessageTypeMap<C>] {
+  isOfType<T extends MessageType>(type: T): this is BuiltMessage<MessageTypeMap[T]> {
     return this.type === type
   }
 }
