@@ -1,29 +1,20 @@
-import {  } from '@aleph-sdk/message'
+import { PostMessageClient, AggregateMessageClient } from '../../src'
 import { v4 as uuidv4 } from 'uuid'
-import { EphAccountList } from '../../testAccount/entryPoint'
-import fs from 'fs'
+import * as ethereum from '../../../ethereum/src'
+import { delay } from '@aleph-sdk/core/src'
 
 describe('Post publish tests', () => {
-  let ephemeralAccount: EphAccountList
-
-  // Import the List of Test Ephemeral test Account, throw if the list is not generated
-  beforeAll(async () => {
-    if (!fs.existsSync('./tests/testAccount/ephemeralAccount.json'))
-      throw Error('[Ephemeral Account Generation] - Error, please run: npm run test:regen')
-    ephemeralAccount = await import('../../testAccount/ephemeralAccount.json')
-    if (!ephemeralAccount.eth.privateKey) throw Error('[Ephemeral Account Generation] - Generated Account corrupted')
-  })
+  const post = new PostMessageClient()
+  const aggregate = new AggregateMessageClient()
 
   it('should amend post message correctly', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
     const postType = uuidv4()
     const content: { body: string } = {
       body: 'Hello World',
     }
 
-    const oldPost = await post.Publish({
+    const oldPost = await post.send({
       channel: 'TEST',
       account: account,
       postType: postType,
@@ -31,7 +22,7 @@ describe('Post publish tests', () => {
     })
 
     content.body = 'New content !'
-    const amended = await post.Publish({
+    const amended = await post.send({
       channel: 'TEST',
       account: account,
       postType: 'amend',
@@ -39,8 +30,10 @@ describe('Post publish tests', () => {
       ref: oldPost.item_hash,
     })
 
+    await delay(1000)
+
     setTimeout(async () => {
-      const amends = await post.Get({
+      const amends = await post.get({
         types: 'amend',
         hashes: [amended.item_hash],
       })
@@ -54,35 +47,34 @@ describe('Post publish tests', () => {
    * createSecurityConfig() inside tests/testAccount/generateAccounts.ts
    */
   it('should delegate amend post message correctly', async () => {
-    if (!ephemeralAccount.eth.privateKey || !ephemeralAccount.eth1.privateKey)
-      throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
+    const { account: owner } = ethereum.NewAccount()
+    const { account: guest } = ethereum.NewAccount()
 
-    const owner = ethereum.ImportAccountFromPrivateKey(ephemeralAccount.eth.privateKey)
-    const guest = ethereum.ImportAccountFromPrivateKey(ephemeralAccount.eth1.privateKey)
-
-    const originalPost = await post.Publish({
+    const originalPost = await post.send({
       channel: 'TEST',
       account: owner,
       postType: 'testing_delegate',
       content: { body: 'First content' },
     })
 
-    await aggregate.Publish({
+    await aggregate.send({
       account: owner,
       key: 'security',
       content: {
         authorizations: [
           {
             address: guest.address,
-            types: ephemeralAccount.security.types,
-            aggregate_keys: ephemeralAccount.security.aggregate_keys,
+            types: ['POST'],
+            post_types: ['testing_delegate'],
           },
         ],
       },
       channel: 'security',
     })
 
-    await post.Publish({
+    await delay(1000)
+
+    await post.send({
       channel: 'TEST',
       account: guest,
       address: owner.address,
@@ -91,7 +83,9 @@ describe('Post publish tests', () => {
       ref: originalPost.item_hash,
     })
 
-    const amends = await post.Get({
+    await delay(1000)
+
+    const amends = await post.get({
       types: 'testing_delegate',
       hashes: [originalPost.item_hash],
     })
@@ -101,7 +95,7 @@ describe('Post publish tests', () => {
   it('should automatically switch between inline and Aleph Storage due to the message size', async () => {
     const { account } = ethereum.NewAccount()
 
-    const postRes = await post.Publish({
+    const postRes = await post.send({
       channel: 'TEST',
       account: account,
       postType: 'testing_oversize',

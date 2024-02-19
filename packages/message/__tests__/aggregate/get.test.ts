@@ -1,4 +1,5 @@
-import { AggregateMessageClient } from '@aleph-sdk/message'
+import { AggregateMessageClient } from '../../src'
+import axios from 'axios'
 
 describe('Aggregate message retrieve test', () => {
   const client = new AggregateMessageClient()
@@ -10,7 +11,8 @@ describe('Aggregate message retrieve test', () => {
       })
       expect(true).toStrictEqual(false)
     } catch (e: any) {
-      expect(e.request.res.statusCode).toStrictEqual(404)
+      expect(axios.isAxiosError(e)).toStrictEqual(true)
+      expect(e.request.statusCode).toStrictEqual(404)
     }
   })
 

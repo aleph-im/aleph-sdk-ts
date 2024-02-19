@@ -1,13 +1,15 @@
-import { store } from '../../index'
-import { DEFAULT_API_V2 } from '../../../src/global'
+import { StoreMessageClient } from '../../src'
+import { DEFAULT_API_V2 } from '../../../core/src'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
-  return new TextDecoder().decode(ab)
+  return String.fromCharCode.apply(null, new Uint8Array(ab) as unknown as number[])
 }
 
 describe('Store message retrieval', () => {
+  const store = new StoreMessageClient()
+
   it('should retrieve a store message correctly', async () => {
-    const response = await store.Get({
+    const response = await store.get({
       fileHash: 'QmQkv43jguT5HLC8TPbYJi2iEmr4MgLgu4nmBoR4zjYb3L',
       apiServer: DEFAULT_API_V2,
     })
@@ -19,7 +21,7 @@ describe('Store message retrieval', () => {
   })
 
   it('should retrieve a store message without an apiServer argument', async () => {
-    const response = await store.Get({
+    const response = await store.get({
       fileHash: 'QmQkv43jguT5HLC8TPbYJi2iEmr4MgLgu4nmBoR4zjYb3L',
     })
 

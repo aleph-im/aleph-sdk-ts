@@ -41,3 +41,7 @@ export function isNode(): boolean {
 }
 
 export type JSExecutionEnvironment = 'node' | 'browser'
+
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}

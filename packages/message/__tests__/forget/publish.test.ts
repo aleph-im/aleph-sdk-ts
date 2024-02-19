@@ -1,27 +1,14 @@
-import { ForgetMessageClient, PostMessageClient } from '@aleph-sdk/message'
-import fs from 'fs'
+import { ForgetMessageClient, PostMessageClient } from '../../src'
+import * as ethereum from '../../../ethereum/src'
 
 describe('Forget publish tests', () => {
-  let ephemeralAccount: EphAccountList
   const postType = 'TS Forget Test'
-  const content: { body: string } = {
-    body: 'This message will be destroyed',
-  }
+  const content: { body: string } = { body: 'This message will be destroyed' }
   const post = new PostMessageClient()
   const forget = new ForgetMessageClient()
 
-  // Import the List of Test Ephemeral test Account, throw if the list is not generated
-  beforeAll(async () => {
-    if (!fs.existsSync('./tests/testAccount/ephemeralAccount.json'))
-      throw Error('[Ephemeral Account Generation] - Error, please run: npm run test:regen')
-    ephemeralAccount = await import('../../testAccount/ephemeralAccount.json')
-    if (!ephemeralAccount.eth.privateKey) throw Error('[Ephemeral Account Generation] - Generated Account corrupted')
-  })
-
   it('should post a message which will be forget', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
     const res = await post.send({
       channel: 'TEST',
@@ -30,7 +17,7 @@ describe('Forget publish tests', () => {
       content: content,
     })
 
-    const Fres = await forget.Publish({
+    const Fres = await forget.send({
       channel: 'TEST',
       hashes: [res.item_hash],
       account: account,
@@ -39,26 +26,23 @@ describe('Forget publish tests', () => {
   })
 
   it('Forget a message using storage engine', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
-
-    const res = await post.Publish({
+    const { account } = ethereum.NewAccount()
+    const postRest = await post.send({
       channel: 'TEST',
       account: account,
       postType: postType,
       content: content,
     })
 
-    const Fres = await forget.Publish({
+    const forgetRes = await forget.send({
       channel: 'TEST',
-      hashes: [res.item_hash],
+      hashes: [postRest.item_hash],
       account: account,
     })
 
-    const initialPost = await post.Get({ types: postType, hashes: [res.item_hash] })
+    const initialPost = await post.get({ types: postType, hashes: [postRest.item_hash] })
 
-    expect(Fres.content).not.toBeNull()
+    expect(forgetRes.content).not.toBeNull()
     expect(initialPost.posts.length).toStrictEqual(0)
   })
 })

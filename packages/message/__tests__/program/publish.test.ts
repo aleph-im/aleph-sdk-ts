@@ -1,30 +1,16 @@
-import fs, { readFileSync } from 'fs'
-import ethereum from '@aleph-sdk/ethereum'
-import { EphAccountList } from '../../testAccount/entryPoint'
-
-export function ArraybufferToString(ab: ArrayBuffer): string {
-  return new TextDecoder().decode(ab)
-}
+import { ProgramMessageClient } from '../../src'
+import * as ethereum from '../../../ethereum/src'
+import { readFileSync } from 'fs'
 
 describe('Test the program message', () => {
-  let ephemeralAccount: EphAccountList
-
-  // Import the List of Test Ephemeral test Account, throw if the list is not generated
-  beforeAll(async () => {
-    if (!fs.existsSync('./tests/testAccount/ephemeralAccount.json'))
-      throw Error('[Ephemeral Account Generation] - Error, please run: npm run test:regen')
-    ephemeralAccount = await import('../../testAccount/ephemeralAccount.json')
-    if (!ephemeralAccount.eth.privateKey) throw Error('[Ephemeral Account Generation] - Generated Account corrupted')
-  })
+  const program = new ProgramMessageClient()
 
   it('Publish a program retrieve the message', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
-    const fileContent = readFileSync('./tests/messages/program/main.py.zip')
+    const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
 
-    const res = await program.publish({
+    const res = await program.send({
       account: account,
       channel: 'TEST',
       file: fileContent,
@@ -36,11 +22,9 @@ describe('Test the program message', () => {
   })
 
   it('Spawn a program', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
-    const res = await program.Spawn({
+    const res = await program.send({
       account: account,
       channel: 'TEST',
       entrypoint: 'main:app',
@@ -52,11 +36,9 @@ describe('Test the program message', () => {
   })
 
   it('Spawn a persistent program', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
-    const res = await program.Spawn({
+    const res = await program.send({
       account: account,
       channel: 'TEST',
       isPersistent: true,
@@ -69,11 +51,9 @@ describe('Test the program message', () => {
   })
 
   it('Spawn a program with custom metadata', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
-    const res = await program.Spawn({
+    const res = await program.send({
       account: account,
       channel: 'TEST',
       entrypoint: 'main:app',
@@ -90,12 +70,10 @@ describe('Test the program message', () => {
   })
 
   it('Should fail to Spawn a program', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
     await expect(
-      program.Spawn({
+      program.send({
         account: account,
         channel: 'TEST',
         entrypoint: 'main:app',

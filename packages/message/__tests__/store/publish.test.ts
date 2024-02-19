@@ -1,37 +1,26 @@
-import { ethereum, store } from '../../index'
-import { DEFAULT_API_V2 } from '../../../src/global'
-import { ItemType } from '../../../src/messages/message'
-import fs, { readFileSync } from 'fs'
-import { EphAccountList } from '../../testAccount/entryPoint'
+import { ItemType, StoreMessageClient } from '../../src'
+import { DEFAULT_API_V2 } from '../../../core/src'
+import * as ethereum from '../../../ethereum/src'
+import { readFileSync } from 'fs'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
-  return new TextDecoder().decode(ab)
+  return String.fromCharCode.apply(null, new Uint8Array(ab) as unknown as number[])
 }
 
 describe('Store message publish', () => {
-  let ephemeralAccount: EphAccountList
-
-  // Import the List of Test Ephemeral test Account, throw if the list is not generated
-  beforeAll(async () => {
-    if (!fs.existsSync('./tests/testAccount/ephemeralAccount.json'))
-      throw Error('[Ephemeral Account Generation] - Error, please run: npm run test:regen')
-    ephemeralAccount = await import('../../testAccount/ephemeralAccount.json')
-    if (!ephemeralAccount.eth.privateKey) throw Error('[Ephemeral Account Generation] - Generated Account corrupted')
-  })
+  const store = new StoreMessageClient()
 
   it('should store a file and retrieve it correctly', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
-    const fileContent = readFileSync('./tests/messages/store/testFile.txt')
+    const { account } = ethereum.NewAccount()
+    const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
 
-    const hash = await store.Publish({
+    const hash = await store.send({
       channel: 'TEST',
       account: account,
       fileObject: fileContent,
     })
 
-    const response = await store.Get({
+    const response = await store.get({
       fileHash: hash.content.item_hash,
       apiServer: DEFAULT_API_V2,
     })
@@ -43,18 +32,16 @@ describe('Store message publish', () => {
   })
 
   it('should pin a file and retrieve it correctly', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
     const helloWorldHash = 'QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j'
 
-    const hash = await store.Pin({
+    const hash = await store.pin({
       channel: 'TEST',
       account: account,
       fileHash: helloWorldHash,
     })
 
-    const response = await store.Get({
+    const response = await store.get({
       fileHash: hash.content.item_hash,
       apiServer: DEFAULT_API_V2,
     })
@@ -66,17 +53,15 @@ describe('Store message publish', () => {
   })
 
   it('should throw Error to pin a file at runtime', async () => {
-    const { mnemonic } = ephemeralAccount.eth
-    if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const account = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account } = ethereum.NewAccount()
 
     const helloWorldHash = 'QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j'
-    const fileContent = readFileSync('./tests/messages/store/testFile.txt')
+    const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
 
     await expect(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      store.Publish({
+      store.send({
         channel: 'TEST',
         account: account,
         fileObject: fileContent,
@@ -85,7 +70,7 @@ describe('Store message publish', () => {
     ).rejects.toThrow("You can't pin a file and upload it at the same time.")
 
     await expect(
-      store.Publish({
+      store.send({
         channel: 'TEST',
         account: account,
         fileHash: helloWorldHash,
@@ -95,7 +80,7 @@ describe('Store message publish', () => {
     await expect(
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      store.Publish({
+      store.send({
         channel: 'TEST',
         apiServer: DEFAULT_API_V2,
         account: account,

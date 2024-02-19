@@ -1,5 +1,5 @@
-import { AggregateMessageClient } from '@aleph-sdk/message'
-import ethereum from '@aleph-sdk/ethereum'
+import { AggregateMessageClient } from '../../src'
+import * as ethereum from '../../../ethereum/src'
 
 describe('Aggregate message publish test', () => {
   const client = new AggregateMessageClient()

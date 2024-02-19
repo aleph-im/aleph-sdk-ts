@@ -1,11 +1,49 @@
-import { Keypair } from '@solana/web3.js'
+import { E2EWalletAdapter } from '@jet-lab/e2e-react-adapter'
+import { Keypair, PublicKey } from '@solana/web3.js'
+import nacl from 'tweetnacl'
 
 import * as solana from '../src/account'
-import { PanthomMockProvider, OfficialMockProvider } from './solanaProvider'
 import { EphAccount } from '@aleph-sdk/account'
-import { PostMessageBuilder } from '@aleph-sdk/message'
+import { PostMessageBuilder, prepareAlephMessage } from '@aleph-sdk/message'
 import { ItemType } from '@aleph-sdk/message/src'
 import { NewAccount, SOLAccount } from '@aleph-sdk/solana'
+
+type WalletSignature = {
+  signature: Uint8Array
+  publicKey: string
+}
+
+class SolanaMockProvider {
+  public provider
+  public publicKey: PublicKey
+  public secretKey: Uint8Array
+  public connected: boolean
+
+  constructor(randomKeypair: Keypair) {
+    this.provider = new E2EWalletAdapter({ keypair: randomKeypair })
+    this.secretKey = randomKeypair.secretKey
+    this.publicKey = this.provider.publicKey
+    this.connected = this.provider.connected
+  }
+
+  connect(): Promise<void> {
+    return this.provider.connect()
+  }
+}
+
+export class PanthomMockProvider extends SolanaMockProvider {
+  signMessage(message: Uint8Array): Promise<WalletSignature> {
+    const signature = nacl.sign.detached(message, this.secretKey)
+    return Promise.resolve({ signature: signature, publicKey: this.publicKey.toString() })
+  }
+}
+
+export class OfficialMockProvider extends SolanaMockProvider {
+  signMessage(message: Uint8Array): Promise<Uint8Array> {
+    const signature = nacl.sign.detached(message, this.secretKey)
+    return Promise.resolve(signature)
+  }
+}
 
 async function createEphemeralSol(): Promise<EphAccount> {
   const { account, privateKey } = solana.NewAccount()
@@ -22,6 +60,14 @@ describe('Solana accounts', () => {
 
   beforeAll(async () => {
     ephemeralAccount = await createEphemeralSol()
+  })
+
+  it('should create a new account with a private key and address', () => {
+    const { account, privateKey } = NewAccount()
+
+    expect(account).toBeInstanceOf(SOLAccount)
+    expect(privateKey).toBeInstanceOf(Uint8Array)
+    expect(privateKey.length).toBeGreaterThan(0)
   })
 
   it('should import an solana accounts using a private key', () => {
@@ -52,7 +98,7 @@ describe('Solana accounts', () => {
     const accountPhantom = await solana.GetAccountFromProvider(providerPhantom)
     const accountOfficial = await solana.GetAccountFromProvider(providerOfficial)
 
-    const message = PostMessageBuilder({
+    const builtMessage = PostMessageBuilder({
       account: accountSecretKey,
       channel: 'TEST',
       storageEngine: ItemType.inline,
@@ -60,8 +106,10 @@ describe('Solana accounts', () => {
       content: { address: accountSecretKey.address, time: 15, type: '' },
     })
 
-    expect(accountSecretKey.sign(message)).toStrictEqual(accountPhantom.sign(message))
-    expect(accountOfficial.sign(message)).toStrictEqual(accountPhantom.sign(message))
+    const hashedMessage = await prepareAlephMessage({ message: builtMessage })
+
+    expect(accountSecretKey.sign(hashedMessage)).toStrictEqual(accountPhantom.sign(hashedMessage))
+    expect(accountOfficial.sign(hashedMessage)).toStrictEqual(accountPhantom.sign(hashedMessage))
   })
 
   // @todo: Fix this test! We should unit test the cosmos account features, not to send messages to the network and if so, at least mock the backend....
@@ -91,14 +139,4 @@ describe('Solana accounts', () => {
   //     expect(amends.posts[0].content).toStrictEqual(content)
   //   })
   // })
-})
-
-describe('NewAccount', () => {
-  it('should create a new account with a private key and address', () => {
-    const { account, privateKey } = NewAccount()
-
-    expect(account).toBeInstanceOf(SOLAccount)
-    expect(privateKey).toBeInstanceOf(Uint8Array)
-    expect(privateKey.length).toBeGreaterThan(0)
-  })
 })

@@ -1,7 +1,7 @@
 import { EthereumMockProvider } from '@aleph-sdk/evm'
 import * as avalanche from '../src'
 import { EphAccount } from '@aleph-sdk/account'
-import { ItemType, PostMessageBuilder } from '@aleph-sdk/message'
+import { HashedMessage, ItemType, PostContent, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
 
 async function createEphemeralAvax(): Promise<EphAccount> {
   const keypair = await avalanche.getKeyPair()
@@ -188,17 +188,19 @@ describe('Avalanche accounts', () => {
   it('Should success to verif the authenticity of a signature', async () => {
     const { account } = await avalanche.NewAccount()
 
-    const message = PostMessageBuilder({
+    const builtMessage = PostMessageBuilder({
       account,
       channel: 'TEST',
       storageEngine: ItemType.inline,
       timestamp: Date.now() / 1000,
       content: { address: account.address, time: 15, type: '' },
     })
+
+    const hashedMessage = await prepareAlephMessage({ message: builtMessage })
     if (!account.publicKey) throw Error()
-    const signature = await account.sign(message)
-    const verif = await avalanche.verifyAvalanche(message.GetVerificationBuffer(), signature, account.publicKey)
-    const verifB = await avalanche.verifyAvalanche(message, signature, account.publicKey)
+    const signature = await account.sign(hashedMessage)
+    const verif = await avalanche.verifyAvalanche(hashedMessage.getVerificationBuffer(), signature, account.publicKey)
+    const verifB = await avalanche.verifyAvalanche(hashedMessage, signature, account.publicKey)
 
     expect(verif).toStrictEqual(true)
     expect(verifB).toStrictEqual(true)
@@ -215,13 +217,14 @@ describe('Avalanche accounts', () => {
       storageEngine: ItemType.storage,
       content: { address: account.address, time: 15, type: '' },
     })
+    const hashedMessage = await prepareAlephMessage({ message })
     const fakeMessage = {
-      ...message,
+      ...hashedMessage,
       item_hash: 'FAKE',
-    }
+    } as HashedMessage<PostContent<unknown>>
     if (!account.publicKey || !fakeAccount.publicKey) throw Error()
     const fakeSignature = await account.sign(fakeMessage)
-    const verif = await avalanche.verifyAvalanche(message, fakeSignature, account.publicKey)
+    const verif = await avalanche.verifyAvalanche(hashedMessage, fakeSignature, account.publicKey)
     const verifB = await avalanche.verifyAvalanche(fakeMessage, fakeSignature, fakeAccount.publicKey)
 
     expect(verif).toStrictEqual(false)

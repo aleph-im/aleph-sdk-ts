@@ -1,32 +1,8 @@
-import { b58cencode, prefix, validateSignature } from '@taquito/utils'
+import { b58cencode, prefix } from '@taquito/utils'
 
-import { DEFAULT_API_V2 } from '@aleph-sdk/core'
-import { EphAccount } from '@aleph-sdk/account'
 import * as tezos from '../src/account'
 
-if (!window) {
-  require('localstorage-polyfill')
-}
-
-async function createEphemeralTezos(): Promise<EphAccount> {
-  const { signerAccount, privateKey } = await tezos.NewAccount()
-  const publicKey = await signerAccount.GetPublicKey()
-
-  return {
-    address: signerAccount.address,
-    publicKey,
-    privateKey: b58cencode(privateKey, prefix.edsk),
-  }
-}
-
 describe('Tezos accounts', () => {
-  let ephemeralAccount: EphAccount
-
-  // Import the List of Test Ephemeral test Account, throw if the list is not generated
-  beforeAll(async () => {
-    ephemeralAccount = await createEphemeralTezos()
-  })
-
   it('should create a new tezos accounts', async () => {
     const { signerAccount } = await tezos.NewAccount()
 

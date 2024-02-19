@@ -1,5 +1,5 @@
-import { BaseMessageClient, MessageType, PublishedMessage, StoreMessage } from '@aleph-sdk/message'
-import { Blockchain } from '@aleph-sdk/core'
+import { BaseMessageClient, MessageType, PublishedMessage } from '../../src'
+import { Blockchain } from '../../../core/src'
 
 describe('Test features from GetMessage', () => {
   const client = new BaseMessageClient()
@@ -8,14 +8,14 @@ describe('Test features from GetMessage', () => {
     const res = await client.get({
       hash: '87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c',
     })
-
+    console.log(res)
     expect(res.isOfType(MessageType.store)).toStrictEqual(true)
     if (res.isOfType(MessageType.store))
       expect(res.content.item_hash).toStrictEqual('QmZyVbZm6Ffs9syXs8pycGbWiTa9yiGoX1b9FSFpTjaixK')
   })
 
   it('Try by Hash with templating resolve', async () => {
-    const res = await client.get<StoreMessage>({
+    const res = await client.get<MessageType.store>({
       hash: '87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c',
     })
 
@@ -182,7 +182,7 @@ describe('Test features from GetMessage', () => {
     await Promise.all(
       typeArray.map(async (type) => {
         const res = await client.getAll({
-          messageType: type,
+          messageTypes: [type],
           pagination: 3,
         })
         expect(checkTypeList(res.messages, type)).toStrictEqual(true)

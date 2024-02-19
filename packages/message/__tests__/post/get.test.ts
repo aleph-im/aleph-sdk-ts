@@ -1,10 +1,12 @@
-import { post } from '../../index'
+import { PostMessageClient } from '../../src'
 
 describe('Post get tests', () => {
+  const post = new PostMessageClient()
+
   it('should only get post from a specific channel', async () => {
     const channel = 'TEST'
 
-    const amends = await post.Get({
+    const amends = await post.get({
       types: 'amend',
       pagination: 5,
       channels: [channel],
@@ -20,7 +22,7 @@ describe('Post get tests', () => {
       body: 'New content !',
     }
 
-    const amends = await post.Get({
+    const amends = await post.get({
       types: 'amend',
       refs: ['7ffbfe7017b3f1010f2830cfa5b4391aefd78466a4300f47ab3f2645fab48cd4'],
       addresses: ['0xB68B9D4f3771c246233823ed1D3Add451055F9Ef'],

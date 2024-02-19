@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import { EphAccount } from '@aleph-sdk/account'
 import { EthereumMockProvider } from '@aleph-sdk/evm'
 import * as ethereum from '../src/account'
-import { PostMessageBuilder } from '@aleph-sdk/message'
+import { PostMessageBuilder, prepareAlephMessage } from '@aleph-sdk/message'
 import { ItemType } from '@aleph-sdk/message/src'
 
 async function createEphemeralEth(): Promise<EphAccount> {
@@ -147,7 +147,7 @@ describe('Ethereum accounts', () => {
     const accountFromProvider = await ethereum.GetAccountFromProvider(provider)
     const accountFromPrivate = await ethereum.ImportAccountFromMnemonic(mnemonic)
 
-    const message = PostMessageBuilder({
+    const builtMessage = PostMessageBuilder({
       account,
       channel: 'TEST',
       storageEngine: ItemType.inline,
@@ -155,7 +155,11 @@ describe('Ethereum accounts', () => {
       content: { address: account.address, time: 15, type: '' },
     })
 
-    expect(account.sign(message)).toStrictEqual(accountFromPrivate.sign(message))
-    expect(account.sign(message)).toStrictEqual(accountFromProvider.sign(message))
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
+    })
+
+    expect(account.sign(hashedMessage)).toStrictEqual(accountFromPrivate.sign(hashedMessage))
+    expect(account.sign(hashedMessage)).toStrictEqual(accountFromProvider.sign(hashedMessage))
   })
 })

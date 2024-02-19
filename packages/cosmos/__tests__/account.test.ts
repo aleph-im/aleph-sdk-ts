@@ -1,8 +1,4 @@
-import {
-  verifyCosmos,
-  CosmosAccount,
-  NewAccount,
-} from '@aleph-sdk/cosmos'
+import { verifyCosmos, CosmosAccount, NewAccount } from '@aleph-sdk/cosmos'
 import { SignableMessage } from '@aleph-sdk/account'
 
 describe('Cosmos SDK', () => {
