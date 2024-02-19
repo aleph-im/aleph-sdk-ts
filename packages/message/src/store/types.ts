@@ -55,6 +55,8 @@ export type StorePinConfiguration = {
  * inlineRequested: If set to False, the Store message will be store on the same storageEngine you picked.
  *
  * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
+ *
+ * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type StorePublishConfiguration = {
   channel: string
@@ -64,4 +66,5 @@ export type StorePublishConfiguration = {
   storageEngine?: ItemType.ipfs | ItemType.storage
   inlineRequested?: boolean
   apiServer?: string
+  sync?: boolean
 }

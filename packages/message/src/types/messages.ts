@@ -70,7 +70,7 @@ export type BaseContent = {
   time: number
 }
 
-export type MessageContent<Content = unknown> =
+export type MessageContent<Content = any> =
   | PostContent<Content>
   | AggregateContent<Content>
   | StoreContent
@@ -89,6 +89,7 @@ export interface MessageTypeMap<Content = any> {
   [MessageType.program]: ProgramContent
   [MessageType.forget]: ForgetContent
   [MessageType.instance]: InstanceContent
+  [key: string]: MessageContent
 }
 
 export type BaseMessageProps<C extends MessageContent> = {

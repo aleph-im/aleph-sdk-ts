@@ -11,9 +11,9 @@ import {
   MachineType,
   ProgramMessage,
 } from './types'
-import { StoreMessage, StoreMessageClient } from '../store'
+import { StoreMessageClient } from '../store'
 import { BaseMessageClient } from '../base'
-import { ItemType } from '../types'
+import { ItemType, MessageType } from '../types'
 
 export class ProgramMessageClient {
   constructor(
@@ -41,6 +41,7 @@ export class ProgramMessageClient {
     runtime = 'bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4',
     volumes = [],
     variables = {},
+    sync = false,
   }: RequireOnlyOne<ProgramPublishConfiguration, 'programRef' | 'file'>): Promise<ProgramMessage> {
     const timestamp = Date.now() / 1000
     if (!programRef && !file) throw new Error('You need to specify a file to upload or a programRef to load.')
@@ -55,11 +56,12 @@ export class ProgramMessageClient {
           account,
           storageEngine,
           fileObject: file,
+          sync,
         })
       ).item_hash
     } else if (programRef && !file) {
       try {
-        const fetchCode = await this.baseMessageClient.get<StoreMessage>({
+        const fetchCode = await this.baseMessageClient.get<MessageType.store>({
           hash: programRef,
           apiServer: DEFAULT_API_V2,
         })
@@ -118,7 +120,6 @@ export class ProgramMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      content: programContent,
       inline: inlineRequested,
       apiServer,
     })
@@ -127,6 +128,7 @@ export class ProgramMessageClient {
       message: hashedMessage,
       account,
       apiServer: apiServer,
+      sync,
     })
 
     return message

@@ -23,6 +23,7 @@ export class InstanceMessageClient {
     inlineRequested = true,
     storageEngine = ItemType.ipfs,
     apiServer = DEFAULT_API_V2,
+    sync = false,
   }: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000
     const { address } = account
@@ -70,7 +71,6 @@ export class InstanceMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      content: instanceContent,
       inline: inlineRequested,
       apiServer,
     })
@@ -79,6 +79,7 @@ export class InstanceMessageClient {
       message: hashedMessage,
       account,
       apiServer: apiServer,
+      sync,
     })
 
     return message

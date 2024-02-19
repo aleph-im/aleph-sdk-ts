@@ -65,6 +65,7 @@ export class AggregateMessageClient {
     storageEngine = ItemType.inline,
     inlineRequested,
     apiServer = DEFAULT_API_V2,
+    sync = false,
   }: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
     if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
 
@@ -86,7 +87,6 @@ export class AggregateMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      content: aggregateContent,
       apiServer,
     })
 
@@ -94,6 +94,7 @@ export class AggregateMessageClient {
       message: hashedMessage,
       account,
       apiServer: apiServer,
+      sync,
     })
 
     return message

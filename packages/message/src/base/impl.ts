@@ -6,9 +6,11 @@ import {
   GetMessageParams,
   GetMessagesConfiguration,
   GetMessagesParams,
-  MessageQueryResponse,
+  MessageResponse,
+  MessagesQueryResponse,
 } from './types'
-import { MessageContent, PublishedMessage } from '../types'
+import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
+import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
 
 export class BaseMessageClient {
   //TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
@@ -18,26 +20,68 @@ export class BaseMessageClient {
    *
    * @param configuration The message params to make the query.
    */
-  async get<T = PublishedMessage<MessageContent>>({
+  async get<T extends MessageType | 'any' = 'any', Content = any>({
     hash,
-    channel,
     messageType,
     apiServer = DEFAULT_API_V2,
-  }: GetMessageConfiguration): Promise<T> {
+  }: GetMessageConfiguration): Promise<PublishedMessage<MessageTypeMap<Content>[T]>> {
     const params: GetMessageParams = {
       hashes: [hash],
-      channels: channel ? [channel] : undefined,
-      messageType,
-      apiServer,
+      messageType: messageType || undefined,
     }
 
-    const response = await this.getAll(params)
-    if (response.messages.length === 0) {
-      throw new Error(`No messages found for: ${hash}`)
+    let message: PublishedMessage<MessageTypeMap<Content>[T]>
+    let status: MessageStatus
+    let forgotten_by: string[]
+    try {
+      const response = await axios.get<MessageResponse<MessageTypeMap<Content>[T]>>(
+        `${stripTrailingSlash(apiServer)}/api/v0/messages/${hash}`,
+        {
+          params,
+          socketPath: getSocketPath(),
+        },
+      )
+      message = response.data.message
+      status = response.data.status
+      forgotten_by = response.data.forgotten_by || []
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new MessageNotFoundError(`No such hash ${hash}`)
+        }
+        throw new QueryError(`Error while querying message ${hash}: ${error.toJSON()}`)
+      }
+      throw error
     }
+    if (status === 'forgotten')
+      throw new ForgottenMessageError(
+        `The requested message ${message.item_hash} has been forgotten by ${forgotten_by?.join(', ')}`,
+      )
+    if (messageType && message.type !== messageType)
+      throw new TypeError(`The message type '${message.type}' does not match the expected type '${messageType}'`)
+    return message
+  }
 
-    const [message] = response.messages
-    return message as unknown as T
+  /**
+   * Retrieves the error of a rejected message
+   *
+   * @param item_hash The hash of the rejected message
+   */
+  async getError(item_hash: string): Promise<{ error_code: string; details: string } | null> {
+    const response = await axios.get(`${stripTrailingSlash(DEFAULT_API_V2)}/api/v0/messages/${item_hash}`, {
+      socketPath: getSocketPath(),
+    })
+    if (response.status === 404) throw new MessageNotFoundError(`No such hash ${item_hash}`)
+    const message_raw = response.data
+    if (message_raw.status === 'forgotten')
+      throw new ForgottenMessageError(
+        `The requested message ${message_raw.item_hash} has been forgotten by ${message_raw.forgotten_by.join(', ')}`,
+      )
+    if (message_raw.status !== 'rejected') return null
+    return {
+      error_code: message_raw.error_code,
+      details: message_raw.details,
+    }
   }
 
   /**
@@ -56,11 +100,11 @@ export class BaseMessageClient {
     contentTypes = [],
     contentKeys = [],
     hashes = [],
-    messageType,
+    messageTypes = [],
     startDate,
     endDate,
     apiServer = DEFAULT_API_V2,
-  }: GetMessagesConfiguration): Promise<MessageQueryResponse> {
+  }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
     const params: GetMessagesParams = {
       pagination,
       page,
@@ -72,12 +116,12 @@ export class BaseMessageClient {
       contentTypes: contentTypes.join(',') || undefined,
       contentKeys: contentKeys.join(',') || undefined,
       hashes: hashes.join(',') || undefined,
-      msgType: messageType || undefined,
+      msgTypes: messageTypes?.join(',') || undefined,
       startDate: startDate ? startDate.valueOf() / 1000 : undefined,
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }
 
-    const response = await axios.get<MessageQueryResponse>(`${stripTrailingSlash(apiServer)}/api/v0/messages.json`, {
+    const response = await axios.get<MessagesQueryResponse>(`${stripTrailingSlash(apiServer)}/api/v0/messages.json`, {
       params,
       socketPath: getSocketPath(),
     })

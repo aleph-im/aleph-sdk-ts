@@ -2,13 +2,11 @@ import axios from 'axios'
 import shajs from 'sha.js'
 import FormDataNode from 'form-data'
 
-import { getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
+import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
 
 /**
  * message:         The message to update and then publish.
- *
- * content:         The message's content to put in the message.
  *
  * inline:          This param can't be filled by the user, it will force the message to be inline in case of size > MAX_SIZE
  *
@@ -19,8 +17,7 @@ import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
 type PutConfiguration<C extends MessageContent> = {
   inline?: boolean
   message: BuiltMessage<C>
-  content: C
-  apiServer: string
+  apiServer?: string
 }
 
 type PushConfiguration<T> = {
@@ -44,16 +41,18 @@ type PushFileConfiguration = {
  *
  * @param configuration The configuration used to update & publish the message.
  */
-export async function prepareAlephMessage<C extends MessageContent>(
-  configuration: PutConfiguration<C>,
-): Promise<HashedMessage<C>> {
-  const serialized = JSON.stringify(configuration.content)
-  const requestedStorageEngine = configuration.message.item_type
+export async function prepareAlephMessage<C extends MessageContent>({
+  inline,
+  message,
+  apiServer = DEFAULT_API_V2,
+}: PutConfiguration<C>): Promise<HashedMessage<C>> {
+  const serialized = JSON.stringify(message.content)
+  const requestedStorageEngine = message.item_type
 
   // @todo: Separate assignment and push to storage engine
-  if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || configuration.inline)) {
+  if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || inline)) {
     return new HashedMessage<C>({
-      ...configuration.message,
+      ...message,
       item_content: serialized,
       item_type: ItemType.inline,
       // @todo: Replace with standard crypto library
@@ -64,15 +63,15 @@ export async function prepareAlephMessage<C extends MessageContent>(
       console.warn(
         "Storage Engine warning: Due to the size of your message content, your message location was switch from 'inline' to 'storage' ",
       )
-      configuration.message.item_type = ItemType.storage
+      message.item_type = ItemType.storage
     }
     const hash = await pushJsonToStorageEngine({
       content: serialized,
-      apiServer: configuration.apiServer,
-      storageEngine: configuration.message.item_type,
+      apiServer: apiServer,
+      storageEngine: message.item_type,
     })
     return new HashedMessage<C>({
-      ...configuration.message,
+      ...message,
       item_content: undefined,
       item_hash: hash,
     })

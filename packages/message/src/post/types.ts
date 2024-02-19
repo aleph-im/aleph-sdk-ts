@@ -85,6 +85,8 @@ export type PostQueryResponse<T> = {
  * postType:        string of your choice like Blog / amend / chat / comment / ...
  *
  * content:         The post message content.
+ *
+ * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type PostSubmitConfiguration<T> = {
   apiServer?: string
@@ -96,4 +98,5 @@ export type PostSubmitConfiguration<T> = {
   address?: string
   postType: string
   content: T
+  sync?: boolean
 }

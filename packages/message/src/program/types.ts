@@ -109,6 +109,12 @@ export type ProgramContent = BaseContent & {
  * runtime:         The docker image to use for the program.
  *
  * volumes:         mount point to use for storage.
+ *
+ * metadata:        Additional information about the program.
+ *
+ * variables:       Environment variables to use during the execution.
+ *
+ * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type ProgramPublishConfiguration = {
   account: Account
@@ -128,6 +134,7 @@ export type ProgramPublishConfiguration = {
   volumes?: MachineVolume[]
   metadata?: Record<string, unknown>
   variables?: Record<string, string>
+  sync?: boolean
 }
 
 // ----------- SPAWN ------------
@@ -154,6 +161,10 @@ export type ProgramPublishConfiguration = {
  * runtime:         The docker image to use for the program.
  *
  * volumes:         mount point to use for storage.
+ *
+ * metadata:        Additional information about the program.
+ *
+ * variables:       Environment variables to use during the execution.
  */
 export type ProgramSpawnConfiguration = {
   account: Account

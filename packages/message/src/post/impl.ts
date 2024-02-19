@@ -68,6 +68,7 @@ export class PostMessageClient {
     address,
     storageEngine = ItemType.inline,
     apiServer = DEFAULT_API_V2,
+    sync = false,
   }: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
     if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
 
@@ -91,7 +92,6 @@ export class PostMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      content: postContent,
       apiServer,
     })
 
@@ -99,6 +99,7 @@ export class PostMessageClient {
       message: hashedMessage,
       account,
       apiServer: apiServer,
+      sync,
     })
 
     return message

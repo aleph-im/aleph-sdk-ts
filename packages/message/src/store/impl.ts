@@ -45,6 +45,7 @@ export class StoreMessageClient {
     channel,
     fileHash,
     fileObject,
+    sync = false,
   }: RequireOnlyOne<StorePublishConfiguration, 'fileObject' | 'fileHash'>): Promise<StoreMessage> {
     if (!fileObject && !fileHash) throw new Error('You need to specify a File to upload or a Hash to pin.')
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.")
@@ -78,7 +79,6 @@ export class StoreMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      content: storeContent,
       inline: inlineRequested,
       apiServer,
     })
@@ -87,6 +87,7 @@ export class StoreMessageClient {
       message: hashedMessage,
       account,
       apiServer: apiServer,
+      sync,
     })
 
     return message

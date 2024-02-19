@@ -24,6 +24,8 @@ export type ForgetContent = BaseContent & {
  * hashes:          The Hashes of the Aleph's message to forget.
  *
  * reason:          An optional reason to justify this action (default value: "None").
+ *
+ * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type ForgetPublishConfiguration = {
   account: Account
@@ -33,4 +35,5 @@ export type ForgetPublishConfiguration = {
   apiServer?: string
   hashes: string[]
   reason?: string
+  sync?: boolean
 }

@@ -24,6 +24,7 @@ export class ForgetMessageClient {
     channel,
     storageEngine = ItemType.inline,
     inlineRequested,
+    sync = false,
   }: ForgetPublishConfiguration): Promise<ForgetMessage> {
     if (inlineRequested) console.warn('inlineRequested is deprecated and will be removed: use storageEngine.inline')
 
@@ -45,7 +46,6 @@ export class ForgetMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      content: forgetContent,
       apiServer,
     })
 
@@ -53,6 +53,7 @@ export class ForgetMessageClient {
       message: hashedMessage,
       account,
       apiServer: apiServer,
+      sync,
     })
     return message
   }

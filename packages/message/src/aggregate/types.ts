@@ -43,6 +43,8 @@ export type AggregateGetConfiguration = {
  * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
  *
  * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
+ *
+ * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type AggregatePublishConfiguration<T> = {
   account: Account
@@ -53,4 +55,5 @@ export type AggregatePublishConfiguration<T> = {
   storageEngine?: ItemType
   inlineRequested?: boolean
   apiServer?: string
+  sync?: boolean
 }
