@@ -13,12 +13,12 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/sha.js": "^2.4.0"
+    "@types/sha.js": "^2.4.4"
   },
   "dependencies": {
     "@aleph-sdk/account": "^0.0.3",
     "@aleph-sdk/core": "^0.0.3",
-    "axios": "^0.21.4",
+    "axios": "^1.6.7",
     "form-data": "^4.0.0",
     "sha.js": "^2.4.11"
   },

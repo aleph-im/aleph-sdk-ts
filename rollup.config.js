@@ -11,8 +11,8 @@ import dts from 'rollup-plugin-dts'
 import sourcemaps from 'rollup-plugin-sourcemaps'
 import del from 'rollup-plugin-delete'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-import json from '@rollup/plugin-json';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
+import json from '@rollup/plugin-json'
+import nodePolyfills from 'rollup-plugin-polyfill-node'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -96,11 +96,12 @@ export default [
       terser(),
     ],
     onwarn: (warning, next) => {
-      if (warning.code === 'CIRCULAR_DEPENDENCY' && (
-        warning.message.indexOf('stream') !== -1 ||
+      if (
+        (warning.code === 'CIRCULAR_DEPENDENCY' && warning.message.indexOf('stream') !== -1) ||
         warning.message.indexOf('node_modules/') !== -1
-      )) return
-      next(warning);
+      )
+        return
+      next(warning)
     },
   },
   {

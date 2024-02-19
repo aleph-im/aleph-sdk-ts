@@ -18,7 +18,7 @@
   "dependencies": {
     "@aleph-sdk/account": "^0.0.3",
     "@aleph-sdk/core": "^0.0.3",
-    "@solana/web3.js": "^1.39.1",
+    "@solana/web3.js": "^1.90.0",
     "bs58": "^5.0.0",
     "tweetnacl": "^1.0.3"
   },

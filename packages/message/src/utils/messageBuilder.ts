@@ -5,7 +5,7 @@ import { AggregateContent } from '../aggregate'
 import { StoreContent } from '../store'
 import { ProgramContent } from '../program'
 import { InstanceContent } from '../instance'
-import {ForgetContent} from "../forget";
+import { ForgetContent } from '../forget'
 
 export type MessageBuilderConfig<C> = {
   storageEngine: ItemType

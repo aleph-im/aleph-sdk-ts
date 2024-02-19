@@ -15,9 +15,9 @@
   "dependencies": {
     "@aleph-sdk/account": "^0.0.3",
     "@aleph-sdk/core": "^0.0.3",
-    "@metamask/eth-sig-util": "^5.0.0",
+    "@metamask/eth-sig-util": "^7.0.1",
     "ethereumjs-util": "^7.1.5",
-    "ethers": "^5.6.4"
+    "ethers": "^6.11.1"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "0.x",

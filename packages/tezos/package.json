@@ -18,9 +18,9 @@
   "dependencies": {
     "@aleph-sdk/account": "^0.0.3",
     "@aleph-sdk/core": "^0.0.3",
-    "@taquito/beacon-wallet": "^14.0.0",
-    "@taquito/signer": "^13.0.1",
-    "@taquito/utils": "^17.0.0",
+    "@taquito/beacon-wallet": "^19.0.2",
+    "@taquito/signer": "^19.0.2",
+    "@taquito/utils": "^19.0.2",
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
