@@ -1,5 +1,5 @@
-import { ProgramMessageClient } from '../../src'
-import * as ethereum from '../../../ethereum/src'
+import { ProgramMessageClient } from '../../'
+import * as ethereum from '../../../ethereum/'
 import { readFileSync } from 'fs'
 
 describe('Test the program message', () => {

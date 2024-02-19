@@ -2,11 +2,9 @@ import { E2EWalletAdapter } from '@jet-lab/e2e-react-adapter'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import nacl from 'tweetnacl'
 
-import * as solana from '../src/account'
-import { EphAccount } from '@aleph-sdk/account'
-import { PostMessageBuilder, prepareAlephMessage } from '@aleph-sdk/message'
-import { ItemType } from '@aleph-sdk/message/src'
-import { NewAccount, SOLAccount } from '@aleph-sdk/solana'
+import * as solana from '../'
+import { EphAccount } from '../../account'
+import { PostMessageBuilder, prepareAlephMessage, ItemType } from '../../message'
 
 type WalletSignature = {
   signature: Uint8Array
@@ -63,9 +61,9 @@ describe('Solana accounts', () => {
   })
 
   it('should create a new account with a private key and address', () => {
-    const { account, privateKey } = NewAccount()
+    const { account, privateKey } = solana.NewAccount()
 
-    expect(account).toBeInstanceOf(SOLAccount)
+    expect(account).toBeInstanceOf(solana.SOLAccount)
     expect(privateKey).toBeInstanceOf(Uint8Array)
     expect(privateKey.length).toBeGreaterThan(0)
   })

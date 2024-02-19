@@ -1,4 +1,4 @@
-import { AggregateMessageClient } from '../../src'
+import { AggregateMessageClient } from '../../'
 import axios from 'axios'
 
 describe('Aggregate message retrieve test', () => {

@@ -1,7 +1,7 @@
-import { PostMessageClient, AggregateMessageClient } from '../../src'
+import { PostMessageClient, AggregateMessageClient } from '../../'
 import { v4 as uuidv4 } from 'uuid'
-import * as ethereum from '../../../ethereum/src'
-import { delay } from '@aleph-sdk/core/src'
+import * as ethereum from '../../../ethereum/'
+import { delay } from '../../../core/'
 
 describe('Post publish tests', () => {
   const post = new PostMessageClient()

@@ -1,5 +1,5 @@
-import { AggregateMessageClient } from '../../src'
-import * as ethereum from '../../../ethereum/src'
+import { AggregateMessageClient } from '../../'
+import * as ethereum from '../../../ethereum/'
 
 describe('Aggregate message publish test', () => {
   const client = new AggregateMessageClient()

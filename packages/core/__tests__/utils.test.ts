@@ -1,4 +1,4 @@
-import { stripTrailingSlash, getSocketPath, isNode } from '@aleph-sdk/core'
+import { stripTrailingSlash, getSocketPath, isNode } from '../'
 
 describe('stripTrailingSlash', () => {
   it('should remove trailing slashes and spaces from url', () => {

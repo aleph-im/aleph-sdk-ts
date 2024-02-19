@@ -1,5 +1,5 @@
-import { StoreMessageClient } from '../../src'
-import { DEFAULT_API_V2 } from '../../../core/src'
+import { StoreMessageClient } from '../../'
+import { DEFAULT_API_V2 } from '../../../core/'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
   return String.fromCharCode.apply(null, new Uint8Array(ab) as unknown as number[])

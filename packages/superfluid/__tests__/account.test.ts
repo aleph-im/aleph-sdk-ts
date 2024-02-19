@@ -1,7 +1,7 @@
 // superfluidAccount.test.ts
-import { SuperfluidAccount, createFromAvalancheAccount } from '../src/account'
+import { SuperfluidAccount, createFromAvalancheAccount } from '../'
 import { ethers, providers } from 'ethers'
-import { JsonRPCWallet } from '@aleph-sdk/evm'
+import { JsonRPCWallet } from '../../evm'
 import { AvalancheAccount } from '@aleph-sdk/avalanche'
 
 // Mocks

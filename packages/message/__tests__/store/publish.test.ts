@@ -1,6 +1,6 @@
-import { ItemType, StoreMessageClient } from '../../src'
-import { DEFAULT_API_V2 } from '../../../core/src'
-import * as ethereum from '../../../ethereum/src'
+import { ItemType, StoreMessageClient } from '../../'
+import { DEFAULT_API_V2 } from '../../../core/'
+import * as ethereum from '../../../ethereum/'
 import { readFileSync } from 'fs'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
