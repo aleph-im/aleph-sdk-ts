@@ -1,4 +1,4 @@
-import { PostMessageClient } from '../../'
+import { PostMessageClient } from '../../src'
 
 describe('Post get tests', () => {
   const post = new PostMessageClient()

@@ -1,5 +1,5 @@
-import { ForgetMessageClient, PostMessageClient } from '../../'
-import * as ethereum from '../../../ethereum/'
+import { ForgetMessageClient, PostMessageClient } from '../../src'
+import * as ethereum from '../../../ethereum/src'
 
 describe('Forget publish tests', () => {
   const postType = 'TS Forget Test'

@@ -1,4 +1,4 @@
-import { verifyCosmos, CosmosAccount, NewAccount } from '../'
+import { verifyCosmos, CosmosAccount, NewAccount } from '../src'
 import { SignableMessage } from '../../account/src'
 
 describe('Cosmos SDK', () => {

@@ -1,6 +1,6 @@
 // import Keyring from '@polkadot/keyring'
-import * as substrate from '../'
-import { Blockchain } from '../../core'
+import * as substrate from '../src'
+import { Blockchain } from '../../core/src'
 
 describe('substrate accounts', () => {
   let newAccount: { account: substrate.DOTAccount; mnemonic: string }

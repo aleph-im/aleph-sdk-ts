@@ -1,7 +1,7 @@
-import { PostMessageClient, AggregateMessageClient } from '../../'
+import { PostMessageClient, AggregateMessageClient } from '../../src'
 import { v4 as uuidv4 } from 'uuid'
-import * as ethereum from '../../../ethereum/'
-import { delay } from '../../../core/'
+import * as ethereum from '../../../ethereum/src'
+import { delay } from '../../../core/src'
 
 describe('Post publish tests', () => {
   const post = new PostMessageClient()

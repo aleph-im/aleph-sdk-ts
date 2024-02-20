@@ -1,6 +1,6 @@
 import { b58cencode, prefix } from '@taquito/utils'
 
-import * as tezos from '../'
+import * as tezos from '../src'
 
 describe('Tezos accounts', () => {
   it('should create a new tezos accounts', async () => {

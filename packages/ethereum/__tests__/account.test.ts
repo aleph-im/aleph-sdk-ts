@@ -1,10 +1,10 @@
 import * as bip39 from 'bip39'
 import { ethers } from 'ethers'
 
-import { EphAccount } from '../../account'
-import { EthereumMockProvider } from '../../evm'
-import * as ethereum from '../'
-import { PostMessageBuilder, prepareAlephMessage, ItemType } from '../../message'
+import { EphAccount } from '../../account/src'
+import { EthereumMockProvider } from '../../evm/src'
+import * as ethereum from '../src'
+import { PostMessageBuilder, prepareAlephMessage, ItemType } from '../../message/src'
 
 async function createEphemeralEth(): Promise<EphAccount> {
   const mnemonic = bip39.generateMnemonic()
