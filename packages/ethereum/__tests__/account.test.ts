@@ -20,11 +20,9 @@ async function createEphemeralEth(): Promise<EphAccount> {
 
 describe('Ethereum accounts', () => {
   let ephemeralAccount: EphAccount
-  let ephemeralAccount1: EphAccount
 
   beforeAll(async () => {
     ephemeralAccount = await createEphemeralEth()
-    ephemeralAccount1 = await createEphemeralEth()
   })
 
   it('should import an ethereum accounts using a mnemonic', () => {
@@ -56,81 +54,6 @@ describe('Ethereum accounts', () => {
     const accountFromPrivate = ethereum.ImportAccountFromPrivateKey(privateKey)
 
     expect(accountFromProvider.address).toStrictEqual(accountFromPrivate.address)
-  })
-
-  it('Should encrypt and decrypt some data with an Ethereum account', async () => {
-    const { account } = ethereum.NewAccount()
-
-    const msg = Buffer.from('Innovation')
-
-    const c = await account.encrypt(msg)
-    const d = await account.decrypt(c)
-
-    expect(c).not.toBe(msg)
-    expect(d).toStrictEqual(msg)
-  })
-
-  it('Should delegate encryption for another account Ethereum account', async () => {
-    const accountA = ethereum.NewAccount()
-    const accountB = ethereum.NewAccount()
-    const msg = Buffer.from('Innovation')
-
-    const c = await accountA.account.encrypt(msg, accountB.account)
-    const d = await accountB.account.decrypt(c)
-    expect(c).not.toBe(msg)
-    expect(d).toStrictEqual(msg)
-
-    const e = await accountA.account.encrypt(msg, accountB.account.publicKey)
-    const f = await accountB.account.decrypt(e)
-    expect(e).not.toBe(msg)
-    expect(f).toStrictEqual(d)
-  })
-
-  it('Should delegate encrypt and decrypt some data with a provided Ethereum account', async () => {
-    const ephAccountA = ephemeralAccount
-    const ephAccountB = ephemeralAccount1
-    if (!ephAccountA.privateKey || !ephAccountB.privateKey)
-      throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-
-    const providerA = new EthereumMockProvider({
-      address: ephAccountA.address,
-      privateKey: ephAccountA.privateKey,
-      networkVersion: 31,
-    })
-    const providerB = new EthereumMockProvider({
-      address: ephAccountB.address,
-      privateKey: ephAccountB.privateKey,
-      networkVersion: 31,
-    })
-
-    const accountFromProviderA = await ethereum.GetAccountFromProvider(providerA)
-    const accountFromProviderB = await ethereum.GetAccountFromProvider(providerB)
-    const msg = Buffer.from('Innovation')
-
-    const c = await accountFromProviderA.encrypt(msg, accountFromProviderB)
-    const d = await accountFromProviderB.decrypt(c)
-
-    expect(c).not.toBe(msg)
-    expect(d).toStrictEqual(msg)
-  })
-
-  it('Should encrypt and decrypt some data with a provided Ethereum account', async () => {
-    const { address, privateKey } = ephemeralAccount
-    if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-
-    const provider = new EthereumMockProvider({
-      address,
-      privateKey,
-      networkVersion: 31,
-    })
-    const accountFromProvider = await ethereum.GetAccountFromProvider(provider)
-    const msg = Buffer.from('Innovation')
-
-    const c = await accountFromProvider.encrypt(msg)
-    const d = await accountFromProvider.decrypt(c)
-
-    expect(c).not.toBe(msg)
-    expect(d).toStrictEqual(msg)
   })
 
   it('should get the same signed message for each account', async () => {

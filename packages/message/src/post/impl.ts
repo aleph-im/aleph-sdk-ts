@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, {AxiosResponse} from 'axios'
 
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import {
@@ -8,20 +8,43 @@ import {
   PostQueryResponse,
   PostSubmitConfiguration,
   PostMessage,
+  PostResponse,
 } from './types'
 import { PostMessageBuilder, prepareAlephMessage, broadcast } from '../utils'
 import { ItemType } from '../types'
+import {MessageNotFoundError} from "../types/errors";
 
 export class PostMessageClient {
   /**
-   * Retrieves a post message on from the Aleph network.
-   * It uses the type(s) provided in the configuration given as a parameter to retrieve the wanted message.
+   * Retrieves a post message from the Aleph network.
+   * @param config
+   */
+  async get<T = any>(config: PostGetConfiguration): Promise<PostResponse<T>> {
+    const response = await this.getAll<T>(config)
+    if (!response.posts || response.posts.length === 0) {
+      throw new MessageNotFoundError('No post found')
+    } else if (response.posts.length > 1) {
+      console.warn('More than one post found, returning the latest one')
+    }
+    return response.posts[0]
+  }
+
+  /**
+   * Retrieves all post messages from the Aleph network.
    * It also uses the pagination and page parameter to limit the number of messages to retrieve.
    *
-   * @param configuration The configuration used to get the message, including the API endpoint.
+   * @param types The types of messages to retrieve.
+   * @param pagination The number of messages to retrieve.
+   * @param page The page number to retrieve.
+   * @param apiServer The API server to use.
+   * @param channels The channels to retrieve the messages from.
+   * @param refs The references to retrieve the messages from.
+   * @param addresses The addresses to retrieve the messages from.
+   * @param tags The tags to retrieve the messages from.
+   * @param hashes The hashes to retrieve the messages from.
    */
-  async get<T>({
-    types = '',
+  async getAll<T = any>({
+    types = [],
     pagination = 50,
     page = 1,
     apiServer = DEFAULT_API_V2,
@@ -33,19 +56,22 @@ export class PostMessageClient {
   }: PostGetConfiguration): Promise<PostQueryResponse<T>> {
     const params: PostQueryParams = {
       types: types,
-      pagination: pagination,
-      page: page,
-      refs: refs.join(',') || undefined,
-      addresses: addresses.join(',') || undefined,
-      tags: tags.join(',') || undefined,
-      hashes: hashes.join(',') || undefined,
+      pagination: pagination as number,
+      page: page as number,
+      refs: refs?.join(',') || undefined,
+      addresses: addresses?.join(',') || undefined,
+      tags: tags?.join(',') || undefined,
+      hashes: hashes?.join(',') || undefined,
       channels: channels?.join(',') || undefined,
     }
 
-    const response = await axios.get<PostQueryResponse<T>>(`${stripTrailingSlash(apiServer)}/api/v0/posts.json`, {
-      params,
-      socketPath: getSocketPath(),
-    })
+    const response = (await axios.get<PostQueryResponse<T>>(
+      `${stripTrailingSlash(apiServer as string)}/api/v0/posts.json`,
+      {
+        params,
+        socketPath: getSocketPath(),
+      },
+    )) as AxiosResponse<PostQueryResponse<T>>
     return response.data
   }
 
@@ -86,7 +112,7 @@ export class PostMessageClient {
       account,
       channel,
       timestamp,
-      storageEngine,
+      storageEngine: storageEngine as ItemType,
       content: postContent,
     })
 
@@ -98,7 +124,7 @@ export class PostMessageClient {
     const { message } = await broadcast({
       message: hashedMessage,
       account,
-      apiServer: apiServer,
+      apiServer: apiServer as string,
       sync,
     })
 

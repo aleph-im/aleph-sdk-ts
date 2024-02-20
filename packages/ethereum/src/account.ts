@@ -2,13 +2,8 @@ import * as bip39 from 'bip39'
 import { ethers } from 'ethers'
 
 import { Blockchain } from '@aleph-sdk/core'
-import { SignableMessage, ECIESAccount, BaseProviderWallet } from '@aleph-sdk/account'
-import {
-  ChangeRpcParam,
-  JsonRPCWallet,
-  RpcId,
-  EVMAccount,
-} from '@aleph-sdk/evm'
+import { SignableMessage, BaseProviderWallet } from '@aleph-sdk/account'
+import { ChangeRpcParam, JsonRPCWallet, RpcId, EVMAccount } from '@aleph-sdk/evm'
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.

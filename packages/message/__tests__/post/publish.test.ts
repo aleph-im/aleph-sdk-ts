@@ -33,7 +33,7 @@ describe('Post publish tests', () => {
     await delay(1000)
 
     setTimeout(async () => {
-      const amends = await post.get({
+      const amends = await post.getAll({
         types: 'amend',
         hashes: [amended.item_hash],
       })
@@ -65,7 +65,6 @@ describe('Post publish tests', () => {
           {
             address: guest.address,
             types: ['POST'],
-            post_types: ['testing_delegate'],
           },
         ],
       },
@@ -85,7 +84,7 @@ describe('Post publish tests', () => {
 
     await delay(1000)
 
-    const amends = await post.get({
+    const amends = await post.getAll({
       types: 'testing_delegate',
       hashes: [originalPost.item_hash],
     })

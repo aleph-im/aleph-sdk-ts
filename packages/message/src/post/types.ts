@@ -24,14 +24,14 @@ export type PostGetConfiguration = {
 }
 
 export type PostQueryParams = {
-  types: string | string[]
+  types?: string | string[]
   pagination: number
   page: number
-  refs?: string
-  addresses?: string
-  tags?: string
-  hashes?: string
-  channels?: string
+  refs?: string | undefined
+  addresses?: string | undefined
+  tags?: string | undefined
+  hashes?: string | undefined
+  channels?: string | undefined
 }
 
 export type PostResponse<T> = {

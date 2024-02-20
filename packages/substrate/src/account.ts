@@ -65,37 +65,13 @@ export class DOTAccount extends Account {
 
     throw new Error('Cannot proof the integrity of the signature')
   }
-
-  /**
-   * Encrypt a content using the user's public key for a Substrate account.
-   *
-   * @param content The content to encrypt.
-   */
-  encrypt(content: Buffer): Buffer {
-    if (this.pair) return Buffer.from(this.pair.encryptMessage(content, this.pair.address))
-    throw 'Error: Can not encrypt'
-  }
-
-  /**
-   * Decrypt a given content using a NULS account.
-   *
-   * @param encryptedContent The encrypted content to decrypt.
-   */
-  decrypt(encryptedContent: Buffer): Buffer | null {
-    if (this.pair) {
-      const res = this.pair.decryptMessage(encryptedContent, this.pair.address)
-      if (res) return Buffer.from(res)
-    }
-
-    throw "Error: This message can't be decoded"
-  }
 }
 
 /**
  * Creates a new substrate account using a randomly generated substrate keyring.
  */
 export async function NewAccount(): Promise<{ account: DOTAccount; mnemonic: string }> {
-  const mnemonic = generateMnemonic()
+  const mnemonic = generateMnemonic(24)
 
   return { account: await ImportAccountFromMnemonic(mnemonic), mnemonic: mnemonic }
 }

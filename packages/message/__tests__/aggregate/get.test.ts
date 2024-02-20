@@ -1,5 +1,5 @@
 import { AggregateMessageClient } from '../../src'
-import axios from 'axios'
+import { MessageNotFoundError } from '../../src/types/errors'
 
 describe('Aggregate message retrieve test', () => {
   const client = new AggregateMessageClient()
@@ -11,8 +11,7 @@ describe('Aggregate message retrieve test', () => {
       })
       expect(true).toStrictEqual(false)
     } catch (e: any) {
-      expect(axios.isAxiosError(e)).toStrictEqual(true)
-      expect(e.request.statusCode).toStrictEqual(404)
+      expect(e instanceof MessageNotFoundError).toStrictEqual(true)
     }
   })
 

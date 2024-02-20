@@ -40,7 +40,7 @@ describe('Forget publish tests', () => {
       account: account,
     })
 
-    const initialPost = await post.get({ types: postType, hashes: [postRest.item_hash] })
+    const initialPost = await post.getAll({ types: postType, hashes: [postRest.item_hash] })
 
     expect(forgetRes.content).not.toBeNull()
     expect(initialPost.posts.length).toStrictEqual(0)

@@ -1,4 +1,4 @@
-import { BinTools, Buffer as AvaBuff } from 'avalanche'
+import { BinTools, Buffer as AvaBuff, AvalancheCore as Avalanche } from 'avalanche'
 import { KeyPair, KeyChain } from 'avalanche/dist/apis/avm'
 import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
 import { ethers, providers } from 'ethers'
@@ -6,12 +6,7 @@ import { privateToAddress } from 'ethereumjs-util'
 
 import { Blockchain } from '@aleph-sdk/core'
 import { SignableMessage, BaseProviderWallet } from '@aleph-sdk/account'
-import {
-  ChangeRpcParam,
-  RpcId,
-  EVMAccount,
-  JsonRPCWallet,
-} from '@aleph-sdk/evm'
+import { ChangeRpcParam, RpcId, EVMAccount, JsonRPCWallet } from '@aleph-sdk/evm'
 import { digestMessage, verifyAvalanche } from './verify'
 
 /**

@@ -27,14 +27,4 @@ describe('substrate accounts', () => {
   //  expect(account.getChain()).toStrictEqual(Blockchain.DOT)
   //  expect(account.address).toStrictEqual(address)
   //})
-
-  it('Should encrypt and decrypt content with substrate', async () => {
-    const { account } = await substrate.NewAccount()
-    const msg = Buffer.from('DOTDOT')
-
-    const c = account.encrypt(msg)
-    const d = account.decrypt(c)
-    expect(c).not.toBe(msg)
-    expect(d).toStrictEqual(msg)
-  })
 })

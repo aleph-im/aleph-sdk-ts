@@ -12,6 +12,7 @@ import {
   AggregatePublishConfiguration,
 } from './types'
 import { ItemType } from '../types'
+import { MessageNotFoundError } from '../types/errors'
 
 export class AggregateMessageClient {
   /**
@@ -38,7 +39,7 @@ export class AggregateMessageClient {
     )
 
     if (!response.data.data) {
-      throw new Error('no aggregate found')
+      throw new MessageNotFoundError('no aggregate found')
     }
     return response.data.data
   }
