@@ -19,7 +19,7 @@
     "@aleph-sdk/account": "0.x",
     "@aleph-sdk/core": "0.x",
     "@aleph-sdk/evm": "0.x",
-    "avalanche": "^1.0.3",
+    "avalanche": "^3.16.0",
     "eciesjs": "^0.4.6",
     "ethers": "^5.7.2",
     "sha.js": "^2.4.11"

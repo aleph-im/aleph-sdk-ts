@@ -1,15 +1,15 @@
 import { Framework, SuperToken } from '@superfluid-finance/sdk-core'
-import { AvalancheAccount } from '../../avalanche'
-import { ChainData, ChangeRpcParam, decToHex, hexToDec, JsonRPCWallet, RpcId } from '../../evm'
+import { AvalancheAccount } from '@aleph-sdk/avalanche'
+import { ChainData, ChangeRpcParam, decToHex, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
 import { BigNumber, ethers, providers } from 'ethers'
 import {
   ALEPH_SUPERFLUID_FUJI_TESTNET,
   ALEPH_SUPERFLUID_MAINNET,
   SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL,
   SUPERFLUID_MAINNET_SUBGRAPH_URL,
-} from '../../core'
+} from '@aleph-sdk/core'
 import { Decimal } from 'decimal.js'
-import { BaseProviderWallet } from '../../account'
+import { BaseProviderWallet } from '@aleph-sdk/account'
 
 /**
  * SuperfluidAccount implements the Account class for the Superfluid protocol.
@@ -34,7 +34,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     if (!this.framework) {
       this.framework = await Framework.create({
         chainId: await this.wallet.getCurrentChainId(),
-        provider: this.wallet,
+        provider: this.wallet.provider,
       })
     }
     if (!this.alephx) {

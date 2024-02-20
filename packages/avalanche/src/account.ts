@@ -1,15 +1,12 @@
-import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
+import { BinTools, Buffer as AvaBuff } from 'avalanche'
 import { KeyPair, KeyChain } from 'avalanche/dist/apis/avm'
 import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
-import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from 'eciesjs'
 import { ethers, providers } from 'ethers'
 import { privateToAddress } from 'ethereumjs-util'
 
 import { Blockchain } from '@aleph-sdk/core'
-import { SignableMessage, ECIESAccount, BaseProviderWallet } from '@aleph-sdk/account'
+import { SignableMessage, BaseProviderWallet } from '@aleph-sdk/account'
 import {
-  ProviderEncryptionLabel,
-  ProviderEncryptionLib,
   ChangeRpcParam,
   RpcId,
   EVMAccount,
@@ -59,60 +56,6 @@ export class AvalancheAccount extends EVMAccount {
   }
 
   /**
-   * Encrypt a content using the user's public key from the keypair
-   *
-   * @param content The content to encrypt.
-   * @param delegateSupport Optional, if you want to encrypt data for another ECIESAccount (Can also be directly a public key)
-   * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
-   */
-  async encrypt(
-    content: Buffer,
-    delegateSupport?: ECIESAccount | string,
-    encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
-  ): Promise<Buffer | string> {
-    let publicKey: string | undefined
-
-    // Does the content is encrypted for a tier?
-    if (delegateSupport instanceof ECIESAccount) {
-      if (!delegateSupport.publicKey) {
-        await delegateSupport.askPubKey()
-      }
-      publicKey = delegateSupport.publicKey
-    } else if (delegateSupport) {
-      publicKey = delegateSupport
-    } else {
-      await this.askPubKey()
-      publicKey = this.publicKey
-    }
-
-    if (!publicKey) throw new Error('Cannot encrypt content')
-    if (!this.wallet) {
-      // Wallet encryption method or non-metamask provider
-      return secp256k1_encrypt(publicKey, content)
-    } else {
-      // provider encryption
-      return ProviderEncryptionLib[encryptionMethod](content, publicKey)
-    }
-  }
-
-  /**
-   * Decrypt a given content using the private key from the keypair.
-   *
-   * @param encryptedContent The encrypted content to decrypt.
-   */
-  async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-    if (this.keyPair) {
-      const secret = this.keyPair.getPrivateKey().toString('hex')
-      return secp256k1_decrypt(secret, Buffer.from(encryptedContent))
-    }
-    if (this.wallet) {
-      const decrypted = await this.wallet.decrypt(encryptedContent)
-      return Buffer.from(decrypted)
-    }
-    throw new Error('Cannot encrypt content')
-  }
-
-  /**
    * The Sign method provides a way to sign a given Aleph message using an avalanche keypair.
    * The full message is not used as the payload, only fields of the BaseMessage type are.
    *
@@ -129,6 +72,7 @@ export class AvalancheAccount extends EVMAccount {
       const digestHex = digest.toString('hex')
       const digestBuff = AvaBuff.from(digestHex, 'hex')
       const signatureBuffer = this.keyPair?.sign(digestBuff)
+      if (!signatureBuffer) throw new Error('Cannot sign message')
 
       const bintools = BinTools.getInstance()
       const signature = bintools.cb58Encode(signatureBuffer)

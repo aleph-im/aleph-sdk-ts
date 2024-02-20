@@ -12,11 +12,6 @@ export abstract class BaseProviderWallet {
   abstract connect(): Promise<void>
 
   /**
-   * Decrypts data using the Provider
-   * @param  {Buffer} data data to decrypt
-   */
-  abstract decrypt(data: Buffer | string): Promise<string>
-  /**
    * Asks the provider for a public key
    */
   abstract getPublicKey(): Promise<string>

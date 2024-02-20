@@ -4,7 +4,7 @@
  * Under MIT LICENSE
  */
 
-import { decrypt, getEncryptionPublicKey, personalSign } from '@metamask/eth-sig-util'
+import { personalSign } from '@metamask/eth-sig-util'
 
 type ProviderSetup = {
   address: string
@@ -66,25 +66,6 @@ export class EthereumMockProvider implements IMockProvider {
         this.log('signed', signed)
 
         return Promise.resolve(signed)
-      }
-
-      case 'eth_getEncryptionPublicKey': {
-        const privateKey = this.setup.privateKey
-        return Promise.resolve(getEncryptionPublicKey(privateKey))
-      }
-
-      case 'eth_decrypt': {
-        this.log('eth_decrypt', { method, params })
-
-        if (!params || !params[0]) throw new Error('Provide an encrypted payload.')
-
-        const stripped = params[0].substring(2)
-        const buff = Buffer.from(stripped, 'hex')
-        const encryptedData = JSON.parse(buff.toString('utf8'))
-
-        const decrypted: string = decrypt({ encryptedData, privateKey: this.setup.privateKey })
-
-        return Promise.resolve(decrypted)
       }
 
       case 'wallet_addEthereumChain': {

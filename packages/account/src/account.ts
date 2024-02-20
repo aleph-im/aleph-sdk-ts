@@ -33,10 +33,4 @@ export abstract class ECIESAccount extends Account {
   }
 
   abstract askPubKey(): Promise<void>
-  abstract encrypt(
-    content: Buffer,
-    delegateSupport?: string | ECIESAccount,
-    encryptionMethod?: string, // ProviderEncryptionLabel,
-  ): Promise<Buffer | string>
-  abstract decrypt(content: Buffer | string): Promise<Buffer>
 }

@@ -142,14 +142,6 @@ export class JsonRPCWallet extends BaseProviderWallet {
     return this.publicKey
   }
 
-  public async decrypt(data: Buffer | string): Promise<string> {
-    console.warn(RPC_WARNING)
-    const query = await this.provider.send('eth_decrypt', [data, this.address])
-
-    if (query.length > 0) return query
-    throw new Error('Could not decrypt data')
-  }
-
   public async signMessage(data: Buffer | string): Promise<string> {
     if (!this.signer) throw new Error('Wallet not connected')
     return this.signer.signMessage(data)

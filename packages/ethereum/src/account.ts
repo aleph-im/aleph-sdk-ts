@@ -1,12 +1,9 @@
 import * as bip39 from 'bip39'
 import { ethers } from 'ethers'
-import { decrypt as secp256k1_decrypt, encrypt as secp256k1_encrypt } from 'eciesjs'
 
 import { Blockchain } from '@aleph-sdk/core'
 import { SignableMessage, ECIESAccount, BaseProviderWallet } from '@aleph-sdk/account'
 import {
-  ProviderEncryptionLabel,
-  ProviderEncryptionLib,
   ChangeRpcParam,
   JsonRPCWallet,
   RpcId,
@@ -47,58 +44,6 @@ export class ETHAccount extends EVMAccount {
     }
     this.publicKey = await this.wallet.getPublicKey()
     return
-  }
-
-  /**
-   * Encrypt a content using the user's public key for an Ethereum account.
-   *
-   * @param content The content to encrypt.
-   * @param delegateSupport Optional, if you want to encrypt data for another EthAccount (Can also be directly a public key)
-   * @param encryptionMethod Optional, chose the standard encryption method to use (With provider).
-   */
-  async encrypt(
-    content: Buffer,
-    delegateSupport?: ECIESAccount | string,
-    encryptionMethod: ProviderEncryptionLabel = ProviderEncryptionLabel.METAMASK,
-  ): Promise<Buffer | string> {
-    let publicKey: string | undefined
-
-    // Does the content is encrypted for a tier?
-    if (delegateSupport instanceof ECIESAccount) {
-      if (!delegateSupport.publicKey) {
-        await delegateSupport.askPubKey()
-      }
-      publicKey = delegateSupport.publicKey
-    } else if (delegateSupport) {
-      publicKey = delegateSupport
-    } else {
-      await this.askPubKey()
-      publicKey = this.publicKey
-    }
-
-    if (!publicKey) throw new Error('Cannot encrypt content')
-    if (this.wallet instanceof ethers.Wallet) {
-      // Wallet encryption method or non-metamask provider
-      return secp256k1_encrypt(publicKey, content)
-    } else {
-      // provider encryption
-      return ProviderEncryptionLib[encryptionMethod](content, publicKey)
-    }
-  }
-
-  /**
-   * Decrypt a given content using an ETHAccount.
-   *
-   * @param encryptedContent The encrypted content to decrypt.
-   */
-  async decrypt(encryptedContent: Buffer | string): Promise<Buffer> {
-    if (this.wallet instanceof ethers.Wallet) {
-      const secret = this.wallet.privateKey
-      return secp256k1_decrypt(secret, Buffer.from(encryptedContent))
-    } else {
-      const decrypted = await this.wallet.decrypt(encryptedContent)
-      return Buffer.from(decrypted)
-    }
   }
 
   /**
