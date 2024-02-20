@@ -147,6 +147,9 @@ describe('Avalanche accounts', () => {
     const fakeMessage = {
       ...hashedMessage,
       item_hash: 'FAKE',
+      getVerificationBuffer(): Buffer {
+        return Buffer.from('FAKE')
+      },
     } as HashedMessage<PostContent<unknown>>
     if (!account.publicKey || !fakeAccount.publicKey) throw Error()
     const fakeSignature = await account.sign(fakeMessage)

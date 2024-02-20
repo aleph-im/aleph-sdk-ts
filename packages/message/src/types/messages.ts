@@ -160,6 +160,23 @@ export class SignedMessage<C extends MessageContent> extends HashedMessage<C> {
     super(props)
     this.signature = props.signature
   }
+
+  /**
+   *  Returns a message that can be broadcast to the network
+   */
+  getBroadcastable(): Omit<SignedMessage<C>, 'content' | 'getVerificationBuffer' | 'isOfType' | 'getBroadcastable'> {
+    return {
+      chain: this.chain,
+      sender: this.sender,
+      channel: this.channel,
+      time: this.time,
+      item_type: this.item_type,
+      item_hash: this.item_hash,
+      item_content: this.item_content,
+      signature: this.signature,
+      type: this.type,
+    }
+  }
 }
 
 export type PublishedMessageProps<C extends MessageContent> = SignedMessageProps<C> & {

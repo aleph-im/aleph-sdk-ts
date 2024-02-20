@@ -12,7 +12,7 @@ export type PostContent<T> = BaseContent & {
 // ------- GET -------
 
 export type PostGetConfiguration = {
-  types: string | string[]
+  types?: string | string[]
   apiServer?: string
   pagination?: number
   page?: number
@@ -68,31 +68,11 @@ export type PostQueryResponse<T> = {
 // ------- PUBLISH -------
 
 /**
- * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
- *
- * ref:             A hash or message object to reference another post / transaction hash / address / ...
- *
- * channel:         The channel in which the message will be published.
- *
- * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
- *
- * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
- *
- * account:         The account used to sign the aggregate message.
- *
- * address:         To aggregate content for another account (Required an authorization key)
- *
- * postType:        string of your choice like Blog / amend / chat / comment / ...
- *
- * content:         The post message content.
- *
- * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type PostSubmitConfiguration<T> = {
   apiServer?: string
   ref?: string | ChainRef
   channel: string
-  inlineRequested?: boolean
   storageEngine?: ItemType
   account: Account
   address?: string

@@ -1,3 +1,5 @@
+import { AxiosError } from 'axios'
+
 export class QueryError extends Error {
   constructor(message: string) {
     super(message)
@@ -14,15 +16,28 @@ export class MessageNotFoundError extends QueryError {
 
 export class BroadcastError extends Error {
   errors: string[]
-  constructor(errors: string[]) {
-    super(errors.join(', '))
-    this.errors = errors
+  constructor(errors: AxiosError | string[] | undefined) {
+    let processedErrors: string[] = []
+    if (errors instanceof AxiosError) {
+      processedErrors.push(errors.message)
+      if (errors.response?.data) {
+        for (const error of errors.response.data as object[]) {
+          processedErrors.push(JSON.stringify(error))
+        }
+      }
+    } else if (errors instanceof Array) {
+      processedErrors = errors
+    } else {
+      processedErrors.push('Unknown error')
+    }
+    super(processedErrors.join('\n'))
+    this.errors = processedErrors
     this.name = 'BroadcastError'
   }
 }
 
 export class InvalidMessageError extends BroadcastError {
-  constructor(errors: string[]) {
+  constructor(errors: AxiosError | string[] | undefined) {
     super(errors)
     this.name = 'InvalidMessageError'
   }

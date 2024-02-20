@@ -23,7 +23,6 @@ describe('Post get tests', () => {
     }
 
     const amends = await post.getAll({
-      types: '',
       addresses: ['0xB68B9D4f3771c246233823ed1D3Add451055F9Ef'],
       hashes: ['7ffbfe7017b3f1010f2830cfa5b4391aefd78466a4300f47ab3f2645fab48cd4'],
     })

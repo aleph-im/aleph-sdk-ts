@@ -1,4 +1,4 @@
-import axios, {AxiosResponse} from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import {
@@ -12,7 +12,7 @@ import {
 } from './types'
 import { PostMessageBuilder, prepareAlephMessage, broadcast } from '../utils'
 import { ItemType } from '../types'
-import {MessageNotFoundError} from "../types/errors";
+import { MessageNotFoundError } from '../types/errors'
 
 export class PostMessageClient {
   /**
@@ -30,18 +30,16 @@ export class PostMessageClient {
   }
 
   /**
-   * Retrieves all post messages from the Aleph network.
-   * It also uses the pagination and page parameter to limit the number of messages to retrieve.
-   *
-   * @param types The types of messages to retrieve.
-   * @param pagination The number of messages to retrieve.
-   * @param page The page number to retrieve.
-   * @param apiServer The API server to use.
-   * @param channels The channels to retrieve the messages from.
-   * @param refs The references to retrieve the messages from.
-   * @param addresses The addresses to retrieve the messages from.
-   * @param tags The tags to retrieve the messages from.
-   * @param hashes The hashes to retrieve the messages from.
+   * Queries the Aleph network for post messages.
+   * @param types       The types of messages to retrieve.
+   * @param pagination  The number of messages to retrieve.
+   * @param page        The page number to retrieve.
+   * @param apiServer   The API server to use.
+   * @param channels    The channels to retrieve the messages from.
+   * @param refs        The references to retrieve the messages from.
+   * @param addresses   The addresses to retrieve the messages from.
+   * @param tags        The tags to retrieve the messages from.
+   * @param hashes      The hashes to retrieve the messages from.
    */
   async getAll<T = any>({
     types = [],
@@ -77,18 +75,24 @@ export class PostMessageClient {
 
   /**
    * Publishes a post message to the Aleph network.
-   *
-   * This message must be indexed using a type, you can provide in the configuration.
-   *
-   * You can amend the message using the type 'amend' and by providing the reference of the message to amend (its hash).
-   *
-   * @param configuration The configuration used to publish the aggregate message.
+   * @param account               The account used to sign the message.
+   * @param postType              The user-defined post type of the post message. If 'amend', the `ref` field points to the message to amend.
+   * @param content               The content of the post message.
+   * @param channel               The channel in which the message will be published.
+   * @param ref                   A message hash or arbitrary reference. Can be used to index a message for search on query.
+   * @param address               The address of the account to post content for. Required an authorization key.
+   * @param storageEngine         The storage engine to use when storing the message (IPFS, Aleph storage or inline). [**default: ItemType.inline**]
+   * @param apiServer             The API server endpoint used to carry the request to the Aleph's network. [**default: https://api2.aleph.im**]
+   * @param sync                  If true, the function will wait for the message to be confirmed before returning. [**default: false**]
+   * @returns                     The message that was published.
+   * @throws InvalidMessageError  if the message is not compliant with the Aleph protocol.
+   * @throws BroadcastError       if the message could not be broadcast for any other reason.
+   * @typeParam T                 The type of the content of the message.
    */
   async send<T>({
     account,
     postType,
     content,
-    inlineRequested,
     channel,
     ref,
     address,
@@ -96,8 +100,6 @@ export class PostMessageClient {
     apiServer = DEFAULT_API_V2,
     sync = false,
   }: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
-    if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
-
     const timestamp: number = Date.now() / 1000
     const postContent: PostContent<T> = {
       type: postType,

@@ -3,6 +3,7 @@ import axios, { AxiosError } from 'axios'
 import { getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import { Account } from '@aleph-sdk/account'
 import { HashedMessage, MessageContent, MessageStatus, SignedMessage } from '../types'
+import { BroadcastError, InvalidMessageError } from '../types/errors'
 
 type SignAndBroadcastConfiguration<C extends MessageContent> = {
   message: HashedMessage<C>
@@ -30,7 +31,7 @@ export async function broadcast<C extends MessageContent>(
       `${stripTrailingSlash(configuration.apiServer)}/api/v0/messages`,
       {
         sync: configuration.sync || false,
-        message: JSON.stringify(signedMessage),
+        message: signedMessage.getBroadcastable(),
       },
       {
         socketPath: getSocketPath(),
@@ -44,7 +45,7 @@ export async function broadcast<C extends MessageContent>(
         status = MessageStatus.pending
         break
       default:
-        throw new Error(`Unexpected status code: ${response.status}, ${response.statusText}`)
+        throw new BroadcastError([`Unexpected status code: ${response.status}, ${response.statusText}`])
     }
   } catch (error) {
     if (!axios.isAxiosError(error)) throw error
@@ -75,7 +76,7 @@ async function handleBroadcastError<C extends MessageContent>(
           `${stripTrailingSlash(configuration.apiServer)}/api/v0/ipfs/pubsub/pub`,
           {
             topic: 'ALEPH-TEST',
-            data: JSON.stringify(signedMessage),
+            data: signedMessage.getBroadcastable(),
           },
           {
             socketPath: getSocketPath(),
@@ -84,12 +85,18 @@ async function handleBroadcastError<C extends MessageContent>(
         return { response, status: MessageStatus.pending }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-          if (error.response.status !== 500) return { response: error.response, status: MessageStatus.rejected }
+          if (error.response.status === 422) {
+            try {
+              throw new InvalidMessageError(error)
+            } catch (error) {
+              throw new BroadcastError(error as AxiosError)
+            }
+          }
         }
         throw error
       }
     case 422:
-      return { response: error.response, status: MessageStatus.rejected }
+      throw new InvalidMessageError(error)
     default:
       throw error
   }
