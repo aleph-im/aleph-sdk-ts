@@ -29,7 +29,7 @@ export type ForgetContent = BaseContent & {
  */
 export type ForgetPublishConfiguration = {
   account: Account
-  channel: string
+  channel?: string
   storageEngine?: ItemType
   inlineRequested?: boolean
   hashes: string[]

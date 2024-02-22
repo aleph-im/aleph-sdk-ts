@@ -116,20 +116,24 @@ export type ProgramContent = BaseContent & {
  */
 export type ProgramPublishConfiguration = {
   account: Account
-  channel: string
+  channel?: string
   isPersistent?: boolean
+  allowAmend?: boolean
+  internet?: boolean
+  alephApi?: boolean
   storageEngine?: ItemType.ipfs | ItemType.storage
   file?: Buffer | Blob
   programRef?: string
   encoding?: Encoding
   entrypoint: string
-  subscription?: Record<string, unknown>[]
+  subscriptions?: Record<string, unknown>[]
   memory?: number
   vcpus?: number
   runtime?: string
   volumes?: MachineVolume[]
   metadata?: Record<string, unknown>
   variables?: Record<string, string>
+  timeoutSeconds?: number
   sync?: boolean
 }
 

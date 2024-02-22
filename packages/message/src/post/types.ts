@@ -68,7 +68,7 @@ export type PostQueryResponse<T> = {
 
 export type PostSubmitConfiguration<T> = {
   ref?: string | ChainRef
-  channel: string
+  channel?: string
   storageEngine?: ItemType
   account: Account
   address?: string

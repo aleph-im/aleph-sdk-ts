@@ -1,5 +1,5 @@
 import {
-  AggregateMessageClient, BaseMessageClient,
+  AggregateMessageClient, AlephSocket, BaseMessageClient,
   ForgetMessageClient,
   InstanceMessageClient,
   PostMessageClient,
@@ -9,10 +9,6 @@ import {
 import {MessageFilter, PostFilter} from "./types";
 import {MessageError, MessageType} from "@aleph-sdk/message/src";
 
-/**
- * class AlephClient(ABC):
-
- */
 class AlephHttpClient {
   postClient: PostMessageClient
   forgetClient: ForgetMessageClient
@@ -85,30 +81,16 @@ class AlephHttpClient {
     return await this.messageClient.getError(itemHash)
   }
 
-  /*
-    async def watch_messages(
-        self,
-        message_filter: Optional[MessageFilter] = None,
-    ) -> AsyncIterable[AlephMessage]:
-        message_filter = message_filter or MessageFilter()
-        params = message_filter.as_http_params()
-
-        async with self.http_session.ws_connect(
-            "/api/ws0/messages", params=params
-        ) as ws:
-            logger.debug("Websocket connected")
-            async for msg in ws:
-                if msg.type == aiohttp.WSMsgType.TEXT:
-                    if msg.data == "close cmd":
-                        await ws.close()
-                        break
-                    else:
-                        data = json.loads(msg.data)
-                        yield parse_message(data)
-                elif msg.type == aiohttp.WSMsgType.ERROR:
-                    break
-
-   */
+  async watchMessages(filter: MessageFilter = {}): Promise<AlephSocket> {
+    const startDate: Date | undefined = filter.startDate instanceof Number ? new Date(filter.startDate) : filter.startDate as Date
+    const endDate: Date | undefined = filter.endDate instanceof Number ? new Date(filter.endDate) : filter.endDate as Date
+    const params = {
+      ...filter,
+      startDate,
+      endDate,
+    }
+    return this.messageClient.getMessagesSocket(params)
+  }
 }
 
 export default AlephHttpClient

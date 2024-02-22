@@ -161,7 +161,7 @@ export class StoreMessageClient {
       return response.data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new InvalidMessageError(error.response?.data)
+        throw new InvalidMessageError(error)
       }
     }
   }

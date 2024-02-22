@@ -36,7 +36,10 @@ export type InstanceContent = BaseExecutableContent & {
 
 export type InstancePublishConfiguration = {
   account: Account
-  channel: string
+  channel?: string
+  allowAmend?: boolean
+  internet?: boolean
+  alephApi?: boolean
   metadata?: Record<string, unknown>
   variables?: Record<string, string>
   authorized_keys?: string[]
@@ -46,5 +49,6 @@ export type InstancePublishConfiguration = {
   image?: string
   volumes?: MachineVolume[]
   storageEngine?: ItemType.ipfs | ItemType.storage
+  timeoutSeconds?: number
   sync?: boolean
 }

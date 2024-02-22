@@ -25,7 +25,7 @@ export type StoreContent = BaseContent & {
  * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 export type StorePinConfiguration = {
-  channel: string
+  channel?: string
   account: Account
   fileHash: string
   storageEngine?: ItemType
@@ -51,10 +51,11 @@ export type StorePinConfiguration = {
  * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type StorePublishConfiguration = {
-  channel: string
+  channel?: string
   account: Account
   fileObject?: Buffer | Blob
   fileHash?: string
   storageEngine?: ItemType.ipfs | ItemType.storage
+  extraFields?: Record<string, unknown>
   sync?: boolean
 }

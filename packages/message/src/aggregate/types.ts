@@ -28,8 +28,7 @@ export type AggregatePublishConfiguration<T> = {
   address?: string
   key: string | AggregateContentKey
   content: T
-  channel: string
+  channel?: string
   storageEngine?: ItemType
-  inlineRequested?: boolean
   sync?: boolean
 }

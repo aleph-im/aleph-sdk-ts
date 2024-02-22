@@ -4,6 +4,7 @@ import FormDataNode from 'form-data'
 
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
+import {InvalidMessageError} from "../types/errors";
 
 /**
  * message:         The message to update and then publish.
@@ -88,8 +89,9 @@ async function pushJsonToStorageEngine<T>(configuration: PushConfiguration<T>): 
     )
     return response.data.hash
   } catch (err) {
-    if (err instanceof AxiosError) {
-      console.error(err.response?.data)
+    if (axios.isAxiosError(err)) {
+      const error = err as AxiosError
+      throw new InvalidMessageError(error)
     }
     throw err
   }

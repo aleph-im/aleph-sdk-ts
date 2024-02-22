@@ -10,7 +10,7 @@ import { ForgetContent } from '../forget'
 export type MessageBuilderConfig<C> = {
   storageEngine: ItemType
   account: Account
-  channel: string
+  channel?: string
   timestamp: number
   content: C
 }

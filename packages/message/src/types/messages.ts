@@ -95,7 +95,7 @@ export interface MessageTypeMap<Content = any> {
 export type BaseMessageProps<C extends MessageContent> = {
   chain: Blockchain
   sender: string
-  channel: string
+  channel?: string
   time: number
   item_type: ItemType
   content: C
@@ -106,7 +106,7 @@ export class BuiltMessage<C extends MessageContent> {
   chain: Blockchain
   sender: string
   type: keyof MessageTypeMap<C>
-  channel: string
+  channel?: string
   time: number
   item_type: ItemType
   content: C

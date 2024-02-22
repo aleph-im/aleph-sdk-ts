@@ -37,17 +37,21 @@ export class ProgramMessageClient {
     channel,
     metadata,
     isPersistent = false,
+    allowAmend = false,
+    internet = true,
+    alephApi = true,
     storageEngine = ItemType.ipfs,
     file,
     programRef,
     encoding = Encoding.zip,
     entrypoint,
-    subscription,
+    subscriptions,
     memory = 128,
     vcpus = 1,
     runtime = 'bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4',
     volumes = [],
     variables = {},
+    timeoutSeconds = 30,
     sync = false,
   }: RequireOnlyOne<ProgramPublishConfiguration, 'programRef' | 'file'>): Promise<ProgramMessage> {
     const timestamp = Date.now() / 1000
@@ -80,13 +84,13 @@ export class ProgramMessageClient {
     }
 
     let triggers: FunctionTriggers = { http: true, persistent: isPersistent }
-    if (subscription) triggers = { ...triggers, message: subscription }
+    if (subscriptions) triggers = { ...triggers, message: subscriptions }
 
     const programContent: ProgramContent = {
       address: account.address,
       time: timestamp,
       type: MachineType.vm_function,
-      allow_amend: false,
+      allow_amend: allowAmend,
       code: {
         encoding, // retrieve the file format or params
         entrypoint: entrypoint,
@@ -97,14 +101,14 @@ export class ProgramMessageClient {
       on: triggers,
       environment: {
         reproducible: false,
-        internet: true,
-        aleph_api: true,
+        internet: internet,
+        aleph_api: alephApi,
         shared_cache: false,
       },
       resources: {
         vcpus,
         memory,
-        seconds: 30,
+        seconds: timeoutSeconds,
       },
       runtime: {
         ref: runtime,
@@ -163,7 +167,7 @@ export class ProgramMessageClient {
       programRef,
       entrypoint,
       encoding,
-      subscription,
+      subscriptions: subscription,
       memory,
       vcpus,
       runtime,
