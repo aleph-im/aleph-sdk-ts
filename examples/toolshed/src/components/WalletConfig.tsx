@@ -1,10 +1,13 @@
-import { solana, ethereum, avalanche, substrate } from '../../../../src/accounts'
 import { WalletChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
-import { RpcId } from '../../../../src/accounts/providers/JsonRPCWallet'
 import Select, { SingleValue } from 'react-select'
 import { useState } from 'react'
+import {RpcId} from "../../../../packages/evm";
+import * as avalanche from "../../../../packages/avalanche/src";
+import * as ethereum from "../../../../packages/ethereum/src";
+import * as substrate from "../../../../packages/substrate/src";
+import * as solana from "../../../../packages/solana/src";
 
 type Option = {
   readonly label: string

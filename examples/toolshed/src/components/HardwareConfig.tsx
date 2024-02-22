@@ -1,4 +1,4 @@
-import { ethereum } from '../../../../src/accounts/providers/Ledger'
+import * as ethereum from '../../../../packages/ethereum-ledger/src'
 import { HardwareChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'

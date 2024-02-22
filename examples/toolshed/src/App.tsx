@@ -7,9 +7,8 @@ import KeypairConfig from './components/KeypairConfig'
 import WalletConfig from './components/WalletConfig'
 import MessageConfig from './components/MessageConfig'
 import WebSocket from './components/WebSocket'
-import EncryptionConfig from './components/EncryptionConfig'
 import HardwareConfig from './components/HardwareConfig'
-import { ECIESAccount } from '../../../src/accounts/account'
+import {ECIESAccount} from "../../../packages/account/src";
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initState)
@@ -80,7 +79,6 @@ function App() {
           <h2>WebSocket</h2>
           <WebSocket />
         </section>
-        {state.account && state.account instanceof ECIESAccount && <EncryptionConfig state={state} />}
       </div>
     </main>
   )

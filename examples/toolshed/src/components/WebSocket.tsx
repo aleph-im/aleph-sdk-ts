@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { GetMessagesSocket } from '../../../../src/messages/any'
-import { AlephSocket, SocketResponse } from '../../../../src/messages/any/getMessagesSocket'
+import {AlephSocket, SocketResponse, BaseMessageClient} from "../../../../packages/message/src/base";
 
 function WebSocket() {
   const [socket, setSocket] = useState<AlephSocket | undefined>()
   const [data, setData] = useState<SocketResponse[]>([])
+  const client = new BaseMessageClient()
 
   const startSocket = async () => {
-    const newSocket = GetMessagesSocket({})
+    const newSocket = client.getMessagesSocket({})
 
     setSocket(newSocket)
   }

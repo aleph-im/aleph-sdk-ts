@@ -1,14 +1,13 @@
 import { useState } from 'react'
 
-import { ItemType } from '../../../../src/messages/types'
-import { Publish } from '../../../../src/messages/post'
-import { DEFAULT_API_V2 } from '../../../../src/global'
 import { consumeProps } from '../model/componentProps'
+import {ItemType, PostMessageClient} from "../../../../packages/message";
 
 function MessageConfig({ state }: consumeProps) {
-  const [messageHash, setMessageHash] = useState(null)
+  const [messageHash, setMessageHash]: [string | null, any] = useState(null)
   const [isSending, setIsSending] = useState(false)
   const [messageContent, setMessageContent] = useState('Did the quick brown fox jump over the lazy dog?!')
+  const postClient = new PostMessageClient()
 
   const handleChange = (e: any) => {
     setMessageContent(e.target.value)
@@ -18,8 +17,9 @@ function MessageConfig({ state }: consumeProps) {
     setMessageHash(null)
     setIsSending(true)
 
-    const message = await Publish({
-      APIServer: DEFAULT_API_V2,
+    if (!state.account) return alert('No account selected')
+
+    const message = await postClient.send({
       channel: 'Typescript-SDK-Toolshed',
       storageEngine: ItemType.inline,
       account: state.account,
@@ -46,7 +46,7 @@ function MessageConfig({ state }: consumeProps) {
         <p>
           Your message was succesfully posted!{' '}
           <a
-            href={`https://explorer.aleph.im/address/${state.account?.GetChain()}/${state.account?.address}/message/POST/${messageHash}`}
+            href={`https://explorer.aleph.im/address/${state.account?.getChain()}/${state.account?.address}/message/POST/${messageHash}`}
             target="_blank"
           >
             Check on explorer
