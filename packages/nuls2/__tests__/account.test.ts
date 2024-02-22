@@ -6,7 +6,7 @@ import { EphAccount } from '../../account/src'
 import * as nuls2 from '../src'
 
 async function createEphemeralNULS2(): Promise<EphAccount> {
-  const account = await nuls2.NewAccount()
+  const account = await nuls2.newAccount()
   const v = await bip39.mnemonicToSeed(account.mnemonic)
   const b = bip32.fromSeed(v)
 
@@ -34,7 +34,7 @@ describe('NULS2 accounts', () => {
   it('should import a NULS2 accounts using a mnemonic', async () => {
     const { address, mnemonic } = ephemeralAccount
     if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const accountFromMnemoic = await nuls2.ImportAccountFromMnemonic(mnemonic)
+    const accountFromMnemoic = await nuls2.importAccountFromMnemonic(mnemonic)
 
     expect(accountFromMnemoic.address).toStrictEqual(address)
     expect(accountFromMnemoic.getChain()).toStrictEqual(Blockchain.NULS2)
@@ -43,7 +43,7 @@ describe('NULS2 accounts', () => {
   it('should import a NULS2 accounts using a private key', async () => {
     const { address, privateKey } = ephemeralAccount
     if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-    const account = await nuls2.ImportAccountFromPrivateKey(privateKey)
+    const account = await nuls2.importAccountFromPrivateKey(privateKey)
 
     expect(account.getChain()).toStrictEqual(Blockchain.NULS2)
     expect(account.address).toStrictEqual(address)
@@ -52,8 +52,8 @@ describe('NULS2 accounts', () => {
   it("should change NULS2 account address' prefix", async () => {
     const { mnemonic, privateKey } = ephemeralAccount
     if (!mnemonic || !privateKey) throw Error('Can not retrieve mnemonic or privateKey inside ephemeralAccount.json')
-    const accountOne = await nuls2.ImportAccountFromMnemonic(mnemonic, { prefix: 'TEST' })
-    const accountTwo = await nuls2.ImportAccountFromPrivateKey(privateKey)
+    const accountOne = await nuls2.importAccountFromMnemonic(mnemonic, { prefix: 'TEST' })
+    const accountTwo = await nuls2.importAccountFromPrivateKey(privateKey)
 
     const accountOnePrefix = accountOne.address.substring(0, 3)
     const accountOneAddress = accountOne.address.substring(4, accountOne.address.length)
@@ -69,7 +69,7 @@ describe('NULS2 accounts', () => {
   // it('should publish a post message correctly', async () => {
   //   const { privateKey } = ephemeralAccount
   //   if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-  //   const account = await nuls2.ImportAccountFromPrivateKey(privateKey)
+  //   const account = await nuls2.importAccountFromPrivateKey(privateKey)
   //   const content: { body: string } = {
   //     body: 'This message was posted from the typescript-SDK test suite with ETH',
   //   }
@@ -92,7 +92,7 @@ describe('NULS2 accounts', () => {
   // })
 
   it('Should encrypt and decrypt content with NULS2', async () => {
-    const { account } = await nuls2.NewAccount()
+    const { account } = await nuls2.newAccount()
     const msg = Buffer.from('Nuuullss2')
 
     const c = await account.encrypt(msg)
@@ -102,8 +102,8 @@ describe('NULS2 accounts', () => {
   })
 
   it('Should delegate encrypt and decrypt content with NULS2', async () => {
-    const accountA = await nuls2.NewAccount()
-    const accountB = await nuls2.NewAccount()
+    const accountA = await nuls2.newAccount()
+    const accountB = await nuls2.newAccount()
     const msg = Buffer.from('Nuuullss2')
 
     const c = await accountA.account.encrypt(msg, accountB.account)

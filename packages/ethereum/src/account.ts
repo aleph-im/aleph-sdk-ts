@@ -63,7 +63,7 @@ export class ETHAccount extends EVMAccount {
  * @param mnemonic The mnemonic of the account to import.
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  */
-export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
+export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
   const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
 
   return new ETHAccount(wallet, wallet.address, wallet.publicKey)
@@ -76,7 +76,7 @@ export function ImportAccountFromMnemonic(mnemonic: string, derivationPath = "m/
  *
  * @param privateKey The private key of the account to import.
  */
-export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
+export function importAccountFromPrivateKey(privateKey: string): ETHAccount {
   const wallet = new ethers.Wallet(privateKey)
 
   return new ETHAccount(wallet, wallet.address, wallet.publicKey)
@@ -87,10 +87,10 @@ export function ImportAccountFromPrivateKey(privateKey: string): ETHAccount {
  *
  * @param derivationPath
  */
-export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHAccount; mnemonic: string } {
+export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHAccount; mnemonic: string } {
   const mnemonic = bip39.generateMnemonic()
 
-  return { account: ImportAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic }
+  return { account: importAccountFromMnemonic(mnemonic, derivationPath), mnemonic: mnemonic }
 }
 
 /**
@@ -99,7 +99,7 @@ export function NewAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  * @param  {ethers.providers.ExternalProvider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
-export async function GetAccountFromProvider(
+export async function getAccountFromProvider(
   provider: ethers.providers.ExternalProvider,
   requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {

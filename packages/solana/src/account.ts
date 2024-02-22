@@ -82,7 +82,7 @@ export class SOLAccount extends Account {
  *
  * @param privateKey The private key of the account to import.
  */
-export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount {
+export function importAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount {
   const keypair = Keypair.fromSecretKey(privateKey)
 
   return new SOLAccount(keypair.publicKey, keypair)
@@ -91,16 +91,16 @@ export function ImportAccountFromPrivateKey(privateKey: Uint8Array): SOLAccount 
 /**
  * Creates a new solana account using a randomly generated solana keypair.
  */
-export function NewAccount(): { account: SOLAccount; privateKey: Uint8Array } {
+export function newAccount(): { account: SOLAccount; privateKey: Uint8Array } {
   const account = new Keypair()
 
-  return { account: ImportAccountFromPrivateKey(account.secretKey), privateKey: account.secretKey }
+  return { account: importAccountFromPrivateKey(account.secretKey), privateKey: account.secretKey }
 }
 
 /**
  * Retrieves a solana account using an in-browser wallet provider
  */
-export async function GetAccountFromProvider(provider: MessageSigner): Promise<SOLAccount> {
+export async function getAccountFromProvider(provider: MessageSigner): Promise<SOLAccount> {
   if (!provider.connected) await provider.connect()
   if (!provider.publicKey) throw new Error('This wallet does not provide a public key')
 

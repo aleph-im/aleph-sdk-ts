@@ -70,10 +70,10 @@ export class DOTAccount extends Account {
 /**
  * Creates a new substrate account using a randomly generated substrate keyring.
  */
-export async function NewAccount(): Promise<{ account: DOTAccount; mnemonic: string }> {
+export async function newAccount(): Promise<{ account: DOTAccount; mnemonic: string }> {
   const mnemonic = generateMnemonic(24)
 
-  return { account: await ImportAccountFromMnemonic(mnemonic), mnemonic: mnemonic }
+  return { account: await importAccountFromMnemonic(mnemonic), mnemonic: mnemonic }
 }
 
 /**
@@ -83,7 +83,7 @@ export async function NewAccount(): Promise<{ account: DOTAccount; mnemonic: str
  *
  * @param mnemonic The mnemonic of the account to import.
  */
-export async function ImportAccountFromMnemonic(mnemonic: string): Promise<DOTAccount> {
+export async function importAccountFromMnemonic(mnemonic: string): Promise<DOTAccount> {
   const keyRing = new Keyring({ type: 'sr25519' })
 
   await cryptoWaitReady()
@@ -98,7 +98,7 @@ export async function ImportAccountFromMnemonic(mnemonic: string): Promise<DOTAc
  *
  * @param privateKey The private key of the account to import.
  */
-export async function ImportAccountFromPrivateKey(privateKey: string): Promise<DOTAccount> {
+export async function importAccountFromPrivateKey(privateKey: string): Promise<DOTAccount> {
   const keyRing = new Keyring({ type: 'sr25519' })
 
   await cryptoWaitReady()
@@ -111,7 +111,7 @@ export async function ImportAccountFromPrivateKey(privateKey: string): Promise<D
  * This function can only be called inside a browser.
  * @param  {string} address that can refer an account to connect, by default connect account number 0
  */
-export async function GetAccountFromProvider(address?: string): Promise<DOTAccount> {
+export async function getAccountFromProvider(address?: string): Promise<DOTAccount> {
   let web3Bundle: typeof import('@polkadot/extension-dapp')
 
   try {

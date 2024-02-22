@@ -290,7 +290,7 @@ export function createFromAvalancheAccount(account: AvalancheAccount, rpc?: stri
   return new SuperfluidAccount(provider, account.address, account.publicKey)
 }
 
-export async function GetAccountFromProvider(
+export async function getAccountFromProvider(
   provider: providers.ExternalProvider,
   requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<SuperfluidAccount> {

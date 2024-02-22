@@ -102,7 +102,7 @@ export async function ImportAccountFromBeaconWallet(wallet: BeaconWallet): Promi
  * @param privateKey The private key of the account to import.
  * @param passphrase The password, if the key is encrypted.
  */
-export async function ImportAccountFromPrivateKey(privateKey: string, passphrase?: string): Promise<TEZOSAccount> {
+export async function importAccountFromPrivateKey(privateKey: string, passphrase?: string): Promise<TEZOSAccount> {
   const wallet: InMemorySigner = new InMemorySigner(privateKey, passphrase)
 
   return new TEZOSAccount(await wallet.publicKey(), wallet)
@@ -128,9 +128,9 @@ export async function ImportAccountFromFundraiserInfo(
 /**
  * Creates a new Tezos account (tz1) using a randomly generated Tezos keypair.
  */
-export async function NewAccount(): Promise<{ signerAccount: TEZOSAccount; privateKey: Uint8Array }> {
+export async function newAccount(): Promise<{ signerAccount: TEZOSAccount; privateKey: Uint8Array }> {
   const key = b58cencode(nacl.sign.keyPair().secretKey, prefix.edsk)
-  const wallet = await ImportAccountFromPrivateKey(key)
+  const wallet = await importAccountFromPrivateKey(key)
 
   return {
     signerAccount: wallet,

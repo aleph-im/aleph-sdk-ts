@@ -69,7 +69,7 @@ async function getCosmosAccount(wallet: OfflineAminoSigner, accountNumber = 0): 
  * @param length The length of the mnemonic
  * @param options The options to generate the wallet
  */
-export async function NewAccount(
+export async function newAccount(
   length?: 12 | 15 | 18 | 21 | 24,
   options?: Partial<Secp256k1HdWalletOptions>,
 ): Promise<{ account: CosmosAccount; mnemonic: string }> {
@@ -87,7 +87,7 @@ export async function NewAccount(
  * @param mnemonic The mnemonic to import
  * @param options The options to generate the wallet
  */
-export async function ImportAccountFromMnemonic(
+export async function importAccountFromMnemonic(
   mnemonic: string,
   options?: Partial<Secp256k1HdWalletOptions>,
 ): Promise<CosmosAccount> {
@@ -102,7 +102,7 @@ export async function ImportAccountFromMnemonic(
  * @param privateKey The private key to import
  * @param prefix The prefix of the network
  */
-export async function ImportAccountFromPrivateKey(privateKey: string, prefix?: string): Promise<CosmosAccount> {
+export async function importAccountFromPrivateKey(privateKey: string, prefix?: string): Promise<CosmosAccount> {
   const key = Buffer.from(privateKey)
   const wallet = await Secp256k1Wallet.fromKey(key, prefix)
 

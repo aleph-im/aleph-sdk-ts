@@ -5,7 +5,7 @@ describe('Aggregate message publish test', () => {
   const client = new AggregateMessageClient()
 
   it('should publish an aggregate message', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
     const key = 'publishTest'
 
     const content: { A: number } = {
@@ -24,10 +24,10 @@ describe('Aggregate message publish test', () => {
     })
 
     const expected = {
-      A: 1,
+      [key]: content,
     }
 
     expect(message).toStrictEqual(expected)
-    expect(message).toStrictEqual(res.content.content)
+    expect(message[key]).toStrictEqual(res.content.content)
   })
 })

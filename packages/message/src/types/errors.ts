@@ -16,7 +16,7 @@ export class MessageNotFoundError extends QueryError {
 
 export class BroadcastError extends Error {
   errors: string[]
-  constructor(errors: AxiosError | string[] | undefined) {
+  constructor(errors?: AxiosError | string[] | undefined) {
     let processedErrors: string[] = []
     if (errors instanceof AxiosError) {
       processedErrors.push(errors.message)
@@ -37,7 +37,7 @@ export class BroadcastError extends Error {
 }
 
 export class InvalidMessageError extends BroadcastError {
-  constructor(errors: AxiosError | string[] | undefined) {
+  constructor(errors?: AxiosError | string[] | undefined) {
     super(errors)
     this.name = 'InvalidMessageError'
   }

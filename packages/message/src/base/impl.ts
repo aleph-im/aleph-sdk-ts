@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios'
-import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
+import {DEFAULT_API_V2, DEFAULT_API_WS_V2, getSocketPath, stripTrailingSlash} from '@aleph-sdk/core'
 
 import {
   GetMessageConfiguration,
@@ -8,15 +8,19 @@ import {
   GetMessagesParams,
   MessageResponse,
   MessagesQueryResponse,
+  MessageError
 } from './types'
 import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
+import {AlephSocket, GetMessagesSocketConfiguration, getMessagesSocket} from "./websocket";
 
 export class BaseMessageClient {
   apiServer: string
+  wsServer: string
 
-  constructor(apiServer: string = DEFAULT_API_V2) {
+  constructor(apiServer: string = DEFAULT_API_V2, wsServer: string = DEFAULT_API_WS_V2) {
     this.apiServer = stripTrailingSlash(apiServer)
+    this.wsServer = stripTrailingSlash(wsServer)
   }
 
   //TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
@@ -72,7 +76,7 @@ export class BaseMessageClient {
    *
    * @param item_hash The hash of the rejected message
    */
-  async getError(item_hash: string): Promise<{ error_code: string; details: string } | null> {
+  async getError(item_hash: string): Promise<MessageError | null> {
     const response = await axios.get(`${stripTrailingSlash(DEFAULT_API_V2)}/api/v0/messages/${item_hash}`, {
       socketPath: getSocketPath(),
     })
@@ -95,7 +99,7 @@ export class BaseMessageClient {
    * @param configuration The message params to make the query.
    */
   async getAll({
-    pagination = 20,
+    pageSize = 20,
     page = 1,
     addresses = [],
     channels = [],
@@ -110,7 +114,7 @@ export class BaseMessageClient {
     endDate,
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
     const params: GetMessagesParams = {
-      pagination,
+      pageSize,
       page,
       addresses: addresses ? addresses.join(',') : undefined,
       channels: channels ? channels.join(',') : undefined,
@@ -131,6 +135,13 @@ export class BaseMessageClient {
     })) as AxiosResponse<MessagesQueryResponse>
 
     return response.data
+  }
+
+  getMessagesSocket(params: Omit<GetMessagesSocketConfiguration, 'apiServer'>): AlephSocket {
+    return getMessagesSocket({
+      ...params,
+      apiServer: this.wsServer,
+    })
   }
 }
 

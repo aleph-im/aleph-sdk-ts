@@ -127,7 +127,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
       this.signer = this.provider.getSigner()
       this.address = await this.signer.getAddress()
     } catch (err: unknown) {
-      throw new Error('Could not get Wallet permissions')
+      throw new Error(`Could not connect to wallet: ${err}`)
     }
   }
 

@@ -18,7 +18,7 @@
   "dependencies": {
     "@aleph-sdk/account": "^0.0.3",
     "@aleph-sdk/core": "^0.0.3",
-    "axios": "^1.6.7",
+    "axios": "^1.5.1",
     "form-data": "^4.0.0",
     "sha.js": "^2.4.11"
   },

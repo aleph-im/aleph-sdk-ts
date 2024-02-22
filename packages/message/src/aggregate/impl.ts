@@ -27,7 +27,7 @@ export class AggregateMessageClient {
    *
    * @param configuration The configuration used to get the message, including the API endpoint.
    */
-  async get<T>({ address = '', keys = [] }: AggregateGetConfiguration): Promise<T> {
+  async get<T = any>({ address = '', keys = [] }: AggregateGetConfiguration): Promise<Record<string, T>> {
     const response = await axios.get<AggregateGetResponse<T>>(`${this.apiServer}/api/v0/aggregates/${address}.json`, {
       socketPath: getSocketPath(),
       params: {

@@ -6,7 +6,7 @@ describe('Test the program message', () => {
   const program = new ProgramMessageClient()
 
   it('Publish a program retrieve the message', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
 
@@ -22,7 +22,7 @@ describe('Test the program message', () => {
   })
 
   it('Spawn a program', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const res = await program.send({
       account: account,
@@ -36,7 +36,7 @@ describe('Test the program message', () => {
   })
 
   it('Spawn a persistent program', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const res = await program.send({
       account: account,
@@ -51,7 +51,7 @@ describe('Test the program message', () => {
   })
 
   it('Spawn a program with custom metadata', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const res = await program.send({
       account: account,
@@ -70,7 +70,7 @@ describe('Test the program message', () => {
   })
 
   it('Should fail to Spawn a program', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     await expect(
       program.send({

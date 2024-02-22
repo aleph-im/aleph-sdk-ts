@@ -174,13 +174,13 @@ export class NULS2Account extends ECIESAccount {
  * @param chain_id The optional chain id.
  * @param prefix The optional address prefix.
  */
-export async function NewAccount(
+export async function newAccount(
   { chain_id = 1, prefix = 'NULS' }: NULS2ImportConfig = { chain_id: 1, prefix: 'NULS' },
 ): Promise<{ account: NULS2Account; mnemonic: string }> {
   const mnemonic = generateMnemonic()
 
   return {
-    account: await ImportAccountFromMnemonic(mnemonic, { chain_id: chain_id, prefix: prefix }),
+    account: await importAccountFromMnemonic(mnemonic, { chain_id: chain_id, prefix: prefix }),
     mnemonic: mnemonic,
   }
 }
@@ -194,7 +194,7 @@ export async function NewAccount(
  * @param chain_id The optional chain id.
  * @param prefix The optional address prefix.
  */
-export async function ImportAccountFromMnemonic(
+export async function importAccountFromMnemonic(
   mnemonic: string,
   { chain_id = 1, prefix = 'NULS' }: NULS2ImportConfig = { chain_id: 1, prefix: 'NULS' },
 ): Promise<NULS2Account> {
@@ -203,7 +203,7 @@ export async function ImportAccountFromMnemonic(
 
   if (!b || !b.privateKey) throw new Error('could not import from mnemonic')
   const privateKey = b.privateKey.toString('hex')
-  return ImportAccountFromPrivateKey(privateKey, { chain_id: chain_id, prefix: prefix })
+  return importAccountFromPrivateKey(privateKey, { chain_id: chain_id, prefix: prefix })
 }
 
 /**
@@ -215,7 +215,7 @@ export async function ImportAccountFromMnemonic(
  * @param chain_id The optional chain id.
  * @param prefix The optional address prefix.
  */
-export async function ImportAccountFromPrivateKey(
+export async function importAccountFromPrivateKey(
   privateKey: string,
   { chain_id = 1, prefix = 'NULS' }: NULS2ImportConfig = { chain_id: 1, prefix: 'NULS' },
 ): Promise<NULS2Account> {

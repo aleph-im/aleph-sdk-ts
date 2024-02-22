@@ -1,5 +1,6 @@
 import { ForgetMessageClient, PostMessageClient } from '../../src'
 import * as ethereum from '../../../ethereum/src'
+import {delay} from "@aleph-sdk/core";
 
 describe('Forget publish tests', () => {
   const postType = 'TS Forget Test'
@@ -8,7 +9,7 @@ describe('Forget publish tests', () => {
   const forget = new ForgetMessageClient()
 
   it('should post a message which will be forget', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const res = await post.send({
       channel: 'TEST',
@@ -26,7 +27,7 @@ describe('Forget publish tests', () => {
   })
 
   it('Forget a message using storage engine', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
     const postRest = await post.send({
       channel: 'TEST',
       account: account,
@@ -39,6 +40,8 @@ describe('Forget publish tests', () => {
       hashes: [postRest.item_hash],
       account: account,
     })
+
+    await delay(1000)
 
     const initialPost = await post.getAll({ types: postType, hashes: [postRest.item_hash] })
 

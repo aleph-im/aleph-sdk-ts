@@ -122,7 +122,7 @@ export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN)
  * @param privateKey The private key of the account to import.
  * @param chain The Avalanche subnet to use the account with.
  */
-export async function ImportAccountFromPrivateKey(
+export async function importAccountFromPrivateKey(
   privateKey: string,
   chain = ChainType.X_CHAIN,
 ): Promise<AvalancheAccount> {
@@ -131,12 +131,31 @@ export async function ImportAccountFromPrivateKey(
 }
 
 /**
+ * Imports an ethereum account given a mnemonic and the 'ethers' package.
+ *
+ * It creates an avalanche wallet containing information about the account, extracted in the AvalancheAccount constructor.
+ *
+ * @param mnemonic The mnemonic of the account to import.
+ * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
+ * @param chain The Avalanche subnet to use the account with.
+ */
+export async function importAccountFromMnemonic(
+  mnemonic: string,
+  derivationPath = "m/44'/60'/0'/0/0",
+  chain = ChainType.X_CHAIN,
+): Promise<AvalancheAccount> {
+  const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
+
+  return await importAccountFromPrivateKey(wallet.privateKey, chain)
+}
+
+/**
  * Get an account from a Web3 provider (ex: Metamask)
  *
  * @param  {providers.ExternalProvider} provider from metamask
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
-export async function GetAccountFromProvider(
+export async function getAccountFromProvider(
   provider: providers.ExternalProvider,
   requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<AvalancheAccount> {
@@ -171,7 +190,7 @@ function getEVMAddress(keypair: EVMKeyPair): string {
 /**
  * Creates a new Avalanche account using a randomly generated privateKey
  */
-export async function NewAccount(
+export async function newAccount(
   chain = ChainType.X_CHAIN,
 ): Promise<{ account: AvalancheAccount; privateKey: string }> {
   const keypair = await getKeyPair(undefined, chain)

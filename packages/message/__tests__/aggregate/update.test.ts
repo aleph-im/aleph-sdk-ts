@@ -1,18 +1,16 @@
 import * as ethereum from '../../../ethereum/src'
 import { AggregateMessageClient } from '../../src'
+import {delay} from "@aleph-sdk/core";
 
 describe('Aggregate message update test', () => {
   const client = new AggregateMessageClient()
 
   it('should publish and update an aggregate message', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
     const key = 'updateTest'
 
     const content: { A: number } = {
       A: 1,
-    }
-    const UpdatedContent: { A: number } = {
-      A: 10,
     }
 
     await client.send<{ A: number }>({
@@ -22,12 +20,18 @@ describe('Aggregate message update test', () => {
       channel: 'TEST',
     })
 
+    const updatedContent: { A: number } = {
+      A: 10,
+    }
+
     const updated = await client.send<{ A: number }>({
       account: account,
       key: key,
-      content: UpdatedContent,
+      content: updatedContent,
       channel: 'TEST',
     })
+
+    await delay(1000)
 
     const message = await client.get<{ A: number }>({
       address: account.address,
@@ -35,11 +39,11 @@ describe('Aggregate message update test', () => {
     })
 
     const expected = {
-      A: 10,
+      [key]: updatedContent,
     }
 
     expect(message).toStrictEqual(expected)
-    expect(message).toStrictEqual(updated.content.content)
+    expect(message[key]).toStrictEqual(updated.content.content)
   })
 
   /**
@@ -48,8 +52,8 @@ describe('Aggregate message update test', () => {
    * createSecurityConfig() inside tests/testAccount/generateAccounts.ts
    */
   it('should allow an delegate call update', async () => {
-    const { account: owner } = ethereum.NewAccount()
-    const { account: guest } = ethereum.NewAccount()
+    const { account: owner } = ethereum.newAccount()
+    const { account: guest } = ethereum.newAccount()
 
     const key = 'delegateUpdateTest'
     const content: { A: number } = {
@@ -96,7 +100,7 @@ describe('Aggregate message update test', () => {
       A: 10,
     }
 
-    expect(message).toStrictEqual(expected)
-    expect(message).toStrictEqual(updated.content.content)
+    expect(message[key]).toStrictEqual(expected)
+    expect(message[key]).toStrictEqual(updated.content.content)
   })
 })

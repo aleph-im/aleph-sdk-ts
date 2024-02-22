@@ -4,15 +4,15 @@ import * as tezos from '../src'
 
 describe('Tezos accounts', () => {
   it('should create a new tezos accounts', async () => {
-    const { signerAccount } = await tezos.NewAccount()
+    const { signerAccount } = await tezos.newAccount()
 
     expect(signerAccount.address).not.toBe('')
     expect(await signerAccount.GetPublicKey()).not.toBe('')
   })
 
   it('should import an tezos accounts using a private key', async () => {
-    const { signerAccount, privateKey } = await tezos.NewAccount()
-    const account = await tezos.ImportAccountFromPrivateKey(b58cencode(privateKey, prefix.edsk))
+    const { signerAccount, privateKey } = await tezos.newAccount()
+    const account = await tezos.importAccountFromPrivateKey(b58cencode(privateKey, prefix.edsk))
 
     expect(account.address).toStrictEqual(signerAccount.address)
   })
@@ -23,7 +23,7 @@ describe('Tezos accounts', () => {
   //   const { privateKey } = ephemeralAccount
   //   if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
 
-  //   const signerAccount = await tezos.ImportAccountFromPrivateKey(privateKey)
+  //   const signerAccount = await tezos.importAccountFromPrivateKey(privateKey)
   //   const content: { body: string } = {
   //     body: 'Hello World InMemorySigner TEZOS',
   //   }
@@ -46,7 +46,7 @@ describe('Tezos accounts', () => {
   // it('should publish a post message correctly', async () => {
   //   const { privateKey } = ephemeralAccount
   //   if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-  //   const signerAccount = await tezos.ImportAccountFromPrivateKey(privateKey)
+  //   const signerAccount = await tezos.importAccountFromPrivateKey(privateKey)
   //   const content: { body: string } = {
   //     body: 'Hello World TEZOS',
   //   }

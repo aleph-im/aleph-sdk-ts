@@ -7,13 +7,13 @@ describe('substrate accounts', () => {
 
   // Import the List of Test Ephemeral test Account, throw if the list is not generated
   beforeAll(async () => {
-    newAccount = await substrate.NewAccount()
+    newAccount = await substrate.newAccount()
   })
 
   it('should import a substrate accounts using a mnemonic', async () => {
     const { account, mnemonic } = newAccount
     if (!mnemonic) throw Error('Can not retrieve mnemonic inside ephemeralAccount.json')
-    const accountFromMnemoic = await substrate.ImportAccountFromMnemonic(mnemonic)
+    const accountFromMnemoic = await substrate.importAccountFromMnemonic(mnemonic)
 
     expect(accountFromMnemoic.address).toStrictEqual(account.address)
     expect(accountFromMnemoic.getChain()).toStrictEqual(Blockchain.DOT)
@@ -22,7 +22,7 @@ describe('substrate accounts', () => {
   //it('should import a substrate accounts using a private key', async () => {
   //  const { account, mnemonic } = newAccount
   //  if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-  //  const account = await substrate.ImportAccountFromPrivateKey(account.privateKey)
+  //  const account = await substrate.importAccountFromPrivateKey(account.privateKey)
   //
   //  expect(account.getChain()).toStrictEqual(Blockchain.DOT)
   //  expect(account.address).toStrictEqual(address)

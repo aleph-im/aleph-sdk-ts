@@ -21,10 +21,10 @@ describe('Avalanche accounts', () => {
   })
 
   it('should retrieved an avalanche keypair from an hexadecimal private key', async () => {
-    const { account, privateKey } = await avalanche.NewAccount()
+    const { account, privateKey } = await avalanche.newAccount()
 
     if (privateKey) {
-      const accountFromPK = await avalanche.ImportAccountFromPrivateKey(privateKey)
+      const accountFromPK = await avalanche.importAccountFromPrivateKey(privateKey)
       expect(account.address).toBe(accountFromPK.address)
     } else {
       throw Error()
@@ -33,12 +33,12 @@ describe('Avalanche accounts', () => {
 
   it('should throw Error to get a Keypair', async () => {
     const fakePrivateKey = 'a'
-    const fct = async () => await avalanche.ImportAccountFromPrivateKey(fakePrivateKey)
+    const fct = async () => await avalanche.importAccountFromPrivateKey(fakePrivateKey)
 
     await expect(fct).rejects.toThrow('Invalid private key')
   })
 
-  it('should import an ethereum accounts using a provider', async () => {
+  it('should import an avalanche accounts using a provider', async () => {
     const { address, privateKey } = ephemeralAccount
     if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
 
@@ -48,7 +48,7 @@ describe('Avalanche accounts', () => {
       networkVersion: 31,
     })
 
-    const accountFromProvider = await avalanche.GetAccountFromProvider(provider)
+    const accountFromProvider = await avalanche.getAccountFromProvider(provider)
     expect(accountFromProvider.address).toStrictEqual(address)
   })
 
@@ -63,7 +63,7 @@ describe('Avalanche accounts', () => {
   //     privateKey,
   //     networkVersion: 31,
   //   })
-  //   const accountFromProvider = await avalanche.GetAccountFromProvider(provider)
+  //   const accountFromProvider = await avalanche.getAccountFromProvider(provider)
   //   const content: { body: string } = {
   //     body: 'This message was posted from the typescript-SDK test suite',
   //   }
@@ -89,7 +89,7 @@ describe('Avalanche accounts', () => {
   //   const { privateKey } = ephemeralAccount
   //   if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
 
-  //   const account = await avalanche.ImportAccountFromPrivateKey(privateKey)
+  //   const account = await avalanche.importAccountFromPrivateKey(privateKey)
   //   const content: { body: string } = {
   //     body: 'This message was posted from the typescript-SDK test suite',
   //   }
@@ -112,7 +112,7 @@ describe('Avalanche accounts', () => {
   // })
 
   it('Should success to verif the authenticity of a signature', async () => {
-    const { account } = await avalanche.NewAccount()
+    const { account } = await avalanche.newAccount()
 
     const builtMessage = PostMessageBuilder({
       account,
@@ -133,8 +133,8 @@ describe('Avalanche accounts', () => {
   })
 
   it('Should fail to verif the authenticity of a signature', async () => {
-    const { account: account } = await avalanche.NewAccount()
-    const { account: fakeAccount } = await avalanche.NewAccount()
+    const { account: account } = await avalanche.newAccount()
+    const { account: fakeAccount } = await avalanche.newAccount()
 
     const message = PostMessageBuilder({
       account,

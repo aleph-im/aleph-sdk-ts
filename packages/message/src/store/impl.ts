@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
 import { DEFAULT_API_V2, stripTrailingSlash, getSocketPath, RequireOnlyOne } from '@aleph-sdk/core'
 import { StoreContent, StoreMessage, StorePinConfiguration, StorePublishConfiguration } from './types'
@@ -8,6 +8,7 @@ import { broadcast } from '../utils/signature'
 import { HashedMessage, ItemType, SignedMessage } from '../types'
 import { blobToBuffer, calculateSHA256Hash } from './utils'
 import { Account } from '@aleph-sdk/account'
+import {InvalidMessageError} from "../types/errors";
 
 export class StoreMessageClient {
   apiServer: string
@@ -51,7 +52,7 @@ export class StoreMessageClient {
     let hash: string | undefined = fileHash
     if (!hash) {
       const buffer = await this.processFileObject(fileObject)
-      hash = await this.getHash(buffer, storageEngine as ItemType, fileHash, this.apiServer)
+      hash = await this.getHash(buffer, storageEngine, fileHash, this.apiServer)
       if (fileObject instanceof File) {
         fileObject = new File([buffer], fileObject.name)
       } else {
@@ -61,8 +62,8 @@ export class StoreMessageClient {
     const timestamp = Date.now() / 1000
     const storeContent: StoreContent = {
       address: account.address,
-      item_type: storageEngine as ItemType,
-      item_hash: hash as string,
+      item_type: storageEngine,
+      item_hash: hash,
       time: timestamp,
     }
 
@@ -148,22 +149,20 @@ export class StoreMessageClient {
       message: signedMessage.getBroadcastable(),
       sync,
     }
-    form.append('file', file)
     form.append('metadata', JSON.stringify(metadata))
-
+    form.append('file', file)
     try {
       const response = await axios.post(`${this.apiServer}/api/v0/storage/add_file`, form, {
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
+          // 'Content-Type': 'multipart/form-data',
         },
       })
       return response.data
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        console.error(err.response?.data)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new InvalidMessageError(error.response?.data)
       }
-      throw err
     }
   }
 

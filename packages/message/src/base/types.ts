@@ -1,5 +1,10 @@
 import { Blockchain } from '@aleph-sdk/core'
-import { MessageType, MessageContent, PublishedMessage, MessageStatus } from '../types'
+import {
+  MessageType,
+  MessageContent,
+  PublishedMessage,
+  MessageStatus,
+} from '../types'
 
 export type GetMessageParams = {
   hashes: string[]
@@ -30,7 +35,7 @@ export type MessagesQueryResponse = {
 }
 
 export type GetMessagesConfiguration = {
-  pagination?: number
+  pageSize?: number
   page?: number
   addresses?: string[]
   channels?: string[]
@@ -46,7 +51,7 @@ export type GetMessagesConfiguration = {
 }
 
 export type GetMessagesParams = {
-  pagination?: number
+  pageSize?: number
   page?: number
   addresses?: string
   channels?: string
@@ -60,3 +65,5 @@ export type GetMessagesParams = {
   startDate?: number
   endDate?: number
 }
+
+export type MessageError = { error_code: string; details: string }

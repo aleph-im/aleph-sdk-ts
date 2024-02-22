@@ -26,8 +26,8 @@ describe('Ethereum accounts', () => {
   })
 
   it('should import an ethereum accounts using a mnemonic', () => {
-    const { account, mnemonic } = ethereum.NewAccount()
-    const accountFromMnemonic = ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account, mnemonic } = ethereum.newAccount()
+    const accountFromMnemonic = ethereum.importAccountFromMnemonic(mnemonic)
 
     expect(account.address).toStrictEqual(accountFromMnemonic.address)
   })
@@ -35,7 +35,7 @@ describe('Ethereum accounts', () => {
   it('should import an ethereum accounts using a private key', () => {
     const mnemonic = bip39.generateMnemonic()
     const wallet = ethers.Wallet.fromMnemonic(mnemonic)
-    const accountFromPrivate = ethereum.ImportAccountFromPrivateKey(wallet.privateKey)
+    const accountFromPrivate = ethereum.importAccountFromPrivateKey(wallet.privateKey)
 
     expect(wallet.address).toStrictEqual(accountFromPrivate.address)
   })
@@ -50,8 +50,8 @@ describe('Ethereum accounts', () => {
       networkVersion: 31,
     })
 
-    const accountFromProvider = await ethereum.GetAccountFromProvider(provider)
-    const accountFromPrivate = ethereum.ImportAccountFromPrivateKey(privateKey)
+    const accountFromProvider = await ethereum.getAccountFromProvider(provider)
+    const accountFromPrivate = ethereum.importAccountFromPrivateKey(privateKey)
 
     expect(accountFromProvider.address).toStrictEqual(accountFromPrivate.address)
   })
@@ -65,9 +65,9 @@ describe('Ethereum accounts', () => {
       privateKey,
       networkVersion: 31,
     })
-    const { account, mnemonic } = ethereum.NewAccount()
-    const accountFromProvider = await ethereum.GetAccountFromProvider(provider)
-    const accountFromPrivate = await ethereum.ImportAccountFromMnemonic(mnemonic)
+    const { account, mnemonic } = ethereum.newAccount()
+    const accountFromProvider = await ethereum.getAccountFromProvider(provider)
+    const accountFromPrivate = await ethereum.importAccountFromMnemonic(mnemonic)
 
     const builtMessage = PostMessageBuilder({
       account,

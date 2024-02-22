@@ -9,8 +9,9 @@ export function ArraybufferToString(ab: ArrayBuffer): string {
 describe('Store message publish', () => {
   const store = new StoreMessageClient()
 
+
   it('should store a file and retrieve it correctly', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
     const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
 
     const hash = await store.send({
@@ -28,7 +29,7 @@ describe('Store message publish', () => {
   })
 
   it('should pin a file and retrieve it correctly', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
     const helloWorldHash = 'QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j'
 
     const hash = await store.pin({
@@ -46,7 +47,7 @@ describe('Store message publish', () => {
   })
 
   it('should throw Error to pin a file at runtime', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const helloWorldHash = 'QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j'
 
@@ -56,6 +57,6 @@ describe('Store message publish', () => {
         account: account,
         fileHash: helloWorldHash,
       }),
-    ).rejects.toThrow('You must choose ipfs to pin file.')
+    ).rejects.toThrow('You must choose ipfs to pin the file.')
   })
 })

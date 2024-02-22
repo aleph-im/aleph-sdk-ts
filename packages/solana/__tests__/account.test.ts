@@ -44,7 +44,7 @@ export class OfficialMockProvider extends SolanaMockProvider {
 }
 
 async function createEphemeralSol(): Promise<EphAccount> {
-  const { account, privateKey } = solana.NewAccount()
+  const { account, privateKey } = solana.newAccount()
 
   return {
     address: account.address,
@@ -61,7 +61,7 @@ describe('Solana accounts', () => {
   })
 
   it('should create a new account with a private key and address', () => {
-    const { account, privateKey } = solana.NewAccount()
+    const { account, privateKey } = solana.newAccount()
 
     expect(account).toBeInstanceOf(solana.SOLAccount)
     expect(privateKey).toBeInstanceOf(Uint8Array)
@@ -71,7 +71,7 @@ describe('Solana accounts', () => {
   it('should import an solana accounts using a private key', () => {
     const { address, privateKey } = ephemeralAccount
     if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-    const accountFromPrivateKey = solana.ImportAccountFromPrivateKey(Buffer.from(privateKey, 'hex'))
+    const accountFromPrivateKey = solana.importAccountFromPrivateKey(Buffer.from(privateKey, 'hex'))
 
     expect(address).toStrictEqual(accountFromPrivateKey.address)
   })
@@ -80,9 +80,9 @@ describe('Solana accounts', () => {
     const randomKeypair = new Keypair()
     const providerPhantom = new PanthomMockProvider(randomKeypair)
     const providerOfficial = new OfficialMockProvider(randomKeypair)
-    const accountSecretKey = await solana.ImportAccountFromPrivateKey(randomKeypair.secretKey)
-    const accountPhantom = await solana.GetAccountFromProvider(providerPhantom)
-    const accountOfficial = await solana.GetAccountFromProvider(providerOfficial)
+    const accountSecretKey = await solana.importAccountFromPrivateKey(randomKeypair.secretKey)
+    const accountPhantom = await solana.getAccountFromProvider(providerPhantom)
+    const accountOfficial = await solana.getAccountFromProvider(providerOfficial)
 
     expect(accountSecretKey.address).toStrictEqual(accountPhantom.address)
     expect(accountOfficial.address).toStrictEqual(accountPhantom.address)
@@ -92,9 +92,9 @@ describe('Solana accounts', () => {
     const randomKeypair = new Keypair()
     const providerPhantom = new PanthomMockProvider(randomKeypair)
     const providerOfficial = new OfficialMockProvider(randomKeypair)
-    const accountSecretKey = await solana.ImportAccountFromPrivateKey(randomKeypair.secretKey)
-    const accountPhantom = await solana.GetAccountFromProvider(providerPhantom)
-    const accountOfficial = await solana.GetAccountFromProvider(providerOfficial)
+    const accountSecretKey = await solana.importAccountFromPrivateKey(randomKeypair.secretKey)
+    const accountPhantom = await solana.getAccountFromProvider(providerPhantom)
+    const accountOfficial = await solana.getAccountFromProvider(providerOfficial)
 
     const builtMessage = PostMessageBuilder({
       account: accountSecretKey,
@@ -115,7 +115,7 @@ describe('Solana accounts', () => {
   // it('should publish a post message correctly', async () => {
   //   const { privateKey } = ephemeralAccount
   //   if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-  //   const account = solana.ImportAccountFromPrivateKey(Buffer.from(privateKey, 'hex'))
+  //   const account = solana.importAccountFromPrivateKey(Buffer.from(privateKey, 'hex'))
 
   //   const content: { body: string } = {
   //     body: 'This message was posted from the typescript-SDK test suite with SOL',

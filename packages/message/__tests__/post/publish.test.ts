@@ -8,7 +8,7 @@ describe('Post publish tests', () => {
   const aggregate = new AggregateMessageClient()
 
   it('should amend post message correctly', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
     const postType = uuidv4()
     const content: { body: string } = {
       body: 'Hello World',
@@ -48,8 +48,8 @@ describe('Post publish tests', () => {
    * createSecurityConfig() inside tests/testAccount/generateAccounts.ts
    */
   it('should delegate amend post message correctly', async () => {
-    const { account: owner } = ethereum.NewAccount()
-    const { account: guest } = ethereum.NewAccount()
+    const { account: owner } = ethereum.newAccount()
+    const { account: guest } = ethereum.newAccount()
 
     const originalPost = await post.send({
       channel: 'TEST',
@@ -93,7 +93,7 @@ describe('Post publish tests', () => {
   })
 
   it('should automatically switch between inline and Aleph Storage due to the message size', async () => {
-    const { account } = ethereum.NewAccount()
+    const { account } = ethereum.newAccount()
 
     const postRes = await post.send({
       channel: 'TEST',

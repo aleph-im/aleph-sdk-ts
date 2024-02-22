@@ -32,9 +32,9 @@ describe('Test features from GetMessage', () => {
 
 describe('Test features from GetMessage', () => {
   const client = new BaseMessageClient()
-  it('Try by Pagination and page', async () => {
+  it('Try by pageSize and page', async () => {
     const res = await client.getAll({
-      pagination: 5,
+      pageSize: 5,
       page: 2,
     })
     expect(res.messages.length).toStrictEqual(5)
@@ -103,7 +103,7 @@ describe('Test features from GetMessage', () => {
     const aimedType = 'testing_oversize'
     const res = await client.getAll({
       contentTypes: [aimedType],
-      pagination: 10,
+      pageSize: 10,
     })
 
     expect(res.messages.length).toBeGreaterThan(0)
@@ -117,7 +117,7 @@ describe('Test features from GetMessage', () => {
     const aimedTag = ['Test']
     const res = await client.getAll({
       tags: aimedTag,
-      pagination: 10,
+      pageSize: 10,
     })
 
     expect(res.messages.length).toBeGreaterThan(0)
@@ -132,7 +132,7 @@ describe('Test features from GetMessage', () => {
     const aimedKey = 'InterPlanetaryCloud'
     const res = await client.getAll({
       contentKeys: [aimedKey],
-      pagination: 10,
+      pageSize: 10,
     })
 
     expect(res.messages.length).toBeGreaterThan(0)
@@ -148,7 +148,7 @@ describe('Test features from GetMessage', () => {
     const res = await client.getAll({
       startDate: aimedStartTime,
       endDate: aimedEndTime,
-      pagination: 5,
+      pageSize: 5,
     })
 
     res.messages.map((item) => {
@@ -182,7 +182,7 @@ describe('Test features from GetMessage', () => {
       typeArray.map(async (type) => {
         const res = await client.getAll({
           messageTypes: [type],
-          pagination: 3,
+          pageSize: 3,
         })
         expect(checkTypeList(res.messages, type)).toStrictEqual(true)
       }),

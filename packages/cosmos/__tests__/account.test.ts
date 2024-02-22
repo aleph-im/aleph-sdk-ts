@@ -1,11 +1,11 @@
-import { verifyCosmos, CosmosAccount, NewAccount } from '../src'
+import { verifyCosmos, CosmosAccount, newAccount } from '../src'
 import { SignableMessage } from '../../account/src'
 
 describe('Cosmos SDK', () => {
   let cosmosAccount: CosmosAccount
 
   beforeAll(async () => {
-    const { account } = await NewAccount()
+    const { account } = await newAccount()
     cosmosAccount = account
   })
 
@@ -25,7 +25,7 @@ describe('Cosmos SDK', () => {
 
   describe('Account creation', () => {
     it('should create a new Cosmos account from mnemonic', async () => {
-      const { account, mnemonic } = await NewAccount()
+      const { account, mnemonic } = await newAccount()
       expect(account).toBeInstanceOf(CosmosAccount)
       expect(mnemonic).toBeDefined()
     })
