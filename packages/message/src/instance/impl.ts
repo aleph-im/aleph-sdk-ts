@@ -1,12 +1,18 @@
-import { DEFAULT_API_V2 } from '@aleph-sdk/core'
+import { DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
 import { defaultResources, defaultExecutionEnvironment } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 import { InstancePublishConfiguration, InstanceContent, InstanceMessage } from './types'
-import { ItemType, VolumePersistence } from '../types'
+import { ItemType, MachineVolume, VolumePersistence } from '../types'
 
 export class InstanceMessageClient {
+  apiServer: string
+
+  constructor(apiServer: string = DEFAULT_API_V2) {
+    this.apiServer = stripTrailingSlash(apiServer)
+  }
+
   // TODO: Check that program_ref, runtime and data_ref exist
   // Guard some numbers values
   async send({
@@ -20,9 +26,7 @@ export class InstanceMessageClient {
     environment,
     image = '549ec451d9b099cad112d4aaa2c00ac40fb6729a92ff252ff22eef0b5c3cb613',
     volumes = [],
-    inlineRequested = true,
     storageEngine = ItemType.ipfs,
-    apiServer = DEFAULT_API_V2,
     sync = false,
   }: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000
@@ -40,7 +44,7 @@ export class InstanceMessageClient {
 
     const rootfs = {
       parent: {
-        ref: image,
+        ref: image as string,
         use_latest: true,
       },
       persistence: VolumePersistence.host,
@@ -52,7 +56,7 @@ export class InstanceMessageClient {
       time: timestamp,
       metadata,
       authorized_keys,
-      volumes,
+      volumes: volumes as MachineVolume[],
       variables,
       requirements,
       allow_amend: false,
@@ -71,14 +75,13 @@ export class InstanceMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      inline: inlineRequested,
-      apiServer,
+      apiServer: this.apiServer,
     })
 
     const { message } = await broadcast({
       message: hashedMessage,
       account,
-      apiServer: apiServer,
+      apiServer: this.apiServer,
       sync,
     })
 

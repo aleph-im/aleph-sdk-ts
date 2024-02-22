@@ -30,12 +30,13 @@ describe('Post publish tests', () => {
       ref: oldPost.item_hash,
     })
 
+    expect(amended.content.content).toStrictEqual(content)
+
     await delay(1000)
 
     setTimeout(async () => {
       const amends = await post.getAll({
-        types: 'amend',
-        hashes: [amended.item_hash],
+        hashes: [oldPost.item_hash],
       })
       expect(amends.posts[0].content).toStrictEqual(content)
     })

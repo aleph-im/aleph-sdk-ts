@@ -5,13 +5,11 @@ export type GetMessageParams = {
   hashes: string[]
   channels?: string[]
   messageType?: MessageType
-  apiServer?: string
 }
 
 export type GetMessageConfiguration = {
   hash: string
   messageType?: MessageType
-  apiServer?: string
 }
 
 export type MessageResponse<T extends MessageContent> = {
@@ -45,7 +43,6 @@ export type GetMessagesConfiguration = {
   messageTypes?: MessageType[]
   startDate?: Date
   endDate?: Date
-  apiServer?: string
 }
 
 export type GetMessagesParams = {

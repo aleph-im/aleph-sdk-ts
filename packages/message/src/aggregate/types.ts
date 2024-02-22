@@ -19,33 +19,10 @@ export type AggregateGetResponse<T> = {
 }
 
 export type AggregateGetConfiguration = {
-  apiServer?: string
   address: string
   keys?: Array<string>
-  limit?: number
 }
 
-// ------- PUBLISH -------
-
-/**
- * account:         The account used to sign the aggregate message.
- *
- * address:         To aggregate content for another account (Required an authorization key)
- *
- * key:             The key used to index the aggregate message.
- *
- * content:         The aggregate message content.
- *
- * channel:         The channel in which the message will be published.
- *
- * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
- *
- * inlineRequested: [Deprecated, use storageEngine instead] - Will the message be inlined ?
- *
- * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
- *
- * sync:            If true, the function will wait for the message to be confirmed by the API server.
- */
 export type AggregatePublishConfiguration<T> = {
   account: Account
   address?: string
@@ -54,6 +31,5 @@ export type AggregatePublishConfiguration<T> = {
   channel: string
   storageEngine?: ItemType
   inlineRequested?: boolean
-  apiServer?: string
   sync?: boolean
 }

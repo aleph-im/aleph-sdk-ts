@@ -92,8 +92,6 @@ export type ProgramContent = BaseContent & {
  *
  * inlineRequested: If set to False, the Program message will be store on the same storageEngine you picked.
  *
- * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
- *
  * file:            The source code of the program in under Zip format.
  *
  * programRef:      The hahs of a Store message containing the code you want to use
@@ -121,8 +119,6 @@ export type ProgramPublishConfiguration = {
   channel: string
   isPersistent?: boolean
   storageEngine?: ItemType.ipfs | ItemType.storage
-  inlineRequested?: boolean
-  apiServer?: string
   file?: Buffer | Blob
   programRef?: string
   encoding?: Encoding
@@ -171,8 +167,6 @@ export type ProgramSpawnConfiguration = {
   channel: string
   isPersistent?: boolean
   storageEngine?: ItemType.ipfs | ItemType.storage
-  inlineRequested?: boolean
-  apiServer?: string
   programRef: string
   entrypoint: string
   encoding?: Encoding

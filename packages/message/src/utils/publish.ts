@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import shajs from 'sha.js'
 import FormDataNode from 'form-data'
 
@@ -8,14 +8,11 @@ import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
 /**
  * message:         The message to update and then publish.
  *
- * inline:          This param can't be filled by the user, it will force the message to be inline in case of size > MAX_SIZE
- *
  * storageEngine:   The storage engine to used when storing the message (IPFS, Aleph storage or inline).
  *
  * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 type PutConfiguration<C extends MessageContent> = {
-  inline?: boolean
   message: BuiltMessage<C>
   apiServer?: string
 }
@@ -31,7 +28,7 @@ type PushResponse = {
 }
 
 type PushFileConfiguration = {
-  file: Buffer | Blob
+  file: Buffer | Uint8Array
   apiServer: string
   storageEngine: ItemType
 }
@@ -42,7 +39,6 @@ type PushFileConfiguration = {
  * @param configuration The configuration used to update & publish the message.
  */
 export async function prepareAlephMessage<C extends MessageContent>({
-  inline,
   message,
   apiServer = DEFAULT_API_V2,
 }: PutConfiguration<C>): Promise<HashedMessage<C>> {
@@ -50,7 +46,7 @@ export async function prepareAlephMessage<C extends MessageContent>({
   const requestedStorageEngine = message.item_type
 
   // @todo: Separate assignment and push to storage engine
-  if (Buffer.byteLength(serialized) < 50000 && (requestedStorageEngine === ItemType.inline || inline)) {
+  if (Buffer.byteLength(serialized) < 50000 && requestedStorageEngine === ItemType.inline) {
     return new HashedMessage<C>({
       ...message,
       item_content: serialized,
@@ -67,7 +63,7 @@ export async function prepareAlephMessage<C extends MessageContent>({
     }
     const hash = await pushJsonToStorageEngine({
       content: serialized,
-      apiServer: apiServer,
+      apiServer: apiServer as string,
       storageEngine: message.item_type,
     })
     return new HashedMessage<C>({
@@ -79,17 +75,24 @@ export async function prepareAlephMessage<C extends MessageContent>({
 }
 
 async function pushJsonToStorageEngine<T>(configuration: PushConfiguration<T>): Promise<string> {
-  const response = await axios.post<PushResponse>(
-    `${stripTrailingSlash(configuration.apiServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
-    configuration.content,
-    {
-      headers: {
-        'Content-Type': 'application/json',
+  try {
+    const response = await axios.post<PushResponse>(
+      `${stripTrailingSlash(configuration.apiServer)}/api/v0/${configuration.storageEngine.toLowerCase()}/add_json`,
+      configuration.content,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        socketPath: getSocketPath(),
       },
-      socketPath: getSocketPath(),
-    },
-  )
-  return response.data.hash
+    )
+    return response.data.hash
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      console.error(err.response?.data)
+    }
+    throw err
+  }
 }
 
 export async function pushFileToStorageEngine(configuration: PushFileConfiguration): Promise<string> {
@@ -97,7 +100,7 @@ export async function pushFileToStorageEngine(configuration: PushFileConfigurati
   let form: FormDataNode | FormData
 
   if (isBrowser) {
-    form = new FormData()
+    form = new FormData() as any
     form.append('file', new Blob([configuration.file]))
   } else {
     form = new FormDataNode()

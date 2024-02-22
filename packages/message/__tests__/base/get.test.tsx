@@ -8,7 +8,6 @@ describe('Test features from GetMessage', () => {
     const res = await client.get({
       hash: '87e1e2ee2cbe88fa2923042b84b2f9c69410005ca7dd40193838bf9bad18e12c',
     })
-    console.log(res)
     expect(res.isOfType(MessageType.store)).toStrictEqual(true)
     if (res.isOfType(MessageType.store))
       expect(res.content.item_hash).toStrictEqual('QmZyVbZm6Ffs9syXs8pycGbWiTa9yiGoX1b9FSFpTjaixK')

@@ -15,6 +15,12 @@ import { ItemType } from '../types'
 import { MessageNotFoundError } from '../types/errors'
 
 export class PostMessageClient {
+  apiServer: string
+
+  constructor(apiServer: string = DEFAULT_API_V2) {
+    this.apiServer = stripTrailingSlash(apiServer)
+  }
+
   /**
    * Retrieves a post message from the Aleph network.
    * @param config
@@ -34,7 +40,6 @@ export class PostMessageClient {
    * @param types       The types of messages to retrieve.
    * @param pagination  The number of messages to retrieve.
    * @param page        The page number to retrieve.
-   * @param apiServer   The API server to use.
    * @param channels    The channels to retrieve the messages from.
    * @param refs        The references to retrieve the messages from.
    * @param addresses   The addresses to retrieve the messages from.
@@ -45,7 +50,6 @@ export class PostMessageClient {
     types = [],
     pagination = 50,
     page = 1,
-    apiServer = DEFAULT_API_V2,
     channels = [],
     refs = [],
     addresses = [],
@@ -63,13 +67,10 @@ export class PostMessageClient {
       channels: channels?.join(',') || undefined,
     }
 
-    const response = (await axios.get<PostQueryResponse<T>>(
-      `${stripTrailingSlash(apiServer as string)}/api/v0/posts.json`,
-      {
-        params,
-        socketPath: getSocketPath(),
-      },
-    )) as AxiosResponse<PostQueryResponse<T>>
+    const response = (await axios.get<PostQueryResponse<T>>(`${this.apiServer}/api/v0/posts.json`, {
+      params,
+      socketPath: getSocketPath(),
+    })) as AxiosResponse<PostQueryResponse<T>>
     return response.data
   }
 
@@ -82,7 +83,6 @@ export class PostMessageClient {
    * @param ref                   A message hash or arbitrary reference. Can be used to index a message for search on query.
    * @param address               The address of the account to post content for. Required an authorization key.
    * @param storageEngine         The storage engine to use when storing the message (IPFS, Aleph storage or inline). [**default: ItemType.inline**]
-   * @param apiServer             The API server endpoint used to carry the request to the Aleph's network. [**default: https://api2.aleph.im**]
    * @param sync                  If true, the function will wait for the message to be confirmed before returning. [**default: false**]
    * @returns                     The message that was published.
    * @throws InvalidMessageError  if the message is not compliant with the Aleph protocol.
@@ -97,7 +97,6 @@ export class PostMessageClient {
     ref,
     address,
     storageEngine = ItemType.inline,
-    apiServer = DEFAULT_API_V2,
     sync = false,
   }: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
     const timestamp: number = Date.now() / 1000
@@ -114,19 +113,19 @@ export class PostMessageClient {
       account,
       channel,
       timestamp,
-      storageEngine: storageEngine as ItemType,
+      storageEngine,
       content: postContent,
     })
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      apiServer,
+      apiServer: this.apiServer,
     })
 
     const { message } = await broadcast({
       message: hashedMessage,
       account,
-      apiServer: apiServer as string,
+      apiServer: this.apiServer,
       sync,
     })
 

@@ -32,7 +32,6 @@ export type ForgetPublishConfiguration = {
   channel: string
   storageEngine?: ItemType
   inlineRequested?: boolean
-  apiServer?: string
   hashes: string[]
   reason?: string
   sync?: boolean

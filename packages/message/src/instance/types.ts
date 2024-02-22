@@ -45,8 +45,6 @@ export type InstancePublishConfiguration = {
   environment?: Partial<FunctionEnvironment>
   image?: string
   volumes?: MachineVolume[]
-  inlineRequested?: boolean
   storageEngine?: ItemType.ipfs | ItemType.storage
-  apiServer?: string
   sync?: boolean
 }

@@ -9,7 +9,6 @@ describe('Aggregate message retrieve test', () => {
         address: '0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10',
         keys: ['satoshi'],
       })
-      expect(true).toStrictEqual(false)
     } catch (e: any) {
       expect(e instanceof MessageNotFoundError).toStrictEqual(true)
     }

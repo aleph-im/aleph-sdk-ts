@@ -15,28 +15,25 @@ import { ItemType } from '../types'
 import { MessageNotFoundError } from '../types/errors'
 
 export class AggregateMessageClient {
+  apiServer: string
+
+  constructor(apiServer: string = DEFAULT_API_V2) {
+    this.apiServer = stripTrailingSlash(apiServer)
+  }
+
   /**
    * Retrieves an aggregate message on from the Aleph network.
    * It uses the address & key(s) provided in the configuration given as a parameter to retrieve the wanted message.
    *
    * @param configuration The configuration used to get the message, including the API endpoint.
    */
-  async get<T>({
-    apiServer = DEFAULT_API_V2,
-    address = '',
-    keys = [],
-    limit = 50,
-  }: AggregateGetConfiguration): Promise<T> {
-    const response = await axios.get<AggregateGetResponse<T>>(
-      `${stripTrailingSlash(apiServer)}/api/v0/aggregates/${address}.json`,
-      {
-        socketPath: getSocketPath(),
-        params: {
-          keys: keys.join(',') || undefined,
-          limit,
-        },
+  async get<T>({ address = '', keys = [] }: AggregateGetConfiguration): Promise<T> {
+    const response = await axios.get<AggregateGetResponse<T>>(`${this.apiServer}/api/v0/aggregates/${address}.json`, {
+      socketPath: getSocketPath(),
+      params: {
+        keys: keys ? keys.join(',') : undefined,
       },
-    )
+    })
 
     if (!response.data.data) {
       throw new MessageNotFoundError('no aggregate found')
@@ -53,9 +50,13 @@ export class AggregateMessageClient {
    *     k_2: v_2,
    * }
    *
-   * This message must be indexed using a key, you can provide in the configuration.
-   *
-   * @param configuration The configuration used to publish the aggregate message.
+   * @param account The account used to sign the aggregate message.
+   * @param address To aggregate content for another account (Required an authorization key)
+   * @param key The key used to index the aggregate message.
+   * @param content The aggregate message content.
+   * @param channel The channel in which the message will be published.
+   * @param storageEngine The storage engine to used when storing the message (IPFS, Aleph storage or inline).
+   * @param sync If true, the function will wait for the message to be confirmed by the API server.
    */
   async send<T>({
     account,
@@ -64,12 +65,8 @@ export class AggregateMessageClient {
     content,
     channel,
     storageEngine = ItemType.inline,
-    inlineRequested,
-    apiServer = DEFAULT_API_V2,
     sync = false,
   }: AggregatePublishConfiguration<T>): Promise<AggregateMessage<T>> {
-    if (inlineRequested) console.warn('Inline requested is deprecated and will be removed: use storageEngine.inline')
-
     const timestamp = Date.now() / 1000
     const aggregateContent: AggregateContent<T> = {
       address: address || account.address,
@@ -88,13 +85,13 @@ export class AggregateMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      apiServer,
+      apiServer: this.apiServer,
     })
 
     const { message } = await broadcast({
       message: hashedMessage,
       account,
-      apiServer: apiServer,
+      apiServer: this.apiServer,
       sync,
     })
 

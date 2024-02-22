@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 
 import {
@@ -13,6 +13,12 @@ import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '..
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
 
 export class BaseMessageClient {
+  apiServer: string
+
+  constructor(apiServer: string = DEFAULT_API_V2) {
+    this.apiServer = stripTrailingSlash(apiServer)
+  }
+
   //TODO: Provide websocket binding (Refacto Get into GetQuerryBuilder)
 
   /**
@@ -23,7 +29,6 @@ export class BaseMessageClient {
   async get<T extends MessageType | 'any' = 'any', Content = any>({
     hash,
     messageType,
-    apiServer = DEFAULT_API_V2,
   }: GetMessageConfiguration): Promise<PublishedMessage<MessageTypeMap<Content>[T]>> {
     const params: GetMessageParams = {
       hashes: [hash],
@@ -35,7 +40,7 @@ export class BaseMessageClient {
     let forgotten_by: string[]
     try {
       const response = await axios.get<MessageResponse<MessageTypeMap<Content>[T]>>(
-        `${stripTrailingSlash(apiServer)}/api/v0/messages/${hash}`,
+        `${this.apiServer}/api/v0/messages/${hash}`,
         {
           params,
           socketPath: getSocketPath(),
@@ -103,28 +108,27 @@ export class BaseMessageClient {
     messageTypes = [],
     startDate,
     endDate,
-    apiServer = DEFAULT_API_V2,
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
     const params: GetMessagesParams = {
       pagination,
       page,
-      addresses: addresses.join(',') || undefined,
-      channels: channels.join(',') || undefined,
-      chains: chains.join(',') || undefined,
-      refs: refs.join(',') || undefined,
-      tags: tags.join(',') || undefined,
-      contentTypes: contentTypes.join(',') || undefined,
-      contentKeys: contentKeys.join(',') || undefined,
-      hashes: hashes.join(',') || undefined,
+      addresses: addresses ? addresses.join(',') : undefined,
+      channels: channels ? channels.join(',') : undefined,
+      chains: chains ? chains.join(',') : undefined,
+      refs: refs ? refs.join(',') : undefined,
+      tags: tags ? tags.join(',') : undefined,
+      contentTypes: contentTypes ? contentTypes.join(',') : undefined,
+      contentKeys: contentKeys ? contentKeys.join(',') : undefined,
+      hashes: hashes ? hashes.join(',') : undefined,
       msgTypes: messageTypes?.join(',') || undefined,
       startDate: startDate ? startDate.valueOf() / 1000 : undefined,
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }
 
-    const response = await axios.get<MessagesQueryResponse>(`${stripTrailingSlash(apiServer)}/api/v0/messages.json`, {
+    const response = (await axios.get<MessagesQueryResponse>(`${this.apiServer}/api/v0/messages.json`, {
       params,
       socketPath: getSocketPath(),
-    })
+    })) as AxiosResponse<MessagesQueryResponse>
 
     return response.data
   }

@@ -1,4 +1,4 @@
-import { DEFAULT_API_V2 } from '@aleph-sdk/core'
+import { DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
 import { buildForgetMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
@@ -6,6 +6,11 @@ import { ForgetContent, ForgetMessage, ForgetPublishConfiguration } from './type
 import { ItemType } from '../types'
 
 export class ForgetMessageClient {
+  apiServer: string
+
+  constructor(apiServer: string = DEFAULT_API_V2) {
+    this.apiServer = stripTrailingSlash(apiServer)
+  }
   /**
    * Submit a forget object to remove content from a Post message on the network.
    *
@@ -18,16 +23,12 @@ export class ForgetMessageClient {
    */
   async send({
     account,
-    apiServer = DEFAULT_API_V2,
     hashes,
     reason,
     channel,
     storageEngine = ItemType.inline,
-    inlineRequested,
     sync = false,
   }: ForgetPublishConfiguration): Promise<ForgetMessage> {
-    if (inlineRequested) console.warn('inlineRequested is deprecated and will be removed: use storageEngine.inline')
-
     const timestamp = Date.now() / 1000
     const forgetContent: ForgetContent = {
       address: account.address,
@@ -46,13 +47,13 @@ export class ForgetMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      apiServer,
+      apiServer: this.apiServer,
     })
 
     const { message } = await broadcast({
       message: hashedMessage,
       account,
-      apiServer: apiServer,
+      apiServer: this.apiServer,
       sync,
     })
     return message

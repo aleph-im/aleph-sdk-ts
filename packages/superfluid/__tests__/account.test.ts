@@ -1,14 +1,7 @@
-// superfluidAccount.test.ts
 import { SuperfluidAccount, createFromAvalancheAccount } from '../src'
 import { ethers, providers } from 'ethers'
 import { JsonRPCWallet } from '../../evm/src'
 import { AvalancheAccount } from '../../avalanche/src'
-
-// Mocks
-jest.mock('../../evm/src')
-jest.mock('../../avalanche/src')
-jest.mock('ethers')
-jest.mock('@superfluid-finance/sdk-core')
 
 describe('SuperfluidAccount', () => {
   let superfluidAccount: SuperfluidAccount

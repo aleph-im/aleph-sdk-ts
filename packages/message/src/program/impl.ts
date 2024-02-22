@@ -1,4 +1,4 @@
-import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
+import { DEFAULT_API_V2, RequireOnlyOne, stripTrailingSlash } from '@aleph-sdk/core'
 import { buildProgramMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
@@ -16,10 +16,19 @@ import { BaseMessageClient } from '../base'
 import { ItemType, MessageType } from '../types'
 
 export class ProgramMessageClient {
+  apiServer: string
+  protected baseMessageClient: BaseMessageClient
+  protected storeMessageClient: StoreMessageClient
+
   constructor(
-    protected baseMessageClient: BaseMessageClient = new BaseMessageClient(),
-    protected storeMessageClient: StoreMessageClient = new StoreMessageClient(),
-  ) {}
+    apiServer: string = DEFAULT_API_V2,
+    baseMessageClient?: BaseMessageClient,
+    storeMessageClient?: StoreMessageClient,
+  ) {
+    this.apiServer = stripTrailingSlash(apiServer)
+    this.baseMessageClient = baseMessageClient || new BaseMessageClient(apiServer)
+    this.storeMessageClient = storeMessageClient || new StoreMessageClient(apiServer)
+  }
 
   // TODO: Check that program_ref, runtime and data_ref exist
   // Guard some numbers values
@@ -28,9 +37,7 @@ export class ProgramMessageClient {
     channel,
     metadata,
     isPersistent = false,
-    inlineRequested = true,
     storageEngine = ItemType.ipfs,
-    apiServer = DEFAULT_API_V2,
     file,
     programRef,
     encoding = Encoding.zip,
@@ -52,7 +59,6 @@ export class ProgramMessageClient {
       programRef = (
         await this.storeMessageClient.send({
           channel,
-          apiServer,
           account,
           storageEngine,
           fileObject: file,
@@ -63,7 +69,6 @@ export class ProgramMessageClient {
       try {
         const fetchCode = await this.baseMessageClient.get<MessageType.store>({
           hash: programRef,
-          apiServer: DEFAULT_API_V2,
         })
         if (fetchCode.sender != account.address)
           console.warn(
@@ -106,7 +111,7 @@ export class ProgramMessageClient {
         use_latest: true,
         comment: 'Aleph Alpine Linux with Python 3.8',
       },
-      volumes,
+      volumes: volumes,
       variables,
     }
 
@@ -120,14 +125,13 @@ export class ProgramMessageClient {
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
-      inline: inlineRequested,
-      apiServer,
+      apiServer: this.apiServer,
     })
 
     const { message } = await broadcast({
       message: hashedMessage,
       account,
-      apiServer: apiServer,
+      apiServer: this.apiServer,
       sync,
     })
 
@@ -139,9 +143,7 @@ export class ProgramMessageClient {
     channel,
     metadata,
     isPersistent = false,
-    inlineRequested = true,
     storageEngine = ItemType.ipfs,
-    apiServer = DEFAULT_API_V2,
     programRef,
     entrypoint,
     encoding = Encoding.zip,
@@ -157,9 +159,7 @@ export class ProgramMessageClient {
       channel,
       metadata,
       isPersistent,
-      inlineRequested,
       storageEngine,
-      apiServer,
       programRef,
       entrypoint,
       encoding,

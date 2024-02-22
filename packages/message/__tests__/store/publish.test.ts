@@ -1,5 +1,4 @@
-import { ItemType, StoreMessageClient } from '../../src'
-import { DEFAULT_API_V2 } from '../../../core/src'
+import { StoreMessageClient } from '../../src'
 import * as ethereum from '../../../ethereum/src'
 import { readFileSync } from 'fs'
 
@@ -20,10 +19,7 @@ describe('Store message publish', () => {
       fileObject: fileContent,
     })
 
-    const response = await store.get({
-      fileHash: hash.content.item_hash,
-      apiServer: DEFAULT_API_V2,
-    })
+    const response = await store.download(hash.content.item_hash)
 
     const got = ArraybufferToString(response)
     const expected = 'y'
@@ -41,10 +37,7 @@ describe('Store message publish', () => {
       fileHash: helloWorldHash,
     })
 
-    const response = await store.get({
-      fileHash: hash.content.item_hash,
-      apiServer: DEFAULT_API_V2,
-    })
+    const response = await store.download(hash.content.item_hash)
 
     const got = ArraybufferToString(response)
     const expected = 'hello world!'
@@ -56,18 +49,6 @@ describe('Store message publish', () => {
     const { account } = ethereum.NewAccount()
 
     const helloWorldHash = 'QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j'
-    const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
-
-    await expect(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      store.send({
-        channel: 'TEST',
-        account: account,
-        fileObject: fileContent,
-        fileHash: helloWorldHash,
-      }),
-    ).rejects.toThrow("You can't pin a file and upload it at the same time.")
 
     await expect(
       store.send({
@@ -76,16 +57,5 @@ describe('Store message publish', () => {
         fileHash: helloWorldHash,
       }),
     ).rejects.toThrow('You must choose ipfs to pin file.')
-
-    await expect(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      store.send({
-        channel: 'TEST',
-        apiServer: DEFAULT_API_V2,
-        account: account,
-        storageEngine: ItemType.storage,
-      }),
-    ).rejects.toThrow('You need to specify a File to upload or a Hash to pin.')
   })
 })

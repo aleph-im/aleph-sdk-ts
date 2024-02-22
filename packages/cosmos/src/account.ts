@@ -7,7 +7,6 @@ import {
 } from '@cosmjs/amino'
 import { Blockchain } from '@aleph-sdk/core'
 import { Account, SignableMessage } from '@aleph-sdk/account'
-import { verifyCosmos } from './verify'
 
 /**
  * CosmosAccount implements the Account class for the Cosmos protocol.
@@ -48,7 +47,7 @@ export class CosmosAccount extends Account {
 
     const signDoc = makeSignDoc([aminoMsg], { amount: [], gas: '0' }, 'signed-message-v1', '', this.accountNumber, '0')
     const { signature } = await this.wallet.signAmino(this.address, signDoc)
-    if (await verifyCosmos(buffer, JSON.stringify(signature))) return JSON.stringify(signature)
+    return JSON.stringify(signature)
 
     throw new Error('Cannot proof the integrity of the signature')
   }

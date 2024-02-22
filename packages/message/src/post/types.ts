@@ -13,7 +13,6 @@ export type PostContent<T> = BaseContent & {
 
 export type PostGetConfiguration = {
   types?: string | string[]
-  apiServer?: string
   pagination?: number
   page?: number
   refs?: string[]
@@ -67,10 +66,7 @@ export type PostQueryResponse<T> = {
 
 // ------- PUBLISH -------
 
-/**
- */
 export type PostSubmitConfiguration<T> = {
-  apiServer?: string
   ref?: string | ChainRef
   channel: string
   storageEngine?: ItemType

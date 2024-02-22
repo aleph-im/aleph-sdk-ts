@@ -11,13 +11,6 @@ export type StoreContent = BaseContent & {
   ref?: string
 }
 
-// -------- GET ----------
-
-export type StoreGetConfiguration = {
-  fileHash: string
-  apiServer?: string
-}
-
 // -------- PIN ----------
 
 /**
@@ -36,7 +29,6 @@ export type StorePinConfiguration = {
   account: Account
   fileHash: string
   storageEngine?: ItemType
-  apiServer?: string
 }
 
 // -------- SEND -----------
@@ -64,7 +56,5 @@ export type StorePublishConfiguration = {
   fileObject?: Buffer | Blob
   fileHash?: string
   storageEngine?: ItemType.ipfs | ItemType.storage
-  inlineRequested?: boolean
-  apiServer?: string
   sync?: boolean
 }

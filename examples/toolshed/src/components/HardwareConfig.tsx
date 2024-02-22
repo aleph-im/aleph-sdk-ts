@@ -3,27 +3,21 @@ import { HardwareChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
 
-
-function HardwareConfig({ dispatch, state } : dispatchAndConsume) {
-  const getAccountClass = () => (
-    state.selectedChain === HardwareChains.Ethereum ? [ethereum, null]
-    : [null, null]
-  )
+function HardwareConfig({ dispatch, state }: dispatchAndConsume) {
+  const getAccountClass = () => (state.selectedChain === HardwareChains.Ethereum ? [ethereum, null] : [null, null])
 
   const connectToHardware = async () => {
-    const [_account, provider] = getAccountClass();
+    const [_account] = getAccountClass()
 
-    if(_account === null)
-      return 
+    if (_account === null) return
 
-    try{
+    try {
       const account = await _account.GetAccountFromLedger()
       dispatch({
         type: Actions.SET_ACCOUNT,
-        payload: account
+        payload: account,
       })
-    }
-    catch(err){
+    } catch (err) {
       alert(err)
     }
   }
