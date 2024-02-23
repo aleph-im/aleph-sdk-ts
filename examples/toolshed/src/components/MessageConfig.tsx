@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { consumeProps } from '../model/componentProps'
-import {ItemType, PostMessageClient} from "../../../../packages/message";
+import { ItemType, PostMessageClient } from '../../../../packages/message'
 
 function MessageConfig({ state }: consumeProps) {
   const [messageHash, setMessageHash]: [string | null, any] = useState(null)

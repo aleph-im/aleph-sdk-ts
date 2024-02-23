@@ -3,11 +3,11 @@ import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
 import Select, { SingleValue } from 'react-select'
 import { useState } from 'react'
-import {RpcId} from "../../../../packages/evm";
-import * as avalanche from "../../../../packages/avalanche/src";
-import * as ethereum from "../../../../packages/ethereum/src";
-import * as substrate from "../../../../packages/substrate/src";
-import * as solana from "../../../../packages/solana/src";
+import { RpcId } from '../../../../packages/evm'
+import * as avalanche from '../../../../packages/avalanche/src'
+import * as ethereum from '../../../../packages/ethereum/src'
+import * as substrate from '../../../../packages/substrate/src'
+import * as solana from '../../../../packages/solana/src'
 
 type Option = {
   readonly label: string

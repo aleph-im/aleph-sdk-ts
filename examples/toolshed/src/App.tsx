@@ -8,7 +8,7 @@ import WalletConfig from './components/WalletConfig'
 import MessageConfig from './components/MessageConfig'
 import WebSocket from './components/WebSocket'
 import HardwareConfig from './components/HardwareConfig'
-import {ECIESAccount} from "../../../packages/account/src";
+import { ECIESAccount } from '../../../packages/account/src'
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initState)
