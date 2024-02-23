@@ -201,7 +201,7 @@ export class AuthenticatedAlephHttpClient extends AlephHttpClient {
    * @param metadata
    * @param sync If true, waits for the message to be processed by the API server
    */
-  async createInstance({
+  async createInstance(
     rootfs: string,
     rootfsSize: number,
     rootfsName: string,
@@ -220,7 +220,7 @@ export class AuthenticatedAlephHttpClient extends AlephHttpClient {
     sshKeys?: string[],
     metadata?: Record<string, any>,
     sync: boolean = false,
-}) {
+) {
     return await this.instanceClient.send({
       account: this.account,
       rootfs: {
