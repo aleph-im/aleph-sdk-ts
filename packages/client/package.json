@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/client",
-  "version": "0.0.3",
+  "version": "1.0.0-alpha.2",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -16,14 +16,14 @@
     "@types/sha.js": "^2.4.4"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.3",
-    "@aleph-sdk/core": "^0.0.3",
-    "@aleph-sdk/message": "^0.0.3"
+    "@aleph-sdk/account": "1.0.0-alpha.2",
+    "@aleph-sdk/core": "1.0.0-alpha.2",
+    "@aleph-sdk/message": "1.0.0-alpha.2"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "0.x",
-    "@aleph-sdk/core": "0.x",
-    "@aleph-sdk/message": "0.x"
+    "@aleph-sdk/account": "1.0.0-alpha.2",
+    "@aleph-sdk/core": "1.0.0-alpha.2",
+    "@aleph-sdk/message": "1.0.0-alpha.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

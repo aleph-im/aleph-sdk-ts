@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/nuls2",
-  "version": "0.0.3",
+  "version": "1.0.0-alpha.2",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -19,8 +19,8 @@
     "@types/sha.js": "^2.4.0"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.3",
-    "@aleph-sdk/core": "^0.0.3",
+    "@aleph-sdk/account": "1.0.0-alpha.2",
+    "@aleph-sdk/core": "1.0.0-alpha.2",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",
@@ -30,8 +30,8 @@
     "sha.js": "^2.4.11"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "0.x",
-    "@aleph-sdk/core": "0.x"
+    "@aleph-sdk/account": "1.0.0-alpha.2",
+    "@aleph-sdk/core": "1.0.0-alpha.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

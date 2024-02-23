@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/tezos",
-  "version": "0.0.3",
+  "version": "1.0.0-alpha.2",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -16,16 +16,16 @@
     "@airgap/beacon-types": "^3.2.0"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^0.0.3",
-    "@aleph-sdk/core": "^0.0.3",
+    "@aleph-sdk/account": "1.0.0-alpha.2",
+    "@aleph-sdk/core": "1.0.0-alpha.2",
     "@taquito/beacon-wallet": "^17.5.2",
     "@taquito/signer": "^17.5.2",
     "@taquito/utils": "^17.5.2",
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "0.x",
-    "@aleph-sdk/core": "0.x"
+    "@aleph-sdk/account": "1.0.0-alpha.2",
+    "@aleph-sdk/core": "1.0.0-alpha.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
