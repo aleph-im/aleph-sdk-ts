@@ -29,6 +29,7 @@
   },
   "exclude": [
     "**/node_modules",
+    "**/examples",
     "**/dist",
     "**/scripts",
     "**/tests",
@@ -39,8 +40,11 @@
   ],
   "typedocOptions": {
     "entryPoints": [
-      "src/index.ts"
+      "packages/**/src/index.ts"
     ],
-    "out": "docs"
+    "out": "docs",
+    "name": "@aleph-sdk/monorepo",
+    "excludeExternals": true,
+    "excludePrivate": true
   }
 }

@@ -87,9 +87,7 @@
     "packages/tezos",
     "packages/substrate",
     "packages/evm",
-    "packages/superfluid"
-  ],
-  "dependencies": {
-    "jasmine-unit-test-generator": "^1.3.1"
-  }
+    "packages/superfluid",
+    "packages/client"
+  ]
 }
