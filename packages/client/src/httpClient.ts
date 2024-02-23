@@ -1,13 +1,17 @@
 import {
-  AggregateMessageClient, AlephSocket, BaseMessageClient,
+  AggregateMessageClient,
+  AlephSocket,
+  BaseMessageClient,
   ForgetMessageClient,
   InstanceMessageClient,
+  PostGetConfiguration,
   PostMessageClient,
   ProgramMessageClient,
   StoreMessageClient,
+  GetMessagesConfiguration,
+  MessageError,
+  MessageType,
 } from '@aleph-sdk/message'
-import {MessageFilter, PostFilter} from "./types";
-import {MessageError, MessageType} from "@aleph-sdk/message/src";
 
 class AlephHttpClient {
   postClient: PostMessageClient
@@ -39,38 +43,16 @@ class AlephHttpClient {
     const result = await this.aggregateClient.get<any>(params)
     return result.data
   }
-  async getPosts<T = any>(
-    pageSize: number = 200,
-    page: number = 1,
-    postFilter: PostFilter = {},
-  ) {
-    const params = {
-      ...postFilter,
-      page: page,
-      pageSize: pageSize,
-    }
-    return await this.postClient.get<T>(params)
+  async getPosts<T = any>(config: PostGetConfiguration) {
+    return await this.postClient.get<T>(config)
   }
 
   async downloadFile(file_hash: string): Promise<ArrayBuffer> {
     return await this.storeClient.download(file_hash)
   }
 
-  async getMessages(
-    pageSize: number = 200,
-    page: number = 1,
-    filter: MessageFilter = {},
-  ) {
-    const startDate: Date | undefined = filter.startDate instanceof Number ? new Date(filter.startDate) : filter.startDate as Date
-    const endDate: Date | undefined = filter.endDate instanceof Number ? new Date(filter.endDate) : filter.endDate as Date
-    const params = {
-      ...filter,
-      page: page,
-      pageSize: pageSize,
-      startDate,
-      endDate,
-    }
-    return await this.messageClient.getAll(params)
+  async getMessages(config: GetMessagesConfiguration) {
+    return await this.messageClient.getAll(config)
   }
 
   async get_message<T extends MessageType | 'any' = 'any', Content = any>(itemHash: string) {
@@ -81,15 +63,8 @@ class AlephHttpClient {
     return await this.messageClient.getError(itemHash)
   }
 
-  async watchMessages(filter: MessageFilter = {}): Promise<AlephSocket> {
-    const startDate: Date | undefined = filter.startDate instanceof Number ? new Date(filter.startDate) : filter.startDate as Date
-    const endDate: Date | undefined = filter.endDate instanceof Number ? new Date(filter.endDate) : filter.endDate as Date
-    const params = {
-      ...filter,
-      startDate,
-      endDate,
-    }
-    return this.messageClient.getMessagesSocket(params)
+  async watchMessages(config: GetMessagesConfiguration): Promise<AlephSocket> {
+    return this.messageClient.getMessagesSocket(config)
   }
 }
 
