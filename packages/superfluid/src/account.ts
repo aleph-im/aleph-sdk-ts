@@ -67,17 +67,9 @@ export class SuperfluidAccount extends AvalancheAccount {
   }
 
   /**
-   * Get the regular ALEPH balance of the account.
+   * Get the ALEPH balance of the account.
    */
   public async getALEPHBalance(): Promise<Decimal> {
-    // @todo: implement
-    return new Decimal(0)
-  }
-
-  /**
-   * Get the wrapped ALEPHx balance of the account.
-   */
-  public async getALEPHxBalance(): Promise<Decimal> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
     const balance = await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider })
@@ -85,10 +77,10 @@ export class SuperfluidAccount extends AvalancheAccount {
   }
 
   /**
-   * Get the ALEPHx flow rate to a given receiver in ALEPHx per hour.
+   * Get the ALEPH flow rate to a given receiver in ALEPH per hour.
    * @param receiver The receiver address.
    */
-  public async getALEPHxFlow(receiver: string): Promise<Decimal> {
+  public async getALEPHFlow(receiver: string): Promise<Decimal> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
     const flow = await this.alephx.getFlow({
@@ -104,9 +96,9 @@ export class SuperfluidAccount extends AvalancheAccount {
   }
 
   /**
-   * Get the net ALEPHx flow rate of the account in ALEPHx per hour.
+   * Get the net ALEPH flow rate of the account in ALEPH per hour.
    */
-  public async getNetALEPHxFlow(): Promise<Decimal> {
+  public async getNetALEPHFlow(): Promise<Decimal> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
     const flow = await this.alephx.getNetFlow({
@@ -116,7 +108,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     return this.flowRateToAlephPerHour(flow)
   }
 
-  public async getAllALEPHxOutflows(): Promise<Record<string, Decimal>> {
+  public async getAllALEPHOutflows(): Promise<Record<string, Decimal>> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.framework || !this.alephx) throw new Error('SuperfluidAccount not initialized')
     // make a graphql query to Superfluid Subgraph
@@ -159,7 +151,7 @@ export class SuperfluidAccount extends AvalancheAccount {
     return await response.json()
   }
 
-  public async getAllALEPHxInflows(): Promise<Record<string, Decimal>> {
+  public async getAllALEPHInflows(): Promise<Record<string, Decimal>> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.framework || !this.alephx) throw new Error('SuperfluidAccount not initialized')
     // make a graphql query to Superfluid Subgraph
@@ -205,11 +197,11 @@ export class SuperfluidAccount extends AvalancheAccount {
   }
 
   /**
-   * Increase the ALEPHx flow rate to a given receiver. Creates a new flow if none exists.
+   * Increase the ALEPH flow rate to a given receiver. Creates a new flow if none exists.
    * @param receiver The receiver address.
-   * @param alephPerHour The amount of ALEPHx per hour to increase the flow by.
+   * @param alephPerHour The amount of ALEPH per hour to increase the flow by.
    */
-  public async increaseALEPHxFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
+  public async increaseALEPHFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount is not initialized')
     const flow = await this.alephx.getFlow({
@@ -222,7 +214,7 @@ export class SuperfluidAccount extends AvalancheAccount {
       await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider }),
     )
     if (balance.lt(this.alephToWei(alephPerHour))) {
-      throw new Error('Not enough ALEPHx to increase flow')
+      throw new Error('Not enough ALEPH to increase flow')
     }
     const signer = this.wallet.provider.getSigner()
     if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
@@ -244,11 +236,11 @@ export class SuperfluidAccount extends AvalancheAccount {
   }
 
   /**
-   * Decrease the ALEPHx flow rate to a given receiver. Deletes the flow if the new flow rate is 0.
+   * Decrease the ALEPH flow rate to a given receiver. Deletes the flow if the new flow rate is 0.
    * @param receiver The receiver address.
-   * @param alephPerHour The amount of ALEPHx per hour to decrease the flow by.
+   * @param alephPerHour The amount of ALEPH per hour to decrease the flow by.
    */
-  public async decreaseALEPHxFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
+  public async decreaseALEPHFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
     const flow = await this.alephx.getFlow({
