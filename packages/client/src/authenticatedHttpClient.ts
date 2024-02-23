@@ -46,8 +46,11 @@ export class AuthenticatedAlephHttpClient extends AlephHttpClient {
    * @param inline Whether to write content inside the message (Default: True)
    * @param sync If true, waits for the message to be processed by the API server (Default: False)
    */
-  async createAggregate<Content>(config: AggregatePublishConfiguration<Content>) {
-    return await this.aggregateClient.send<Content>(config)
+  async createAggregate<Content>(config: Omit<AggregatePublishConfiguration<Content>, 'account'>) {
+    return await this.aggregateClient.send<Content>({
+      account: this.account,
+      ...config,
+    } as AggregatePublishConfiguration<Content>)
   }
 
   /**
@@ -134,3 +137,5 @@ export class AuthenticatedAlephHttpClient extends AlephHttpClient {
     } as ForgetPublishConfiguration)
   }
 }
+
+export default AuthenticatedAlephHttpClient
