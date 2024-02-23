@@ -27,17 +27,24 @@ export class AggregateMessageClient {
    * @param configuration The configuration used to get the message, including the API endpoint.
    */
   async get<T = any>({ address = '', keys = [] }: AggregateGetConfiguration): Promise<Record<string, T>> {
-    const response = await axios.get<AggregateGetResponse<T>>(`${this.apiServer}/api/v0/aggregates/${address}.json`, {
-      socketPath: getSocketPath(),
-      params: {
-        keys: keys ? keys.join(',') : undefined,
-      },
-    })
+    try {
+      const response = await axios.get<AggregateGetResponse<T>>(`${this.apiServer}/api/v0/aggregates/${address}.json`, {
+        socketPath: getSocketPath(),
+        params: {
+          keys: keys ? keys.join(',') : undefined,
+        },
+      })
 
-    if (!response.data.data) {
-      throw new MessageNotFoundError('no aggregate found')
+      if (!response.data.data) {
+        throw new MessageNotFoundError('no aggregate found')
+      }
+      return response.data.data
+    } catch (e: any) {
+      if (axios.isAxiosError(e) && e.response?.status === 404) {
+        throw new MessageNotFoundError('no aggregate found')
+      }
+      throw e
     }
-    return response.data.data
   }
 
   /**
