@@ -151,11 +151,23 @@ export class StoreMessageClient {
     }
     form.append('metadata', JSON.stringify(metadata))
     form.append('file', file)
+    const getContentLength = (form: FormData) => {
+      let length = 0
+      form.forEach((value) => {
+        if (value instanceof Blob) {
+          length += value.size
+        } else {
+          length += value.length
+        }
+      })
+      return length
+    }
     try {
       const response = await axios.post(`${this.apiServer}/api/v0/storage/add_file`, form, {
         headers: {
           Accept: 'application/json',
-          // 'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
+          'Content-Length': getContentLength(form).toString(),
         },
       })
       return response.data

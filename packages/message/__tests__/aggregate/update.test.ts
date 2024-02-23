@@ -1,6 +1,5 @@
 import * as ethereum from '../../../ethereum/src'
 import { AggregateMessageClient } from '../../src'
-import { delay } from '@aleph-sdk/core'
 
 describe('Aggregate message update test', () => {
   const client = new AggregateMessageClient()
@@ -18,6 +17,7 @@ describe('Aggregate message update test', () => {
       key: key,
       content: content,
       channel: 'TEST',
+      sync: true,
     })
 
     const updatedContent: { A: number } = {
@@ -29,9 +29,8 @@ describe('Aggregate message update test', () => {
       key: key,
       content: updatedContent,
       channel: 'TEST',
+      sync: true,
     })
-
-    await delay(1000)
 
     const message = await client.get<{ A: number }>({
       address: account.address,
@@ -68,6 +67,7 @@ describe('Aggregate message update test', () => {
       key: key,
       content: content,
       channel: 'TEST',
+      sync: true,
     })
     await client.send({
       account: owner,
@@ -82,6 +82,7 @@ describe('Aggregate message update test', () => {
         ],
       },
       channel: 'security',
+      sync: true,
     })
 
     const updated = await client.send<{ A: number }>({
@@ -90,6 +91,7 @@ describe('Aggregate message update test', () => {
       key: key,
       content: UpdatedContent,
       channel: 'TEST',
+      sync: true,
     })
     const message = await client.get<{ A: number }>({
       address: owner.address,

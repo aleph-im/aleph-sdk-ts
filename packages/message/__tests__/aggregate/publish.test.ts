@@ -17,7 +17,9 @@ describe('Aggregate message publish test', () => {
       key: key,
       content: content,
       channel: 'TEST',
+      sync: true,
     })
+
     const message = await client.get<{ A: number }>({
       address: account.address,
       keys: [key],

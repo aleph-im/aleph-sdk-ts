@@ -1,6 +1,5 @@
 import { ForgetMessageClient, PostMessageClient } from '../../src'
 import * as ethereum from '../../../ethereum/src'
-import { delay } from '@aleph-sdk/core'
 
 describe('Forget publish tests', () => {
   const postType = 'TS Forget Test'
@@ -39,9 +38,10 @@ describe('Forget publish tests', () => {
       channel: 'TEST',
       hashes: [postRest.item_hash],
       account: account,
+      sync: true,
     })
 
-    await delay(1000)
+    console.log('forgottenHash', postRest.item_hash)
 
     const initialPost = await post.getAll({ types: postType, hashes: [postRest.item_hash] })
 
