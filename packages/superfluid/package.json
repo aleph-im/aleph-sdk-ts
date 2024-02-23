@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/superfluid",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -16,19 +16,19 @@
     "@types/sha.js": "^2.4.0"
   },
   "dependencies": {
-    "@aleph-sdk/account": "1.0.0-alpha.2",
-    "@aleph-sdk/avalanche": "1.0.0-alpha.2",
-    "@aleph-sdk/core": "1.0.0-alpha.2",
-    "@aleph-sdk/evm": "1.0.0-alpha.2",
+    "@aleph-sdk/account": "1.0.0-alpha.3",
+    "@aleph-sdk/avalanche": "1.0.0-alpha.3",
+    "@aleph-sdk/core": "1.0.0-alpha.3",
+    "@aleph-sdk/evm": "1.0.0-alpha.3",
     "@superfluid-finance/sdk-core": "^0.6.12",
     "avalanche": "1.0.3",
     "decimal.js": "^10.4.3"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "1.0.0-alpha.2",
-    "@aleph-sdk/avalanche": "1.0.0-alpha.2",
-    "@aleph-sdk/core": "1.0.0-alpha.2",
-    "@aleph-sdk/evm": "1.0.0-alpha.2"
+    "@aleph-sdk/account": "1.0.0-alpha.3",
+    "@aleph-sdk/avalanche": "1.0.0-alpha.3",
+    "@aleph-sdk/core": "1.0.0-alpha.3",
+    "@aleph-sdk/evm": "1.0.0-alpha.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
