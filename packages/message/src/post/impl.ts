@@ -6,7 +6,7 @@ import {
   PostGetConfiguration,
   PostQueryParams,
   PostQueryResponse,
-  PostSubmitConfiguration,
+  PostPublishConfiguration,
   PostResponse,
 } from './types'
 import { PostMessageBuilder, prepareAlephMessage, broadcast } from '../utils'
@@ -97,7 +97,7 @@ export class PostMessageClient {
     address,
     storageEngine = ItemType.inline,
     sync = false,
-  }: PostSubmitConfiguration<T>): Promise<PostMessage<T>> {
+  }: PostPublishConfiguration<T>): Promise<PostMessage<T>> {
     const timestamp: number = Date.now() / 1000
     const postContent: PostContent<T> = {
       type: postType,

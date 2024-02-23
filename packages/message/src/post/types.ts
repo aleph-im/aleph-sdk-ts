@@ -64,7 +64,7 @@ export type PostQueryResponse<T> = {
 
 // ------- PUBLISH -------
 
-export type PostSubmitConfiguration<T> = {
+export type PostPublishConfiguration<T> = {
   ref?: string | ChainRef
   channel?: string
   storageEngine?: ItemType
