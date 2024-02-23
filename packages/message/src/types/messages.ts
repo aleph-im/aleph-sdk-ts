@@ -11,64 +11,7 @@ import { AggregateContent } from '../aggregate'
 import { ProgramContent } from '../program'
 import { PostContent } from '../post'
 import { ForgetContent } from '../forget'
-
-/**
- * Message types supported by Aleph
- *
- * Warning: Program is currently not supported by the TS sdk.
- */
-export enum MessageType {
-  post = 'POST',
-  aggregate = 'AGGREGATE',
-  store = 'STORE',
-  program = 'PROGRAM',
-  forget = 'FORGET',
-  instance = 'INSTANCE',
-}
-
-export enum ItemType {
-  inline = 'inline',
-  storage = 'storage',
-  ipfs = 'ipfs',
-}
-
-/**
- * Some POST messages have a 'ref' field referencing other content
- */
-export type ChainRef = {
-  chain: string
-  channel?: string
-  item_content: string
-  item_hash: string
-  item_type: string
-  sender: string
-  signature: string
-  time: number
-  type: MessageType.post
-}
-
-type MessageConfirmationHash = {
-  binary: string
-  type: string
-}
-
-/**
- * Format of the result when a message has been confirmed on a blockchain
- * The time and publisher field are introduced in recent versions of CCNs. They should
- * remain optional until the corresponding CCN upload (0.4.0) is widely uploaded.
- */
-type MessageConfirmation = {
-  chain: string
-  height: number
-  hash: string | MessageConfirmationHash
-  time?: number
-  publisher?: string
-}
-
-export type BaseContent = {
-  address: string
-  time: number
-}
+import { ItemType, MessageConfirmation, MessageType } from './base'
 
 export type MessageContent<Content = any> =
   | PostContent<Content>
@@ -203,3 +146,17 @@ export enum MessageStatus {
   rejected = 'rejected',
   forgotten = 'forgotten',
 }
+
+export type ProgramMessage = SignedMessage<ProgramContent>
+export type InstanceMessage = SignedMessage<InstanceContent>
+export type StoreMessage = SignedMessage<StoreContent>
+export type PostMessage<T> = SignedMessage<PostContent<T>>
+export type AggregateMessage<T> = SignedMessage<AggregateContent<T>>
+export type ForgetMessage = SignedMessage<ForgetContent>
+export type Message =
+  | ProgramMessage
+  | InstanceMessage
+  | StoreMessage
+  | PostMessage<any>
+  | AggregateMessage<any>
+  | ForgetMessage

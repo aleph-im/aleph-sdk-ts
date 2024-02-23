@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios'
-import {DEFAULT_API_V2, DEFAULT_API_WS_V2, getSocketPath, stripTrailingSlash} from '@aleph-sdk/core'
+import { DEFAULT_API_V2, DEFAULT_API_WS_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 
 import {
   GetMessageConfiguration,
@@ -8,11 +8,11 @@ import {
   GetMessagesParams,
   MessageResponse,
   MessagesQueryResponse,
-  MessageError
+  MessageError,
 } from './types'
 import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
-import {AlephSocket, GetMessagesSocketConfiguration, getMessagesSocket} from "./websocket";
+import { AlephSocket, GetMessagesSocketConfiguration, getMessagesSocket } from './websocket'
 
 export class BaseMessageClient {
   apiServer: string

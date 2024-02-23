@@ -1,11 +1,17 @@
-import { BaseContent } from './messages'
+import { Blockchain } from '@aleph-sdk/core'
 import { MachineVolume } from './volumes'
+import { BaseContent, PaymentType } from './base'
 
 /**
  * Properties of the execution environment
+ *
+ * reproducible: The function is deterministic (not available yet)
+ * internet: Allow internet access
+ * aleph_api: Allow access to the Aleph API
+ * shared_cache: Allow access to the shared redis cache
  */
 export type FunctionEnvironment = {
-  reproducible: boolean
+  reproducible: false
   internet: boolean
   aleph_api: boolean
   shared_cache: boolean
@@ -13,6 +19,10 @@ export type FunctionEnvironment = {
 
 /**
  * System resources required
+ *
+ * vcpus: Number of virtual CPUs
+ * memory: Memory in MiB
+ * seconds: Timeout in seconds
  */
 export type MachineResources = {
   vcpus: number
@@ -30,8 +40,10 @@ export type CpuProperties = {
 }
 
 /**
- * Address of the node owner
- * Node address must match this regular expression
+ * Additional properties required for the node
+ *
+ * owner: Owner address of the node (not available yet)
+ * address_regex: Regular expression to match the node address (not available yet)
  */
 export type NodeRequirements = {
   owner?: string
@@ -45,6 +57,19 @@ export type NodeRequirements = {
 export type HostRequirements = {
   cpu?: CpuProperties
   node?: NodeRequirements
+}
+
+/**
+ * Payment solution
+ *
+ * chain: Blockchain to use
+ * receiver: Receiver address, should be usually the (streaming) reward address of the targeted node
+ * type: Payment type (hold, stream)
+ */
+export type Payment = {
+  chain: Blockchain
+  receiver?: string
+  type: PaymentType
 }
 
 /**
@@ -67,7 +92,13 @@ export type BaseExecutableContent = BaseContent & {
   variables?: Record<string, string>
   environment: FunctionEnvironment
   resources: MachineResources
+  payment?: Payment
   requirements?: HostRequirements
   volumes: MachineVolume[]
   replaces?: string
+}
+
+export enum MachineType {
+  vm_function = 'vm-function',
+  vm_instance = 'vm-instance',
 }

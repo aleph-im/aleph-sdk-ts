@@ -1,17 +1,13 @@
 import { Account } from '@aleph-sdk/account'
+import { MachineVolume, ParentVolume, VolumePersistence } from '../types/volumes'
 import {
   BaseExecutableContent,
   FunctionEnvironment,
   HostRequirements,
-  ItemType,
   MachineResources,
-  MachineVolume,
-  ParentVolume,
-  SignedMessage,
-  VolumePersistence,
-} from '../types'
-
-export type InstanceMessage = SignedMessage<InstanceContent>
+  Payment,
+} from '../types/execution'
+import { ItemType } from '../types/base'
 
 /**
  * Root file system of a VM instance.
@@ -37,9 +33,6 @@ export type InstanceContent = BaseExecutableContent & {
 export type InstancePublishConfiguration = {
   account: Account
   channel?: string
-  allowAmend?: boolean
-  internet?: boolean
-  alephApi?: boolean
   metadata?: Record<string, unknown>
   variables?: Record<string, string>
   authorized_keys?: string[]
@@ -49,6 +42,6 @@ export type InstancePublishConfiguration = {
   image?: string
   volumes?: MachineVolume[]
   storageEngine?: ItemType.ipfs | ItemType.storage
-  timeoutSeconds?: number
+  payment?: Payment
   sync?: boolean
 }

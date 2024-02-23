@@ -7,11 +7,10 @@ import {
   PostQueryParams,
   PostQueryResponse,
   PostSubmitConfiguration,
-  PostMessage,
   PostResponse,
 } from './types'
 import { PostMessageBuilder, prepareAlephMessage, broadcast } from '../utils'
-import { ItemType } from '../types'
+import { ItemType, PostMessage } from '../types'
 import { MessageNotFoundError } from '../types/errors'
 
 export class PostMessageClient {

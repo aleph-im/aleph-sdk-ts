@@ -1,6 +1,6 @@
 import * as ethereum from '../../../ethereum/src'
 import { AggregateMessageClient } from '../../src'
-import {delay} from "@aleph-sdk/core";
+import { delay } from '@aleph-sdk/core'
 
 describe('Aggregate message update test', () => {
   const client = new AggregateMessageClient()

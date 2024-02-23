@@ -1,7 +1,5 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, ChainRef, ItemType, SignedMessage } from '../types/messages'
-
-export type PostMessage<T> = SignedMessage<PostContent<T>>
+import { BaseContent, ChainRef, ItemType } from '../types/base'
 
 export type PostContent<T> = BaseContent & {
   content?: T

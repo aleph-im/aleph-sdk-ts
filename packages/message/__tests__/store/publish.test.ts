@@ -9,7 +9,6 @@ export function ArraybufferToString(ab: ArrayBuffer): string {
 describe('Store message publish', () => {
   const store = new StoreMessageClient()
 
-
   it('should store a file and retrieve it correctly', async () => {
     const { account } = ethereum.newAccount()
     const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')

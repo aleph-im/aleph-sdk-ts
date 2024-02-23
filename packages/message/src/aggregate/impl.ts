@@ -8,10 +8,9 @@ import {
   AggregateContent,
   AggregateGetConfiguration,
   AggregateGetResponse,
-  AggregateMessage,
   AggregatePublishConfiguration,
 } from './types'
-import { ItemType } from '../types'
+import { ItemType, AggregateMessage } from '../types'
 import { MessageNotFoundError } from '../types/errors'
 
 export class AggregateMessageClient {

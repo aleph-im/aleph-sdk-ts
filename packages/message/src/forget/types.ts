@@ -1,7 +1,5 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, ItemType, SignedMessage } from '../types/messages'
-
-export type ForgetMessage = SignedMessage<ForgetContent>
+import { BaseContent, ItemType } from '../types/base'
 
 export type ForgetContent = BaseContent & {
   hashes: string[]

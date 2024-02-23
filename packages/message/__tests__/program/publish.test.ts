@@ -10,7 +10,7 @@ describe('Test the program message', () => {
 
     const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
 
-    const res = await program.send({
+    const res = await program.publish({
       account: account,
       channel: 'TEST',
       file: fileContent,
@@ -24,7 +24,7 @@ describe('Test the program message', () => {
   it('Spawn a program', async () => {
     const { account } = ethereum.newAccount()
 
-    const res = await program.send({
+    const res = await program.publish({
       account: account,
       channel: 'TEST',
       entrypoint: 'main:app',
@@ -38,7 +38,7 @@ describe('Test the program message', () => {
   it('Spawn a persistent program', async () => {
     const { account } = ethereum.newAccount()
 
-    const res = await program.send({
+    const res = await program.publish({
       account: account,
       channel: 'TEST',
       isPersistent: true,
@@ -53,7 +53,7 @@ describe('Test the program message', () => {
   it('Spawn a program with custom metadata', async () => {
     const { account } = ethereum.newAccount()
 
-    const res = await program.send({
+    const res = await program.publish({
       account: account,
       channel: 'TEST',
       entrypoint: 'main:app',
@@ -73,7 +73,7 @@ describe('Test the program message', () => {
     const { account } = ethereum.newAccount()
 
     await expect(
-      program.send({
+      program.publish({
         account: account,
         channel: 'TEST',
         entrypoint: 'main:app',

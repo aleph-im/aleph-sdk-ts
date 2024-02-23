@@ -1,10 +1,10 @@
-import { DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
+import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
 import { defaultResources, defaultExecutionEnvironment } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
-import { InstancePublishConfiguration, InstanceContent, InstanceMessage } from './types'
-import { ItemType, MachineVolume, VolumePersistence } from '../types'
+import { InstancePublishConfiguration, InstanceContent } from './types'
+import { InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
 
 export class InstanceMessageClient {
   apiServer: string
@@ -27,7 +27,11 @@ export class InstanceMessageClient {
     image = '549ec451d9b099cad112d4aaa2c00ac40fb6729a92ff252ff22eef0b5c3cb613',
     volumes = [],
     storageEngine = ItemType.ipfs,
-    sync = false,
+    payment = {
+      chain: Blockchain.ETH,
+      type: PaymentType.hold,
+    },
+    sync = true,
   }: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000
     const { address } = account
@@ -63,6 +67,7 @@ export class InstanceMessageClient {
       resources: mergedResources,
       environment: mergedEnvironment,
       rootfs,
+      payment,
     }
 
     const builtMessage = buildInstanceMessage({

@@ -1,6 +1,6 @@
 import { ForgetMessageClient, PostMessageClient } from '../../src'
 import * as ethereum from '../../../ethereum/src'
-import {delay} from "@aleph-sdk/core";
+import { delay } from '@aleph-sdk/core'
 
 describe('Forget publish tests', () => {
   const postType = 'TS Forget Test'

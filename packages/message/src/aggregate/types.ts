@@ -1,7 +1,5 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, ItemType, SignedMessage } from '../types/messages'
-
-export type AggregateMessage<T> = SignedMessage<AggregateContent<T>>
+import { BaseContent, ItemType } from '../types/base'
 
 export type AggregateContentKey = {
   name: string

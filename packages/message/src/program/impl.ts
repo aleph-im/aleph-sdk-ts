@@ -1,19 +1,17 @@
-import { DEFAULT_API_V2, RequireOnlyOne, stripTrailingSlash } from '@aleph-sdk/core'
+import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
 import { buildProgramMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 import {
-  ProgramPublishConfiguration,
   ProgramSpawnConfiguration,
   Encoding,
   FunctionTriggers,
   ProgramContent,
-  MachineType,
-  ProgramMessage,
+  ProgramPublishConfiguration,
 } from './types'
 import { StoreMessageClient } from '../store'
 import { BaseMessageClient } from '../base'
-import { ItemType, MessageType } from '../types'
+import { ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
 
 export class ProgramMessageClient {
   apiServer: string
@@ -30,16 +28,11 @@ export class ProgramMessageClient {
     this.storeMessageClient = storeMessageClient || new StoreMessageClient(apiServer)
   }
 
-  // TODO: Check that program_ref, runtime and data_ref exist
-  // Guard some numbers values
-  async send({
+  async publish({
     account,
     channel,
     metadata,
     isPersistent = false,
-    allowAmend = false,
-    internet = true,
-    alephApi = true,
     storageEngine = ItemType.ipfs,
     file,
     programRef,
@@ -51,9 +44,12 @@ export class ProgramMessageClient {
     runtime = 'bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4',
     volumes = [],
     variables = {},
-    timeoutSeconds = 30,
-    sync = false,
-  }: RequireOnlyOne<ProgramPublishConfiguration, 'programRef' | 'file'>): Promise<ProgramMessage> {
+    payment = {
+      chain: Blockchain.ETH,
+      type: PaymentType.hold,
+    },
+    sync = true,
+  }: ProgramPublishConfiguration): Promise<ProgramMessage> {
     const timestamp = Date.now() / 1000
     if (!programRef && !file) throw new Error('You need to specify a file to upload or a programRef to load.')
     if (programRef && file) throw new Error("You can't load a file and a programRef at the same time.")
@@ -90,7 +86,7 @@ export class ProgramMessageClient {
       address: account.address,
       time: timestamp,
       type: MachineType.vm_function,
-      allow_amend: allowAmend,
+      allow_amend: false,
       code: {
         encoding, // retrieve the file format or params
         entrypoint: entrypoint,
@@ -101,22 +97,23 @@ export class ProgramMessageClient {
       on: triggers,
       environment: {
         reproducible: false,
-        internet: internet,
-        aleph_api: alephApi,
+        internet: true,
+        aleph_api: true,
         shared_cache: false,
       },
       resources: {
         vcpus,
         memory,
-        seconds: timeoutSeconds,
+        seconds: 30,
       },
       runtime: {
         ref: runtime,
         use_latest: true,
         comment: 'Aleph Alpine Linux with Python 3.8',
       },
-      volumes: volumes,
+      volumes,
       variables,
+      payment,
     }
 
     const builtMessage = buildProgramMessage({
@@ -151,14 +148,19 @@ export class ProgramMessageClient {
     programRef,
     entrypoint,
     encoding = Encoding.zip,
-    subscription,
+    subscriptions,
     memory = 128,
     vcpus = 1,
     runtime = 'bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4',
     volumes = [],
     variables = {},
+    payment = {
+      chain: Blockchain.ETH,
+      type: PaymentType.hold,
+    },
+    sync = true,
   }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
-    return this.send({
+    return await this.publish({
       account,
       channel,
       metadata,
@@ -167,12 +169,14 @@ export class ProgramMessageClient {
       programRef,
       entrypoint,
       encoding,
-      subscriptions: subscription,
+      subscriptions,
       memory,
       vcpus,
       runtime,
       volumes,
       variables,
+      payment,
+      sync,
     })
   }
 }

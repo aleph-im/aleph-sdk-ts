@@ -1,7 +1,5 @@
 import { Account } from '@aleph-sdk/account'
-import { BaseContent, ItemType, SignedMessage } from '../types/messages'
-
-export type StoreMessage = SignedMessage<StoreContent>
+import { BaseContent, ItemType } from '../types/base'
 
 export type StoreContent = BaseContent & {
   item_type: string

@@ -4,7 +4,7 @@ import FormDataNode from 'form-data'
 
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
-import {InvalidMessageError} from "../types/errors";
+import { InvalidMessageError } from '../types/errors'
 
 /**
  * message:         The message to update and then publish.
