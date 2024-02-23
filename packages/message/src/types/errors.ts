@@ -20,15 +20,7 @@ export class BroadcastError extends Error {
     let processedErrors: string[] = []
     if (errors instanceof AxiosError) {
       processedErrors.push(errors.message)
-      processedErrors.push(errors.cause?.message || '')
-      if (errors.response?.data) {
-        if (typeof errors.response.data === 'string') {
-          processedErrors.push(errors.response.data)
-        } else
-          for (const error of errors.response.data as any[]) {
-            processedErrors.push(JSON.stringify(error))
-          }
-      }
+      processedErrors.push(JSON.stringify(errors, null, 2))
     } else if (errors instanceof Array) {
       processedErrors = errors
     } else {
