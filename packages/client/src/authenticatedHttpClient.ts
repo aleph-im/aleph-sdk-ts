@@ -12,7 +12,7 @@ import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
 
 export class AuthenticatedAlephHttpClient extends AlephHttpClient {
   account: Account
-  constructor(apiServer: string = DEFAULT_API_V2, account: Account) {
+  constructor(account: Account, apiServer: string = DEFAULT_API_V2) {
     super(apiServer)
     this.account = account
   }
