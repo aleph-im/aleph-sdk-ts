@@ -8,7 +8,6 @@ import commonjs from '@rollup/plugin-commonjs'
 import typescript from '@rollup/plugin-typescript'
 import terser from '@rollup/plugin-terser'
 import dts from 'rollup-plugin-dts'
-import sourcemaps from 'rollup-plugin-sourcemaps'
 import del from 'rollup-plugin-delete'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import json from '@rollup/plugin-json'
@@ -57,7 +56,6 @@ export default [
         sourceMap: true,
         inlineSources: false,
       }),
-      sourcemaps(),
       terser(),
     ],
   },
@@ -92,7 +90,6 @@ export default [
         sourceMap: true,
         inlineSources: false,
       }),
-      sourcemaps(),
       terser(),
     ],
     onwarn: (warning, next) => {
