@@ -13,7 +13,7 @@ import {
   MessageType,
 } from '@aleph-sdk/message'
 
-class AlephHttpClient {
+export class AlephHttpClient {
   postClient: PostMessageClient
   forgetClient: ForgetMessageClient
   aggregateClient: AggregateMessageClient
