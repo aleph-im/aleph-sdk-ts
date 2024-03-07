@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
-  "browser": "dist/iife/index.min.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
