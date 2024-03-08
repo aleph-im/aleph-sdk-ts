@@ -1,0 +1,35 @@
+{
+  "name": "@aleph-sdk/solana",
+  "version": "1.0.0-rc.1",
+  "description": "",
+  "main": "dist/cjs/index.min.cjs",
+  "module": "dist/esm/index.min.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/bs58": "^4.0.1"
+  },
+  "dependencies": {
+    "@aleph-sdk/account": "1.0.0-rc.1",
+    "@aleph-sdk/core": "1.0.0-rc.1",
+    "@solana/web3.js": "^1.90.0",
+    "bs58": "^5.0.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/account": "1.0.0-rc.1",
+    "@aleph-sdk/core": "1.0.0-rc.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup  -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "license": "ISC"
+}

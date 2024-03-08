@@ -1,0 +1,31 @@
+{
+  "name": "@aleph-sdk/cosmos",
+  "version": "1.0.0-rc.1",
+  "description": "",
+  "main": "dist/cjs/index.min.cjs",
+  "module": "dist/esm/index.min.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aleph-sdk/account": "1.0.0-rc.1",
+    "@aleph-sdk/core": "1.0.0-rc.1",
+    "@cosmjs/amino": "^0.32.2",
+    "elliptic": "^6.5.4"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/account": "1.0.0-rc.1",
+    "@aleph-sdk/core": "1.0.0-rc.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup  -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "license": "ISC"
+}

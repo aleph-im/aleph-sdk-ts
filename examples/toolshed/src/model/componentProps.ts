@@ -1,11 +1,11 @@
-import { ActionType, AppStateType } from "../reducer";
+import { ActionType, AppStateType } from '../reducer'
 
 export type consumeProps = {
-    state: AppStateType;
-};
+  state: AppStateType
+}
 
 export type dispatchProps = {
-    dispatch: React.Dispatch<ActionType>;
-};
+  dispatch: React.Dispatch<ActionType>
+}
 
-export type dispatchAndConsume = consumeProps & dispatchProps;
+export type dispatchAndConsume = consumeProps & dispatchProps
