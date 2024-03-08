@@ -67,8 +67,17 @@ export class AlephHttpClient {
    *
    * @param config The configuration used to fetch a post message.
    */
-  async getPosts<T = any>(config: PostGetConfiguration) {
+  async getPost<T = any>(config: PostGetConfiguration) {
     return await this.postClient.get<T>(config)
+  }
+
+  /**
+   * Fetches multiple POST messages on the Aleph network. POST messages are used to store arbitrary JSON data on the Aleph network.
+   *
+   * @param config The configuration used to fetch a post message.
+   */
+  async getPosts<T = any>(config: PostGetConfiguration) {
+    return await this.postClient.getAll<T>(config)
   }
 
   /**
@@ -94,7 +103,7 @@ export class AlephHttpClient {
    *
    * @param itemHash The hash of the message to fetch.
    */
-  async get_message<T extends MessageType | 'any' = 'any', Content = any>(itemHash: string) {
+  async getMessage<T extends MessageType | 'any' = 'any', Content = any>(itemHash: string) {
     return await this.messageClient.get<T, Content>({ hash: itemHash })
   }
 
