@@ -1,5 +1,5 @@
 import Select, { SingleValue } from 'react-select'
-import {HardwareChains, KeypairChains, WalletChains} from '../model/chains'
+import { HardwareChains, KeypairChains, WalletChains } from '../model/chains'
 import { dispatchProps } from '../model/componentProps'
 import { Actions } from '../reducer'
 
@@ -8,7 +8,6 @@ type Option = {
   readonly value: string
   readonly isDisabled?: boolean
 }
-
 
 export const availableKeypairs: Option[] = [
   { label: 'Avalanche', value: KeypairChains.Avalanche },
@@ -26,9 +25,7 @@ export const availableWallets: Option[] = [
   { label: 'Solana (via Phantom)', value: WalletChains.Solana },
 ]
 
-export const availableHardware: Option[] = [
-  { label: 'Ethereum (via Ledger)', value: HardwareChains.Ethereum },
-]
+export const availableHardware: Option[] = [{ label: 'Ethereum (via Ledger)', value: HardwareChains.Ethereum }]
 
 export const options = [
   { label: 'Hardware', options: availableHardware },
@@ -36,19 +33,17 @@ export const options = [
   { label: 'Keypairs', options: availableKeypairs },
 ]
 
-function SelectProvider({dispatch}: dispatchProps) {
-  const handleChange = (x: SingleValue<Option> ) => { 
+function SelectProvider({ dispatch }: dispatchProps) {
+  const handleChange = (x: SingleValue<Option>) => {
     dispatch({
       type: Actions.SELECT_CHAIN,
-      payload: x?.value
+      payload: x?.value,
     })
   }
 
   return (
     <div>
-      <Select options={options} 
-              defaultValue={availableKeypairs[0]}
-              onChange={handleChange} />
+      <Select options={options} defaultValue={availableKeypairs[0]} onChange={handleChange} />
     </div>
   )
 }
