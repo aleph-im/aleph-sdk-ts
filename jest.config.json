@@ -3,5 +3,6 @@
   "testEnvironment": "node",
   "testPathIgnorePatterns": [
     "<rootDir>/cypress/"
-  ]
+  ],
+  "coverageReporters": ["text-summary", "html"]
 }

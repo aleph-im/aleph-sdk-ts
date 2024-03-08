@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/monorepo",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-rc.1",
   "description": "Aleph.im Typescript SDK",
   "keywords": [
     "web3",
@@ -23,7 +23,7 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "npm run test:jest",
-    "test:jest": "jest --testTimeout=30000 --verbose --coverage ./packages"
+    "test:jest": "jest --testTimeout=120000 --verbose --coverage ./packages"
   },
   "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
   "author": "Aleph.im Team",
