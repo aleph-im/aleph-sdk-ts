@@ -113,18 +113,19 @@ export class BaseMessageClient {
     startDate,
     endDate,
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
+    const any = (value: any) => value && value.length > 0
     const params: GetMessagesParams = {
       pageSize,
       page,
-      addresses: addresses ? addresses.join(',') : undefined,
-      channels: channels ? channels.join(',') : undefined,
-      chains: chains ? chains.join(',') : undefined,
-      refs: refs ? refs.join(',') : undefined,
-      tags: tags ? tags.join(',') : undefined,
-      contentTypes: contentTypes ? contentTypes.join(',') : undefined,
-      contentKeys: contentKeys ? contentKeys.join(',') : undefined,
-      hashes: hashes ? hashes.join(',') : undefined,
-      msgTypes: messageTypes?.join(',') || undefined,
+      addresses: any(addresses) ? addresses.join(',') : undefined,
+      channels: any(channels) ? channels.join(',') : undefined,
+      chains: any(chains) ? chains.join(',') : undefined,
+      refs: any(refs) ? refs.join(',') : undefined,
+      tags: any(tags) ? tags.join(',') : undefined,
+      contentTypes: any(contentTypes) ? contentTypes.join(',') : undefined,
+      contentKeys: any(contentKeys) ? contentKeys.join(',') : undefined,
+      hashes: any(hashes) ? hashes.join(',') : undefined,
+      msgTypes: any(messageTypes) ? messageTypes?.join(',') : undefined,
       startDate: startDate ? startDate.valueOf() / 1000 : undefined,
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }

@@ -55,15 +55,16 @@ export class PostMessageClient {
     tags = [],
     hashes = [],
   }: PostGetConfiguration): Promise<PostQueryResponse<T>> {
+    const any = (value: any) => value && value.length > 0
     const params: PostQueryParams = {
       types: types,
       pageSize: pageSize as number,
       page: page as number,
-      refs: refs?.join(',') || undefined,
-      addresses: addresses?.join(',') || undefined,
-      tags: tags?.join(',') || undefined,
-      hashes: hashes?.join(',') || undefined,
-      channels: channels?.join(',') || undefined,
+      refs: any(refs) ? refs?.join(',') : undefined,
+      addresses: any(addresses) ? addresses?.join(',') : undefined,
+      tags: any(tags) ? tags?.join(',') : undefined,
+      hashes: any(hashes) ? hashes?.join(',') : undefined,
+      channels: any(channels) ? channels?.join(',') : undefined,
     }
 
     const response = (await axios.get<PostQueryResponse<T>>(`${this.apiServer}/api/v0/posts.json`, {
