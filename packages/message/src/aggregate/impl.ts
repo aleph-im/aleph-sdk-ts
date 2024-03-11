@@ -105,4 +105,4 @@ export class AggregateMessageClient {
   }
 }
 
-export default AggregateMessage
+export default AggregateMessageClient

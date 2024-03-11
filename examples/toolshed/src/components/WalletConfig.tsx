@@ -44,8 +44,8 @@ function WalletConfig({ dispatch, state }: dispatchAndConsume) {
     try {
       const account =
         state.selectedChain === WalletChains.Ethereum
-          ? await _account.GetAccountFromProvider(provider, customEndpoint)
-          : await _account.GetAccountFromProvider(provider)
+          ? await _account.getAccountFromProvider(provider, customEndpoint)
+          : await _account.getAccountFromProvider(provider)
       dispatch({
         type: Actions.SET_ACCOUNT,
         payload: account,

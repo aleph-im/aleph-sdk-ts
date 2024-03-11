@@ -4,12 +4,18 @@ This tool is intended as a quick demo to send message on the Aleph.im network us
 
 ## Setup
 
-```
-You must install all the dependencies from the typescript sdk at the root of the project before running it
+You must install all the dependencies from the typescript sdk at the root of the project before running it.
 
-# install dependencies
+```shell
+# assumes you are in the root of the project
+npm install && npm build
+
+# now we can go to the toolshed example
+cd examples/toolshed
+
+# install its dependencies
 npm install
 
-# Launches the app in your default browser
+# and run the example
 npm run dev
 ```
