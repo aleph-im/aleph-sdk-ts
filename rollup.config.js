@@ -58,24 +58,28 @@ export default [
         inlineDynamicImports: true,
       },
     ],
+    external: ['@taquito/taquito', '@ledgerhq/live-env'],
     plugins: [
-      nodePolyfills(),
       json(),
-      peerDepsExternal({
-        includeDependencies: true,
-      }),
+      peerDepsExternal(),
       resolve({
         extensions: ['.ts', '.js', '.mjs'],
-        preferBuiltins: true,
+        preferBuiltins: false,
         browser: true,
       }),
-      commonjs(),
+      commonjs({
+        include: /node_modules/,
+        transformMixedEsModules: true,
+      }),
       typescript({
         tsconfig,
         sourceMap: true,
         inlineSources: true,
       }),
       fixSourcemap(),
+      nodePolyfills({
+        include: null,
+      }),
       terser(),
     ],
   },
