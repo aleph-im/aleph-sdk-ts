@@ -45,3 +45,9 @@ export type JSExecutionEnvironment = 'node' | 'browser'
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
+
+export function gigabyteToMebibyte(n: number): number {
+  const mebibyte = 2 ** 20
+  const gigabyte = 10 ** 9
+  return Math.ceil((n * gigabyte) / mebibyte)
+}

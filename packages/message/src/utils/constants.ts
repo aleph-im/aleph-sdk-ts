@@ -1,4 +1,5 @@
 import { FunctionEnvironment, MachineResources } from '../types'
+import { gigabyteToMebibyte } from '@aleph-sdk/core'
 
 export const defaultExecutionEnvironment: FunctionEnvironment = {
   reproducible: false,
@@ -12,3 +13,5 @@ export const defaultResources: MachineResources = {
   vcpus: 1,
   seconds: 30,
 }
+
+export const MAXIMUM_DISK_SIZE = gigabyteToMebibyte(100)
