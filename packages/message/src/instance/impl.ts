@@ -1,5 +1,5 @@
 import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
-import { defaultResources, defaultExecutionEnvironment } from '../utils/constants'
+import { defaultResources, defaultExecutionEnvironment, MAXIMUM_DISK_SIZE } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
@@ -46,13 +46,15 @@ export class InstanceMessageClient {
       ...environment,
     }
 
+    const size_mib = mergedResources.memory * 10 > MAXIMUM_DISK_SIZE ? MAXIMUM_DISK_SIZE : mergedResources.memory * 10
+
     const rootfs = {
       parent: {
         ref: image as string,
         use_latest: true,
       },
       persistence: VolumePersistence.host,
-      size_mib: mergedResources.memory * 10,
+      size_mib,
     }
 
     const instanceContent: InstanceContent = {
