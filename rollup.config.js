@@ -49,6 +49,7 @@ const fixSourcemap = () => {
 
 export default [
   {
+    external: ['dns'],
     input: 'src/index.ts',
     output: [
       {
@@ -74,6 +75,7 @@ export default [
         tsconfig,
         sourceMap: true,
         inlineSources: true,
+        exclude: ['**/__tests__', '**/*.test.ts'],
       }),
       fixSourcemap(),
       terser(),
@@ -104,6 +106,7 @@ export default [
         tsconfig,
         sourceMap: true,
         inlineSources: true,
+        exclude: ['**/__tests__', '**/*.test.ts'],
       }),
       fixSourcemap(),
       terser(),
