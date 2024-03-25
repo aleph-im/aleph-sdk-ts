@@ -7,7 +7,7 @@ import {
   ALEPH_SUPERFLUID_MAINNET,
   SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL,
   SUPERFLUID_MAINNET_SUBGRAPH_URL,
-} from '@aleph-sdk/core'
+} from './constants'
 import { Decimal } from 'decimal.js'
 import { BaseProviderWallet } from '@aleph-sdk/account'
 
