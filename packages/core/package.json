@@ -1,7 +1,7 @@
 {
   "name": "@aleph-sdk/core",
   "version": "1.0.0-rc2",
-  "description": "",
+  "description": "Shared utilities and constants for @aleph-sdk",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
   "types": "dist/index.d.ts",
@@ -17,5 +17,7 @@
     "build": "npm run rollup"
   },
   "author": "",
-  "license": "ISC"
+  "homepage": "https://aleph.im",
+  "bugs": "https://github.com/aleph-im/aleph-sdk-ts/issues",
+  "license": "MIT"
 }

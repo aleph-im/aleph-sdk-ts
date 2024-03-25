@@ -20,9 +20,9 @@ export abstract class Account {
 
 /**
  * The ECIESAccount class is used to implement protocols using secp256k1's curve.
- * It extends the Account class by exposing an encryption publicKey and method
+ * It extends the Account class by exposing an encryption publicKey.
  *
- * All inherited classes of ECIESAccount must implement the encrypt methods and expose a publicKey.
+ * Encryption has been removed as of the v1.0.0 release but will find its way back into the SDK.
  */
 export abstract class ECIESAccount extends Account {
   public publicKey: string | undefined

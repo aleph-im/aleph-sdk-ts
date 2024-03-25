@@ -1,7 +1,7 @@
 {
   "name": "@aleph-sdk/superfluid",
   "version": "1.0.0-rc2",
-  "description": "",
+  "description": "Aleph.im account wrapper for interacting with the Superfluid Avalanche Contract",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
   "types": "dist/index.d.ts",
@@ -23,17 +23,13 @@
     "avalanche": "1.0.3",
     "decimal.js": "^10.4.3"
   },
-  "peerDependencies": {
-    "@aleph-sdk/account": "1.0.0-rc.1",
-    "@aleph-sdk/avalanche": "1.0.0-rc.1",
-    "@aleph-sdk/core": "1.0.0-rc.1",
-    "@aleph-sdk/evm": "1.0.0-rc.1"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "rollup": "rollup  -c ../../rollup.config.js",
     "build": "npm run rollup"
   },
   "author": "",
-  "license": "ISC"
+  "homepage": "https://aleph.im",
+  "bugs": "https://github.com/aleph-im/aleph-sdk-ts/issues",
+  "license": "MIT"
 }

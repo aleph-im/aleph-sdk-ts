@@ -1,7 +1,7 @@
 {
   "name": "@aleph-sdk/nuls2",
   "version": "1.0.0-rc2",
-  "description": "",
+  "description": "Nuls2 accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
   "types": "dist/index.d.ts",
@@ -28,15 +28,13 @@
     "secp256k1": "^5.0.0",
     "sha.js": "^2.4.11"
   },
-  "peerDependencies": {
-    "@aleph-sdk/account": "1.0.0-rc.1",
-    "@aleph-sdk/core": "1.0.0-rc.1"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "rollup": "rollup  -c ../../rollup.config.js",
     "build": "npm run rollup"
   },
   "author": "",
-  "license": "ISC"
+  "homepage": "https://aleph.im",
+  "bugs": "https://github.com/aleph-im/aleph-sdk-ts/issues",
+  "license": "MIT"
 }

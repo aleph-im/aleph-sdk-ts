@@ -16,7 +16,11 @@ Each chain has its own package:
 
 so that you can only install the packages and dependencies you need.
 
-This particular client package is a wrapper arount [@aleph-sdk/message](https://npmjs.com/package/@aleph-sdk/message) and delivers a similar interface to the more developed [Python SDK](https://pypi.org/project/aleph-sdk-python/).
+This particular client package is a wrapper arount [@aleph-sdk/message](https://npmjs.com/package/@aleph-sdk/message) and delivers a similar interface to the exemplary [Python SDK](https://pypi.org/project/aleph-sdk-python/).
+
+Additional domain and DNS-related functions can be found in [@aleph-sdk/dns](https://npmjs.com/package/@aleph-sdk/dns) or in the [official docs](https://docs.aleph.im/computing/custom_domain/setup/).
+
+Establishing [ALEPH streams to create VPS instances](https://docs.aleph.im/libraries/typescript-sdk/instances/) using Superfluid on Avalanche can be done with [@aleph-sdk/superfluid](https://npmjs.com/package/@aleph-sdk/superfluid).
 
 ## Installation
 
