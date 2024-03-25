@@ -22,18 +22,20 @@ This is the list of currently supported Account types. For each of them you can:
 
 -   Retrieve an account from a private key or mnemonic (or generate one on the fly).
 -   Sign and send messages on the Aleph Network
+-   Some allow you to retrieve an account from a **browser based** wallet (ex: Metamask), or from a **Ledger** wallet.
 
-On top of that some accounts allow you to **encrypt** messages, retrieve an account from a **browser based** wallet (ex: Metamask), or from a **Ledger** wallet.
+[Previous versions](https://npmjs.com/package/aleph-sdk-ts) of the Typescript SDK allowed you to **encrypt** messages.
+This has been 
 
-| Chain     | Encryption         | Wallet             | Ledger             |
-| --------- | ------------------ | ------------------ | ------------------ |
-| Avalanche | :heavy_check_mark: | :heavy_check_mark: | :x:                |
-| Cosmos    | :x:                | :x:                | :x:                |
-| Ethereum  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| NULS2     | :heavy_check_mark: | :x:                | :x:                |
-| Solana    | :x:                | :heavy_check_mark: | :x:                |
-| Substrate | :heavy_check_mark: | :x:                | :x:                |
-| Tezos     | :x:                | :heavy_check_mark: | :x:                |
+| Chain                | Encryption | Browser Wallet     | Ledger             |
+|----------------------|------------|--------------------| ------------------ |
+| Avalanche            | :x:        | :heavy_check_mark: | :x:                |
+| Cosmos               | :x:        | :heavy_check_mark: | :x:                |
+| Ethereum             | :x:        | :heavy_check_mark: | :heavy_check_mark: |
+| NULS2                | :x:        | :x:                | :x:                |
+| Solana               | :x:        | :heavy_check_mark: | :x:                |
+| Substrate (Polkadot) | :x:        | :heavy_check_mark: | :x:                |
+| Tezos                | :x:        | :heavy_check_mark: | :x:                |
 
 ## Running from source
 
@@ -60,7 +62,8 @@ This SDK is tested and works, with the following Node.js versions:
 | -- | -- |
 | v14.x | :heavy_check_mark: **Full working support** |
 | v16.x | :heavy_check_mark: **Full working support** |
-| v18.x (**LTS**) | :heavy_multiplication_x: Some feature may not work (see notes) |
+| v18.x | :heavy_multiplication_x: Some feature may not work (see notes) |
+| v20.x (**LTS**)
 
 \* Due to changes in OpenSSL in Node v18, some chains helper may not work. If you encounter bugs using Node v18, you might want to consider using the `--openssl-legacy-provider` feature flag while running your project.
 
