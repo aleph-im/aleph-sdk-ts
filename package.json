@@ -88,6 +88,7 @@
     "packages/substrate",
     "packages/evm",
     "packages/superfluid",
-    "packages/client"
+    "packages/client",
+    "packages/dns"
   ]
 }
