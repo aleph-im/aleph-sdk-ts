@@ -40,14 +40,14 @@ function KeypairConfig({ state, dispatch }: dispatchAndConsume) {
     let method = _account.importAccountFromPrivateKey
 
     if (mnemonicOrPk.match(' ')) {
-      // @ts-ignore
+      // @ts-expect-error: There might be accounts for which this function isn't implemented.
       if (!_account.importAccountFromMnemonic) return alert('This account cannot be imported from a mnemonic')
 
-      // @ts-ignore
+      // @ts-expect-error: There might be accounts for which this function isn't implemented.
       method = _account.importAccountFromMnemonic
     }
     try {
-      // @ts-ignore
+      // @ts-expect-error: There might be accounts for which this function isn't implemented.
       const account = await method(mnemonicOrPk)
       dispatch({
         type: Actions.SET_ACCOUNT,
