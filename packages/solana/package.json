@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/solana",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "description": "Solana accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -15,8 +15,8 @@
     "@types/bs58": "^4.0.1"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^1.0.0-rc2",
-    "@aleph-sdk/core": "^1.0.0-rc2",
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0",
     "@solana/web3.js": "^1.90.0",
     "bs58": "^5.0.0",
     "tweetnacl": "^1.0.3"

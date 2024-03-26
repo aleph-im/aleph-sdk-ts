@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/substrate",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "description": "Polkadot/Substrate-based accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -12,8 +12,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^1.0.0-rc2",
-    "@aleph-sdk/core": "^1.0.0-rc2",
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0",
     "@polkadot/extension-dapp": "^0.46.6",
     "@polkadot/extension-inject": "^0.46.6",
     "@polkadot/keyring": "^12.6.2",

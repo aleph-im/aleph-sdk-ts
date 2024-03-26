@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/message",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "description": "Aleph.im message CRUD API",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -15,8 +15,8 @@
     "@types/sha.js": "^2.4.4"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^1.0.0-rc2",
-    "@aleph-sdk/core": "^1.0.0-rc2",
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0",
     "axios": "^1.5.1",
     "form-data": "^4.0.0",
     "sha.js": "^2.4.11"

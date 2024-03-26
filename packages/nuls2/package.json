@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/nuls2",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "description": "Nuls2 accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -18,8 +18,8 @@
     "@types/sha.js": "^2.4.0"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^1.0.0-rc2",
-    "@aleph-sdk/core": "^1.0.0-rc2",
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
     "bs58": "^5.0.0",

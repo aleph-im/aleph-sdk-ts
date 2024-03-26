@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/account",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "description": "Common interfaces for accounts compatible with aleph.im.",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -12,7 +12,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@aleph-sdk/core": "^1.0.0-rc2"
+    "@aleph-sdk/core": "^1.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
