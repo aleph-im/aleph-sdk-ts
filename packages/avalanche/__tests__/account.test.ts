@@ -1,10 +1,19 @@
-import { EthereumMockProvider } from '../../evm/src'
+import {EthereumMockProvider} from '../../evm/src'
 import * as avalanche from '../src'
-import { EphAccount } from '../../account/src'
-import { HashedMessage, ItemType, PostContent, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
+import {EphAccount} from '../../account/src'
+import {
+  HashedMessage,
+  ItemType,
+  PostContent,
+  PostMessageBuilder,
+  prepareAlephMessage,
+  PublishedMessage,
+} from '../../message/src'
+import * as validMessage from './message.json'
+import {getKeyPair} from "../src/utils";
 
 async function createEphemeralAvax(): Promise<EphAccount> {
-  const keypair = await avalanche.getKeyPair()
+  const keypair = await getKeyPair()
 
   return {
     address: keypair.getAddressString(),
@@ -110,6 +119,12 @@ describe('Avalanche accounts', () => {
   //     expect(amends.posts[0].content).toStrictEqual(content)
   //   })
   // })
+
+  it('Should verify the valid message.json', async () => {
+    const message = new PublishedMessage(validMessage)
+    const verif = await avalanche.verifyAvalanche(message, message.signature, message.sender)
+    expect(verif).toStrictEqual(true)
+  })
 
   it('Should success to verif the authenticity of a signature', async () => {
     const { account } = await avalanche.newAccount()

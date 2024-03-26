@@ -49,7 +49,7 @@ const fixSourcemap = () => {
 
 export default [
   {
-    external: ['dns'],
+    external: ['dns', 'crypto'],
     input: 'src/index.ts',
     output: [
       {

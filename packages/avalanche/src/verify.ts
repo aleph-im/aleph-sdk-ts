@@ -1,15 +1,5 @@
 import { SignableMessage } from '@aleph-sdk/account'
-import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
-import shajs from 'sha.js'
-
-export function digestMessage(message: Uint8Array): Uint8Array {
-  const msgSize = Buffer.alloc(4)
-  msgSize.writeUInt32BE(message.length, 0)
-  const msgStr = Buffer.from(message).toString('utf-8')
-  const msgBuf = Buffer.from(`\x1AAvalanche Signed Message:\n${msgSize}${msgStr}`, 'utf8')
-
-  return new shajs.sha256().update(msgBuf).digest()
-}
+import { digestMessage, getAddressFromPkey, recover, splitSig } from './utils'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
@@ -31,16 +21,10 @@ export async function verifyAvalanche(
       throw Error(`Cannot sign message: ${message}`)
     }
   }
-  const ava = new Avalanche()
-  const keyPair = ava.XChain().keyChain().makeKey()
+  const signatureObj = splitSig(signature)
+  const digestBuff = await digestMessage(message)
 
-  const bintools = BinTools.getInstance()
-  const readableSignature = bintools.cb58Decode(signature)
-
-  const digest = Buffer.from(await digestMessage(message))
-  const digestHex = digest.toString('hex')
-  const digestBuff = AvaBuff.from(digestHex, 'hex')
-
-  const recovered = keyPair.recover(digestBuff, readableSignature)
-  return signerPKey === recovered.toString('hex')
+  const { pubkBuff } = recover(digestBuff, signatureObj)
+  const recoveredPkey = '0x'.concat(pubkBuff.toString('hex'))
+  return getAddressFromPkey(signerPKey) === getAddressFromPkey(recoveredPkey)
 }

@@ -1,13 +1,13 @@
-import { BinTools, Buffer as AvaBuff, AvalancheCore as Avalanche } from 'avalanche'
-import { KeyPair, KeyChain } from 'avalanche/dist/apis/avm'
+import { BinTools, Buffer as AvaBuff } from 'avalanche'
+import { KeyPair } from 'avalanche/dist/apis/avm'
 import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
 import { ethers, providers } from 'ethers'
-import { privateToAddress } from 'ethereumjs-util'
 
 import { Blockchain } from '@aleph-sdk/core'
-import { SignableMessage, BaseProviderWallet } from '@aleph-sdk/account'
-import { ChangeRpcParam, RpcId, EVMAccount, JsonRPCWallet } from '@aleph-sdk/evm'
-import { digestMessage, verifyAvalanche } from './verify'
+import { BaseProviderWallet, SignableMessage } from '@aleph-sdk/account'
+import { ChangeRpcParam, EVMAccount, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
+import { verifyAvalanche } from './verify'
+import { ChainType, digestMessage, getEVMAddress, getKeyPair } from './utils'
 
 /**
  * AvalancheAccount implements the Account class for the Avalanche protocol.
@@ -71,7 +71,8 @@ export class AvalancheAccount extends EVMAccount {
 
       const bintools = BinTools.getInstance()
       const signature = bintools.cb58Encode(signatureBuffer)
-      if (await verifyAvalanche(buffer, signature, this.keyPair.getPublicKey().toString('hex'))) return signature
+      if (await verifyAvalanche(buffer, signature, '0x'.concat(this.keyPair.getPublicKey().toString('hex'))))
+        return signature
 
       throw new Error('Cannot proof the integrity of the signature')
     } else if (this.wallet) {
@@ -80,38 +81,6 @@ export class AvalancheAccount extends EVMAccount {
 
     throw new Error('Cannot sign message')
   }
-}
-
-export enum ChainType {
-  C_CHAIN = 'C',
-  X_CHAIN = 'X',
-}
-
-/**
- * Get Key Chains
- * @param chain Avalanche chain type: c-chain | x-chain
- * @returns key chains
- */
-async function getKeyChain(chain = ChainType.X_CHAIN) {
-  return new KeyChain(new Avalanche().getHRP(), chain)
-}
-
-export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN): Promise<KeyPair> {
-  const keyChain = await getKeyChain(chain)
-  const keyPair = keyChain.makeKey()
-
-  if (privateKey) {
-    let keyBuff: AvaBuff
-    if (privateKey.startsWith('PrivateKey-')) {
-      const bintools = BinTools.getInstance()
-      keyBuff = bintools.cb58Decode(privateKey.split('-')[1])
-    } else {
-      keyBuff = AvaBuff.from(privateKey, 'hex')
-    }
-    if (keyPair.importKey(keyBuff)) return keyPair
-    throw new Error('Invalid private key')
-  }
-  return keyPair
 }
 
 /**
@@ -168,23 +137,6 @@ export async function getAccountFromProvider(
     return new AvalancheAccount(jrw, jrw.address)
   }
   throw new Error('Insufficient permissions')
-}
-
-/**
- * Retrieves the EVM compatible address for the current account.
- * This function works specifically with the C-Chain.
- *
- * If the current signer is not associated with the C-Chain,
- * the function throws an error.
- *
- * @returns A Promise that resolves to the EVM-style address of the account
- * @throws An error if the current signer is not associated with the C-Chain
- */
-function getEVMAddress(keypair: EVMKeyPair): string {
-  const pkHex = keypair.getPrivateKey().toString('hex')
-  const pkBuffNative = Buffer.from(pkHex, 'hex')
-  const ethAddress = privateToAddress(pkBuffNative).toString('hex')
-  return `0x${ethAddress}`
 }
 
 /**

@@ -12,6 +12,7 @@ import { ProgramContent } from '../program'
 import { PostContent } from '../post'
 import { ForgetContent } from '../forget'
 import { ItemType, MessageConfirmation, MessageType } from './base'
+import {InvalidMessageError} from "./errors";
 
 export type MessageContent<Content = any> =
   | PostContent<Content>
@@ -36,13 +37,13 @@ export interface MessageTypeMap<Content = any> {
 }
 
 export type BaseMessageProps<C extends MessageContent> = {
-  chain: Blockchain
+  chain: Blockchain | string
   sender: string
   channel?: string
   time: number
-  item_type: ItemType
+  item_type: ItemType | string
   content: C
-  type: keyof MessageTypeMap<C>
+  type: keyof MessageTypeMap<C> | string
 }
 
 export class BuiltMessage<C extends MessageContent> {
@@ -55,12 +56,18 @@ export class BuiltMessage<C extends MessageContent> {
   content: C
 
   constructor(props: BaseMessageProps<C>) {
-    this.chain = props.chain
+    if (!Object.values(Blockchain).includes(props.chain as Blockchain))
+      throw new InvalidMessageError([`${props.chain} is not a valid Blockchain`])
+    this.chain = props.chain as Blockchain
     this.sender = props.sender
     this.channel = props.channel
     this.time = props.time
-    this.item_type = props.item_type
+    if (!Object.values(ItemType).includes(props.item_type as ItemType))
+      throw new InvalidMessageError([`${props.item_type} is not a valid ItemType`])
+    this.item_type = props.item_type as ItemType
     this.content = props.content
+    if (!Object.values(MessageType).includes(props.type as MessageType))
+      throw new InvalidMessageError([`${props.type} is not a valid MessageType`])
     this.type = props.type
   }
 

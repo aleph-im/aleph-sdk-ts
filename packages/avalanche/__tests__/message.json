@@ -1,0 +1,28 @@
+{
+  "item_hash": "53dd4e79d9eeeb57f35fde9b4e83e460362fc7b6538e639a09fc492949e4bea0",
+  "type": "POST",
+  "chain": "AVAX",
+  "sender": "X-avax1kyqku38a3zjm4evqk4hnrfay9gvu47wkv0xtvs",
+  "signature": "2iFshWzaiyhuMcXtfQTnuUp8XysCxqsAAKbKebADF8Nou5SVF6F9BxVHEMEsoTazMpQrSFMdBKDVxL3gJS3oNp8FTsvEsmc",
+  "item_type": "inline",
+  "item_content": "{\"type\":\"avalanche\",\"address\":\"X-avax1kyqku38a3zjm4evqk4hnrfay9gvu47wkv0xtvs\",\"content\":{\"body\":\"This message was posted from the typescript-SDK test suite\"},\"time\":1708682878.725}",
+  "content": {
+    "time": 1708682878.725,
+    "type": "avalanche",
+    "address": "X-avax1kyqku38a3zjm4evqk4hnrfay9gvu47wkv0xtvs",
+    "content": {
+      "body": "This message was posted from the typescript-SDK test suite"
+    }
+  },
+  "time": 1708682878.725,
+  "channel": "TEST",
+  "size": 180,
+  "confirmations": [
+    {
+      "chain": "ETH",
+      "hash": "0xc972dc1b8d142ef391b735d81a97a80dcbf5aa32f53729fb43ef1abd04c1b220",
+      "height": 19289666
+    }
+  ],
+  "confirmed": true
+}
