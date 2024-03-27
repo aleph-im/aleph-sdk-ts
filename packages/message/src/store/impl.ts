@@ -1,14 +1,14 @@
-import axios, { AxiosResponse } from 'axios'
+import axios, {AxiosResponse} from 'axios'
 
-import { DEFAULT_API_V2, stripTrailingSlash, getSocketPath, RequireOnlyOne } from '@aleph-sdk/core'
-import { StoreContent, StorePinConfiguration, StorePublishConfiguration } from './types'
-import { buildStoreMessage } from '../utils/messageBuilder'
-import { pushFileToStorageEngine, prepareAlephMessage } from '../utils/publish'
-import { broadcast } from '../utils/signature'
-import { HashedMessage, ItemType, SignedMessage, StoreMessage } from '../types'
-import { blobToBuffer, calculateSHA256Hash } from './utils'
-import { Account } from '@aleph-sdk/account'
-import { InvalidMessageError } from '../types/errors'
+import {DEFAULT_API_V2, getSocketPath, RequireOnlyOne, stripTrailingSlash} from '@aleph-sdk/core'
+import {StoreContent, StorePinConfiguration, StorePublishConfiguration} from './types'
+import {buildStoreMessage} from '../utils/messageBuilder'
+import {prepareAlephMessage, pushFileToStorageEngine} from '../utils/publish'
+import {broadcast} from '../utils/signature'
+import {HashedMessage, ItemType, SignedMessage, StoreMessage} from '../types'
+import {blobToBuffer, calculateSHA256Hash} from './utils'
+import {Account} from '@aleph-sdk/account'
+import {InvalidMessageError} from '../types/errors'
 
 export class StoreMessageClient {
   apiServer: string
@@ -71,7 +71,7 @@ export class StoreMessageClient {
       channel,
       content: storeContent,
       account,
-      storageEngine,
+      storageEngine: storageEngine === ItemType.storage ? ItemType.inline : ItemType.ipfs,
       timestamp,
     })
 
