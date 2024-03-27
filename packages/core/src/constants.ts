@@ -1,2 +1,2 @@
-export const DEFAULT_API_V2 = 'http://pyaleph-lab-2.aleph.cloud:4024/'
-export const DEFAULT_API_WS_V2 = 'ws://pyaleph-lab-2.aleph.cloud:4024/'
+export const DEFAULT_API_V2 = 'https://api3.aleph.im/'
+export const DEFAULT_API_WS_V2 = 'wss://api3.aleph.im/'
