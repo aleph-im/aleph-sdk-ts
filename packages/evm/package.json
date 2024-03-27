@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/evm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Common functions for EVM-based accounts interacting with aleph.im.",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -16,9 +16,9 @@
     "ethereumjs-util": "^7.1.5"
   },
   "peerDependencies": {
-    "ethers": "^5.7.2",
     "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0"
+    "@aleph-sdk/core": "^1.0.0",
+    "ethers": "^5.7.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

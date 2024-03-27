@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/cosmos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cosmos accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -15,9 +15,9 @@
     "elliptic": "^6.5.4"
   },
   "peerDependencies": {
-    "@cosmjs/amino": "^0.32.2",
     "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0"
+    "@aleph-sdk/core": "^1.0.0",
+    "@cosmjs/amino": "^0.32.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/nuls2",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nuls2 accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",

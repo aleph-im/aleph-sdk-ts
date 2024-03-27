@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/solana",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Solana accounts for signing messages on aleph.im",
   "main": "dist/cjs/index.min.cjs",
   "module": "dist/esm/index.min.mjs",
@@ -19,10 +19,10 @@
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
-    "@solana/web3.js": "^1.90.0",
-    "@solana/buffer-layout": "^4.0.1",
     "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0"
+    "@aleph-sdk/core": "^1.0.0",
+    "@solana/buffer-layout": "^4.0.1",
+    "@solana/web3.js": "^1.90.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
