@@ -155,7 +155,7 @@ export class StoreMessageClient {
       const response = await axios.post(`${this.apiServer}/api/v0/storage/add_file`, form, {
         headers: {
           Accept: 'application/json',
-          // 'Content-Type': 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
         },
         socketPath: getSocketPath(),
       })

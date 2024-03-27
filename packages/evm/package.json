@@ -12,11 +12,13 @@
     "access": "public"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0",
     "@metamask/eth-sig-util": "^7.0.1",
     "ethereumjs-util": "^7.1.5",
     "ethers": "^5.7.2"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

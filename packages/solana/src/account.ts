@@ -60,14 +60,14 @@ export class SOLAccount extends Account {
       if (signed instanceof Uint8Array) signature = signed
       else signature = signed.signature
     } else if (this.keypair) {
-      signature = nacl.sign.detached(buffer, this.keypair.secretKey)
+      signature = base58.encode(nacl.sign.detached(buffer, this.keypair.secretKey))
     } else {
       throw new Error('Cannot sign message')
     }
 
     if (verifySolana(buffer, JSON.stringify({ signature, publicKey: this.address }))) {
       return JSON.stringify({
-        signature: base58.encode(signature),
+        signature,
         publicKey: this.address,
       })
     }

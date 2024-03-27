@@ -60,23 +60,24 @@ export default [
       },
     ],
     plugins: [
-      nodePolyfills(),
-      json(),
-      peerDepsExternal({
-        includeDependencies: true,
-      }),
       resolve({
-        extensions: ['.ts', '.js', '.mjs'],
+        extensions: ['.ts', '.js', '.mjs', '.json', '.node'],
         preferBuiltins: true,
         browser: true,
       }),
       commonjs(),
+      json(),
       typescript({
         tsconfig,
         sourceMap: true,
         inlineSources: true,
         exclude: ['**/__tests__', '**/*.test.ts'],
       }),
+      nodePolyfills({
+        include: null, // all files
+        sourceMap: true,
+      }),
+      peerDepsExternal(),
       fixSourcemap(),
       terser(),
     ],
@@ -92,22 +93,20 @@ export default [
       },
     ],
     plugins: [
-      json(),
-      peerDepsExternal({
-        includeDependencies: true,
-      }),
       resolve({
-        extensions: ['.ts', '.js', '.mjs'],
+        extensions: ['.ts', '.js', '.mjs', '.json', '.node'],
         preferBuiltins: true,
         browser: false,
       }),
       commonjs(),
+      json(),
       typescript({
         tsconfig,
         sourceMap: true,
         inlineSources: true,
         exclude: ['**/__tests__', '**/*.test.ts'],
       }),
+      peerDepsExternal(),
       fixSourcemap(),
       terser(),
     ],

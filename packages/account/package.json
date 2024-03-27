@@ -11,7 +11,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@aleph-sdk/core": "^1.0.0"
   },
   "scripts": {

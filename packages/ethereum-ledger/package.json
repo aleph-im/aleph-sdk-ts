@@ -12,14 +12,16 @@
     "access": "public"
   },
   "dependencies": {
-    "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0",
     "@ledgerhq/domain-service": "^1.1.17",
+    "semver": "^7.3.8"
+  },
+  "peerDependencies": {
     "@ledgerhq/hw-app-eth": "^6.35.4",
     "@ledgerhq/hw-transport": "^6.30.3",
     "@ledgerhq/hw-transport-node-hid": "^6.28.3",
     "@ledgerhq/hw-transport-webusb": "^6.28.3",
-    "semver": "^7.3.8"
+    "@aleph-sdk/account": "^1.0.0",
+    "@aleph-sdk/core": "^1.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

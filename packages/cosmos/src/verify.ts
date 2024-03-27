@@ -8,9 +8,16 @@ import elliptic from 'elliptic'
  * @param message The content of the signature to verify. It can be the result of GetVerificationBuffer() or directly a BaseMessage object.
  * @param serializedSignature The signature associated with the first params of this method.
  */
-export async function verifyCosmos(message: Buffer | SignableMessage, serializedSignature: string): Promise<boolean> {
-  if (!(message instanceof Buffer)) {
-    message = message.getVerificationBuffer()
+export async function verifyCosmos(
+  message: Uint8Array | SignableMessage,
+  serializedSignature: string,
+): Promise<boolean> {
+  if (!(message instanceof Uint8Array)) {
+    if (typeof message?.getVerificationBuffer === 'function') {
+      message = message.getVerificationBuffer()
+    } else {
+      throw Error(`Cannot sign message: ${message}`)
+    }
   }
 
   const { signature, pub_key } = JSON.parse(serializedSignature)
