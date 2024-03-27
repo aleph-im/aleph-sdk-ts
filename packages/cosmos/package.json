@@ -12,10 +12,10 @@
     "access": "public"
   },
   "dependencies": {
-    "@cosmjs/amino": "^0.32.2",
     "elliptic": "^6.5.4"
   },
   "peerDependencies": {
+    "@cosmjs/amino": "^0.32.2",
     "@aleph-sdk/account": "^1.0.0",
     "@aleph-sdk/core": "^1.0.0"
   },

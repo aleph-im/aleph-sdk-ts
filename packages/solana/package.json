@@ -15,12 +15,12 @@
     "@types/bs58": "^4.0.1"
   },
   "dependencies": {
-    "@solana/web3.js": "^1.90.0",
-    "@solana/buffer-layout": "^4.0.1",
     "bs58": "^5.0.0",
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
+    "@solana/web3.js": "^1.90.0",
+    "@solana/buffer-layout": "^4.0.1",
     "@aleph-sdk/account": "^1.0.0",
     "@aleph-sdk/core": "^1.0.0"
   },

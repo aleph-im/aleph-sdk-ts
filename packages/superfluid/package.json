@@ -14,12 +14,10 @@
   "devDependencies": {
     "@types/sha.js": "^2.4.0"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@superfluid-finance/sdk-core": "^0.6.12",
     "avalanche": "1.0.3",
-    "decimal.js": "^10.4.3"
-  },
-  "peerDependencies": {
+    "decimal.js": "^10.4.3",
     "@aleph-sdk/account": "^1.0.0",
     "@aleph-sdk/avalanche": "^1.0.0",
     "@aleph-sdk/core": "^1.0.0",
