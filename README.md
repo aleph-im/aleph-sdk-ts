@@ -63,7 +63,7 @@ This SDK is tested and works, with the following Node.js versions:
 | v14.x | :heavy_check_mark: **Full working support** |
 | v16.x | :heavy_check_mark: **Full working support** |
 | v18.x | :heavy_multiplication_x: Some feature may not work (see notes) |
-| v20.x (**LTS**)
+| v20.x | :heavy_check_mark: **Full working support** |
 
 \* Due to changes in OpenSSL in Node v18, some chains helper may not work. If you encounter bugs using Node v18, you might want to consider using the `--openssl-legacy-provider` feature flag while running your project.
 
