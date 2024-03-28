@@ -1,14 +1,14 @@
-import axios, {AxiosResponse} from 'axios'
+import axios, { AxiosResponse } from 'axios'
 
-import {DEFAULT_API_V2, getSocketPath, RequireOnlyOne, stripTrailingSlash} from '@aleph-sdk/core'
-import {StoreContent, StorePinConfiguration, StorePublishConfiguration} from './types'
-import {buildStoreMessage} from '../utils/messageBuilder'
-import {prepareAlephMessage, pushFileToStorageEngine} from '../utils/publish'
-import {broadcast} from '../utils/signature'
-import {HashedMessage, ItemType, SignedMessage, StoreMessage} from '../types'
-import {blobToBuffer, calculateSHA256Hash} from './utils'
-import {Account} from '@aleph-sdk/account'
-import {InvalidMessageError} from '../types/errors'
+import { DEFAULT_API_V2, getSocketPath, RequireOnlyOne, stripTrailingSlash } from '@aleph-sdk/core'
+import { StoreContent, StorePinConfiguration, StorePublishConfiguration } from './types'
+import { buildStoreMessage } from '../utils/messageBuilder'
+import { prepareAlephMessage, pushFileToStorageEngine } from '../utils/publish'
+import { broadcast } from '../utils/signature'
+import { HashedMessage, ItemType, SignedMessage, StoreMessage } from '../types'
+import { blobToBuffer, calculateSHA256Hash } from './utils'
+import { Account } from '@aleph-sdk/account'
+import { InvalidMessageError } from '../types/errors'
 
 export class StoreMessageClient {
   apiServer: string
@@ -91,7 +91,8 @@ export class StoreMessageClient {
     } else if (!fileObject) {
       throw new Error('You need to specify a File to upload or a Hash to pin.')
     } else {
-      return await this.uploadStore(hashedMessage, account, fileObject as Blob | File, sync || false)
+      const { message } = await this.uploadStore(hashedMessage, account, fileObject as Blob | File, sync || false)
+      return message
     }
   }
 
@@ -139,7 +140,7 @@ export class StoreMessageClient {
     account: Account,
     file: Blob | File,
     sync: boolean,
-  ): Promise<any> {
+  ): Promise<{ message: SignedMessage<StoreContent>; response: { status: string; hash: string } }> {
     const form = new FormData()
     const signedMessage = new SignedMessage<StoreContent>({
       ...message,
@@ -159,11 +160,15 @@ export class StoreMessageClient {
         },
         socketPath: getSocketPath(),
       })
-      return response.data
+      return {
+        message: signedMessage,
+        response: response.data,
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new InvalidMessageError(error)
       }
+      throw error
     }
   }
 
