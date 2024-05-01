@@ -15,9 +15,9 @@
     "@types/sha.js": "^2.4.4"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0",
-    "@aleph-sdk/message": "^1.0.0"
+    "@aleph-sdk/account": "^1.0.1",
+    "@aleph-sdk/core": "^1.0.1",
+    "@aleph-sdk/message": "^1.0.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

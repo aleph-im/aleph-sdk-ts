@@ -19,8 +19,8 @@
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.0.0",
-    "@aleph-sdk/core": "^1.0.0",
+    "@aleph-sdk/account": "^1.0.1",
+    "@aleph-sdk/core": "^1.0.1",
     "@solana/buffer-layout": "^4.0.1",
     "@solana/web3.js": "^1.90.0"
   },
