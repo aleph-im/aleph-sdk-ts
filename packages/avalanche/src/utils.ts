@@ -4,7 +4,7 @@ import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
 import { privateToAddress } from 'ethereumjs-util'
 import shajs from 'sha.js'
 import { BadSignatureError } from '@aleph-sdk/message'
-import { ec as EC } from 'elliptic'
+import { ec as EC, SignatureInput } from 'elliptic'
 
 export enum ChainType {
   C_CHAIN = 'C',
@@ -55,10 +55,10 @@ export function getEVMAddress(keypair: EVMKeyPair): string {
   return `0x${ethAddress}`
 }
 
-export function digestMessage(message: Buffer): Buffer {
+export function digestMessage(message: Uint8Array): Buffer {
   const msgSize = Buffer.alloc(4)
   msgSize.writeUInt32BE(message.length, 0)
-  const msgStr = message.toString('utf-8')
+  const msgStr = Buffer.from(message).toString('utf-8')
   const msgBuf = Buffer.from(`\x1AAvalanche Signed Message:\n${msgSize}${msgStr}`, 'utf8')
   return new shajs.sha256().update(msgBuf).digest()
 }
@@ -75,30 +75,30 @@ export function getAddressFromPkey(pkey: string): AvaBuff {
   return AvaBuff.from(shaHash) // @todo lets go
 }
 
-export function splitSig(signature: string) {
+export function splitSig(signature: string): {
+  sigParam: SignatureInput
+  sigHex: Array<string>
+} {
   try {
     const bintools = BinTools.getInstance()
     const decodedSig = bintools.cb58Decode(signature)
     const r: BN = new BN(bintools.copyFrom(decodedSig, 0, 32))
     const s: BN = new BN(bintools.copyFrom(decodedSig, 32, 64))
-    const v: number = bintools.copyFrom(decodedSig, 64, 65).readUIntBE(0, 1)
-    const sigParam: any = {
-      r: r,
-      s: s,
-      v: v,
-    }
+    const recoveryParam: number = bintools.copyFrom(decodedSig, 64, 65).readUIntBE(0, 1)
+    const sigParam: SignatureInput = { r, s, recoveryParam }
     const rhex: string = '0x' + r.toString('hex') //converts r to hex
     const shex: string = '0x' + s.toString('hex') //converts s to hex
     const sigHex: Array<string> = [rhex, shex]
     return { sigParam, sigHex }
-  } catch {
-    throw new BadSignatureError(`Could not split signature ${signature}`)
+  } catch (e) {
+    throw new BadSignatureError(`Could not split signature ${signature}: ${e}`)
   }
 }
 
-export function recover(msgHash: Buffer, sig: any) {
+export function recover(msgHash: Uint8Array, sig: any) {
   const ec: EC = new EC('secp256k1')
-  const pubk: any = ec.recoverPubKey(msgHash, sig, sig.v)
+  console.log(sig.v)
+  const pubk: any = ec.recoverPubKey(msgHash, sig, sig.sigParam.v)
   const pubkx: string = '0x' + pubk.x.toString('hex')
   const pubky: string = '0x' + pubk.y.toString('hex')
   const pubkCord: Array<string> = [pubkx, pubky]
