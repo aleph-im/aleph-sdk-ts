@@ -2,9 +2,10 @@
   "name": "@aleph-sdk/account",
   "version": "1.0.1",
   "description": "Common interfaces for accounts compatible with aleph.im.",
-  "main": "dist/cjs/index.min.cjs",
-  "module": "dist/esm/index.min.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
@@ -12,7 +13,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@aleph-sdk/core": "^1.0.1"
+    "@aleph-sdk/core": "^1.x.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -2,8 +2,8 @@
   "name": "@aleph-sdk/dns",
   "version": "1.0.1",
   "description": "",
-  "main": "dist/cjs/index.min.cjs",
-  "module": "dist/esm/index.min.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"

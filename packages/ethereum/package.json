@@ -2,8 +2,8 @@
   "name": "@aleph-sdk/ethereum",
   "version": "1.0.1",
   "description": "Ethereum accounts for signing messages on aleph.im",
-  "main": "dist/cjs/index.min.cjs",
-  "module": "dist/esm/index.min.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -16,10 +16,10 @@
     "eciesjs": "^0.4.6"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.0.1",
-    "@aleph-sdk/core": "^1.0.1",
-    "@aleph-sdk/evm": "^1.0.1",
-    "ethers": "^6.x.x"
+    "@aleph-sdk/account": "^1.x.x",
+    "@aleph-sdk/core": "^1.x.x",
+    "@aleph-sdk/evm": "^1.x.x",
+    "ethers": "^5.x.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

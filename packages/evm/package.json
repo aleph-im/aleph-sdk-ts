@@ -2,8 +2,8 @@
   "name": "@aleph-sdk/evm",
   "version": "1.0.1",
   "description": "Common functions for EVM-based accounts interacting with aleph.im.",
-  "main": "dist/cjs/index.min.cjs",
-  "module": "dist/esm/index.min.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -15,10 +15,13 @@
     "@metamask/eth-sig-util": "^7.0.1",
     "ethereumjs-util": "^7.1.5"
   },
+  "devDependencies": {
+    "ethers": "^5.x.x"
+  },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.0.1",
-    "@aleph-sdk/core": "^1.0.1",
-    "ethers": "^6.x.x"
+    "@aleph-sdk/account": "^1.x.x",
+    "@aleph-sdk/core": "^1.x.x",
+    "ethers": "^5.x.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

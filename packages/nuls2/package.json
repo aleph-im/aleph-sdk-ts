@@ -2,8 +2,8 @@
   "name": "@aleph-sdk/nuls2",
   "version": "1.0.1",
   "description": "Nuls2 accounts for signing messages on aleph.im",
-  "main": "dist/cjs/index.min.cjs",
-  "module": "dist/esm/index.min.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -27,8 +27,8 @@
     "sha.js": "^2.4.11"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.0.1",
-    "@aleph-sdk/core": "^1.0.1"
+    "@aleph-sdk/account": "^1.x.x",
+    "@aleph-sdk/core": "^1.x.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

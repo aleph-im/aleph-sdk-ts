@@ -3,121 +3,44 @@ import process from 'process'
 import * as url from 'url'
 import { readFileSync } from 'node:fs'
 
-import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import typescript from '@rollup/plugin-typescript'
-import terser from '@rollup/plugin-terser'
-import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-import json from '@rollup/plugin-json'
-import nodePolyfills from 'rollup-plugin-polyfill-node'
-import { dts } from 'rollup-plugin-dts'
-import del from 'rollup-plugin-delete'
+import dts from 'rollup-plugin-dts'
+import esbuild from 'rollup-plugin-esbuild'
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 
 const tsconfig = path.join(__dirname, './tsconfig.json')
 const packagePath = path.join(process.cwd(), 'package.json')
 const packageJson = JSON.parse(readFileSync(packagePath))
-const packageName = packageJson.name.split('/').pop()
 
-const fixSourcemap = () => {
-  // Fix sourcemap paths like this
-  // ../../packages/<packageName>/src/types/base.ts
-  // to
-  // ../../src/types/base.ts
-  return {
-    name: 'fix-multi-package-sourcemap',
-    generateBundle(options, bundle) {
-      for (const fileName in bundle) {
-        const file = bundle[fileName]
-        if (file.map) {
-          file.map.sources = file.map.sources.map((source) => {
-            return source.replace(`../../packages/${packageName}/src`, `../../src`)
-          })
-        }
-        if (fileName.endsWith('.map')) {
-          const sourceMap = JSON.parse(file.source)
-          sourceMap.sources = sourceMap.sources.map((source) => {
-            return source.replace(`../../packages/${packageName}/src`, `../../src`)
-          })
-          file.source = JSON.stringify(sourceMap)
-        }
-      }
-    },
-  }
-}
+// https://gist.github.com/aleclarson/9900ed2a9a3119d865286b218e14d226
+
+const bundle = (config) => ({
+  ...config,
+  input: 'src/index.ts',
+  external: (id) => !/^[./]/.test(id),
+})
 
 export default [
-  {
-    external: ['dns'],
-    input: 'src/index.ts',
-    output: [
-      {
-        file: packageJson.module,
-        format: 'esm',
-        sourcemap: true,
-        inlineDynamicImports: true,
-      },
-    ],
-    plugins: [
-      resolve({
-        extensions: ['.ts', '.js', '.mjs', '.json', '.node'],
-        preferBuiltins: true,
-        browser: true,
-      }),
-      commonjs(),
-      json(),
-      typescript({
-        tsconfig,
-        sourceMap: true,
-        inlineSources: true,
-        exclude: ['**/__tests__', '**/*.test.ts'],
-      }),
-      nodePolyfills({
-        include: null, // all files
-        sourceMap: true,
-      }),
-      peerDepsExternal(),
-      fixSourcemap(),
-      terser(),
-    ],
-  },
-  {
-    input: 'src/index.ts',
+  bundle({
+    plugins: [esbuild({ tsconfig, minify: true })],
     output: [
       {
         file: packageJson.main,
         format: 'cjs',
         sourcemap: true,
-        inlineDynamicImports: true,
+      },
+      {
+        file: packageJson.module,
+        format: 'esm',
+        sourcemap: true,
       },
     ],
-    plugins: [
-      resolve({
-        extensions: ['.ts', '.js', '.mjs', '.json', '.node'],
-        preferBuiltins: true,
-        browser: false,
-      }),
-      commonjs(),
-      json(),
-      typescript({
-        tsconfig,
-        sourceMap: true,
-        inlineSources: true,
-        exclude: ['**/__tests__', '**/*.test.ts'],
-      }),
-      peerDepsExternal(),
-      fixSourcemap(),
-      terser(),
-    ],
-  },
-  {
-    input: 'dist/esm/types/index.d.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'esm' }],
-    plugins: [
-      dts({ tsconfig }),
-      del({ targets: 'dist/esm/types', hook: 'buildEnd' }),
-      del({ targets: 'dist/cjs/types', hook: 'buildEnd' }),
-    ],
-  },
+  }),
+  bundle({
+    plugins: [dts({ tsconfig })],
+    output: {
+      file: packageJson.types,
+      format: 'esm',
+    },
+  }),
 ]

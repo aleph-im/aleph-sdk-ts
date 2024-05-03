@@ -2,7 +2,7 @@ import { SignableMessage } from '@aleph-sdk/account'
 import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
 import shajs from 'sha.js'
 
-export function digestMessage(message: Uint8Array): Uint8Array {
+export function digestMessage(message: Uint8Array): Buffer {
   const msgSize = Buffer.alloc(4)
   msgSize.writeUInt32BE(message.length, 0)
   const msgStr = Buffer.from(message).toString('utf-8')

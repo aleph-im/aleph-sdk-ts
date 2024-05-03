@@ -2,8 +2,8 @@
   "name": "@aleph-sdk/tezos",
   "version": "1.0.1",
   "description": "Tezos accounts for signing messages on aleph.im",
-  "main": "dist/cjs/index.min.cjs",
-  "module": "dist/esm/index.min.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -19,8 +19,8 @@
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.0.1",
-    "@aleph-sdk/core": "^1.0.1",
+    "@aleph-sdk/account": "^1.x.x",
+    "@aleph-sdk/core": "^1.x.x",
     "@taquito/beacon-wallet": "^17.5.2",
     "@taquito/signer": "^17.5.2"
   },

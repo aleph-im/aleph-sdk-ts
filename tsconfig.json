@@ -25,7 +25,6 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "importHelpers": true,
-    "declarationDir": "types"
   },
   "exclude": [
     "**/node_modules",
