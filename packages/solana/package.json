@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/solana",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Solana accounts for signing messages on aleph.im",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
