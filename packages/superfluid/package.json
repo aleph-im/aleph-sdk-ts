@@ -20,7 +20,6 @@
     "@aleph-sdk/core": "^1.x.x",
     "@aleph-sdk/evm": "^1.x.x",
     "@superfluid-finance/sdk-core": "^0.6.12",
-    "avalanche": "1.0.3",
     "decimal.js": "^10.4.3"
   },
   "scripts": {
