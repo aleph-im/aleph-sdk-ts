@@ -57,7 +57,7 @@ export class AlephHttpClient {
   async fetchAggregates(address: string, keys?: string[]): Promise<Record<string, any>> {
     const params = { address, keys }
     const result = await this.aggregateClient.get<any>(params)
-    return result.data
+    return result
   }
 
   /**
