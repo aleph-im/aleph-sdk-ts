@@ -66,7 +66,7 @@ export class StoreMessageClient {
       item_type: storageEngine,
       item_hash: hash,
       time: timestamp,
-      extra_fields: extraFields
+      extra_fields: extraFields,
     }
 
     const builtMessage = buildStoreMessage({
