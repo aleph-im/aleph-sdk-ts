@@ -7,6 +7,7 @@ export type StoreContent = BaseContent & {
   size?: number
   content_type?: string
   ref?: string
+  extra_fields?: Record<string, unknown>
 }
 
 // -------- PIN ----------
