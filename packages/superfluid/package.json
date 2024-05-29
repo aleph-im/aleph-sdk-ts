@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/superfluid",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Aleph.im account wrapper for interacting with the Superfluid Avalanche Contract",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
