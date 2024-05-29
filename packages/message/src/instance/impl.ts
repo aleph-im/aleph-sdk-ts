@@ -35,6 +35,8 @@ export class InstanceMessageClient {
   }: InstancePublishConfiguration): Promise<InstanceMessage> {
     const timestamp = Date.now() / 1000
     const { address } = account
+    // To remove @typescript-eslint/no-unused-vars at buildtime, without removing the argument
+    storageEngine
 
     const mergedResources = {
       ...defaultResources,

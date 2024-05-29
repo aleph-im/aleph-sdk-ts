@@ -71,7 +71,7 @@ export class StoreMessageClient {
       channel,
       content: storeContent,
       account,
-      storageEngine:ItemType.inline,
+      storageEngine: ItemType.inline,
       timestamp,
     })
 
