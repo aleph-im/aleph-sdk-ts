@@ -76,7 +76,7 @@ export class InstanceMessageClient {
       account,
       channel,
       timestamp,
-      storageEngine,
+      storageEngine: ItemType.inline,
       content: instanceContent,
     })
 
