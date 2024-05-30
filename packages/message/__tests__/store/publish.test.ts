@@ -13,10 +13,16 @@ describe('Store message publish', () => {
     const { account } = ethereum.newAccount()
     const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
 
+    const extraFields: Record<string, unknown> = {
+      key1: 'value1',
+      key2: 123,
+    }
+
     const hash = await store.send({
       channel: 'TEST',
       account: account,
       fileObject: fileContent,
+      extraFields,
     })
 
     const response = await store.download(hash.content.item_hash)
@@ -25,6 +31,7 @@ describe('Store message publish', () => {
     const expected = 'y'
 
     expect(got).toBe(expected)
+    expect(hash.content.extra_fields).toEqual(extraFields)
   })
 
   it('should pin a file and retrieve it correctly', async () => {

@@ -7,6 +7,7 @@ export type StoreContent = BaseContent & {
   size?: number
   content_type?: string
   ref?: string
+  extra_fields?: Record<string, unknown>
 }
 
 // -------- PIN ----------
@@ -44,7 +45,7 @@ export type StorePinConfiguration = {
  *
  * inlineRequested: If set to False, the Store message will be store on the same storageEngine you picked.
  *
- * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
+ * extraFields:     Extra fields to add to the Store message.
  *
  * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
