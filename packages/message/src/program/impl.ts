@@ -120,7 +120,7 @@ export class ProgramMessageClient {
       account,
       channel,
       timestamp,
-      storageEngine,
+      storageEngine: ItemType.inline,
       content: programContent,
     })
 
