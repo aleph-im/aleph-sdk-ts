@@ -31,7 +31,7 @@ export class AggregateMessageClient {
       const response = await axios.get<AggregateGetResponse<T>>(`${this.apiServer}/api/v0/aggregates/${address}.json`, {
         socketPath: getSocketPath(),
         params: {
-          keys: keys ? keys.join(',') : undefined,
+          keys: keys.length > 0 ? keys.join(',') : undefined,
         },
       })
 
