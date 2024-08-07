@@ -57,9 +57,9 @@ export class PostMessageClient {
   }: PostGetConfiguration): Promise<PostQueryResponse<T>> {
     const any = (value: any) => value && value.length > 0
     const params: PostQueryParams = {
-      types: types,
-      pageSize: pageSize as number,
-      page: page as number,
+      types,
+      pageSize,
+      page,
       refs: any(refs) ? refs?.join(',') : undefined,
       addresses: any(addresses) ? addresses?.join(',') : undefined,
       tags: any(tags) ? tags?.join(',') : undefined,
@@ -102,7 +102,7 @@ export class PostMessageClient {
     const timestamp: number = Date.now() / 1000
     const postContent: PostContent<T> = {
       type: postType,
-      address: address || account.address,
+      address: address ?? account.address,
       content: content,
       time: timestamp,
     }
