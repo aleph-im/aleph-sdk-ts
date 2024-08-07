@@ -23,6 +23,7 @@ export class ForgetMessageClient {
    */
   async send({
     account,
+    address,
     hashes,
     reason,
     channel,
@@ -31,10 +32,10 @@ export class ForgetMessageClient {
   }: ForgetPublishConfiguration): Promise<ForgetMessage> {
     const timestamp = Date.now() / 1000
     const forgetContent: ForgetContent = {
-      address: account.address,
+      address: address ?? account.address,
       time: timestamp,
-      hashes: hashes,
-      reason: reason || undefined,
+      hashes,
+      reason,
     }
 
     const builtMessage = buildForgetMessage({
