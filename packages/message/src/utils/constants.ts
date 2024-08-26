@@ -1,4 +1,4 @@
-import { FunctionEnvironment, MachineResources } from '../types'
+import { FunctionEnvironment, HypervisorType, InstanceEnvironment, MachineResources } from '../types'
 import { gigabyteToMebibyte } from '@aleph-sdk/core'
 
 export const defaultExecutionEnvironment: FunctionEnvironment = {
@@ -6,6 +6,14 @@ export const defaultExecutionEnvironment: FunctionEnvironment = {
   internet: true,
   aleph_api: true,
   shared_cache: false,
+}
+
+export const defaultInstanceExecutionEnvironment: InstanceEnvironment = {
+  reproducible: false,
+  internet: true,
+  aleph_api: true,
+  shared_cache: false,
+  hypervisor: HypervisorType.qemu,
 }
 
 export const defaultResources: MachineResources = {

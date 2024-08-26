@@ -1,5 +1,5 @@
 import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
-import { defaultResources, defaultExecutionEnvironment, MAXIMUM_DISK_SIZE } from '../utils/constants'
+import { defaultResources, MAXIMUM_DISK_SIZE, defaultInstanceExecutionEnvironment } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
@@ -44,7 +44,7 @@ export class InstanceMessageClient {
     }
 
     const mergedEnvironment = {
-      ...defaultExecutionEnvironment,
+      ...defaultInstanceExecutionEnvironment,
       ...environment,
     }
 

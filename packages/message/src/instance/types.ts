@@ -2,7 +2,7 @@ import { Account } from '@aleph-sdk/account'
 import { MachineVolume, ParentVolume, VolumePersistence } from '../types/volumes'
 import {
   BaseExecutableContent,
-  FunctionEnvironment,
+  InstanceEnvironment,
   HostRequirements,
   MachineResources,
   Payment,
@@ -38,7 +38,7 @@ export type InstancePublishConfiguration = {
   authorized_keys?: string[]
   resources?: Partial<MachineResources>
   requirements?: HostRequirements
-  environment?: Partial<FunctionEnvironment>
+  environment?: Partial<InstanceEnvironment>
   image?: string
   volumes?: MachineVolume[]
   storageEngine?: ItemType.ipfs | ItemType.storage
