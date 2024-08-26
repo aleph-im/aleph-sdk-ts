@@ -1,4 +1,4 @@
-import {FunctionEnvironment, HypervisorType, InstanceEnvironment, MachineResources} from '../types'
+import { FunctionEnvironment, HypervisorType, InstanceEnvironment, MachineResources } from '../types'
 import { gigabyteToMebibyte } from '@aleph-sdk/core'
 
 export const defaultExecutionEnvironment: FunctionEnvironment = {
