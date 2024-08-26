@@ -3,7 +3,7 @@ import { MachineVolume } from './volumes'
 import { BaseContent, PaymentType } from './base'
 
 /**
- * Properties of the execution environment
+ * Properties of the execution function environment
  *
  * reproducible: The function is deterministic (not available yet)
  * internet: Allow internet access
@@ -15,6 +15,37 @@ export type FunctionEnvironment = {
   internet: boolean
   aleph_api: boolean
   shared_cache: boolean
+}
+
+/**
+ * Properties of the trusted execution environment
+ *
+ * firmware: Firmware to use for the trusted execution
+ * policy: Policy to use for trusted execution
+ */
+export type TrustedExecutionEnvironment = {
+  firmware: string
+  policy: number
+}
+
+/**
+ * Properties of the execution instance environment
+ *
+ * reproducible: The function is deterministic (not available yet)
+ * internet: Allow internet access
+ * aleph_api: Allow access to the Aleph API
+ * shared_cache: Allow access to the shared redis cache
+ * hypervisor: Hypervisor to use for the execution, can be Firecracker or Qemu
+ * trusted_execution: Sets the execution as confidential
+ */
+export type InstanceEnvironment = {
+  internet: boolean
+  aleph_api: boolean
+  hypervisor?: HypervisorType
+  trusted_execution?: Partial<TrustedExecutionEnvironment>
+  // The following fields are kept for retro-compatibility.
+  shared_cache: boolean
+  reproducible: false
 }
 
 /**
@@ -101,4 +132,9 @@ export type BaseExecutableContent = BaseContent & {
 export enum MachineType {
   vm_function = 'vm-function',
   vm_instance = 'vm-instance',
+}
+
+export enum HypervisorType {
+  qemu = 'qemu',
+  firecracker = 'firecracker',
 }
