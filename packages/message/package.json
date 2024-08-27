@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/message",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Aleph.im message CRUD API",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
