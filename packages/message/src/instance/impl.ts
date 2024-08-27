@@ -48,6 +48,8 @@ export class InstanceMessageClient {
       ...environment,
     }
 
+    if (mergedEnvironment.trusted_execution === null) delete mergedEnvironment.trusted_execution
+
     const size_mib = mergedResources.memory * 10 > MAXIMUM_DISK_SIZE ? MAXIMUM_DISK_SIZE : mergedResources.memory * 10
 
     const rootfs = {
@@ -73,6 +75,8 @@ export class InstanceMessageClient {
       rootfs,
       payment,
     }
+
+    if (instanceContent.requirements === null) delete instanceContent.requirements
 
     const builtMessage = buildInstanceMessage({
       account,
