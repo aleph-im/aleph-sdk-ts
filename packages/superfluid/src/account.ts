@@ -1,56 +1,76 @@
 import { Framework, SuperToken } from '@superfluid-finance/sdk-core'
-import { AvalancheAccount } from '@aleph-sdk/avalanche'
-import { ChainData, ChangeRpcParam, decToHex, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
-import { BigNumber, ethers, providers } from 'ethers'
+import { AvalancheAccount, getAccountFromProvider as getAvalancheAccountFromProvider } from '@aleph-sdk/avalanche'
+import { BaseAccount, getAccountFromProvider as getBaseAccountFromProvider } from '@aleph-sdk/base'
+import { getAccountFromProvider as getEthereumAccountFromProvider } from '@aleph-sdk/ethereum'
 import {
-  ALEPH_SUPERFLUID_FUJI_TESTNET,
-  ALEPH_SUPERFLUID_MAINNET,
-  SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL,
-  SUPERFLUID_MAINNET_SUBGRAPH_URL,
-} from './constants'
+  ChainData,
+  ChangeRpcParam,
+  EVMAccount,
+  findChainMetadataByChainId,
+  hexToDec,
+  JsonRPCWallet,
+  RpcId,
+} from '@aleph-sdk/evm'
+import { BigNumber, ethers, providers } from 'ethers'
 import { Decimal } from 'decimal.js'
-import { BaseProviderWallet } from '@aleph-sdk/account'
+import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
 
 /**
  * SuperfluidAccount implements the Account class for the Superfluid protocol.
  * It is used to represent a Superfluid account when publishing a message on the Aleph network.
  */
 
-export class SuperfluidAccount extends AvalancheAccount {
+export class SuperfluidAccount extends EVMAccount {
   public override wallet: JsonRPCWallet
+  private account: EVMAccount
   private framework?: Framework
   private alephx?: SuperToken
 
-  constructor(wallet: BaseProviderWallet | ethers.providers.JsonRpcProvider, address: string, publicKey?: string) {
-    super(wallet, address, publicKey)
-    if (wallet instanceof JsonRPCWallet) this.wallet = wallet
-    else if (wallet instanceof ethers.providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(wallet)
+  constructor(account: EVMAccount) {
+    super(account.address, account.publicKey)
+    this.account = account
+
+    if (account.wallet instanceof JsonRPCWallet) this.wallet = account.wallet
+    else if (account.wallet instanceof ethers.providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(account.wallet)
     else throw new Error('Unsupported wallet type')
   }
 
   public async init(): Promise<void> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     await this.wallet.connect()
+
     if (!this.framework) {
       this.framework = await Framework.create({
         chainId: await this.wallet.getCurrentChainId(),
         provider: this.wallet.provider,
       })
     }
-    if (!this.alephx) {
-      if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.getChainId())) {
-        this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_FUJI_TESTNET)
-      } else if (ChainData[RpcId.AVAX].chainId === decToHex(await this.getChainId())) {
-        this.alephx = await this.framework.loadSuperToken(ALEPH_SUPERFLUID_MAINNET)
-      } else {
-        throw new Error(`ChainID ${await this.getChainId()} not supported`)
-      }
-    }
+
+    const currentChainId = await this.getChainId()
+    const superTokenAddress = findChainMetadataByChainId(currentChainId)?.superTokenAddress
+
+    if (!superTokenAddress) throw new Error(`ChainID ${currentChainId} not supported`)
+
+    this.alephx = await this.framework.loadSuperToken(superTokenAddress)
+  }
+
+  public override async askPubKey() {
+    return this.account.askPubKey()
+  }
+
+  public override getChain() {
+    return this.account.getChain()
+  }
+
+  public override async sign(message: SignableMessage) {
+    return this.account.sign(message)
   }
 
   private alephToWei(alephAmount: Decimal | number): ethers.BigNumber {
     // @note: Need to pre-multiply the number as Decimal in order to correctly parse as BigNumber
     const alephAmountBN = new Decimal(alephAmount).mul(10 ** 18)
+
     return ethers.BigNumber.from(alephAmountBN.toString())
   }
 
@@ -72,7 +92,12 @@ export class SuperfluidAccount extends AvalancheAccount {
   public async getALEPHBalance(): Promise<Decimal> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
-    const balance = await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider })
+
+    const balance = await this.alephx.balanceOf({
+      account: this.address,
+      providerOrSigner: this.wallet.provider,
+    })
+
     return this.weiToAleph(balance)
   }
 
@@ -83,117 +108,16 @@ export class SuperfluidAccount extends AvalancheAccount {
   public async getALEPHFlow(receiver: string): Promise<Decimal> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
+
     const flow = await this.alephx.getFlow({
       sender: this.address,
       receiver,
       providerOrSigner: this.wallet.provider,
     })
-    if (!flow) {
-      return new Decimal(0)
-    } else {
-      return this.flowRateToAlephPerHour(flow.flowRate)
-    }
-  }
 
-  /**
-   * Get the net ALEPH flow rate of the account in ALEPH per hour.
-   */
-  public async getNetALEPHFlow(): Promise<Decimal> {
-    if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
-    if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
-    const flow = await this.alephx.getNetFlow({
-      account: this.address,
-      providerOrSigner: this.wallet.provider,
-    })
-    return this.flowRateToAlephPerHour(flow)
-  }
+    if (!flow) return new Decimal(0)
 
-  public async getAllALEPHOutflows(): Promise<Record<string, Decimal>> {
-    if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
-    if (!this.framework || !this.alephx) throw new Error('SuperfluidAccount not initialized')
-    // make a graphql query to Superfluid Subgraph
-    const query = `
-            query {
-              accounts(where: {outflows_: {sender: ${this.address}}}) {
-                id
-                outflows(where: {currentFlowRate_not: "0"}) {
-                  sender {
-                    id
-                  }
-                  receiver {
-                    id
-                  }
-                  createdAtTimestamp
-                  currentFlowRate
-                }
-              }
-            }
-        `
-    const data = await this.querySubgraph(query)
-    const accounts = data.data.accounts
-    const outflows: Record<string, Decimal> = {}
-    for (const account of accounts) {
-      for (const outflow of account.outflows) {
-        const flowRate = this.flowRateToAlephPerHour(outflow.currentFlowRate)
-        if (outflow.sender.id === this.address) {
-          outflows[outflow.sender.id] = flowRate
-        }
-      }
-    }
-    return outflows
-  }
-
-  private async querySubgraph(query: string) {
-    const response = await fetch(await this.getSubgraphUrl(), {
-      method: 'POST',
-      body: JSON.stringify({ query }),
-    })
-    return await response.json()
-  }
-
-  public async getAllALEPHInflows(): Promise<Record<string, Decimal>> {
-    if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
-    if (!this.framework || !this.alephx) throw new Error('SuperfluidAccount not initialized')
-    // make a graphql query to Superfluid Subgraph
-    const query = `
-            query {
-              accounts(where: {inflows_: {receiver: ${this.address}}}) {
-                id
-                inflows(where: {currentFlowRate_not: "0"}) {
-                  sender {
-                    id
-                  }
-                  receiver {
-                    id
-                  }
-                  createdAtTimestamp
-                  currentFlowRate
-                }
-              }
-            }
-        `
-    const data = await this.querySubgraph(query)
-    const accounts = data.data.accounts
-    const inflows: Record<string, Decimal> = {}
-    for (const account of accounts) {
-      for (const inflow of account.inflows) {
-        const flowRate = this.flowRateToAlephPerHour(inflow.currentFlowRate)
-        if (inflow.receiver.id === this.address) {
-          inflows[inflow.sender.id] = flowRate
-        }
-      }
-    }
-    return inflows
-  }
-
-  private async getSubgraphUrl() {
-    if (ChainData[RpcId.AVAX_TESTNET].chainId === decToHex(await this.getChainId())) {
-      return SUPERFLUID_FUJI_TESTNET_SUBGRAPH_URL
-    } else if (ChainData[RpcId.AVAX].chainId === decToHex(await this.getChainId())) {
-      return SUPERFLUID_MAINNET_SUBGRAPH_URL
-    } else {
-      throw new Error(`ChainID ${await this.getChainId()} not supported`)
-    }
+    return this.flowRateToAlephPerHour(flow.flowRate)
   }
 
   /**
@@ -204,35 +128,26 @@ export class SuperfluidAccount extends AvalancheAccount {
   public async increaseALEPHFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount is not initialized')
-    const flow = await this.alephx.getFlow({
-      sender: this.address,
-      receiver,
-      providerOrSigner: this.wallet.provider,
-    })
+
     // check wrapped balance, if none throw
     const balance = ethers.BigNumber.from(
       await this.alephx.balanceOf({ account: this.address, providerOrSigner: this.wallet.provider }),
     )
-    if (balance.lt(this.alephToWei(alephPerHour))) {
-      throw new Error('Not enough ALEPH to increase flow')
-    }
+    if (balance.lt(this.alephToWei(alephPerHour))) throw new Error('Not enough ALEPH to increase flow')
+
     const signer = this.wallet.provider.getSigner()
-    if (!flow || BigNumber.from(flow.flowRate).eq(0)) {
-      const op = this.alephx.createFlow({
-        sender: this.address,
-        receiver,
-        flowRate: this.alephPerHourToFlowRate(alephPerHour).toString(),
-      })
-      await op.exec(signer)
-    } else {
-      const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).add(this.alephPerHourToFlowRate(alephPerHour))
-      const op = this.alephx.updateFlow({
-        sender: this.address,
-        receiver,
-        flowRate: newFlowRate.toString(),
-      })
-      await op.exec(signer)
-    }
+    const sender = this.address
+    const flow = await this.getFlow(receiver)
+
+    const newFlowRate = flow
+      ? ethers.BigNumber.from(flow.flowRate.toString()).add(this.alephPerHourToFlowRate(alephPerHour))
+      : this.alephPerHourToFlowRate(alephPerHour)
+
+    const operation = flow
+      ? this.alephx.updateFlow({ sender, receiver, flowRate: newFlowRate.toString() })
+      : this.alephx.createFlow({ sender, receiver, flowRate: newFlowRate.toString() })
+
+    await operation.exec(signer)
   }
 
   /**
@@ -243,43 +158,54 @@ export class SuperfluidAccount extends AvalancheAccount {
   public async decreaseALEPHFlow(receiver: string, alephPerHour: Decimal | number): Promise<void> {
     if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
     if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
-    const flow = await this.alephx.getFlow({
+
+    const flow = await this.getFlow(receiver)
+    if (!flow) return
+
+    const sender = this.address
+    const signer = this.wallet.provider.getSigner()
+    const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).sub(this.alephPerHourToFlowRate(alephPerHour))
+
+    const operation = newFlowRate.lte(0)
+      ? this.alephx.deleteFlow({ sender, receiver })
+      : this.alephx.updateFlow({ sender, receiver, flowRate: newFlowRate.toString() })
+
+    await operation.exec(signer)
+  }
+
+  private async getFlow(receiver: string) {
+    if (!this.wallet) throw Error('PublicKey Error: No providers are set up')
+    if (!this.alephx) throw new Error('SuperfluidAccount not initialized')
+
+    const fetchedFlow = await this.alephx.getFlow({
       sender: this.address,
       receiver,
       providerOrSigner: this.wallet.provider,
     })
-    if (!flow || BigNumber.from(flow.flowRate).eq(0)) return
-    const newFlowRate = ethers.BigNumber.from(flow.flowRate.toString()).sub(this.alephPerHourToFlowRate(alephPerHour))
-    const signer = this.wallet.provider.getSigner()
-    if (newFlowRate.lte(0)) {
-      const op = this.alephx.deleteFlow({
-        sender: this.address,
-        receiver,
-      })
-      await op.exec(signer)
-    } else {
-      const op = this.alephx.updateFlow({
-        sender: this.address,
-        receiver,
-        flowRate: newFlowRate.toString(),
-      })
-      await op.exec(signer)
-    }
+
+    return !fetchedFlow || BigNumber.from(fetchedFlow.flowRate).eq(0) ? null : fetchedFlow
   }
 }
 
-export function createFromAvalancheAccount(account: AvalancheAccount, rpc?: string): SuperfluidAccount {
-  if (account.wallet) {
-    return new SuperfluidAccount(account.wallet, account.address, account.publicKey)
-  }
-  throw new Error('Wallet is required')
-  // @todo: implement for node.js
-  if (!rpc) throw new Error('RPC or Provider is required')
-  if (!account.keyPair) throw new Error('KeyPair is required')
+export function isBlockchainSupported(blockchain: Blockchain | undefined): boolean {
+  if (!blockchain) return false
 
-  const rpcProvider = new ethers.providers.JsonRpcProvider(rpc)
-  const provider = new JsonRPCWallet(rpcProvider)
-  return new SuperfluidAccount(provider, account.address, account.publicKey)
+  return [Blockchain.AVAX, Blockchain.BASE].includes(blockchain)
+}
+
+export function isAccountSupported(account: Account | undefined): boolean {
+  if (!account) return false
+
+  return account instanceof AvalancheAccount || account instanceof BaseAccount
+}
+
+export async function createFromEVMAccount(account: EVMAccount): Promise<SuperfluidAccount> {
+  if (!account.wallet) throw new Error('Wallet error: Could not connect to wallet')
+
+  const superfluidAccount = new SuperfluidAccount(account)
+  await superfluidAccount.init()
+
+  return superfluidAccount
 }
 
 export async function getAccountFromProvider(
@@ -292,12 +218,23 @@ export async function getAccountFromProvider(
   } else {
     networkInfo = hexToDec(requestedRpc.chainId)
   }
-  const web3Provider = new providers.Web3Provider(provider, networkInfo)
-  const wallet = new JsonRPCWallet(web3Provider)
-  if (!wallet.address) await wallet.connect()
-  if (!wallet.address) throw new Error('PublicKey Error: No providers are set up')
-  const account = new SuperfluidAccount(wallet, wallet.address)
-  await account.changeNetwork(requestedRpc)
-  await account.init()
-  return account
+
+  let account: EVMAccount
+  if ([hexToDec(ChainData[RpcId.AVAX].chainId), hexToDec(ChainData[RpcId.AVAX_TESTNET].chainId)].includes(networkInfo))
+    account = await getAvalancheAccountFromProvider(provider)
+  else if (
+    [hexToDec(ChainData[RpcId.BASE].chainId), hexToDec(ChainData[RpcId.BASE_TESTNET].chainId)].includes(networkInfo)
+  )
+    account = await getBaseAccountFromProvider(provider)
+  else if (
+    [
+      hexToDec(ChainData[RpcId.ETH].chainId),
+      hexToDec(ChainData[RpcId.ETH_FLASHBOTS].chainId),
+      hexToDec(ChainData[RpcId.ETH_SEPOLIA].chainId),
+    ].includes(networkInfo)
+  )
+    account = await getEthereumAccountFromProvider(provider)
+  else throw new Error(`Unsupported Chain: ${requestedRpc}`)
+
+  return createFromEVMAccount(account)
 }
