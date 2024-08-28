@@ -9,6 +9,9 @@
     "messages",
     "ethereum",
     "solana",
+    "avalanche",
+    "avax",
+    "base",
     "defi",
     "dao",
     "nft"
@@ -32,7 +35,8 @@
     "Roman Gascoin <roman.gascoin@gmail.com>",
     "Mike Hukiewitz <mike.hukiewitz@robotter.ai>",
     "Kelian Christophe <BjrInt@users.noreply.github.com>",
-    "Angel Manzano <amalcaraz89@gmail.com>"
+    "Angel Manzano <amalcaraz89@gmail.com>",
+    "Gerard Molina <gerardmo98@gmail.com>"
   ],
   "license": "MIT",
   "engines": {
@@ -73,6 +77,7 @@
     "packages/ethereum",
     "packages/ethereum-ledger",
     "packages/avalanche",
+    "packages/base",
     "packages/nuls2",
     "packages/cosmos",
     "packages/solana",

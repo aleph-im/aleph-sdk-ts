@@ -1,0 +1,38 @@
+{
+  "name": "@aleph-sdk/base",
+  "version": "1.0.0",
+  "description": "Base accounts for signing messages on aleph.im",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/sha.js": "^2.4.0"
+  },
+  "dependencies": {
+    "eciesjs": "^0.4.6",
+    "sha.js": "^2.4.11"
+  },
+  "peerDependencies": {
+    "@aleph-sdk/account": "^1.x.x",
+    "@aleph-sdk/core": "^1.0.4",
+    "@aleph-sdk/evm": "^1.0.4",
+    "@aleph-sdk/ethereum": "^1.x.x",
+    "avalanche": "^3.15.3",
+    "ethers": "^5.x.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup  -c ../../rollup.config.js",
+    "build": "npm run rollup"
+  },
+  "author": "",
+  "homepage": "https://aleph.im",
+  "bugs": "https://github.com/aleph-im/aleph-sdk-ts/issues",
+  "license": "MIT"
+}
