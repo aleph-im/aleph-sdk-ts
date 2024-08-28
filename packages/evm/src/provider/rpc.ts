@@ -1,16 +1,19 @@
 import { ethers } from 'ethers'
 import { BaseProviderWallet } from '@aleph-sdk/account'
 
-const RPC_WARNING = `DEPRECATION WARNING: 
+const RPC_WARNING = `DEPRECATION WARNING:
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`
 
 export enum RpcId {
   ETH,
   ETH_FLASHBOTS,
+  ETH_SEPOLIA,
   POLYGON,
   BSC,
   AVAX,
   AVAX_TESTNET,
+  BASE,
+  BASE_TESTNET,
 }
 
 export type RpcType = {
@@ -23,6 +26,11 @@ export type RpcType = {
     decimals: number
   }
   blockExplorerUrls: string[]
+}
+
+export type ChainMetadataType = RpcType & {
+  tokenAddress?: string
+  superTokenAddress?: string
 }
 
 export type ChangeRpcParam = RpcType | RpcId
@@ -80,6 +88,17 @@ export const ChainData: { [key: number]: RpcType } = {
     },
     blockExplorerUrls: ['https://etherscan.io'],
   },
+  [RpcId.ETH_SEPOLIA]: {
+    chainId: decToHex(11155111),
+    rpcUrls: ['https://eth-sepolia.public.blastapi.io/'],
+    chainName: 'Ethereum Sepolia (Testnet)',
+    nativeCurrency: {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    blockExplorerUrls: ['https://sepolia.etherscan.io'],
+  },
   [RpcId.POLYGON]: {
     chainId: decToHex(137),
     rpcUrls: ['https://polygon-rpc.com/'],
@@ -102,6 +121,56 @@ export const ChainData: { [key: number]: RpcType } = {
     },
     blockExplorerUrls: ['https://bscscan.com'],
   },
+  [RpcId.BASE]: {
+    chainId: decToHex(8453),
+    rpcUrls: ['https://mainnet.base.org'],
+    chainName: 'Base Mainnet',
+    nativeCurrency: {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    blockExplorerUrls: ['https://basescan.org'],
+  },
+  [RpcId.BASE_TESTNET]: {
+    chainId: decToHex(84532),
+    rpcUrls: ['https://sepolia.base.org'],
+    chainName: 'Base Sepolia (Testnet)',
+    nativeCurrency: {
+      name: 'ETH',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    blockExplorerUrls: ['	https://sepolia-explorer.base.org'],
+  },
+}
+
+export const ChainMetadata: { [key: number]: ChainMetadataType } = {
+  ...ChainData,
+  [RpcId.AVAX]: {
+    ...ChainData[RpcId.AVAX],
+    tokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
+    superTokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
+  },
+  [RpcId.AVAX_TESTNET]: {
+    ...ChainData[RpcId.AVAX_TESTNET],
+    tokenAddress: '0x1290248E01ED2F9f863A9752A8aAD396ef3a1B00',
+    superTokenAddress: '0x1290248E01ED2F9f863A9752A8aAD396ef3a1B00',
+  },
+  [RpcId.ETH_SEPOLIA]: {
+    ...ChainData[RpcId.ETH_SEPOLIA],
+    tokenAddress: '0xc4bf5cbdabe595361438f8c6a187bdc330539c60',
+    superTokenAddress: '0x22064a21fee226d8ffb8818e7627d5ff6d0fc33a',
+  },
+  [RpcId.BASE]: {
+    ...ChainData[RpcId.BASE],
+    tokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
+    superTokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
+  },
+}
+
+export function findChainMetadataByChainId(chainId: number): ChainMetadataType | undefined {
+  return Object.values(ChainMetadata).find((chain) => hexToDec(chain.chainId) === chainId)
 }
 
 /**
@@ -149,11 +218,9 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
     if (typeof chainOrRpc === 'number') {
-      if (chainOrRpc === RpcId.ETH) {
-        await this.provider.send('wallet_switchEthereumChain', [{ chainId: '0x1' }])
-      } else await this.provider.send('wallet_addEthereumChain', [ChainData[chainOrRpc]])
+      await this.provider.send('wallet_switchEthereumChain', [{ chainId: ChainData[chainOrRpc].chainId }])
     } else {
-      await this.provider.send('wallet_addEthereumChain', [chainOrRpc])
+      await this.provider.send('wallet_switchEthereumChain', [{ chainId: chainOrRpc }])
     }
   }
 
