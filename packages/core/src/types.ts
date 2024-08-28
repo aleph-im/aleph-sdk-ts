@@ -8,6 +8,7 @@ export enum Blockchain {
   CSDK = 'CSDK',
   NEO = 'NEO',
   TEZOS = 'TEZOS',
+  BASE = 'BASE',
 }
 
 /**
