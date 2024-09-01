@@ -169,6 +169,10 @@ export const ChainMetadata: { [key: number]: ChainMetadataType } = {
   },
 }
 
+export function findChainDataByChainId(chainId: number): RpcType | undefined {
+  return Object.values(ChainData).find((chain) => hexToDec(chain.chainId) === chainId)
+}
+
 export function findChainMetadataByChainId(chainId: number): ChainMetadataType | undefined {
   return Object.values(ChainMetadata).find((chain) => hexToDec(chain.chainId) === chainId)
 }
@@ -188,6 +192,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
   }
 
   public async connect(): Promise<void> {
+    console.log('Trying connect')
     try {
       const connected = await this.isConnected()
       if (!connected) {
@@ -217,10 +222,12 @@ export class JsonRPCWallet extends BaseProviderWallet {
   }
 
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
-    if (typeof chainOrRpc === 'number') {
-      await this.provider.send('wallet_switchEthereumChain', [{ chainId: ChainData[chainOrRpc].chainId }])
-    } else {
-      await this.provider.send('wallet_switchEthereumChain', [{ chainId: chainOrRpc }])
+    const chainData = typeof chainOrRpc === 'number' ? ChainData[chainOrRpc] : chainOrRpc
+
+    try {
+      await this.provider.send('wallet_switchEthereumChain', [{ chainId: chainData.chainId }])
+    } catch (error) {
+      await this.addNetwork(chainData)
     }
   }
 
@@ -236,5 +243,13 @@ export class JsonRPCWallet extends BaseProviderWallet {
   public async isConnected(): Promise<boolean> {
     const accounts = await this.provider.send('eth_accounts', [])
     return accounts.length !== 0
+  }
+
+  private async addNetwork(chainData: RpcType): Promise<void> {
+    try {
+      await this.provider.send('wallet_addEthereumChain', [chainData])
+    } catch (error) {
+      throw new Error(`Could not add network to provider: ${error}`)
+    }
   }
 }
