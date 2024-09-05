@@ -17,9 +17,10 @@ import { Account, SignableMessage } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
 
 /**
- * SuperfluidAccount implements the Account class for the Superfluid protocol.
+ * SuperfluidAccount implements the Account class for the Superfluid protocol, now for AVAX and BASE chains.
  * It is used to represent a Superfluid account when publishing a message on the Aleph network.
  */
+
 
 export class SuperfluidAccount extends EVMAccount {
   public override wallet: JsonRPCWallet
