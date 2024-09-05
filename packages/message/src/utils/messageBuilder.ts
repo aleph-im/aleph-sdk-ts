@@ -1,4 +1,6 @@
 import { Account } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
+import { EVMAccount } from '@aleph-sdk/evm'
 import { BuiltMessage, ItemType, MessageContent, MessageType } from '../types'
 import { PostContent } from '../post'
 import { AggregateContent } from '../aggregate'
@@ -17,7 +19,7 @@ export type MessageBuilderConfig<C> = {
 
 function buildMessage<C extends MessageContent>(config: MessageBuilderConfig<C>, type: MessageType): BuiltMessage<C> {
   return new BuiltMessage<C>({
-    chain: config.account.getChain(),
+    chain: config.account instanceof EVMAccount ? Blockchain.ETH : config.account.getChain(),
     sender: config.account.address,
     channel: config.channel,
     time: config.timestamp,
