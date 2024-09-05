@@ -3,10 +3,9 @@ import { KeyPair, KeyChain } from 'avalanche/dist/apis/avm'
 import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
 import { ethers, providers } from 'ethers'
 import { privateToAddress } from 'ethereumjs-util'
-
 import { Blockchain } from '@aleph-sdk/core'
 import { SignableMessage, BaseProviderWallet } from '@aleph-sdk/account'
-import { ChangeRpcParam, RpcId, EVMAccount, JsonRPCWallet } from '@aleph-sdk/evm'
+import { ChangeRpcParam, RpcId, EVMAccount, JsonRPCWallet, ChainData } from '@aleph-sdk/evm'
 import { digestMessage, verifyAvalanche } from './verify'
 
 /**
@@ -152,18 +151,21 @@ export async function importAccountFromMnemonic(
 /**
  * Get an account from a Web3 provider (ex: Metamask)
  *
- * @param  {providers.ExternalProvider} provider from metamask
+ * @param  {providers.ExternalProvider | ethers.providers.Web3Provider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
-  provider: providers.ExternalProvider,
+  provider: ethers.providers.ExternalProvider | ethers.providers.Web3Provider,
   requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<AvalancheAccount> {
-  const avaxProvider = new providers.Web3Provider(provider)
-  const jrw = new JsonRPCWallet(avaxProvider)
-  await jrw.changeNetwork(requestedRpc)
+  const ETHprovider =
+    provider instanceof ethers.providers.Web3Provider ? provider : new providers.Web3Provider(provider)
+  const jrw = new JsonRPCWallet(ETHprovider)
 
+  const chainId = Number((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
+  if (chainId !== (await jrw.provider.getNetwork()).chainId) await jrw.changeNetwork(requestedRpc)
   await jrw.connect()
+
   if (jrw.address) {
     return new AvalancheAccount(jrw, jrw.address)
   }

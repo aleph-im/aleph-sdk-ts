@@ -2,7 +2,7 @@ import * as bip39 from 'bip39'
 import { Blockchain } from '@aleph-sdk/core'
 import { ETHAccount } from '@aleph-sdk/ethereum'
 import { ethers } from 'ethers'
-import { ChangeRpcParam, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
+import { ChainData, ChangeRpcParam, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
 
 /**
  * BaseAccount implements the Account class for the Base protocol.
@@ -55,16 +55,19 @@ export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: Base
 /**
  * Get an account from a Web3 provider (ex: Metamask)
  *
- * @param  {ethers.providers.ExternalProvider} provider
+ * @param  {ethers.providers.ExternalProvider | ethers.providers.Web3Provider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
-  provider: ethers.providers.ExternalProvider,
+  provider: ethers.providers.ExternalProvider | ethers.providers.Web3Provider,
   requestedRpc: ChangeRpcParam = RpcId.BASE,
 ): Promise<BaseAccount> {
-  const ETHprovider = new ethers.providers.Web3Provider(provider)
+  const ETHprovider =
+    provider instanceof ethers.providers.Web3Provider ? provider : new ethers.providers.Web3Provider(provider)
   const jrw = new JsonRPCWallet(ETHprovider)
-  await jrw.changeNetwork(requestedRpc)
+
+  const chainId = Number((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
+  if (chainId !== (await jrw.provider.getNetwork()).chainId) await jrw.changeNetwork(requestedRpc)
   await jrw.connect()
 
   if (jrw.address) return new BaseAccount(jrw, jrw.address)
