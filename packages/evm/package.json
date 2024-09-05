@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/evm",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Common functions for EVM-based accounts interacting with aleph.im.",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
