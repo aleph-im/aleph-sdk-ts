@@ -1,7 +1,7 @@
 {
-  "name": "@aleph-sdk/message",
-  "version": "1.0.9",
-  "description": "Aleph.im message CRUD API",
+  "name": "@aleph-sdk/base",
+  "version": "1.0.0",
+  "description": "Base accounts for signing messages on aleph.im",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -12,17 +12,19 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/sha.js": "^2.4.4"
+    "@types/sha.js": "^2.4.0"
   },
   "dependencies": {
-    "axios": "^1.5.1",
-    "form-data": "^4.0.0",
+    "eciesjs": "^0.4.6",
     "sha.js": "^2.4.11"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
-    "@aleph-sdk/evm": "^1.x.x"
+    "@aleph-sdk/core": "^1.0.4",
+    "@aleph-sdk/evm": "^1.0.4",
+    "@aleph-sdk/ethereum": "^1.x.x",
+    "avalanche": "^3.15.3",
+    "ethers": "^5.x.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

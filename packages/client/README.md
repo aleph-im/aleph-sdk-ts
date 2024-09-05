@@ -6,6 +6,7 @@ This iteration of the SDK is a complete rewrite of the original [aleph-ts-sdk](h
 Each chain has its own package:
 
 - [@aleph-sdk/avalanche](https://npmjs.com/package/@aleph-sdk/avalanche)
+- [@aleph-sdk/base](https://npmjs.com/package/@aleph-sdk/base)
 - [@aleph-sdk/cosmos](https://npmjs.com/package/@aleph-sdk/cosmos)
 - [@aleph-sdk/ethereum](https://npmjs.com/package/@aleph-sdk/ethereum)
 - [@aleph-sdk/ethereum-ledger](https://npmjs.com/package/@aleph-sdk/ethereum-ledger)
@@ -20,7 +21,7 @@ This particular client package is a wrapper arount [@aleph-sdk/message](https://
 
 Additional domain and DNS-related functions can be found in [@aleph-sdk/dns](https://npmjs.com/package/@aleph-sdk/dns) or in the [official docs](https://docs.aleph.im/computing/custom_domain/setup/).
 
-Establishing [ALEPH streams to create VPS instances](https://docs.aleph.im/libraries/typescript-sdk/instances/) using Superfluid on Avalanche can be done with [@aleph-sdk/superfluid](https://npmjs.com/package/@aleph-sdk/superfluid).
+Establishing [ALEPH streams to create VPS instances](https://docs.aleph.im/libraries/typescript-sdk/instances/) using Superfluid with a compatible chain can be done with [@aleph-sdk/superfluid](https://npmjs.com/package/@aleph-sdk/superfluid).
 
 ## Installation
 
