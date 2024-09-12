@@ -21,7 +21,6 @@ import { Blockchain } from '@aleph-sdk/core'
  * It is used to represent a Superfluid account when publishing a message on the Aleph network.
  */
 
-
 export class SuperfluidAccount extends EVMAccount {
   public override wallet: JsonRPCWallet
   private account: EVMAccount

@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 import { BaseProviderWallet } from '@aleph-sdk/account'
+import { MetamaskErrorCodes } from './constants'
 
 const RPC_WARNING = `DEPRECATION WARNING:
 Encryption/Decryption features may become obsolete, for more information: https://github.com/aleph-im/aleph-sdk-ts/issues/37`
@@ -226,8 +227,15 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
     try {
       await this.provider.send('wallet_switchEthereumChain', [{ chainId: chainData.chainId }])
-    } catch (error) {
-      await this.addNetwork(chainData)
+    } catch (e) {
+      const err = e as { code?: number; message?: string }
+      if (err?.code === MetamaskErrorCodes.UNRECOGNIZED) {
+        await this.addNetwork(chainData)
+      } else if (err?.code === MetamaskErrorCodes.REJECTED) {
+        console.warn(`[Switch Network]: ${err?.message}`)
+      } else {
+        throw new Error(`[Switch Network]: ${err?.message}`)
+      }
     }
   }
 
@@ -248,8 +256,14 @@ export class JsonRPCWallet extends BaseProviderWallet {
   private async addNetwork(chainData: RpcType): Promise<void> {
     try {
       await this.provider.send('wallet_addEthereumChain', [chainData])
-    } catch (error) {
-      throw new Error(`Could not add network to provider: ${error}`)
+      await this.changeNetwork(chainData)
+    } catch (e) {
+      const err = e as { code?: number; message?: string }
+      if (err?.code === MetamaskErrorCodes.REJECTED) {
+        console.warn(`[Add Network]: ${err?.message}`)
+      } else {
+        throw new Error(`[Add Network]: ${err?.message}`)
+      }
     }
   }
 }

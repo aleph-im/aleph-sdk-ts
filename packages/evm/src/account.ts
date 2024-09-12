@@ -47,9 +47,7 @@ export abstract class EVMAccount extends ECIESAccount {
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
     if (this.wallet instanceof JsonRPCWallet) {
       await this.wallet.changeNetwork(chainOrRpc)
-    }
-    if (this.wallet instanceof ethers.Wallet) {
-      //await this.wallet.provider.send("wallet_switchEthereumChain", [{ chainId: chainId.toString(16) }]);
+    } else if (this.wallet instanceof ethers.Wallet) {
       throw new Error('Not implemented for ethers.Wallet')
     }
   }
