@@ -68,6 +68,7 @@ export type MachineResources = {
 export type CpuProperties = {
   architecture?: 'x86_64' | 'arm64'
   vendor?: 'AuthenticAMD' | 'GenuineIntel' | string
+  features?: string[]
 }
 
 /**
@@ -79,6 +80,7 @@ export type CpuProperties = {
 export type NodeRequirements = {
   owner?: string
   address_regex?: string
+  node_hash?: string
 }
 
 /**
