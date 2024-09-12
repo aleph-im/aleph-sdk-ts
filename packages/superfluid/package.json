@@ -15,11 +15,11 @@
     "@types/sha.js": "^2.4.0"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/avalanche": "^1.x.x",
-    "@aleph-sdk/base": "^1.x.x",
-    "@aleph-sdk/core": "^1.0.4",
-    "@aleph-sdk/evm": "^1.0.4",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/avalanche": "../avalanche",
+    "@aleph-sdk/base": "../base",
+    "@aleph-sdk/core": "../core",
+    "@aleph-sdk/evm": "../evm",
     "@superfluid-finance/sdk-core": "^0.6.12",
     "decimal.js": "^10.4.3"
   },

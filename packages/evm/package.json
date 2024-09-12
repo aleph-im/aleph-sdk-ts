@@ -19,8 +19,8 @@
     "ethers": "^5.x.x"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
     "ethers": "^5.x.x"
   },
   "scripts": {

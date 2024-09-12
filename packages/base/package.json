@@ -19,10 +19,10 @@
     "sha.js": "^2.4.11"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.0.4",
-    "@aleph-sdk/ethereum": "^1.x.x",
-    "@aleph-sdk/evm": "^1.0.4",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
+    "@aleph-sdk/ethereum": "../ethereum",
+    "@aleph-sdk/evm": "../evm",
     "avalanche": "^3.15.3",
     "ethers": "^5.x.x"
   },

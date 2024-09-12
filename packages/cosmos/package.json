@@ -15,8 +15,8 @@
     "elliptic": "^6.5.4"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
     "@cosmjs/amino": "^0.32.2"
   },
   "scripts": {

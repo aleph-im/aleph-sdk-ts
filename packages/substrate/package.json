@@ -17,8 +17,8 @@
     "@polkadot/util-crypto": "^12.6.2"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
     "@polkadot/extension-dapp": "^0.46.6",
     "@polkadot/extension-inject": "^0.46.6"
   },

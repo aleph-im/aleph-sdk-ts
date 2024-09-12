@@ -16,9 +16,9 @@
     "eciesjs": "^0.4.6"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
-    "@aleph-sdk/evm": "^1.x.x",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
+    "@aleph-sdk/evm": "../evm",
     "ethers": "^5.x.x"
   },
   "scripts": {

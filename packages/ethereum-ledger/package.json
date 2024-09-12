@@ -16,8 +16,8 @@
     "semver": "^7.3.8"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
     "@ledgerhq/hw-app-eth": "^6.35.4",
     "@ledgerhq/hw-transport": "^6.30.3",
     "@ledgerhq/hw-transport-node-hid": "^6.28.3",

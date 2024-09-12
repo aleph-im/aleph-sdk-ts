@@ -20,9 +20,9 @@
     "sha.js": "^2.4.11"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
-    "@aleph-sdk/evm": "^1.x.x"
+    "@aleph-sdk/account": "../account",
+    "@aleph-sdk/core": "../core",
+    "@aleph-sdk/evm": "../evm"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
