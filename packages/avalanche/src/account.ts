@@ -13,11 +13,10 @@ import { digestMessage, verifyAvalanche } from './verify'
  * It is used to represent an Avalanche account when publishing a message on the Aleph network.
  */
 export class AvalancheAccount extends EVMAccount {
-  public declare readonly wallet?: BaseProviderWallet
   public readonly keyPair?: KeyPair | EVMKeyPair
 
   constructor(
-    signerOrWallet: KeyPair | EVMKeyPair | BaseProviderWallet | ethers.providers.JsonRpcProvider,
+    signerOrWallet: KeyPair | EVMKeyPair | ethers.Wallet | BaseProviderWallet | ethers.providers.JsonRpcProvider,
     address: string,
     publicKey?: string,
   ) {
@@ -45,6 +44,11 @@ export class AvalancheAccount extends EVMAccount {
   override async askPubKey(): Promise<void> {
     if (this.publicKey) return
     if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
+
+    if (this.wallet instanceof ethers.Wallet) {
+      this.publicKey = this.wallet.publicKey
+      return
+    }
     this.publicKey = await this.wallet.getPublicKey()
     return
   }
@@ -91,11 +95,11 @@ export enum ChainType {
  * @param chain Avalanche chain type: c-chain | x-chain
  * @returns key chains
  */
-async function getKeyChain(chain = ChainType.X_CHAIN) {
+async function getKeyChain(chain = ChainType.C_CHAIN) {
   return new KeyChain(new Avalanche().getHRP(), chain)
 }
 
-export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN): Promise<KeyPair> {
+export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN): Promise<KeyPair> {
   const keyChain = await getKeyChain(chain)
   const keyPair = keyChain.makeKey()
 
@@ -123,10 +127,15 @@ export async function getKeyPair(privateKey?: string, chain = ChainType.X_CHAIN)
  */
 export async function importAccountFromPrivateKey(
   privateKey: string,
-  chain = ChainType.X_CHAIN,
+  chain = ChainType.C_CHAIN,
 ): Promise<AvalancheAccount> {
-  const keyPair = await getKeyPair(privateKey, chain)
-  return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString('hex'))
+  if (chain === ChainType.X_CHAIN) {
+    const keyPair = await getKeyPair(privateKey, chain)
+    return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString('hex'))
+  } else {
+    const wallet = new ethers.Wallet(privateKey)
+    return new AvalancheAccount(wallet, wallet.address, wallet.publicKey)
+  }
 }
 
 /**
@@ -141,7 +150,7 @@ export async function importAccountFromPrivateKey(
 export async function importAccountFromMnemonic(
   mnemonic: string,
   derivationPath = "m/44'/60'/0'/0/0",
-  chain = ChainType.X_CHAIN,
+  chain = ChainType.C_CHAIN,
 ): Promise<AvalancheAccount> {
   const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
 
@@ -186,14 +195,14 @@ function getEVMAddress(keypair: EVMKeyPair): string {
   const pkHex = keypair.getPrivateKey().toString('hex')
   const pkBuffNative = Buffer.from(pkHex, 'hex')
   const ethAddress = privateToAddress(pkBuffNative).toString('hex')
-  return `0x${ethAddress}`
+  return ethers.utils.getAddress(`0x${ethAddress}`)
 }
 
 /**
  * Creates a new Avalanche account using a randomly generated privateKey
  */
 export async function newAccount(
-  chain = ChainType.X_CHAIN,
+  chain = ChainType.C_CHAIN,
 ): Promise<{ account: AvalancheAccount; privateKey: string }> {
   const keypair = await getKeyPair(undefined, chain)
   const privateKey = keypair.getPrivateKey().toString('hex')

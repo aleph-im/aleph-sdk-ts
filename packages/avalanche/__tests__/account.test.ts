@@ -33,12 +33,12 @@ describe('Avalanche accounts', () => {
 
   it('should throw Error to get a Keypair', async () => {
     const fakePrivateKey = 'a'
-    const fct = async () => await avalanche.importAccountFromPrivateKey(fakePrivateKey)
+    const fct = async () => await avalanche.importAccountFromPrivateKey(fakePrivateKey, avalanche.ChainType.X_CHAIN)
 
     await expect(fct).rejects.toThrow('Invalid private key')
   })
 
-  it('should import an avalanche accounts using a provider', async () => {
+  it('should import an avalanche account using a provider', async () => {
     const { address, privateKey } = ephemeralAccount
     if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
 

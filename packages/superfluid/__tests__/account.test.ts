@@ -1,16 +1,33 @@
-import { SuperfluidAccount, createFromAvalancheAccount } from '../src'
-import { ethers, providers } from 'ethers'
+import { SuperfluidAccount, createFromEVMAccount } from '../src'
+import { ethers } from 'ethers'
 import { JsonRPCWallet } from '../../evm/src'
 import { AvalancheAccount } from '../../avalanche/src'
+import { BaseAccount } from '@aleph-sdk/base'
+import { findChainDataByChainId, RpcId } from '../../evm/src/provider'
 
 describe('SuperfluidAccount', () => {
+  let avalancheAccountMock: AvalancheAccount
+  let baseAccountMock: BaseAccount
   let superfluidAccount: SuperfluidAccount
-  let mockProvider: providers.JsonRpcProvider
 
-  beforeEach(() => {
-    mockProvider = new providers.JsonRpcProvider()
-    const wallet = new JsonRPCWallet(mockProvider)
-    superfluidAccount = new SuperfluidAccount(wallet, 'testAddress', 'testPublicKey')
+  beforeEach(async () => {
+    const avaxRpcUrl = findChainDataByChainId(RpcId.AVAX)?.rpcUrls[0]
+    avalancheAccountMock = {
+      wallet: new JsonRPCWallet(new ethers.providers.JsonRpcProvider(avaxRpcUrl)),
+      address: '0xTestAddress',
+      publicKey: 'TestPublicKey',
+      keyPair: undefined,
+    } as unknown as AvalancheAccount
+
+    const baseRpcUrl = findChainDataByChainId(RpcId.BASE)?.rpcUrls[0]
+    baseAccountMock = {
+      wallet: new JsonRPCWallet(new ethers.providers.JsonRpcProvider(baseRpcUrl)),
+      address: '0xTestAddress',
+      publicKey: 'TestPublicKey',
+      keyPair: undefined,
+    } as unknown as BaseAccount
+
+    superfluidAccount = new SuperfluidAccount(avalancheAccountMock)
   })
 
   it('init should setup framework and alephx', async () => {
@@ -26,26 +43,23 @@ describe('SuperfluidAccount', () => {
   })
 
   it('should create Superfluid account from Avalanche account', () => {
-    const rpcUrl = 'http://localhost:8545'
-    const avalancheAccountMock = {
-      wallet: new JsonRPCWallet(new ethers.providers.JsonRpcProvider(rpcUrl)),
-      address: '0xTestAddress',
-      publicKey: 'TestPublicKey',
-      keyPair: undefined,
-    } as unknown as AvalancheAccount
-
-    const superfluidAccount = createFromAvalancheAccount(avalancheAccountMock, rpcUrl)
+    const superfluidAccount = createFromEVMAccount(avalancheAccountMock)
     expect(superfluidAccount).toBeInstanceOf(SuperfluidAccount)
   })
 
-  it('should fail if Avalanche account does not have a wallet', () => {
-    const avalancheAccountMock = {
+  it('should create Superfluid account from Base account', () => {
+    const superfluidAccount = createFromEVMAccount(baseAccountMock)
+    expect(superfluidAccount).toBeInstanceOf(SuperfluidAccount)
+  })
+
+  it('should fail if account does not have a wallet', () => {
+    const accountMock = {
       address: '0xTestAddress',
       publicKey: 'TestPublicKey',
       keyPair: undefined,
     } as unknown as AvalancheAccount
 
-    expect(() => createFromAvalancheAccount(avalancheAccountMock)).toThrow('Wallet is required')
+    expect(() => createFromEVMAccount(accountMock)).toThrow('Wallet is required')
   })
 
   // Add more tests for other functions like "increaseALEPHxFlow", "decreaseALEPHxFlow" etc.

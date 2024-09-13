@@ -5,6 +5,7 @@
  */
 
 import { personalSign } from '@metamask/eth-sig-util'
+import { ethers } from 'ethers'
 
 type ProviderSetup = {
   address: string
@@ -46,11 +47,16 @@ export class EthereumMockProvider implements IMockProvider {
     return `0x${this.setup.networkVersion.toString(16)}`
   }
 
+  getSigner(): ethers.Signer {
+    return new ethers.Wallet(this.setup.privateKey)
+  }
+
   request({ method, params }: { method: string; params?: any[] }): Promise<any> {
     this.log(`request[${method}]`)
 
     switch (method) {
       case 'wallet_requestPermissions':
+        return Promise.resolve()
       case 'eth_accounts':
         return Promise.resolve([this.selectedAddress])
 
@@ -77,7 +83,7 @@ export class EthereumMockProvider implements IMockProvider {
       }
 
       default:
-        this.log(`resquesting missing method ${method}`)
+        this.log(`requesting missing method ${method}`)
         // eslint-disable-next-line prefer-promise-reject-errors
         return Promise.reject(`The method ${method} is not implemented by the mock provider.`)
     }
