@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import * as ethereum from '../../../../packages/ethereum/src'
+
 import * as avalanche from '../../../../packages/avalanche/src'
-import * as substrate from '../../../../packages/substrate/src'
-import * as solana from '../../../../packages/solana/src'
+import * as base from '../../../../packages/base/src'
+import * as ethereum from '../../../../packages/ethereum/src'
 import * as nuls2 from '../../../../packages/nuls2/src'
+import * as solana from '../../../../packages/solana/src'
+import * as substrate from '../../../../packages/substrate/src'
 import { KeypairChains } from '../model/chains'
 import { dispatchAndConsume } from '../model/componentProps'
 import { Actions } from '../reducer'
@@ -12,20 +14,22 @@ function KeypairConfig({ state, dispatch }: dispatchAndConsume) {
   const [mnemonicOrPk, setMnemonicOrPk] = useState('')
 
   const _account = (() =>
-    state.selectedChain === KeypairChains.Avalanche
-      ? avalanche
-      : state.selectedChain === KeypairChains.Ethereum
-        ? ethereum
-        : state.selectedChain === KeypairChains.NULS2
-          ? nuls2
-          : state.selectedChain === KeypairChains.Polkadot
-            ? substrate
-            : state.selectedChain === KeypairChains.Solana
-              ? solana
-              : null)()
+    state.selectedChain === KeypairChains.Ethereum
+      ? ethereum
+      : state.selectedChain === KeypairChains.Avalanche
+        ? avalanche
+        : state.selectedChain === KeypairChains.Base
+          ? base
+          : state.selectedChain === KeypairChains.Solana
+            ? solana
+            : state.selectedChain === KeypairChains.NULS2
+              ? nuls2
+              : state.selectedChain === KeypairChains.Polkadot
+                ? substrate
+                : undefined)()
 
   const getKeypair = async () => {
-    if (_account === null) return console.error('Internal error')
+    if (!_account) return console.error('Internal error')
 
     const { account } = await _account.newAccount()
     dispatch({

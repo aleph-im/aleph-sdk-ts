@@ -1,13 +1,15 @@
 import { useState } from 'react'
 
+import { Account } from '../../../../packages/account/src'
+import { AuthenticatedAlephHttpClient } from '../../../../packages/client/src'
+import { ItemType } from '../../../../packages/message/src'
 import { consumeProps } from '../model/componentProps'
-import { ItemType, PostMessageClient } from '../../../../packages/message'
 
 function MessageConfig({ state }: consumeProps) {
   const [messageHash, setMessageHash]: [string | null, any] = useState(null)
   const [isSending, setIsSending] = useState(false)
   const [messageContent, setMessageContent] = useState('Did the quick brown fox jump over the lazy dog?!')
-  const postClient = new PostMessageClient()
+  const client = new AuthenticatedAlephHttpClient(state.account as Account)
 
   const handleChange = (e: any) => {
     setMessageContent(e.target.value)
@@ -19,10 +21,9 @@ function MessageConfig({ state }: consumeProps) {
 
     if (!state.account) return alert('No account selected')
 
-    const message = await postClient.send({
+    const message = await client.createPost({
       channel: 'Typescript-SDK-Toolshed',
       storageEngine: ItemType.inline,
-      account: state.account,
       postType: 'Toolshed',
       content: messageContent,
     })

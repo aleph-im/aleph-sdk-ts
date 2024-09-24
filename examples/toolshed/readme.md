@@ -8,7 +8,7 @@ You must install all the dependencies from the typescript sdk at the root of the
 
 ```shell
 # assumes you are in the root of the project
-npm install && npm build
+npm install && npm run build
 
 # now we can go to the toolshed example
 cd examples/toolshed

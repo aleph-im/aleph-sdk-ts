@@ -1,6 +1,7 @@
-import * as readline from 'readline'
 import { stdin as input, stdout as output } from 'process'
-import * as aggregate from '../../../src/messages/aggregate'
+import * as readline from 'readline'
+
+import { AlephHttpClient } from '../../../packages/client/src'
 
 type NodeListResponse = {
   corechannel: {
@@ -9,10 +10,11 @@ type NodeListResponse = {
 }
 
 export const getNodeList = async () => {
-  const list: NodeListResponse = await aggregate.Get({
-    address: '0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10',
-    keys: ['corechannel'],
-  })
+  const client = new AlephHttpClient()
+  const list: NodeListResponse = await client.fetchAggregate(
+    '0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10',
+    'corechannel',
+  )
 
   return list.corechannel.nodes.filter((node) => node.status === 'active' && !node.locked)
 }
