@@ -1,15 +1,19 @@
-import { ethers } from 'ethers'
-import { BaseProviderWallet, ECIESAccount } from '@aleph-sdk/account'
-import { ChainData, decToHex, JsonRPCWallet, RpcId, RpcType } from './provider'
+import { ECIESAccount } from '@aleph-sdk/account'
+import { Decimal } from 'decimal.js'
+import { Contract, Wallet } from 'ethers'
+
+import { ChainData, ChainMetadata, decToHex, JsonRPCWallet, RpcId, RpcType } from './provider'
+import { erc20Abi, weiToAleph } from './utils'
 
 export abstract class EVMAccount extends ECIESAccount {
-  public wallet?: ethers.Wallet | BaseProviderWallet
+  public wallet?: Wallet | JsonRPCWallet
+  public selectedRpcId?: RpcId
 
   public async getChainId(): Promise<number> {
     if (this.wallet instanceof JsonRPCWallet) {
       return this.wallet.provider.network.chainId
     }
-    if (this.wallet instanceof ethers.Wallet) {
+    if (this.wallet instanceof Wallet) {
       return (await this.wallet.provider.getNetwork()).chainId
     }
     if (!this.wallet) {
@@ -26,7 +30,7 @@ export abstract class EVMAccount extends ECIESAccount {
     if (this.wallet instanceof JsonRPCWallet) {
       return this.wallet.provider.connection.url
     }
-    if (this.wallet instanceof ethers.Wallet) {
+    if (this.wallet instanceof Wallet) {
       throw new Error('Wallet has no connected provider')
     }
     throw new Error('EVMAccount has no connected wallet')
@@ -47,8 +51,21 @@ export abstract class EVMAccount extends ECIESAccount {
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
     if (this.wallet instanceof JsonRPCWallet) {
       await this.wallet.changeNetwork(chainOrRpc)
-    } else if (this.wallet instanceof ethers.Wallet) {
-      throw new Error('Not implemented for ethers.Wallet')
+    } else if (this.wallet instanceof Wallet) {
+      throw new Error('Not implemented for Wallet')
     }
+  }
+
+  /**
+   * Retrieves the ALEPH token balance for a specified wallet address.
+   */
+  async getALEPHBalance(): Promise<Decimal> {
+    const tokenAddress = ChainMetadata[this.selectedRpcId!].tokenAddress
+    if (!tokenAddress) throw new Error('No token address found')
+    if (this.wallet instanceof JsonRPCWallet) await this.wallet.connect()
+    const provider = this.wallet!.provider as any
+    const tokenContract = new Contract(tokenAddress, erc20Abi, provider)
+    const balance = await tokenContract.balanceOf(this.wallet?.address)
+    return weiToAleph(balance)
   }
 }

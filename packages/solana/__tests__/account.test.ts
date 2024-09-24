@@ -29,7 +29,7 @@ class SolanaMockProvider {
   }
 }
 
-export class PanthomMockProvider extends SolanaMockProvider {
+export class PhantomMockProvider extends SolanaMockProvider {
   signMessage(message: Uint8Array): Promise<WalletSignature> {
     const signature = nacl.sign.detached(message, this.secretKey)
     return Promise.resolve({ signature: signature, publicKey: this.publicKey.toString() })
@@ -50,6 +50,7 @@ async function createEphemeralSol(): Promise<EphAccount> {
     address: account.address,
     publicKey: account.address,
     privateKey: Buffer.from(privateKey).toString('hex'),
+    mnemonic: '',
   }
 }
 
@@ -78,7 +79,7 @@ describe('Solana accounts', () => {
 
   it('should import an solana accounts using a provider', async () => {
     const randomKeypair = new Keypair()
-    const providerPhantom = new PanthomMockProvider(randomKeypair)
+    const providerPhantom = new PhantomMockProvider(randomKeypair)
     const providerOfficial = new OfficialMockProvider(randomKeypair)
     const accountSecretKey = await solana.importAccountFromPrivateKey(randomKeypair.secretKey)
     const accountPhantom = await solana.getAccountFromProvider(providerPhantom)
@@ -90,7 +91,7 @@ describe('Solana accounts', () => {
 
   it('should get the same signed message for each account', async () => {
     const randomKeypair = new Keypair()
-    const providerPhantom = new PanthomMockProvider(randomKeypair)
+    const providerPhantom = new PhantomMockProvider(randomKeypair)
     const providerOfficial = new OfficialMockProvider(randomKeypair)
     const accountSecretKey = await solana.importAccountFromPrivateKey(randomKeypair.secretKey)
     const accountPhantom = await solana.getAccountFromProvider(providerPhantom)

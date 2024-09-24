@@ -1,5 +1,6 @@
-import { ethers } from 'ethers'
 import { BaseProviderWallet } from '@aleph-sdk/account'
+import { providers, Wallet } from 'ethers'
+
 import { MetamaskErrorCodes } from './constants'
 
 const RPC_WARNING = `DEPRECATION WARNING:
@@ -9,12 +10,12 @@ export enum RpcId {
   ETH,
   ETH_FLASHBOTS,
   ETH_SEPOLIA,
-  POLYGON,
-  BSC,
   AVAX,
   AVAX_TESTNET,
   BASE,
   BASE_TESTNET,
+  POLYGON,
+  BSC,
 }
 
 export type RpcType = {
@@ -54,22 +55,22 @@ export const ChainData: { [key: number]: RpcType } = {
       symbol: 'AVAX',
       decimals: 18,
     },
-    blockExplorerUrls: ['https://snowtrace.io/'],
+    blockExplorerUrls: ['https://snowtrace.io'],
   },
   [RpcId.AVAX_TESTNET]: {
     chainId: decToHex(43113),
     rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
-    chainName: 'Avalanche Testnet',
+    chainName: 'Avalanche Fuji (Testnet)',
     nativeCurrency: {
       name: 'AVAX',
       symbol: 'AVAX',
       decimals: 18,
     },
-    blockExplorerUrls: ['https://testnet.snowtrace.io/'],
+    blockExplorerUrls: ['https://testnet.snowtrace.io'],
   },
   [RpcId.ETH]: {
     chainId: decToHex(1),
-    rpcUrls: ['https://mainnet.infura.io/v3/'],
+    rpcUrls: ['https://eth-mainnet.public.blastapi.io'],
     chainName: 'Ethereum Mainnet',
     nativeCurrency: {
       name: 'ETH',
@@ -80,7 +81,7 @@ export const ChainData: { [key: number]: RpcType } = {
   },
   [RpcId.ETH_FLASHBOTS]: {
     chainId: decToHex(1),
-    rpcUrls: ['https://rpc.flashbots.net/'],
+    rpcUrls: ['https://rpc.flashbots.net'],
     chainName: 'Ethereum Mainnet - Flashbots',
     nativeCurrency: {
       name: 'ETH',
@@ -91,7 +92,7 @@ export const ChainData: { [key: number]: RpcType } = {
   },
   [RpcId.ETH_SEPOLIA]: {
     chainId: decToHex(11155111),
-    rpcUrls: ['https://eth-sepolia.public.blastapi.io/'],
+    rpcUrls: ['https://eth-sepolia.public.blastapi.io'],
     chainName: 'Ethereum Sepolia (Testnet)',
     nativeCurrency: {
       name: 'ETH',
@@ -102,18 +103,18 @@ export const ChainData: { [key: number]: RpcType } = {
   },
   [RpcId.POLYGON]: {
     chainId: decToHex(137),
-    rpcUrls: ['https://polygon-rpc.com/'],
+    rpcUrls: ['https://polygon-rpc.com'],
     chainName: 'Polygon Mainnet',
     nativeCurrency: {
       name: 'MATIC',
       symbol: 'MATIC',
       decimals: 18,
     },
-    blockExplorerUrls: ['https://polygonscan.com/'],
+    blockExplorerUrls: ['https://polygonscan.com'],
   },
   [RpcId.BSC]: {
     chainId: decToHex(56),
-    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+    rpcUrls: ['https://bsc-dataseed.binance.org'],
     chainName: 'Binance Smart Chain Mainnet',
     nativeCurrency: {
       name: 'BNB',
@@ -148,6 +149,15 @@ export const ChainData: { [key: number]: RpcType } = {
 
 export const ChainMetadata: { [key: number]: ChainMetadataType } = {
   ...ChainData,
+  [RpcId.ETH]: {
+    ...ChainData[RpcId.ETH],
+    tokenAddress: '0x27702a26126e0B3702af63Ee09aC4d1A084EF628',
+  },
+  [RpcId.ETH_SEPOLIA]: {
+    ...ChainData[RpcId.ETH_SEPOLIA],
+    tokenAddress: '0xc4bf5cbdabe595361438f8c6a187bdc330539c60',
+    superTokenAddress: '0x22064a21fee226d8ffb8818e7627d5ff6d0fc33a',
+  },
   [RpcId.AVAX]: {
     ...ChainData[RpcId.AVAX],
     tokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
@@ -157,11 +167,6 @@ export const ChainMetadata: { [key: number]: ChainMetadataType } = {
     ...ChainData[RpcId.AVAX_TESTNET],
     tokenAddress: '0x1290248E01ED2F9f863A9752A8aAD396ef3a1B00',
     superTokenAddress: '0x1290248E01ED2F9f863A9752A8aAD396ef3a1B00',
-  },
-  [RpcId.ETH_SEPOLIA]: {
-    ...ChainData[RpcId.ETH_SEPOLIA],
-    tokenAddress: '0xc4bf5cbdabe595361438f8c6a187bdc330539c60',
-    superTokenAddress: '0x22064a21fee226d8ffb8818e7627d5ff6d0fc33a',
   },
   [RpcId.BASE]: {
     ...ChainData[RpcId.BASE],
@@ -182,24 +187,32 @@ export function findChainMetadataByChainId(chainId: number): ChainMetadataType |
  * Wrapper for JSON RPC Providers (ex: Metamask).
  */
 export class JsonRPCWallet extends BaseProviderWallet {
-  public declare readonly provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider
-  private signer?: ethers.providers.JsonRpcSigner
+  public declare readonly provider: providers.JsonRpcProvider | providers.Web3Provider
+  private signer?: providers.JsonRpcSigner | Wallet
   public address?: string
   private publicKey?: string
 
-  constructor(provider: ethers.providers.JsonRpcProvider | ethers.providers.Web3Provider) {
+  constructor(providerOrWallet: providers.JsonRpcProvider | providers.Web3Provider | Wallet) {
     super()
-    this.provider = provider
+    if (providerOrWallet instanceof Wallet) {
+      this.signer = providerOrWallet
+      this.provider = providerOrWallet.provider as providers.JsonRpcProvider
+    } else {
+      this.provider = providerOrWallet
+    }
   }
 
   public async connect(): Promise<void> {
-    console.log('Trying connect')
     try {
       const connected = await this.isConnected()
-      if (!connected) {
-        await this.provider.send('wallet_requestPermissions', [{ eth_accounts: {} }])
+      if (!this.signer) {
+        if (!connected) {
+          await this.provider.send('wallet_requestPermissions', [{ eth_accounts: {} }])
+        }
+        this.signer = this.provider.getSigner()
+      } else if (!connected) {
+        throw new Error('JsonRpcProvider error')
       }
-      this.signer = this.provider.getSigner()
       this.address = await this.signer.getAddress()
     } catch (err: unknown) {
       throw new Error(`Could not connect to wallet: ${err}`)
@@ -208,8 +221,12 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
   public async getPublicKey(): Promise<string> {
     if (!this.publicKey) {
-      console.warn(RPC_WARNING)
-      this.publicKey = await this.provider.send('eth_getEncryptionPublicKey', [this.address])
+      if (this.signer instanceof Wallet) {
+        this.publicKey = this.signer.publicKey
+      } else {
+        console.warn(RPC_WARNING)
+        this.publicKey = await this.provider.send('eth_getEncryptionPublicKey', [this.address])
+      }
       if (!this.publicKey || this.publicKey.length === 0) {
         throw new Error('Could not retrieve public key')
       }
@@ -222,7 +239,29 @@ export class JsonRPCWallet extends BaseProviderWallet {
     return this.signer.signMessage(data)
   }
 
+  public async getCurrentChainId(): Promise<number> {
+    const network = await this.provider.getNetwork()
+    return network.chainId
+  }
+
+  public isMetamask(): boolean {
+    return this.provider instanceof providers.Web3Provider && !!this.provider?.provider.isMetaMask
+  }
+
+  public async isConnected(): Promise<boolean> {
+    if (this.signer instanceof Wallet) {
+      return !!(await this.provider.detectNetwork())
+    }
+
+    const accounts = await this.provider.send('eth_accounts', [])
+    return accounts.length !== 0
+  }
+
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
+    if (this.signer instanceof Wallet) {
+      console.warn('[Switch Network]: Only available for injected providers')
+    }
+
     const chainData = typeof chainOrRpc === 'number' ? ChainData[chainOrRpc] : chainOrRpc
 
     try {
@@ -239,21 +278,11 @@ export class JsonRPCWallet extends BaseProviderWallet {
     }
   }
 
-  public async getCurrentChainId(): Promise<number> {
-    const network = await this.provider.getNetwork()
-    return network.chainId
-  }
-
-  public isMetamask(): boolean {
-    return this.provider instanceof ethers.providers.Web3Provider && !!this.provider?.provider.isMetaMask
-  }
-
-  public async isConnected(): Promise<boolean> {
-    const accounts = await this.provider.send('eth_accounts', [])
-    return accounts.length !== 0
-  }
-
   private async addNetwork(chainData: RpcType): Promise<void> {
+    if (this.signer instanceof Wallet) {
+      console.warn('[Add Network]: Only available for injected providers')
+    }
+
     try {
       await this.provider.send('wallet_addEthereumChain', [chainData])
       await this.changeNetwork(chainData)

@@ -65,12 +65,9 @@ export class SOLAccount extends Account {
       throw new Error('Cannot sign message')
     }
 
-    if (verifySolana(buffer, JSON.stringify({ signature, publicKey: this.address }))) {
-      return JSON.stringify({
-        signature,
-        publicKey: this.address,
-      })
-    }
+    const signatureObj = JSON.stringify({ signature, publicKey: this.address })
+
+    if (verifySolana(buffer, signatureObj)) return signatureObj
     throw new Error('Cannot proof the integrity of the signature')
   }
 }
