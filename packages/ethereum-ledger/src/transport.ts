@@ -1,5 +1,5 @@
-import Transport from '@ledgerhq/hw-transport'
 import { isNode, JSExecutionEnvironment } from '@aleph-sdk/core'
+import Transport from '@ledgerhq/hw-transport'
 
 export async function getTransport(overrideEnvironment?: JSExecutionEnvironment): Promise<Transport> {
   let transport

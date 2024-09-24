@@ -2,9 +2,9 @@ import { E2EWalletAdapter } from '@jet-lab/e2e-react-adapter'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import nacl from 'tweetnacl'
 
-import * as solana from '../'
-import { EphAccount } from '../../account'
-import { PostMessageBuilder, prepareAlephMessage, ItemType } from '../../message'
+import { EphAccount } from '../../account/src'
+import { ItemType, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
+import * as solana from '../src'
 
 type WalletSignature = {
   signature: Uint8Array

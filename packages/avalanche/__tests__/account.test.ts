@@ -1,7 +1,7 @@
-import { EthereumMockProvider } from '../../evm/src'
-import * as avalanche from '../src'
 import { EphAccount } from '../../account/src'
+import { EthereumMockProvider } from '../../evm/src'
 import { HashedMessage, ItemType, PostContent, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
+import * as avalanche from '../src'
 
 async function createEphemeralAvax(): Promise<EphAccount> {
   const keypair = await avalanche.getKeyPair()

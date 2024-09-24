@@ -1,5 +1,5 @@
-import { BaseMessageClient, MessageType, PublishedMessage } from '../../src'
 import { Blockchain } from '../../../core/src'
+import { BaseMessageClient, MessageType, PublishedMessage } from '../../src'
 
 describe('Test features from GetMessage', () => {
   const client = new BaseMessageClient()

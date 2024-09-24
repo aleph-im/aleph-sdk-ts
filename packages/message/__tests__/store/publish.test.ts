@@ -1,6 +1,7 @@
-import { StoreMessageClient } from '../../src'
-import * as ethereum from '../../../ethereum/src'
 import { readFileSync } from 'fs'
+
+import * as ethereum from '../../../ethereum/src'
+import { StoreMessageClient } from '../../src'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
   return String.fromCharCode.apply(null, new Uint8Array(ab) as unknown as number[])

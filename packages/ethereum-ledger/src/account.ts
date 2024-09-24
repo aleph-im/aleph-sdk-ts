@@ -1,8 +1,8 @@
+import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain, JSExecutionEnvironment } from '@aleph-sdk/core'
 import EthApp from '@ledgerhq/hw-app-eth'
 import semver from 'semver'
 
-import { Blockchain, JSExecutionEnvironment } from '@aleph-sdk/core'
-import { Account, SignableMessage } from '@aleph-sdk/account'
 import { getTransport } from './transport'
 
 const DERIVATION_PATH = "44'/60'/0'/0/0"

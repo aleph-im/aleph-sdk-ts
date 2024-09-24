@@ -1,6 +1,7 @@
 import { Blockchain } from '@aleph-sdk/core'
-import { MachineVolume } from './volumes'
+
 import { BaseContent, PaymentType } from './base'
+import { MachineVolume } from './volumes'
 
 /**
  * Properties of the execution function environment

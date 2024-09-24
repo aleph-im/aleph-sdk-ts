@@ -1,6 +1,6 @@
 import { SignableMessage } from '@aleph-sdk/account'
-import nacl from 'tweetnacl'
 import bs58 from 'bs58'
+import nacl from 'tweetnacl'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.

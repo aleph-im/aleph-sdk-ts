@@ -1,7 +1,8 @@
-import { Resolver, resolveNs } from 'dns'
+import { resolveNs, Resolver } from 'dns'
 import { URL } from 'url'
+
+import { DNS_INSTANCE_DOMAIN, DNS_IPFS_DOMAIN, DNS_PROGRAM_DOMAIN, DNS_RESOLVERS, DNS_STATIC_DOMAIN } from './constants'
 import { DomainConfigurationError } from './errors'
-import { DNS_RESOLVERS, DNS_STATIC_DOMAIN, DNS_PROGRAM_DOMAIN, DNS_INSTANCE_DOMAIN, DNS_IPFS_DOMAIN } from './constants'
 import { TargetType } from './types'
 
 type Hostname = string

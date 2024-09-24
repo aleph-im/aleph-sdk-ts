@@ -1,5 +1,5 @@
-import AlephHttpClient from './httpClient'
 import { Account } from '@aleph-sdk/account'
+import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
 import {
   AggregatePublishConfiguration,
   ForgetPublishConfiguration,
@@ -8,7 +8,8 @@ import {
   ProgramPublishConfiguration,
   StorePublishConfiguration,
 } from '@aleph-sdk/message'
-import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
+
+import AlephHttpClient from './httpClient'
 
 export class AuthenticatedAlephHttpClient extends AlephHttpClient {
   account: Account

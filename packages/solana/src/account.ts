@@ -1,9 +1,9 @@
+import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import base58 from 'bs58'
 import nacl from 'tweetnacl'
 
-import { Blockchain } from '@aleph-sdk/core'
-import { Account, SignableMessage } from '@aleph-sdk/account'
 import { verifySolana } from './verify'
 
 type WalletSignature = {

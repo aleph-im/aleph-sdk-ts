@@ -1,6 +1,7 @@
-import { AlephWebSocket } from './alephWebSocket'
-import { AlephNodeWebSocket } from './alephNodeWebSocket'
 import { DEFAULT_API_WS_V2, isNode } from '@aleph-sdk/core'
+
+import { AlephNodeWebSocket } from './alephNodeWebSocket'
+import { AlephWebSocket } from './alephWebSocket'
 import { AlephSocket, GetMessagesSocketConfiguration, GetMessagesSocketParams } from './types'
 
 /**

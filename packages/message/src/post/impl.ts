@@ -1,17 +1,17 @@
-import axios, { AxiosResponse } from 'axios'
-
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
+import axios, { type AxiosResponse } from 'axios'
+
 import {
   PostContent,
   PostGetConfiguration,
+  PostPublishConfiguration,
   PostQueryParams,
   PostQueryResponse,
-  PostPublishConfiguration,
   PostResponse,
 } from './types'
-import { PostMessageBuilder, prepareAlephMessage, broadcast } from '../utils'
 import { ItemType, PostMessage } from '../types'
 import { MessageNotFoundError } from '../types/errors'
+import { broadcast, PostMessageBuilder, prepareAlephMessage } from '../utils'
 
 export class PostMessageClient {
   apiServer: string

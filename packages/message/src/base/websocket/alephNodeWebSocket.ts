@@ -1,5 +1,6 @@
-import { GetMessagesSocketParams, SocketResponse } from './types'
 import WebSocket from 'ws'
+
+import { GetMessagesSocketParams, SocketResponse } from './types'
 
 /**
  * This class is used to manipulate Node Web Socket to list Aleph Messages

@@ -1,3 +1,5 @@
+import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
 import {
   makeSignDoc,
   OfflineAminoSigner,
@@ -5,8 +7,6 @@ import {
   Secp256k1HdWalletOptions,
   Secp256k1Wallet,
 } from '@cosmjs/amino'
-import { Blockchain } from '@aleph-sdk/core'
-import { Account, SignableMessage } from '@aleph-sdk/account'
 
 /**
  * CosmosAccount implements the Account class for the Cosmos protocol.

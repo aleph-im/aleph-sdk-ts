@@ -1,4 +1,5 @@
 import { Account } from '@aleph-sdk/account'
+
 import { BaseContent, ItemType } from '../types/base'
 
 export type AggregateContentKey = {

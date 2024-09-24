@@ -1,9 +1,10 @@
 import { DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
+
+import { ForgetContent, ForgetPublishConfiguration } from './types'
+import { ForgetMessage, ItemType } from '../types'
 import { buildForgetMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
-import { ForgetContent, ForgetPublishConfiguration } from './types'
-import { ItemType, ForgetMessage } from '../types'
 
 export class ForgetMessageClient {
   apiServer: string
