@@ -23,8 +23,8 @@
     "version": "lerna version --no-private",
     "publish": "lerna publish from-git --no-private --yes",
     "doc": "typedoc",
-    "lint": "eslint */**/*.{js,ts,tsx} --quiet",
-    "lint:fix": "eslint */**/*.{js,ts,tsx} --quiet --fix",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
+    "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "npm run test:jest",
     "test:jest": "jest --testTimeout=120000 --verbose --coverage ./packages"
   },
