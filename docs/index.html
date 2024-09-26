@@ -1,64 +1,55 @@
-<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>aleph-sdk-ts</title><meta name="description" content="Documentation for aleph-sdk-ts"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">aleph-sdk-ts</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>aleph-sdk-ts </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
-<a href="#aleph-sdk-ts" id="aleph-sdk-ts" style="color: inherit; text-decoration: none;">
-  <h1>aleph-sdk-ts</h1>
-</a>
-
-<a href="#description" id="description" style="color: inherit; text-decoration: none;">
-  <h2>Description</h2>
-</a>
-<p>This SDK offers binding to interact with the <a href="https://aleph.im/">Aleph decentralized network</a>.</p>
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@aleph-sdk/monorepo</title><meta name="description" content="Documentation for @aleph-sdk/monorepo"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@aleph-sdk/monorepo</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h2>@aleph-sdk/monorepo</h2></div><div class="tsd-panel tsd-typography"><a id="md:aleph-sdk-ts" class="tsd-anchor"></a><h1><a href="#md:aleph-sdk-ts">aleph-sdk-ts</a></h1><a id="md:description" class="tsd-anchor"></a><h2><a href="#md:description">Description</a></h2><p>This SDK offers binding to interact with the <a href="https://aleph.im/">Aleph decentralized network</a>.</p>
 <p>Written in Typescript it is meant as a drop in replacement for the <a href="https://github.com/aleph-im/aleph-js">aleph-js library</a>. It works both in the browser, on a server using Node.js, or an Aleph Virtual Machine without internet access (using <a href="https://manpages.org/socat">socat</a>).</p>
-
-<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
-  <h2>Quick Start</h2>
-</a>
-<pre><code class="language-shell"><span class="hl-0">npm install aleph-sdk-ts</span>
-</code></pre>
+<a id="md:quick-start" class="tsd-anchor"></a><h2><a href="#md:quick-start">Quick Start</a></h2><pre><code class="language-shell"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">aleph-sdk-ts</span>
+</code><button>Copy</button></pre>
 <ul>
 <li>An API reference <a href="https://aleph-im.github.io/aleph-sdk-ts/index.html">on the repository github pages</a></li>
 <li>For guides and use-cases check the <a href="https://aleph-im.gitbook.io/ts-sdk/">Aleph TS SDK Gitbook</a></li>
 <li>Some examples are available in the <code>/examples</code> directory.</li>
 </ul>
-
-<a href="#supported-chains" id="supported-chains" style="color: inherit; text-decoration: none;">
-  <h2>Supported chains</h2>
-</a>
-<p>This is the list of currently supported Account types. For each of them you can:</p>
+<a id="md:supported-chains" class="tsd-anchor"></a><h2><a href="#md:supported-chains">Supported chains</a></h2><p>This is the list of currently supported Account types. For each of them you can:</p>
 <ul>
 <li>Retrieve an account from a private key or mnemonic (or generate one on the fly).</li>
 <li>Sign and send messages on the Aleph Network</li>
+<li>Some allow you to retrieve an account from a <strong>browser based</strong> wallet (ex: Metamask), or from a <strong>Ledger</strong> wallet.</li>
 </ul>
-<p>On top of that some accounts allow you to <strong>encrypt</strong> messages, retrieve an account from a <strong>browser based</strong> wallet (ex: Metamask), or from a <strong>Ledger</strong> wallet.</p>
+<p><a href="https://npmjs.com/package/aleph-sdk-ts">Previous versions</a> of the Typescript SDK allowed you to <strong>encrypt</strong> messages.</p>
 <table>
 <thead>
 <tr>
 <th>Chain</th>
 <th>Encryption</th>
-<th>Wallet</th>
+<th>Browser Wallet</th>
 <th>Ledger</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Avalanche</td>
+<td>:x:</td>
 <td>:heavy_check_mark:</td>
+<td>:x:</td>
+</tr>
+<tr>
+<td>Base</td>
+<td>:x:</td>
 <td>:heavy_check_mark:</td>
 <td>:x:</td>
 </tr>
 <tr>
 <td>Cosmos</td>
 <td>:x:</td>
-<td>:x:</td>
+<td>:heavy_check_mark:</td>
 <td>:x:</td>
 </tr>
 <tr>
 <td>Ethereum</td>
-<td>:heavy_check_mark:</td>
+<td>:x:</td>
 <td>:heavy_check_mark:</td>
 <td>:heavy_check_mark:</td>
 </tr>
 <tr>
 <td>NULS2</td>
-<td>:heavy_check_mark:</td>
+<td>:x:</td>
 <td>:x:</td>
 <td>:x:</td>
 </tr>
@@ -69,9 +60,9 @@
 <td>:x:</td>
 </tr>
 <tr>
-<td>Substrate</td>
-<td>:heavy_check_mark:</td>
+<td>Substrate (Polkadot)</td>
 <td>:x:</td>
+<td>:heavy_check_mark:</td>
 <td>:x:</td>
 </tr>
 <tr>
@@ -81,26 +72,14 @@
 <td>:x:</td>
 </tr>
 </tbody></table>
-
-<a href="#running-from-source" id="running-from-source" style="color: inherit; text-decoration: none;">
-  <h2>Running from source</h2>
-</a>
-<p>If you wish to use feature which are not (yet) released, feel free to clone this repository on your local machine.</p>
+<a id="md:running-from-source" class="tsd-anchor"></a><h2><a href="#md:running-from-source">Running from source</a></h2><p>If you wish to use feature which are not (yet) released, feel free to clone this repository on your local machine.</p>
 <p>Make sure to install the dependencies first by running:</p>
-<pre><code><span class="hl-1">npm</span><span class="hl-0"> </span><span class="hl-1">install</span>
-</code></pre>
+<pre><code><span class="hl-3">npm</span><span class="hl-1"> </span><span class="hl-3">install</span>
+</code><button>Copy</button></pre>
 <p>You can run the test suite, using:</p>
-<pre><code><span class="hl-1">npm</span><span class="hl-0"> </span><span class="hl-1">run</span><span class="hl-0"> </span><span class="hl-1">test</span>
-</code></pre>
-
-<a href="#environments" id="environments" style="color: inherit; text-decoration: none;">
-  <h2>Environments</h2>
-</a>
-
-<a href="#supported-nodejs-versions" id="supported-nodejs-versions" style="color: inherit; text-decoration: none;">
-  <h3>Supported Node.js versions</h3>
-</a>
-<p>This SDK is tested and works, with the following Node.js versions:</p>
+<pre><code><span class="hl-3">npm</span><span class="hl-1"> </span><span class="hl-3">run</span><span class="hl-1"> </span><span class="hl-3">test</span>
+</code><button>Copy</button></pre>
+<a id="md:environments" class="tsd-anchor"></a><h2><a href="#md:environments">Environments</a></h2><a id="md:supported-nodejs-versions" class="tsd-anchor"></a><h3><a href="#md:supported-nodejs-versions">Supported Node.js versions</a></h3><p>This SDK is tested and works, with the following Node.js versions:</p>
 <table>
 <thead>
 <tr>
@@ -117,25 +96,21 @@
 <td>:heavy_check_mark: <strong>Full working support</strong></td>
 </tr>
 <tr>
-<td>v18.x (<strong>LTS</strong>)</td>
+<td>v18.x</td>
 <td>:heavy_multiplication_x: Some feature may not work (see notes)</td>
+</tr>
+<tr>
+<td>v20.x</td>
+<td>:heavy_check_mark: <strong>Full working support</strong></td>
+</tr>
+<tr>
+<td>v22.x</td>
+<td>:heavy_check_mark: <strong>Full working support</strong></td>
 </tr>
 </tbody></table>
 <p>* Due to changes in OpenSSL in Node v18, some chains helper may not work. If you encounter bugs using Node v18, you might want to consider using the <code>--openssl-legacy-provider</code> feature flag while running your project.</p>
-
-<a href="#running-code-inside-the-browser" id="running-code-inside-the-browser" style="color: inherit; text-decoration: none;">
-  <h3>Running code inside the browser</h3>
-</a>
-<p>This SDK relies on several non-native browser modules (such as Streams and Buffer). While bundling your application, either using <strong>rollup</strong> (ex: <code>Vite</code>) or <strong>webpack</strong> (ex: <code>create-react-app</code>) you might have to rely on external polyfills for those features.</p>
+<a id="md:running-code-inside-the-browser" class="tsd-anchor"></a><h3><a href="#md:running-code-inside-the-browser">Running code inside the browser</a></h3><p>This SDK relies on several non-native browser modules (such as Streams and Buffer). While bundling your application, either using <strong>rollup</strong> (ex: <code>Vite</code>) or <strong>webpack</strong> (ex: <code>create-react-app</code>) you might have to rely on external polyfills for those features.</p>
 <p>You can check the configuration files from the <a href="./examples/toolshed/">examples/toolshed</a> directory to get started. Please note that we won&#39;t provide polyfills as part of this SDK.</p>
-
-<a href="#contribution" id="contribution" style="color: inherit; text-decoration: none;">
-  <h2>Contribution</h2>
-</a>
-<p>Your contributions are always welcome, <a href="./contributing.md">here&#39;s a guide to get started</a>.</p>
-
-<a href="#license" id="license" style="color: inherit; text-decoration: none;">
-  <h2>License</h2>
-</a>
-<p>This software is released under <a href="./LICENSE">The MIT License</a>.</p>
-</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li><li class=" tsd-kind-namespace"><a href="modules/Ledger.html">Ledger</a></li><li class=" tsd-kind-namespace"><a href="modules/accounts.html">accounts</a></li><li class=" tsd-kind-namespace"><a href="modules/messages.html">messages</a></li><li class=" tsd-kind-namespace"><a href="modules/utils.html">utils</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
+<a id="md:contribution" class="tsd-anchor"></a><h2><a href="#md:contribution">Contribution</a></h2><p>Your contributions are always welcome, <a href="./contributing.md">here&#39;s a guide to get started</a>.</p>
+<a id="md:license" class="tsd-anchor"></a><h2><a href="#md:license">License</a></h2><p>This software is released under <a href="./LICENSE">The MIT License</a>.</p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:aleph-sdk-ts"><span>aleph-<wbr/>sdk-<wbr/>ts</span></a><ul><li><a href="#md:description"><span>Description</span></a></li><li><a href="#md:quick-start"><span>Quick <wbr/>Start</span></a></li><li><a href="#md:supported-chains"><span>Supported chains</span></a></li><li><a href="#md:running-from-source"><span>Running from source</span></a></li><li><a href="#md:environments"><span>Environments</span></a></li><li><ul><li><a href="#md:supported-nodejs-versions"><span>Supported <wbr/>Node.js versions</span></a></li><li><a href="#md:running-code-inside-the-browser"><span>Running code inside the browser</span></a></li></ul></li><li><a href="#md:contribution"><span>Contribution</span></a></li><li><a href="#md:license"><span>License</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="index.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>@aleph-sdk/monorepo</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><div class="tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div></body></html>
