@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/account",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "description": "Common interfaces for accounts compatible with aleph.im.",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",

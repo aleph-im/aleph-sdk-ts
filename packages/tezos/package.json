@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/tezos",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "description": "Tezos accounts for signing messages on aleph.im",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
