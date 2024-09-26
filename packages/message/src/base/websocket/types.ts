@@ -1,7 +1,8 @@
-import { BaseContent, ItemType, MessageType } from '../../types'
-import { AlephWebSocket } from './alephWebSocket'
-import { AlephNodeWebSocket } from './alephNodeWebSocket'
 import { Blockchain } from '@aleph-sdk/core'
+
+import { AlephNodeWebSocket } from './alephNodeWebSocket'
+import { AlephWebSocket } from './alephWebSocket'
+import { BaseContent, ItemType, MessageType } from '../../types'
 
 export type SocketResponse = {
   _id?: string

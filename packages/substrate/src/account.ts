@@ -1,13 +1,13 @@
+import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
+import { type InjectedExtension } from '@polkadot/extension-inject/types'
 import { Keyring } from '@polkadot/keyring'
-import { KeyringPair } from '@polkadot/keyring/types'
+import { type KeyringPair } from '@polkadot/keyring/types'
+import { stringToHex } from '@polkadot/util'
 import { cryptoWaitReady } from '@polkadot/util-crypto'
 import { generateMnemonic } from '@polkadot/util-crypto/mnemonic/bip39'
 
-import { InjectedExtension } from '@polkadot/extension-inject/types'
-import { Blockchain } from '@aleph-sdk/core'
-import { Account, SignableMessage } from '@aleph-sdk/account'
 import { verifySubstrate } from './verify'
-import { stringToHex } from '@polkadot/util'
 
 /**
  * DOTAccount implements the Account class for the substrate protocol.

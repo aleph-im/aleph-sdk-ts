@@ -1,8 +1,8 @@
-import axios, { AxiosError } from 'axios'
-import shajs from 'sha.js'
-import FormDataNode from 'form-data'
-
 import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
+import axios, { AxiosError } from 'axios'
+import FormDataNode from 'form-data'
+import shajs from 'sha.js'
+
 import { BuiltMessage, HashedMessage, ItemType, MessageContent } from '../types'
 import { InvalidMessageError } from '../types/errors'
 

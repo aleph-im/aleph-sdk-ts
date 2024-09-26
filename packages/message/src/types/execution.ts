@@ -1,6 +1,7 @@
 import { Blockchain } from '@aleph-sdk/core'
-import { MachineVolume } from './volumes'
+
 import { BaseContent, PaymentType } from './base'
+import { MachineVolume } from './volumes'
 
 /**
  * Properties of the execution function environment
@@ -68,6 +69,7 @@ export type MachineResources = {
 export type CpuProperties = {
   architecture?: 'x86_64' | 'arm64'
   vendor?: 'AuthenticAMD' | 'GenuineIntel' | string
+  features?: string[]
 }
 
 /**
@@ -79,6 +81,7 @@ export type CpuProperties = {
 export type NodeRequirements = {
   owner?: string
   address_regex?: string
+  node_hash?: string
 }
 
 /**

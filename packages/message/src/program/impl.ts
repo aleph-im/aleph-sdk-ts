@@ -1,17 +1,18 @@
 import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
-import { buildProgramMessage } from '../utils/messageBuilder'
-import { prepareAlephMessage } from '../utils/publish'
-import { broadcast } from '../utils/signature'
+
 import {
-  ProgramSpawnConfiguration,
   Encoding,
   FunctionTriggers,
   ProgramContent,
   ProgramPublishConfiguration,
+  ProgramSpawnConfiguration,
 } from './types'
-import { StoreMessageClient } from '../store'
 import { BaseMessageClient } from '../base'
+import { StoreMessageClient } from '../store'
 import { ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
+import { buildProgramMessage } from '../utils/messageBuilder'
+import { prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
 
 export class ProgramMessageClient {
   apiServer: string

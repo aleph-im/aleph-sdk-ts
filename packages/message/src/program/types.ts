@@ -1,8 +1,9 @@
 import { Account } from '@aleph-sdk/account'
 import { RequireOnlyOne } from '@aleph-sdk/core'
-import { MachineVolume } from '../types/volumes'
-import { BaseExecutableContent, MachineType, Payment } from '../types/execution'
+
 import { ItemType } from '../types/base'
+import { BaseExecutableContent, MachineType, Payment } from '../types/execution'
+import { MachineVolume } from '../types/volumes'
 
 export enum Encoding {
   plain = 'plain',

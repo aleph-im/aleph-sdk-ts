@@ -1,22 +1,7 @@
-import * as bip39 from 'bip39'
-import { ethers } from 'ethers'
-
+import { EphAccount } from '../../account/src'
+import { createEphemeralEth, EthereumMockProvider } from '../../evm/src'
+import { ItemType, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
 import * as base from '../src'
-import { PostMessageBuilder, prepareAlephMessage, ItemType } from '../../message/src'
-import { EthereumMockProvider } from '@aleph-sdk/evm'
-import { EphAccount } from '@aleph-sdk/account'
-
-async function createEphemeralEth(): Promise<EphAccount> {
-  const mnemonic = bip39.generateMnemonic()
-  const { address, publicKey, privateKey } = ethers.Wallet.fromMnemonic(mnemonic)
-
-  return {
-    address,
-    publicKey,
-    privateKey: privateKey.substring(2),
-    mnemonic,
-  }
-}
 
 describe('Ethereum accounts', () => {
   let ephemeralAccount: EphAccount
@@ -26,62 +11,50 @@ describe('Ethereum accounts', () => {
   })
 
   it('should import a base account using a mnemonic', () => {
-    const { account, mnemonic } = base.newAccount()
-    const accountFromMnemonic = base.importAccountFromMnemonic(mnemonic)
+    const accountFromMnemonic = base.importAccountFromMnemonic(ephemeralAccount.mnemonic)
 
-    expect(account.address).toStrictEqual(accountFromMnemonic.address)
+    expect(ephemeralAccount.address).toStrictEqual(accountFromMnemonic.address)
   })
 
   it('should import a base account using a private key', () => {
-    const mnemonic = bip39.generateMnemonic()
-    const wallet = ethers.Wallet.fromMnemonic(mnemonic)
-    const accountFromPrivate = base.importAccountFromPrivateKey(wallet.privateKey)
+    const accountFromPrivate = base.importAccountFromPrivateKey(ephemeralAccount.privateKey)
 
-    expect(wallet.address).toStrictEqual(accountFromPrivate.address)
+    expect(ephemeralAccount.address).toStrictEqual(accountFromPrivate.address)
   })
 
   it('should import a base account using a provider', async () => {
-    const { address, privateKey } = ephemeralAccount
-    if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-
-    const provider = new EthereumMockProvider({
-      address,
-      privateKey,
-      networkVersion: 31,
+    const mockProvider = new EthereumMockProvider({
+      address: '0x1234567890AbcdEF1234567890aBcdef12345678',
+      privateKey: '0x1234567890AbcdEF1234567890aBcdef12345678',
+      networkVersion: 8453,
     })
-
-    const accountFromProvider = await base.getAccountFromProvider(provider)
-    const accountFromPrivate = base.importAccountFromPrivateKey(privateKey)
-
-    expect(accountFromProvider.address).toStrictEqual(accountFromPrivate.address)
+    const accountFromProvider = await base.getAccountFromProvider(mockProvider)
+    expect(accountFromProvider.address).toStrictEqual(mockProvider.getAddress())
   })
 
   it('should get the same signed message for each account', async () => {
-    const { address, privateKey } = ephemeralAccount
-    if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-
-    const provider = new EthereumMockProvider({
-      address,
-      privateKey,
-      networkVersion: 31,
-    })
-    const { account, mnemonic } = base.newAccount()
-    const accountFromProvider = await base.getAccountFromProvider(provider)
-    const accountFromPrivate = await base.importAccountFromMnemonic(mnemonic)
+    const accountFromMnemonic = base.importAccountFromMnemonic(ephemeralAccount.mnemonic!)
+    const accountFromPrivate = base.importAccountFromPrivateKey(ephemeralAccount.privateKey!)
 
     const builtMessage = PostMessageBuilder({
-      account,
+      account: accountFromMnemonic,
       channel: 'TEST',
       storageEngine: ItemType.inline,
       timestamp: Date.now() / 1000,
-      content: { address: account.address, time: 15, type: '' },
+      content: { address: accountFromMnemonic.address, time: 15, type: '' },
     })
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
     })
 
-    expect(account.sign(hashedMessage)).toStrictEqual(accountFromPrivate.sign(hashedMessage))
-    expect(account.sign(hashedMessage)).toStrictEqual(accountFromProvider.sign(hashedMessage))
+    expect(accountFromMnemonic.sign(hashedMessage)).toStrictEqual(accountFromPrivate.sign(hashedMessage))
+  })
+
+  it('should retrieve ALEPH balance for each account', async () => {
+    const accountFromMnemonic = base.importAccountFromMnemonic(ephemeralAccount.mnemonic!)
+    const accountFromPrivate = base.importAccountFromPrivateKey(ephemeralAccount.privateKey!)
+
+    expect(await accountFromMnemonic.getALEPHBalance()).toStrictEqual(await accountFromPrivate.getALEPHBalance())
   })
 })

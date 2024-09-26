@@ -1,8 +1,8 @@
-import { logo, separator } from './src/logo'
 import { askChoices, getNodeList, getRandomNode, keypress } from './src/helpers'
-import { GetAccountFromLedger } from '../../src/accounts/providers/Ledger/ethereum'
-import { ItemType } from '../../src/messages/types'
-import * as post from '../../src/messages/post'
+import { logo, separator } from './src/logo'
+import { AuthenticatedAlephHttpClient } from '../../packages/client/src'
+import { GetAccountFromLedger } from '../../packages/ethereum-ledger/src'
+import { ItemType } from '../../packages/message/src/types'
 
 const main = async () => {
   console.log(logo)
@@ -46,9 +46,8 @@ const main = async () => {
   console.log(separator)
   console.log('Sending a stake message on selected Node. Please check your Ledger to sign the message.')
 
-  const stakeMessage = await post.Publish({
-    account,
-    APIServer: 'https://api2.aleph.im',
+  const client = new AuthenticatedAlephHttpClient(account)
+  const stakeMessage = await client.createPost({
     channel: 'FOUNDATION',
     storageEngine: ItemType.inline,
     postType: 'corechan-operation',

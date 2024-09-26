@@ -1,9 +1,9 @@
+import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import base58 from 'bs58'
 import nacl from 'tweetnacl'
 
-import { Blockchain } from '@aleph-sdk/core'
-import { Account, SignableMessage } from '@aleph-sdk/account'
 import { verifySolana } from './verify'
 
 type WalletSignature = {
@@ -65,12 +65,9 @@ export class SOLAccount extends Account {
       throw new Error('Cannot sign message')
     }
 
-    if (verifySolana(buffer, JSON.stringify({ signature, publicKey: this.address }))) {
-      return JSON.stringify({
-        signature,
-        publicKey: this.address,
-      })
-    }
+    const signatureObj = JSON.stringify({ signature, publicKey: this.address })
+
+    if (verifySolana(buffer, signatureObj)) return signatureObj
     throw new Error('Cannot proof the integrity of the signature')
   }
 }

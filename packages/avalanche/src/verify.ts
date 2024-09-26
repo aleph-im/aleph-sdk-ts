@@ -1,5 +1,5 @@
 import { SignableMessage } from '@aleph-sdk/account'
-import { Avalanche, BinTools, Buffer as AvaBuff } from 'avalanche'
+import { Buffer as AvaBuff, Avalanche, BinTools } from 'avalanche'
 import shajs from 'sha.js'
 
 export function digestMessage(message: Uint8Array): Buffer {

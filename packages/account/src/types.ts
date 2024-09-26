@@ -9,6 +9,6 @@ export type SignableMessage = {
 export type EphAccount = {
   address: string
   publicKey: string
-  privateKey?: string
-  mnemonic?: string
+  privateKey: string
+  mnemonic: string
 }

@@ -3,14 +3,14 @@ import {
   AlephSocket,
   BaseMessageClient,
   ForgetMessageClient,
+  GetMessagesConfiguration,
   InstanceMessageClient,
+  MessageError,
+  MessageType,
   PostGetConfiguration,
   PostMessageClient,
   ProgramMessageClient,
   StoreMessageClient,
-  GetMessagesConfiguration,
-  MessageError,
-  MessageType,
 } from '@aleph-sdk/message'
 
 export class AlephHttpClient {

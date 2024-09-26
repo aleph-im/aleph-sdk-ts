@@ -1,7 +1,7 @@
+import { Account } from '@aleph-sdk/account'
+import { getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import axios, { AxiosError } from 'axios'
 
-import { getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
-import { Account } from '@aleph-sdk/account'
 import { HashedMessage, MessageContent, MessageStatus, SignedMessage } from '../types'
 import { BroadcastError, InvalidMessageError } from '../types/errors'
 

@@ -20,9 +20,9 @@
   },
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.0.4",
+    "@aleph-sdk/core": "^1.x.x",
     "@aleph-sdk/ethereum": "^1.x.x",
-    "@aleph-sdk/evm": "^1.0.4",
+    "@aleph-sdk/evm": "^1.x.x",
     "avalanche": "^3.15.3",
     "ethers": "^5.x.x"
   },

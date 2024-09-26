@@ -21,7 +21,7 @@ export async function verifyCosmos(
   }
 
   const { signature, pub_key } = JSON.parse(serializedSignature)
-  const secp256k1 = new elliptic.ec('secp256k1')
+  if (!signature || !pub_key) return false
 
   // unsupported curve checking
   if (pub_key?.type !== 'tendermint/PubKeySecp256k1') return false
@@ -31,13 +31,14 @@ export async function verifyCosmos(
   const signatureBuffer = Buffer.from(signature, 'base64')
 
   // Extract the r and s values from the signature
-  const r = signatureBuffer.slice(0, 32)
-  const s = signatureBuffer.slice(32, 64)
+  const r = signatureBuffer.subarray(0, 32)
+  const s = signatureBuffer.subarray(32, 64)
 
   // Create a signature object with the r and s values
   const signatureObj = { r, s }
 
   try {
+    const secp256k1 = new elliptic.ec('secp256k1')
     const key = secp256k1.keyFromPublic(publicKey)
     return key.verify(message, signatureObj)
   } catch (e: unknown) {

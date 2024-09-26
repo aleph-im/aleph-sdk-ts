@@ -1,15 +1,18 @@
-import { EthereumMockProvider } from '../../evm/src'
-import * as avalanche from '../src'
+import { Decimal } from 'decimal.js'
+
 import { EphAccount } from '../../account/src'
+import { EthereumMockProvider } from '../../evm/src'
 import { HashedMessage, ItemType, PostContent, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
+import * as avalanche from '../src'
 
 async function createEphemeralAvax(): Promise<EphAccount> {
   const keypair = await avalanche.getKeyPair()
 
   return {
-    address: keypair.getAddressString(),
+    address: avalanche.getEVMAddress(keypair),
     publicKey: keypair.getPublicKey().toString('hex'),
     privateKey: keypair.getPrivateKey().toString('hex'),
+    mnemonic: '',
   }
 }
 
@@ -18,6 +21,12 @@ describe('Avalanche accounts', () => {
 
   beforeAll(async () => {
     ephemeralAccount = await createEphemeralAvax()
+  })
+
+  it('should import an avalanche account using a private key', async () => {
+    const accountFromPrivate = await avalanche.importAccountFromPrivateKey(ephemeralAccount.privateKey)
+
+    expect(ephemeralAccount.address).toStrictEqual(accountFromPrivate.address)
   })
 
   it('should retrieved an avalanche keypair from an hexadecimal private key', async () => {
@@ -33,23 +42,19 @@ describe('Avalanche accounts', () => {
 
   it('should throw Error to get a Keypair', async () => {
     const fakePrivateKey = 'a'
-    const fct = async () => await avalanche.importAccountFromPrivateKey(fakePrivateKey)
+    const fct = async () => await avalanche.importAccountFromPrivateKey(fakePrivateKey, avalanche.ChainType.X_CHAIN)
 
     await expect(fct).rejects.toThrow('Invalid private key')
   })
 
-  it('should import an avalanche accounts using a provider', async () => {
-    const { address, privateKey } = ephemeralAccount
-    if (!privateKey) throw Error('Can not retrieve privateKey inside ephemeralAccount.json')
-
-    const provider = new EthereumMockProvider({
-      address,
-      privateKey,
-      networkVersion: 31,
+  it('should import an avalanche account using a provider', async () => {
+    const mockProvider = new EthereumMockProvider({
+      address: '0x1234567890AbcdEF1234567890aBcdef12345678',
+      privateKey: '0x1234567890AbcdEF1234567890aBcdef12345678',
+      networkVersion: 43114,
     })
-
-    const accountFromProvider = await avalanche.getAccountFromProvider(provider)
-    expect(accountFromProvider.address).toStrictEqual(address)
+    const accountFromProvider = await avalanche.getAccountFromProvider(mockProvider)
+    expect(accountFromProvider.address).toStrictEqual(mockProvider.getAddress())
   })
 
   // @todo: Fix this test! We should unit test the cosmos account features, not to send messages to the network and if so, at least mock the backend....
@@ -158,5 +163,11 @@ describe('Avalanche accounts', () => {
 
     expect(verif).toStrictEqual(false)
     expect(verifB).toStrictEqual(false)
+  })
+
+  it('should retrieve ALEPH balance for each account', async () => {
+    const accountFromPrivate = await avalanche.importAccountFromPrivateKey(ephemeralAccount.privateKey!)
+
+    expect(await accountFromPrivate.getALEPHBalance()).toStrictEqual(new Decimal(0))
   })
 })

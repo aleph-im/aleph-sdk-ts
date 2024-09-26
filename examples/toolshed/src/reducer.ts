@@ -1,5 +1,6 @@
+import { HardwareChains, KeypairChains, WalletChains } from './model/chains'
 import { Account, ECIESAccount } from '../../../packages/account/src'
-import { KeypairChains, WalletChains, HardwareChains } from './model/chains'
+import { EVMAccount } from '../../../packages/evm/src'
 
 export enum Actions {
   SELECT_CHAIN,
@@ -13,12 +14,12 @@ export type ActionType = {
 
 export type AppStateType = {
   selectedChain: KeypairChains | WalletChains | HardwareChains
-  account: null | Account | ECIESAccount
+  account?: Account | ECIESAccount | EVMAccount
 }
 
 export const initState: AppStateType = {
-  selectedChain: KeypairChains.Avalanche,
-  account: null,
+  selectedChain: KeypairChains.Ethereum,
+  account: undefined,
 }
 
 export const reducer = (state: AppStateType, action: ActionType): AppStateType => {
@@ -27,7 +28,7 @@ export const reducer = (state: AppStateType, action: ActionType): AppStateType =
       return {
         ...state,
         selectedChain: action.payload,
-        account: null,
+        account: undefined,
       }
 
     case Actions.SET_ACCOUNT:

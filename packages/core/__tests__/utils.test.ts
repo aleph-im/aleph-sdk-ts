@@ -1,4 +1,4 @@
-import { stripTrailingSlash, getSocketPath, isNode } from '../src'
+import { getSocketPath, isNode, stripTrailingSlash } from '../src'
 
 describe('stripTrailingSlash', () => {
   it('should remove trailing slashes and spaces from url', () => {

@@ -1,13 +1,14 @@
 import { Account } from '@aleph-sdk/account'
-import { MachineVolume, ParentVolume, VolumePersistence } from '../types/volumes'
+
+import { ItemType } from '../types/base'
 import {
   BaseExecutableContent,
-  InstanceEnvironment,
   HostRequirements,
+  InstanceEnvironment,
   MachineResources,
   Payment,
 } from '../types/execution'
-import { ItemType } from '../types/base'
+import { MachineVolume, ParentVolume, VolumePersistence } from '../types/volumes'
 
 /**
  * Root file system of a VM instance.

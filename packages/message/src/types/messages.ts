@@ -5,12 +5,13 @@
  * Warning: Avax, CSDK, NEO are currently not supported by the TS sdk.
  */
 import { Blockchain } from '@aleph-sdk/core'
-import { InstanceContent } from '../instance'
-import { StoreContent } from '../store'
+
 import { AggregateContent } from '../aggregate'
-import { ProgramContent } from '../program'
-import { PostContent } from '../post'
 import { ForgetContent } from '../forget'
+import { InstanceContent } from '../instance'
+import { PostContent } from '../post'
+import { ProgramContent } from '../program'
+import { StoreContent } from '../store'
 import { ItemType, MessageConfirmation, MessageType } from './base'
 
 export type MessageContent<Content = any> =

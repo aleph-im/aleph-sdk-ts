@@ -1,17 +1,17 @@
+import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
 import axios from 'axios'
 
-import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
-import { prepareAlephMessage } from '../utils/publish'
-import { broadcast } from '../utils/signature'
-import { buildAggregateMessage } from '../utils/messageBuilder'
 import {
   AggregateContent,
   AggregateGetConfiguration,
   AggregateGetResponse,
   AggregatePublishConfiguration,
 } from './types'
-import { ItemType, AggregateMessage } from '../types'
+import { AggregateMessage, ItemType } from '../types'
 import { MessageNotFoundError } from '../types/errors'
+import { buildAggregateMessage } from '../utils/messageBuilder'
+import { prepareAlephMessage } from '../utils/publish'
+import { broadcast } from '../utils/signature'
 
 export class AggregateMessageClient {
   apiServer: string

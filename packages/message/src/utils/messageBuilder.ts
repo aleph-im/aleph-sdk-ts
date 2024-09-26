@@ -1,13 +1,14 @@
 import { Account } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
 import { EVMAccount } from '@aleph-sdk/evm'
-import { BuiltMessage, ItemType, MessageContent, MessageType } from '../types'
-import { PostContent } from '../post'
+
 import { AggregateContent } from '../aggregate'
-import { StoreContent } from '../store'
-import { ProgramContent } from '../program'
-import { InstanceContent } from '../instance'
 import { ForgetContent } from '../forget'
+import { InstanceContent } from '../instance'
+import { PostContent } from '../post'
+import { ProgramContent } from '../program'
+import { StoreContent } from '../store'
+import { BuiltMessage, ItemType, MessageContent, MessageType } from '../types'
 
 export type MessageBuilderConfig<C> = {
   storageEngine: ItemType

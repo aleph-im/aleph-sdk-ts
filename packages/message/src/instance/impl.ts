@@ -1,10 +1,11 @@
 import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
-import { defaultResources, MAXIMUM_DISK_SIZE, defaultInstanceExecutionEnvironment } from '../utils/constants'
+
+import { InstanceContent, InstancePublishConfiguration } from './types'
+import { InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
+import { defaultInstanceExecutionEnvironment, defaultResources, MAXIMUM_DISK_SIZE } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
-import { InstancePublishConfiguration, InstanceContent } from './types'
-import { InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
 
 export class InstanceMessageClient {
   apiServer: string

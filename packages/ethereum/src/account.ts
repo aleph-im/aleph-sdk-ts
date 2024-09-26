@@ -1,19 +1,29 @@
-import * as bip39 from 'bip39'
-import { ethers } from 'ethers'
+import { SignableMessage } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
-import { SignableMessage, BaseProviderWallet } from '@aleph-sdk/account'
-import { ChangeRpcParam, JsonRPCWallet, RpcId, EVMAccount, ChainData } from '@aleph-sdk/evm'
+import { ChainMetadata, ChangeRpcParam, EVMAccount, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
+import * as bip39 from 'bip39'
+import { providers, Wallet } from 'ethers'
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 export class ETHAccount extends EVMAccount {
-  public override readonly wallet: ethers.Wallet | BaseProviderWallet
+  public override readonly wallet: Wallet | JsonRPCWallet
 
-  public constructor(wallet: ethers.Wallet | BaseProviderWallet, address: string, publicKey?: string) {
+  public constructor(wallet: Wallet | JsonRPCWallet, address: string, publicKey?: string, rpcId?: number) {
     super(address, publicKey)
-    this.wallet = wallet
+    this.selectedRpcId = rpcId || RpcId.ETH
+    if (wallet instanceof Wallet && !wallet.provider) {
+      const network = ChainMetadata[rpcId || this.selectedRpcId]
+      const provider = new providers.JsonRpcProvider(network.rpcUrls.at(0), {
+        name: network.chainName,
+        chainId: hexToDec(network.chainId),
+      })
+      this.wallet = new JsonRPCWallet(wallet.connect(provider))
+    } else {
+      this.wallet = wallet
+    }
   }
 
   override getChain(): Blockchain {
@@ -32,7 +42,7 @@ export class ETHAccount extends EVMAccount {
     if (this.publicKey) return
     if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
 
-    if (this.wallet instanceof ethers.Wallet) {
+    if (this.wallet instanceof Wallet) {
       this.publicKey = this.wallet.publicKey
       return
     }
@@ -63,7 +73,7 @@ export class ETHAccount extends EVMAccount {
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  */
 export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
-  const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivationPath)
+  const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
 
   return new ETHAccount(wallet, wallet.address, wallet.publicKey)
 }
@@ -76,7 +86,7 @@ export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/
  * @param privateKey The private key of the account to import.
  */
 export function importAccountFromPrivateKey(privateKey: string): ETHAccount {
-  const wallet = new ethers.Wallet(privateKey)
+  const wallet = new Wallet(privateKey)
 
   return new ETHAccount(wallet, wallet.address, wallet.publicKey)
 }
@@ -99,17 +109,17 @@ export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
-  provider: ethers.providers.ExternalProvider | ethers.providers.Web3Provider,
+  provider: providers.ExternalProvider | providers.Web3Provider,
   requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {
-  const ETHprovider =
-    provider instanceof ethers.providers.Web3Provider ? provider : new ethers.providers.Web3Provider(provider)
+  const ETHprovider = provider instanceof providers.Web3Provider ? provider : new providers.Web3Provider(provider)
   const jrw = new JsonRPCWallet(ETHprovider)
 
-  const chainId = Number((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
-  if (chainId !== (await jrw.provider.getNetwork()).chainId) await jrw.changeNetwork(requestedRpc)
+  const chainId = hexToDec((typeof requestedRpc === 'number' ? ChainMetadata[requestedRpc] : requestedRpc).chainId)
+  if (chainId !== (await jrw.getCurrentChainId())) await jrw.changeNetwork(requestedRpc)
   await jrw.connect()
 
-  if (jrw.address) return new ETHAccount(jrw, jrw.address)
+  if (jrw.address)
+    return new ETHAccount(jrw, jrw.address, undefined, typeof requestedRpc === 'number' ? requestedRpc : undefined)
   throw new Error('Insufficient permissions')
 }

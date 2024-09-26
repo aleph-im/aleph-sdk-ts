@@ -1,14 +1,13 @@
 export enum Blockchain {
-  DOT = 'DOT',
   ETH = 'ETH',
+  AVAX = 'AVAX',
+  BASE = 'BASE',
   SOL = 'SOL',
+  TEZOS = 'TEZOS',
+  DOT = 'DOT',
   NULS = 'NULS',
   NULS2 = 'NULS2',
-  AVAX = 'AVAX',
   CSDK = 'CSDK',
-  NEO = 'NEO',
-  TEZOS = 'TEZOS',
-  BASE = 'BASE',
 }
 
 /**

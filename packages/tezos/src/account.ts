@@ -1,11 +1,10 @@
-import { RequestSignPayloadInput, SigningType } from '@airgap/beacon-types'
-import { InMemorySigner } from '@taquito/signer'
-import { b58cdecode, b58cencode, prefix, getPkhfromPk, char2Bytes } from '@taquito/utils'
-import { BeaconWallet } from '@taquito/beacon-wallet'
-import nacl from 'tweetnacl'
-
-import { Blockchain } from '@aleph-sdk/core'
+import { type RequestSignPayloadInput, SigningType } from '@airgap/beacon-types'
 import { Account, SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
+import { BeaconWallet } from '@taquito/beacon-wallet'
+import { InMemorySigner } from '@taquito/signer'
+import { b58cdecode, b58cencode, char2Bytes, getPkhfromPk, prefix } from '@taquito/utils'
+import nacl from 'tweetnacl'
 
 // The data to format
 export const STANDARD_DAPP_URL = 'https://aleph.im'

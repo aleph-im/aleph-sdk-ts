@@ -1,18 +1,18 @@
-import axios, { AxiosResponse } from 'axios'
 import { DEFAULT_API_V2, DEFAULT_API_WS_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/core'
+import axios, { type AxiosResponse } from 'axios'
 
 import {
   GetMessageConfiguration,
   GetMessageParams,
   GetMessagesConfiguration,
   GetMessagesParams,
+  MessageError,
   MessageResponse,
   MessagesQueryResponse,
-  MessageError,
 } from './types'
 import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
+import { AlephSocket, getMessagesSocket, GetMessagesSocketConfiguration } from './websocket'
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
-import { AlephSocket, GetMessagesSocketConfiguration, getMessagesSocket } from './websocket'
 
 export class BaseMessageClient {
   apiServer: string

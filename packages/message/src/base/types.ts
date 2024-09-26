@@ -1,5 +1,6 @@
 import { Blockchain } from '@aleph-sdk/core'
-import { MessageType, MessageContent, PublishedMessage, MessageStatus } from '../types'
+
+import { MessageContent, MessageStatus, MessageType, PublishedMessage } from '../types'
 
 export type GetMessageParams = {
   hashes: string[]

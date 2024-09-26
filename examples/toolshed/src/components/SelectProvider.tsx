@@ -1,4 +1,5 @@
-import Select, { SingleValue } from 'react-select'
+import Select, { type SingleValue } from 'react-select'
+
 import { HardwareChains, KeypairChains, WalletChains } from '../model/chains'
 import { dispatchProps } from '../model/componentProps'
 import { Actions } from '../reducer'
@@ -10,19 +11,20 @@ type Option = {
 }
 
 export const availableKeypairs: Option[] = [
-  { label: 'Avalanche', value: KeypairChains.Avalanche },
-  { label: 'Cosmos', value: 'CSDK_KP' },
   { label: 'Ethereum', value: KeypairChains.Ethereum },
-  { label: 'NULS2', value: KeypairChains.NULS2 },
-  { label: 'Polkadot/Substrate', value: KeypairChains.Polkadot },
+  { label: 'Avalanche', value: KeypairChains.Avalanche },
+  { label: 'Base', value: KeypairChains.Base },
   { label: 'Solana', value: KeypairChains.Solana },
   { label: 'Tezos', value: KeypairChains.Tezos },
+  { label: 'Cosmos', value: 'CSDK_KP' },
+  { label: 'NULS2', value: KeypairChains.NULS2 },
+  { label: 'Polkadot/Substrate', value: KeypairChains.Polkadot },
 ]
 
 export const availableWallets: Option[] = [
-  { label: 'PolkaDot (via Polka.js)', value: WalletChains.Substrate },
-  { label: 'Ethereum (via Metamask)', value: WalletChains.Ethereum },
+  { label: 'EVM (via Metamask)', value: WalletChains.Ethereum },
   { label: 'Solana (via Phantom)', value: WalletChains.Solana },
+  { label: 'PolkaDot (via Polka.js)', value: WalletChains.Substrate },
 ]
 
 export const availableHardware: Option[] = [{ label: 'Ethereum (via Ledger)', value: HardwareChains.Ethereum }]
