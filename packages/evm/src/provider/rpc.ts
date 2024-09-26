@@ -173,6 +173,10 @@ export const ChainMetadata: { [key: number]: ChainMetadataType } = {
     tokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
     superTokenAddress: '0xc0Fbc4967259786C743361a5885ef49380473dCF',
   },
+  [RpcId.BSC]: {
+    ...ChainData[RpcId.BSC],
+    tokenAddress: '0x82D2f8E02Afb160Dd5A480a617692e62de9038C4',
+  },
 }
 
 export function findChainDataByChainId(chainId: number): RpcType | undefined {

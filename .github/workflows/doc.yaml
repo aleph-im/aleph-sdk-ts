@@ -22,7 +22,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
 
       - name: Create Doc
         run: npm run doc

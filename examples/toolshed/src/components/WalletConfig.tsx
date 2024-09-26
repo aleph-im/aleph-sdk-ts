@@ -37,13 +37,11 @@ function WalletConfig({ state, dispatch }: dispatchAndConsume) {
       ? [solana, window.phantom?.solana]
       : state.selectedChain === WalletChains.Substrate
         ? [substrate, null]
-        : [RpcId.ETH, RpcId.ETH_FLASHBOTS, RpcId.ETH_SEPOLIA].includes(rpcId)
-          ? [ethereum, window.ethereum]
-          : [RpcId.AVAX, RpcId.AVAX_TESTNET].includes(rpcId)
-            ? [avalanche, window.ethereum]
-            : [RpcId.BASE, RpcId.BASE_TESTNET].includes(rpcId)
-              ? [base, window.ethereum]
-              : [null, null]
+        : [RpcId.AVAX, RpcId.AVAX_TESTNET].includes(rpcId)
+          ? [avalanche, window.ethereum]
+          : [RpcId.BASE, RpcId.BASE_TESTNET].includes(rpcId)
+            ? [base, window.ethereum]
+            : [ethereum, window.ethereum]
 
   const connectToMetamask = useCallback(async () => {
     const [_account, provider] = getAccountClass()
