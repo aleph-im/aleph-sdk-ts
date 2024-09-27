@@ -4,67 +4,87 @@
 
 This SDK offers binding to interact with the [Aleph decentralized network](https://aleph.im/).
 
-Written in Typescript it is meant as a drop in replacement for the [aleph-js library](https://github.com/aleph-im/aleph-js). It works both in the browser, on a server using Node.js, or an Aleph Virtual Machine without internet access (using [socat](https://manpages.org/socat)).
+Written in TypeScript, it's designed to replace the [aleph-js library](https://github.com/aleph-im/aleph-js) and works seamlessly in the browser, on Node.js servers, and within the Aleph Virtual Machine without internet access (using [socat](https://manpages.org/socat)).
 
 ## Quick Start
 
+## Installation
+
+To get started, install the SDK using `npm install <package>`.
+Available packages are:
+
 ```shell
-npm install aleph-sdk-ts
+# Legacy (3.9.2)
+aleph-sdk-ts
+
+# Current (1.0.0 or later)
+## General
+@aleph-sdk/core
+@aleph-sdk/account
+@aleph-sdk/client
+@aleph-sdk/message
+@aleph-sdk/dns
+## EVM chains
+@aleph-sdk/evm
+@aleph-sdk/ethereum
+@aleph-sdk/ethereum-ledger
+@aleph-sdk/avalanche
+@aleph-sdk/base
+@aleph-sdk/superfluid
+## Non-EVM chains
+@aleph-sdk/solana
+@aleph-sdk/tezos
+@aleph-sdk/nuls2
+@aleph-sdk/cosmos
+@aleph-sdk/substrate
 ```
 
-- An API reference [on the repository github pages](https://aleph-im.github.io/aleph-sdk-ts/index.html)
-- For guides and use-cases check the [Aleph TS SDK Gitbook](https://aleph-im.gitbook.io/ts-sdk/)
-- Some examples are available in the `/examples` directory.
+## Additional Resources
+
+- [API reference](https://aleph-im.github.io/aleph-sdk-ts/index.html): Detailed documentation for the SDK's API.
+- [Aleph TS SDK Gitbook](https://aleph-im.gitbook.io/ts-sdk/): Guides and use-cases for the SDK.
+- [Examples](https://github.com/aleph-im/aleph-sdk-ts/tree/main/examples): Sample code snippets demonstrating the SDK's usage.
 
 ## Supported chains
 
 This is the list of currently supported Account types. For each of them you can:
 
-- Retrieve an account from a private key or mnemonic (or generate one on the fly).
-- Sign and send messages on the Aleph Network
+- Retrieve an account from a **private key** or **mnemonic** (or generate one on the fly).
+- Sign and send messages on the Aleph Network.
 - Some allow you to retrieve an account from a **browser based** wallet (ex: Metamask), or from a **Ledger** wallet.
 
 [Previous versions](https://npmjs.com/package/aleph-sdk-ts) of the Typescript SDK allowed you to **encrypt** messages.
 
-| Chain                | Encryption | Browser Wallet     | Ledger             |
-| -------------------- | ---------- | ------------------ | ------------------ |
-| Avalanche            | :x:        | :heavy_check_mark: | :x:                |
-| Base                 | :x:        | :heavy_check_mark: | :x:                |
-| Cosmos               | :x:        | :heavy_check_mark: | :x:                |
-| Ethereum             | :x:        | :heavy_check_mark: | :heavy_check_mark: |
-| NULS2                | :x:        | :x:                | :x:                |
-| Solana               | :x:        | :heavy_check_mark: | :x:                |
-| Substrate (Polkadot) | :x:        | :heavy_check_mark: | :x:                |
-| Tezos                | :x:        | :heavy_check_mark: | :x:                |
+| Chain                | Encryption | Browser Wallet | Ledger |
+| -------------------- | ---------- | -------------- | ------ |
+| Avalanche            | ❌         | ✔️             | ❌     |
+| Base                 | ❌         | ✔️             | ❌     |
+| Cosmos               | ❌         | ✔️             | ❌     |
+| Ethereum             | ❌         | ✔️             | ✔️     |
+| NULS2                | ❌         | ❌             | ❌     |
+| Solana               | ❌         | ✔️             | ❌     |
+| Substrate (Polkadot) | ❌         | ✔️             | ❌     |
+| Tezos                | ❌         | ✔️             | ❌     |
 
 ## Running from source
 
-If you wish to use feature which are not (yet) released, feel free to clone this repository on your local machine.
+To use features not yet released, clone this repository and follow these steps:
 
-Make sure to install the dependencies first by running:
-
-```
-npm install
-```
-
-You can run the test suite, using:
-
-```
-npm run test
-```
+1. Install dependencies: `npm install`
+2. Build packages: `npm run build`
+3. Run the test suite: `npm run test`
 
 ## Environments
 
-### Supported Node.js versions
+### Supported Node.js Versions
 
-This SDK is tested and works, with the following Node.js versions:
-| Version | Supported |
-| -- | -- |
-| v14.x | :heavy_check_mark: **Full working support** |
-| v16.x | :heavy_check_mark: **Full working support** |
-| v18.x | :heavy_multiplication_x: Some feature may not work (see notes) |
-| v20.x | :heavy_check_mark: **Full working support** |
-| v22.x | :heavy_check_mark: **Full working support** |
+| Version | Supported                                |
+| ------- | ---------------------------------------- |
+| v14.x   | ✔️ **Full working support**              |
+| v16.x   | ✔️ **Full working support**              |
+| v18.x   | ❌ Some feature may not work (see notes) |
+| v20.x   | ✔️ **Full working support**              |
+| v22.x   | ✔️ **Full working support**              |
 
 \* Due to changes in OpenSSL in Node v18, some chains helper may not work. If you encounter bugs using Node v18, you might want to consider using the `--openssl-legacy-provider` feature flag while running your project.
 
