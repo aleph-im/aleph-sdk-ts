@@ -28,6 +28,7 @@ export class SOLAccount extends Account {
 
   constructor(publicKey: PublicKey, walletOrKeypair: Keypair | MessageSigner) {
     super(publicKey.toString())
+
     if (walletOrKeypair instanceof Keypair) {
       this.keypair = walletOrKeypair
       this.isKeypair = true
@@ -54,18 +55,25 @@ export class SOLAccount extends Account {
     const buffer = message.getVerificationBuffer()
 
     let signature
+    let publicKey: string // as Base58
 
     if (this.wallet) {
       const signed = await this.wallet.signMessage(buffer)
-      if (signed instanceof Uint8Array) signature = signed
-      else signature = signed.signature
+      signature = signed instanceof Uint8Array ? signed : signed.signature
+      publicKey = this.wallet.publicKey.toBase58()
     } else if (this.keypair) {
-      signature = base58.encode(nacl.sign.detached(buffer, this.keypair.secretKey))
+      signature = nacl.sign.detached(buffer, this.keypair.secretKey)
+      publicKey = this.keypair.publicKey.toBase58()
     } else {
       throw new Error('Cannot sign message')
     }
 
-    const signatureObj = JSON.stringify({ signature, publicKey: this.address })
+    signature = base58.encode(signature)
+
+    const signatureObj = JSON.stringify({
+      signature,
+      publicKey: publicKey,
+    })
 
     if (verifySolana(buffer, signatureObj)) return signatureObj
     throw new Error('Cannot proof the integrity of the signature')

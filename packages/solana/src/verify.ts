@@ -1,5 +1,5 @@
 import { SignableMessage } from '@aleph-sdk/account'
-import bs58 from 'bs58'
+import base58 from 'bs58'
 import nacl from 'tweetnacl'
 
 /**
@@ -20,7 +20,7 @@ export function verifySolana(message: Uint8Array | SignableMessage, serializedSi
   const { signature, publicKey } = JSON.parse(serializedSignature)
 
   try {
-    return nacl.sign.detached.verify(message, bs58.decode(signature), bs58.decode(publicKey))
+    return nacl.sign.detached.verify(message, base58.decode(signature), base58.decode(publicKey))
   } catch (e: unknown) {
     return false
   }
