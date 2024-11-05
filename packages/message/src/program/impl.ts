@@ -110,7 +110,7 @@ export class ProgramMessageClient {
       runtime: {
         ref: runtime,
         use_latest: true,
-        comment: 'Aleph Alpine Linux with Python 3.8',
+        comment: 'Aleph Alpine Linux with Python 3.12',
       },
       volumes,
       variables,
