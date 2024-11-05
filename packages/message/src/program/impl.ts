@@ -42,7 +42,7 @@ export class ProgramMessageClient {
     subscriptions,
     memory = 128,
     vcpus = 1,
-    runtime = 'bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4',
+    runtime = '63f07193e6ee9d207b7d1fcf8286f9aee34e6f12f101d2ec77c1229f92964696',
     volumes = [],
     variables = {},
     payment = {
@@ -152,7 +152,7 @@ export class ProgramMessageClient {
     subscriptions,
     memory = 128,
     vcpus = 1,
-    runtime = 'bd79839bf96e595a06da5ac0b6ba51dea6f7e2591bb913deccded04d831d29f4',
+    runtime = '63f07193e6ee9d207b7d1fcf8286f9aee34e6f12f101d2ec77c1229f92964696',
     volumes = [],
     variables = {},
     payment = {
