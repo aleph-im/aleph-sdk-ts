@@ -37,7 +37,7 @@ export class PostMessageClient {
   /**
    * Queries the Aleph network for post messages.
    * @param types       The types of messages to retrieve.
-   * @param pageSize  The number of messages to retrieve.
+   * @param pagination  The number of messages to retrieve.
    * @param page        The page number to retrieve.
    * @param channels    The channels to retrieve the messages from.
    * @param refs        The references to retrieve the messages from.
@@ -47,7 +47,7 @@ export class PostMessageClient {
    */
   async getAll<T = any>({
     types = [],
-    pageSize = 50,
+    pagination = 50,
     page = 1,
     channels = [],
     refs = [],
@@ -58,7 +58,7 @@ export class PostMessageClient {
     const any = (value: any) => value && value.length > 0
     const params: PostQueryParams = {
       types,
-      pageSize,
+      pagination,
       page,
       refs: any(refs) ? refs?.join(',') : undefined,
       addresses: any(addresses) ? addresses?.join(',') : undefined,

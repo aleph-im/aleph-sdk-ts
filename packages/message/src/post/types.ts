@@ -12,7 +12,7 @@ export type PostContent<T> = BaseContent & {
 
 export type PostGetConfiguration = {
   types?: string | string[]
-  pageSize?: number
+  pagination?: number
   page?: number
   refs?: string[]
   addresses?: string[]
@@ -23,7 +23,7 @@ export type PostGetConfiguration = {
 
 export type PostQueryParams = {
   types?: string | string[]
-  pageSize: number
+  pagination: number
   page: number
   refs?: string | undefined
   addresses?: string | undefined

@@ -120,7 +120,7 @@ export class AlephHttpClient {
    * Watches for new messages on the Aleph network. This method returns a socket that can be used to listen for new messages.
    * @param config The filters used to watch for new messages, similar to getMessages.
    */
-  async watchMessages(config: Omit<GetMessagesConfiguration, 'page' | 'pageSize'>): Promise<AlephSocket> {
+  async watchMessages(config: Omit<GetMessagesConfiguration, 'page' | 'pagination'>): Promise<AlephSocket> {
     return this.messageClient.getMessagesSocket(config)
   }
 }

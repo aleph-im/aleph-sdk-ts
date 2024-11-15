@@ -8,7 +8,7 @@ describe('Post get tests', () => {
 
     const amends = await post.getAll({
       types: [],
-      pageSize: 5,
+      pagination: 5,
       channels: [channel],
     })
 

@@ -99,7 +99,7 @@ export class BaseMessageClient {
    * @param configuration The message params to make the query.
    */
   async getAll({
-    pageSize = 20,
+    pagination = 20,
     page = 1,
     addresses = [],
     channels = [],
@@ -115,7 +115,7 @@ export class BaseMessageClient {
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
     const any = (value: any) => value && value.length > 0
     const params: GetMessagesParams = {
-      pageSize,
+      pagination,
       page,
       addresses: any(addresses) ? addresses.join(',') : undefined,
       channels: any(channels) ? channels.join(',') : undefined,

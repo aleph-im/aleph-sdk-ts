@@ -31,7 +31,7 @@ export type MessagesQueryResponse = {
 }
 
 export type GetMessagesConfiguration = {
-  pageSize?: number
+  pagination?: number
   page?: number
   addresses?: string[]
   channels?: string[]
@@ -47,7 +47,7 @@ export type GetMessagesConfiguration = {
 }
 
 export type GetMessagesParams = {
-  pageSize?: number
+  pagination?: number
   page?: number
   addresses?: string
   channels?: string
