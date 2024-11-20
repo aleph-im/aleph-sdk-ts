@@ -88,6 +88,20 @@ To use features not yet released, clone this repository and follow these steps:
 
 \* Due to changes in OpenSSL in Node v18, some chains helper may not work. If you encounter bugs using Node v18, you might want to consider using the `--openssl-legacy-provider` feature flag while running your project.
 
+### Supported Deno Versions
+
+Since v2, Deno is now [compatible with npm packages](https://docs.deno.com/runtime/fundamentals/node/) and can be used as an alternative to Node.js.
+
+| Version | Supported                                |
+| ------- | ---------------------------------------- |
+| v2.x    | ✔️ **Full working support**              |
+
+To install any sdk package with Deno, use the following example:
+
+```bash
+deno install npm:@aleph-sdk/client
+```
+
 ### Running code inside the browser
 
 This SDK relies on several non-native browser modules (such as Streams and Buffer). While bundling your application, either using **rollup** (ex: `Vite`) or **webpack** (ex: `create-react-app`) you might have to rely on external polyfills for those features.
