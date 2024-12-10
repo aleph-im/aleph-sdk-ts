@@ -9,6 +9,7 @@ export type StoreContent = BaseContent & {
   content_type?: string
   ref?: string
   extra_fields?: Record<string, unknown>
+  metadata?: Record<string, unknown>
 }
 
 // -------- PIN ----------
@@ -48,6 +49,8 @@ export type StorePinConfiguration = {
  *
  * extraFields:     Extra fields to add to the Store message.
  *
+ * metadata:        Metadata about the stored content.
+ *
  * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type StorePublishConfiguration = {
@@ -57,5 +60,6 @@ export type StorePublishConfiguration = {
   fileHash?: string
   storageEngine?: ItemType.ipfs | ItemType.storage
   extraFields?: Record<string, unknown>
+  metadata?: Record<string, unknown>
   sync?: boolean
 }

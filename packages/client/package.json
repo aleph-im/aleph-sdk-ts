@@ -17,7 +17,7 @@
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
     "@aleph-sdk/core": "^1.x.x",
-    "@aleph-sdk/message": "^1.x.x"
+    "@aleph-sdk/message": "file:../message"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

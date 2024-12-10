@@ -44,6 +44,7 @@ export class StoreMessageClient {
     fileHash,
     fileObject,
     extraFields,
+    metadata,
     sync = false,
   }: RequireOnlyOne<StorePublishConfiguration, 'fileObject' | 'fileHash'>): Promise<StoreMessage> {
     if (!fileObject && !fileHash) throw new Error('You need to specify a File to upload or a Hash to pin.')
@@ -67,6 +68,7 @@ export class StoreMessageClient {
       item_hash: hash,
       time: timestamp,
       extra_fields: extraFields,
+      metadata,
     }
 
     const builtMessage = buildStoreMessage({
