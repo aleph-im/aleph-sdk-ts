@@ -19,11 +19,16 @@ describe('Store message publish', () => {
       key2: 123,
     }
 
+    const metadata: Record<string, unknown> = {
+      name: 'testFile.txt',
+    }
+
     const hash = await store.send({
       channel: 'TEST',
       account: account,
       fileObject: fileContent,
       extraFields,
+      metadata,
     })
 
     const response = await store.download(hash.content.item_hash)
@@ -33,6 +38,7 @@ describe('Store message publish', () => {
 
     expect(got).toBe(expected)
     expect(hash.content.extra_fields).toEqual(extraFields)
+    expect(hash.content.metadata).toEqual(metadata)
   })
 
   it('should pin a file and retrieve it correctly', async () => {
