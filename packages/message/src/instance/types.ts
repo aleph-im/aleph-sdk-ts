@@ -45,5 +45,4 @@ export type InstancePublishConfiguration = {
   storageEngine?: ItemType.ipfs | ItemType.storage
   payment?: Payment
   sync?: boolean
-  termsAndConditions?: string
 }

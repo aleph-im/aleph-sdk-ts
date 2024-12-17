@@ -82,6 +82,7 @@ export type NodeRequirements = {
   owner?: string
   address_regex?: string
   node_hash?: string
+  terms_and_conditions?: string
 }
 
 /**
