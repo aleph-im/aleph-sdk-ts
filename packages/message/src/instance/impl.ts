@@ -25,7 +25,7 @@ export class InstanceMessageClient {
     resources,
     requirements,
     environment,
-    image = '549ec451d9b099cad112d4aaa2c00ac40fb6729a92ff252ff22eef0b5c3cb613',
+    image = 'f7e68c568906b4ebcd3cd3c4bfdff96c489cd2a9ef73ba2d7503f244dfd578de',
     volumes = [],
     storageEngine = ItemType.ipfs,
     payment = {
