@@ -1,22 +1,40 @@
-import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
+import { Blockchain, DEFAULT_API_V2 } from '@aleph-sdk/core'
 
 import { InstanceContent, InstancePublishConfiguration } from './types'
-import { InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
+import { BuiltMessage, InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
+import { DefaultMessageClient } from '../utils/base'
 import { defaultInstanceExecutionEnvironment, defaultResources, MAXIMUM_DISK_SIZE } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
-export class InstanceMessageClient {
-  apiServer: string
-
+export class InstanceMessageClient extends DefaultMessageClient<InstancePublishConfiguration, InstanceContent> {
   constructor(apiServer: string = DEFAULT_API_V2) {
-    this.apiServer = stripTrailingSlash(apiServer)
+    super(apiServer)
   }
 
   // TODO: Check that program_ref, runtime and data_ref exist
   // Guard some numbers values
-  async send({
+  async send(conf: InstancePublishConfiguration): Promise<InstanceMessage> {
+    const { account, sync = true } = conf
+    const builtMessage = await this.prepareMessage(conf)
+
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
+      apiServer: this.apiServer,
+    })
+
+    const { message } = await broadcast({
+      message: hashedMessage,
+      account,
+      apiServer: this.apiServer,
+      sync,
+    })
+
+    return message
+  }
+
+  protected async prepareMessage({
     account,
     channel,
     metadata,
@@ -32,8 +50,7 @@ export class InstanceMessageClient {
       chain: Blockchain.ETH,
       type: PaymentType.hold,
     },
-    sync = true,
-  }: InstancePublishConfiguration): Promise<InstanceMessage> {
+  }: InstancePublishConfiguration): Promise<BuiltMessage<InstanceContent>> {
     const timestamp = Date.now() / 1000
     const { address } = account
     // To remove @typescript-eslint/no-unused-vars at buildtime, without removing the argument
@@ -79,27 +96,13 @@ export class InstanceMessageClient {
 
     if (instanceContent.requirements === null) delete instanceContent.requirements
 
-    const builtMessage = buildInstanceMessage({
+    return buildInstanceMessage({
       account,
       channel,
       timestamp,
       storageEngine: ItemType.inline,
       content: instanceContent,
     })
-
-    const hashedMessage = await prepareAlephMessage({
-      message: builtMessage,
-      apiServer: this.apiServer,
-    })
-
-    const { message } = await broadcast({
-      message: hashedMessage,
-      account,
-      apiServer: this.apiServer,
-      sync,
-    })
-
-    return message
   }
 }
 
