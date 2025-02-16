@@ -4,7 +4,7 @@ import * as ethereum from '../../../ethereum/src'
 import { ProgramMessageClient } from '../../src'
 
 describe('Test the program message', () => {
-  const program = new ProgramMessageClient('http://localhost:4024')
+  const program = new ProgramMessageClient()
 
   it('Publish a program retrieve the message', async () => {
     const { account } = ethereum.newAccount()
