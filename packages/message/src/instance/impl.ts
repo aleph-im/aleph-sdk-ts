@@ -2,11 +2,11 @@ import { Blockchain, DEFAULT_API_V2 } from '@aleph-sdk/core'
 
 import { InstanceContent, InstancePublishConfiguration } from './types'
 import { BuiltMessage, InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
+import { DefaultMessageClient } from '../utils/base'
 import { defaultInstanceExecutionEnvironment, defaultResources, MAXIMUM_DISK_SIZE } from '../utils/constants'
 import { buildInstanceMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
-import { DefaultMessageClient } from '../utils/base'
 
 export class InstanceMessageClient extends DefaultMessageClient<InstancePublishConfiguration, InstanceContent> {
   constructor(apiServer: string = DEFAULT_API_V2) {

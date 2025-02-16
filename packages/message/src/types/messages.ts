@@ -75,7 +75,17 @@ export type HashedMessageProps<C extends MessageContent> = BaseMessageProps<C> &
   item_content?: string
 }
 
-export type CostComputableMessage<C extends MessageContent> = Omit<HashedMessage<C>, 'content' | 'time' | 'chain' | 'sender' | 'channel' | 'getVerificationBuffer' | 'isOfType' | 'getMessageCostRequestSchema'>
+export type CostComputableMessage<C extends MessageContent> = Omit<
+  HashedMessage<C>,
+  | 'content'
+  | 'time'
+  | 'chain'
+  | 'sender'
+  | 'channel'
+  | 'getVerificationBuffer'
+  | 'isOfType'
+  | 'getMessageCostRequestSchema'
+>
 
 export class HashedMessage<C extends MessageContent> extends BuiltMessage<C> {
   item_hash: string
@@ -111,7 +121,10 @@ export type SignedMessageProps<C extends MessageContent> = HashedMessageProps<C>
   signature: string
 }
 
-export type BroadcastableMessage<C extends MessageContent> = Omit<SignedMessage<C>, 'content' | 'getVerificationBuffer' | 'isOfType' | 'getBroadcastable' | 'getMessageCostRequestSchema'>
+export type BroadcastableMessage<C extends MessageContent> = Omit<
+  SignedMessage<C>,
+  'content' | 'getVerificationBuffer' | 'isOfType' | 'getBroadcastable' | 'getMessageCostRequestSchema'
+>
 
 export class SignedMessage<C extends MessageContent> extends HashedMessage<C> {
   signature: string

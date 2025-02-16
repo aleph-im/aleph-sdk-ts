@@ -4,7 +4,7 @@ import * as ethereum from '../../../ethereum/src'
 import { ProgramMessageClient } from '../../src'
 
 describe('Test the program message', () => {
-  const program = new ProgramMessageClient("http://localhost:4024")
+  const program = new ProgramMessageClient('http://localhost:4024')
 
   it('Publish a program retrieve the message', async () => {
     const { account } = ethereum.newAccount()
@@ -94,10 +94,10 @@ describe('Test the program message', () => {
       channel: 'TEST',
       file: fileContent,
       entrypoint: 'main:app',
-    }) 
+    })
 
     expect(response).toBeDefined()
-    expect(response.cost).toBe("400.000000000000000000")
+    expect(response.cost).toBe('400.000000000000000000')
     expect(response.detail).toHaveLength(3)
   })
 })

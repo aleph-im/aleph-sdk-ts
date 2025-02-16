@@ -10,18 +10,16 @@ import {
 import { BaseMessageClient } from '../base'
 import { StoreMessageClient } from '../store'
 import { BuiltMessage, ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
+import { DefaultMessageClient } from '../utils/base'
 import { buildProgramMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
-import { DefaultMessageClient } from '../utils/base'
-
-
 
 export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishConfiguration, ProgramContent> {
   constructor(
     apiServer: string = DEFAULT_API_V2,
     protected baseMessageClient: BaseMessageClient = new BaseMessageClient(apiServer),
-    protected storeMessageClient: StoreMessageClient = new StoreMessageClient(apiServer)
+    protected storeMessageClient: StoreMessageClient = new StoreMessageClient(apiServer),
   ) {
     super(apiServer)
   }

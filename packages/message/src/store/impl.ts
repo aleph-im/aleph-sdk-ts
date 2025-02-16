@@ -1,15 +1,15 @@
-import axios, { type AxiosResponse } from 'axios'
 import { Account } from '@aleph-sdk/account'
 import { DEFAULT_API_V2, getSocketPath } from '@aleph-sdk/core'
+import axios, { type AxiosResponse } from 'axios'
 
 import { StoreContent, StorePinConfiguration, StorePublishConfiguration } from './types'
 import { BuiltMessage, HashedMessage, ItemType, SignedMessage, StoreMessage } from '../types'
 import { blobToBuffer, calculateSHA256Hash } from './utils'
 import { InvalidMessageError } from '../types/errors'
+import { DefaultMessageClient } from '../utils/base'
 import { buildStoreMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage, pushFileToStorageEngine } from '../utils/publish'
 import { broadcast } from '../utils/signature'
-import { DefaultMessageClient } from '../utils/base'
 
 export class StoreMessageClient extends DefaultMessageClient<StorePublishConfiguration, StoreContent> {
   constructor(apiServer: string = DEFAULT_API_V2) {

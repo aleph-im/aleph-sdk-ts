@@ -1,8 +1,9 @@
-import { Account } from "@aleph-sdk/account"
-import { BuiltMessage, MessageContent, MessageCost } from "../types"
-import { prepareAlephMessage } from "./publish"
-import { getMessageCost } from "./cost"
-import { stripTrailingSlash } from "@aleph-sdk/core"
+import { Account } from '@aleph-sdk/account'
+import { stripTrailingSlash } from '@aleph-sdk/core'
+
+import { BuiltMessage, MessageContent, MessageCost } from '../types'
+import { getMessageCost } from './cost'
+import { prepareAlephMessage } from './publish'
 
 export type DefaultMessageConfiguration = {
   account: Account
@@ -10,9 +11,7 @@ export type DefaultMessageConfiguration = {
 }
 
 export abstract class DefaultMessageClient<T extends DefaultMessageConfiguration, C extends MessageContent> {
-  constructor(
-    protected apiServer: string
-  ) {
+  constructor(protected apiServer: string) {
     this.apiServer = stripTrailingSlash(apiServer)
   }
 
