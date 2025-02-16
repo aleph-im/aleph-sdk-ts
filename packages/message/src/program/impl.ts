@@ -1,4 +1,4 @@
-import { Blockchain, DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
+import { Blockchain, DEFAULT_API_V2 } from '@aleph-sdk/core'
 
 import {
   Encoding,
@@ -9,27 +9,84 @@ import {
 } from './types'
 import { BaseMessageClient } from '../base'
 import { StoreMessageClient } from '../store'
-import { ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
+import { BuiltMessage, ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
 import { buildProgramMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
+import { DefaultMessageClient } from '../utils/base'
 
-export class ProgramMessageClient {
-  apiServer: string
-  protected baseMessageClient: BaseMessageClient
-  protected storeMessageClient: StoreMessageClient
 
+
+export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishConfiguration, ProgramContent> {
   constructor(
     apiServer: string = DEFAULT_API_V2,
-    baseMessageClient?: BaseMessageClient,
-    storeMessageClient?: StoreMessageClient,
+    protected baseMessageClient: BaseMessageClient = new BaseMessageClient(apiServer),
+    protected storeMessageClient: StoreMessageClient = new StoreMessageClient(apiServer)
   ) {
-    this.apiServer = stripTrailingSlash(apiServer)
-    this.baseMessageClient = baseMessageClient || new BaseMessageClient(apiServer)
-    this.storeMessageClient = storeMessageClient || new StoreMessageClient(apiServer)
+    super(apiServer)
   }
 
-  async publish({
+  async publish(conf: ProgramPublishConfiguration): Promise<ProgramMessage> {
+    const { account, sync = true } = conf
+    const builtMessage = await this.prepareMessage(conf)
+
+    const hashedMessage = await prepareAlephMessage({
+      message: builtMessage,
+      apiServer: this.apiServer,
+    })
+
+    const { message } = await broadcast({
+      message: hashedMessage,
+      account,
+      apiServer: this.apiServer,
+      sync,
+    })
+
+    return message
+  }
+
+  async spawn({
+    account,
+    channel,
+    metadata,
+    isPersistent = false,
+    storageEngine = ItemType.ipfs,
+    programRef,
+    entrypoint,
+    encoding = Encoding.zip,
+    subscriptions,
+    memory = 128,
+    vcpus = 1,
+    runtime = '63f07193e6ee9d207b7d1fcf8286f9aee34e6f12f101d2ec77c1229f92964696',
+    volumes = [],
+    variables = {},
+    payment = {
+      chain: Blockchain.ETH,
+      type: PaymentType.hold,
+    },
+    sync = true,
+  }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
+    return await this.publish({
+      account,
+      channel,
+      metadata,
+      isPersistent,
+      storageEngine,
+      programRef,
+      entrypoint,
+      encoding,
+      subscriptions,
+      memory,
+      vcpus,
+      runtime,
+      volumes,
+      variables,
+      payment,
+      sync,
+    })
+  }
+
+  protected async prepareMessage({
     account,
     channel,
     metadata,
@@ -50,7 +107,7 @@ export class ProgramMessageClient {
       type: PaymentType.hold,
     },
     sync = true,
-  }: ProgramPublishConfiguration): Promise<ProgramMessage> {
+  }: ProgramPublishConfiguration): Promise<BuiltMessage<ProgramContent>> {
     const timestamp = Date.now() / 1000
     if (!programRef && !file) throw new Error('You need to specify a file to upload or a programRef to load.')
     if (programRef && file) throw new Error("You can't load a file and a programRef at the same time.")
@@ -117,67 +174,12 @@ export class ProgramMessageClient {
       payment,
     }
 
-    const builtMessage = buildProgramMessage({
+    return buildProgramMessage({
       account,
       channel,
-      timestamp,
+      timestamp: programContent.time,
       storageEngine: ItemType.inline,
       content: programContent,
-    })
-
-    const hashedMessage = await prepareAlephMessage({
-      message: builtMessage,
-      apiServer: this.apiServer,
-    })
-
-    const { message } = await broadcast({
-      message: hashedMessage,
-      account,
-      apiServer: this.apiServer,
-      sync,
-    })
-
-    return message
-  }
-
-  async spawn({
-    account,
-    channel,
-    metadata,
-    isPersistent = false,
-    storageEngine = ItemType.ipfs,
-    programRef,
-    entrypoint,
-    encoding = Encoding.zip,
-    subscriptions,
-    memory = 128,
-    vcpus = 1,
-    runtime = '63f07193e6ee9d207b7d1fcf8286f9aee34e6f12f101d2ec77c1229f92964696',
-    volumes = [],
-    variables = {},
-    payment = {
-      chain: Blockchain.ETH,
-      type: PaymentType.hold,
-    },
-    sync = true,
-  }: ProgramSpawnConfiguration): Promise<ProgramMessage> {
-    return await this.publish({
-      account,
-      channel,
-      metadata,
-      isPersistent,
-      storageEngine,
-      programRef,
-      entrypoint,
-      encoding,
-      subscriptions,
-      memory,
-      vcpus,
-      runtime,
-      volumes,
-      variables,
-      payment,
-      sync,
     })
   }
 }

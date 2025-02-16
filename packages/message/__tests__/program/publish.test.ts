@@ -4,7 +4,7 @@ import * as ethereum from '../../../ethereum/src'
 import { ProgramMessageClient } from '../../src'
 
 describe('Test the program message', () => {
-  const program = new ProgramMessageClient()
+  const program = new ProgramMessageClient("http://localhost:4024")
 
   it('Publish a program retrieve the message', async () => {
     const { account } = ethereum.newAccount()
@@ -82,5 +82,22 @@ describe('Test the program message', () => {
         programRef: 'unknown_program',
       }),
     ).rejects.toThrow('The program ref: unknown_program does not exist on Aleph network')
+  })
+
+  it('Should calculate the costs', async () => {
+    const { account } = ethereum.newAccount()
+
+    const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
+
+    const response = await program.getCost({
+      account: account,
+      channel: 'TEST',
+      file: fileContent,
+      entrypoint: 'main:app',
+    }) 
+
+    expect(response).toBeDefined()
+    expect(response.cost).toBe("400.000000000000000000")
+    expect(response.detail).toHaveLength(3)
   })
 })

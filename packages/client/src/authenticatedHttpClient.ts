@@ -1,5 +1,5 @@
 import { Account } from '@aleph-sdk/account'
-import { DEFAULT_API_V2, RequireOnlyOne } from '@aleph-sdk/core'
+import { DEFAULT_API_V2 } from '@aleph-sdk/core'
 import {
   AggregatePublishConfiguration,
   ForgetPublishConfiguration,
@@ -65,11 +65,11 @@ export class AuthenticatedAlephHttpClient extends AlephHttpClient {
    * @param channel Channel to post the message to
    * @param sync If true, waits for the message to be processed by the API server (Default: False)
    */
-  async createStore(config: RequireOnlyOne<Omit<StorePublishConfiguration, 'account'>, 'fileObject' | 'fileHash'>) {
+  async createStore(config: Omit<StorePublishConfiguration, 'account'>) {
     return await this.storeClient.send({
       account: this.account,
       ...config,
-    } as RequireOnlyOne<StorePublishConfiguration, 'fileObject' | 'fileHash'>)
+    } as StorePublishConfiguration)
   }
 
   /**

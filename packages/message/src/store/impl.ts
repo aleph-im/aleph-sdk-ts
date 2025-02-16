@@ -1,20 +1,19 @@
-import { Account } from '@aleph-sdk/account'
-import { DEFAULT_API_V2, getSocketPath, RequireOnlyOne, stripTrailingSlash } from '@aleph-sdk/core'
 import axios, { type AxiosResponse } from 'axios'
+import { Account } from '@aleph-sdk/account'
+import { DEFAULT_API_V2, getSocketPath } from '@aleph-sdk/core'
 
 import { StoreContent, StorePinConfiguration, StorePublishConfiguration } from './types'
-import { HashedMessage, ItemType, SignedMessage, StoreMessage } from '../types'
+import { BuiltMessage, HashedMessage, ItemType, SignedMessage, StoreMessage } from '../types'
 import { blobToBuffer, calculateSHA256Hash } from './utils'
 import { InvalidMessageError } from '../types/errors'
 import { buildStoreMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage, pushFileToStorageEngine } from '../utils/publish'
 import { broadcast } from '../utils/signature'
+import { DefaultMessageClient } from '../utils/base'
 
-export class StoreMessageClient {
-  apiServer: string
-
+export class StoreMessageClient extends DefaultMessageClient<StorePublishConfiguration, StoreContent> {
   constructor(apiServer: string = DEFAULT_API_V2) {
-    this.apiServer = stripTrailingSlash(apiServer)
+    super(apiServer)
   }
 
   /**
@@ -37,47 +36,9 @@ export class StoreMessageClient {
    *
    * @param spc The configuration used to publish a store message.
    */
-  async send({
-    account,
-    storageEngine = ItemType.storage,
-    channel,
-    fileHash,
-    fileObject,
-    extraFields,
-    metadata,
-    sync = false,
-  }: RequireOnlyOne<StorePublishConfiguration, 'fileObject' | 'fileHash'>): Promise<StoreMessage> {
-    if (!fileObject && !fileHash) throw new Error('You need to specify a File to upload or a Hash to pin.')
-    if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.")
-    if (fileHash && storageEngine !== ItemType.ipfs) throw new Error('You must choose ipfs to pin the file.')
-
-    let hash: string | undefined = fileHash
-    if (!hash) {
-      const buffer = await this.processFileObject(fileObject)
-      hash = await this.getHash(buffer, storageEngine, fileHash, this.apiServer)
-      if (fileObject instanceof File) {
-        fileObject = new File([buffer], fileObject.name)
-      } else {
-        fileObject = new Blob([buffer])
-      }
-    }
-    const timestamp = Date.now() / 1000
-    const storeContent: StoreContent = {
-      address: account.address,
-      item_type: storageEngine,
-      item_hash: hash,
-      time: timestamp,
-      extra_fields: extraFields,
-      metadata,
-    }
-
-    const builtMessage = buildStoreMessage({
-      channel,
-      content: storeContent,
-      account,
-      storageEngine: ItemType.inline,
-      timestamp,
-    })
+  async send(conf: StorePublishConfiguration): Promise<StoreMessage> {
+    const { account, storageEngine, fileObject, sync = false } = conf
+    const builtMessage = await this.prepareMessage(conf)
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
@@ -190,6 +151,48 @@ export class StoreMessageClient {
       channel: spc.channel,
       fileHash: spc.fileHash,
       storageEngine: ItemType.ipfs,
+    })
+  }
+
+  protected async prepareMessage({
+    account,
+    storageEngine = ItemType.storage,
+    channel,
+    fileHash,
+    fileObject,
+    extraFields,
+    metadata,
+  }: StorePublishConfiguration): Promise<BuiltMessage<StoreContent>> {
+    if (!fileObject && !fileHash) throw new Error('You need to specify a File to upload or a Hash to pin.')
+    if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.")
+    if (fileHash && storageEngine !== ItemType.ipfs) throw new Error('You must choose ipfs to pin the file.')
+
+    let hash: string | undefined = fileHash
+    if (!hash) {
+      const buffer = await this.processFileObject(fileObject)
+      hash = await this.getHash(buffer, storageEngine, fileHash, this.apiServer)
+      if (typeof File !== 'undefined' && fileObject instanceof File) {
+        fileObject = new File([buffer], fileObject.name)
+      } else {
+        fileObject = new Blob([buffer])
+      }
+    }
+    const timestamp = Date.now() / 1000
+    const storeContent: StoreContent = {
+      address: account.address,
+      item_type: storageEngine,
+      item_hash: hash,
+      time: timestamp,
+      extra_fields: extraFields,
+      metadata,
+    }
+
+    return buildStoreMessage({
+      channel,
+      content: storeContent,
+      account,
+      storageEngine: ItemType.inline,
+      timestamp,
     })
   }
 }
