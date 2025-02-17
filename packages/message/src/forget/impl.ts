@@ -1,13 +1,14 @@
 import { DEFAULT_API_V2, stripTrailingSlash } from '@aleph-sdk/core'
 
 import { ForgetContent, ForgetPublishConfiguration } from './types'
-import { ForgetMessage, ItemType } from '../types'
-import { buildForgetMessage } from '../utils/messageBuilder'
+import { ForgetMessage, ItemType, MessageType } from '../types'
+import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
 export class ForgetMessageClient {
   apiServer: string
+  protected messageType = MessageType.forget
 
   constructor(apiServer: string = DEFAULT_API_V2) {
     this.apiServer = stripTrailingSlash(apiServer)
@@ -39,13 +40,16 @@ export class ForgetMessageClient {
       reason,
     }
 
-    const builtMessage = buildForgetMessage({
-      account,
-      channel,
-      timestamp,
-      storageEngine,
-      content: forgetContent,
-    })
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel,
+        timestamp,
+        storageEngine,
+        content: forgetContent,
+      },
+      this.messageType,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,

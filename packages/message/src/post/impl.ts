@@ -9,12 +9,13 @@ import {
   PostQueryResponse,
   PostResponse,
 } from './types'
-import { ItemType, PostMessage } from '../types'
+import { ItemType, MessageType, PostMessage } from '../types'
 import { MessageNotFoundError } from '../types/errors'
-import { broadcast, PostMessageBuilder, prepareAlephMessage } from '../utils'
+import { broadcast, buildMessage, prepareAlephMessage } from '../utils'
 
 export class PostMessageClient {
   apiServer: string
+  protected messageType = MessageType.post
 
   constructor(apiServer: string = DEFAULT_API_V2) {
     this.apiServer = stripTrailingSlash(apiServer)
@@ -109,13 +110,16 @@ export class PostMessageClient {
 
     if (ref !== '') postContent.ref = ref
 
-    const builtMessage = PostMessageBuilder({
-      account,
-      channel,
-      timestamp,
-      storageEngine,
-      content: postContent,
-    })
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel,
+        timestamp,
+        storageEngine,
+        content: postContent,
+      },
+      this.messageType,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
