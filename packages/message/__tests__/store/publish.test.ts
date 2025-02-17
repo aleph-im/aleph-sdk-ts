@@ -77,7 +77,7 @@ describe('Store message publish', () => {
     const { account } = ethereum.newAccount()
     const fileContent = readFileSync('./packages/message/__tests__/store/heavyTestFile.txt')
 
-    const cost = await store.getCost({
+    const cost = await store.getEstimatedCost({
       channel: 'TEST',
       account: account,
       fileObject: fileContent,
@@ -93,7 +93,7 @@ describe('Store message publish', () => {
     // @note: 1MiB ~file size
     const fileContent = readFileSync('./packages/message/__tests__/store/heavyTestFile.txt')
 
-    const cost = await store.getCost({
+    const cost = await store.getEstimatedCost({
       channel: 'TEST',
       account: account,
       fileObject: fileContent,
@@ -101,5 +101,12 @@ describe('Store message publish', () => {
 
     expect(cost).toBeDefined()
     expect(cost.cost).toBe('0.333333333000000000')
+  })
+
+  it('should get the cost of an existing message', async () => {
+    const cost = await store.getCost('9d6fa0355f946b60f15a56f3510551fbbb5b3ea2e38adf098d80f4dc0d3647ed')
+
+    expect(cost).toBeDefined()
+    expect(cost.cost).toBe('0.059805234213469505')
   })
 })

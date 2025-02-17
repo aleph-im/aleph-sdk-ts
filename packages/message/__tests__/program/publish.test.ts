@@ -89,7 +89,7 @@ describe('Test the program message', () => {
 
     const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
 
-    const response = await program.getCost({
+    const response = await program.getEstimatedCost({
       account: account,
       channel: 'TEST',
       file: fileContent,
