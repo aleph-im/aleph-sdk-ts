@@ -1,23 +1,44 @@
 import { Blockchain, DEFAULT_API_V2 } from '@aleph-sdk/core'
 
-import { InstanceContent, InstancePublishConfiguration } from './types'
-import { BuiltMessage, InstanceMessage, ItemType, MachineVolume, PaymentType, VolumePersistence } from '../types'
+import {
+  CostEstimationInstanceContent,
+  CostEstimationInstancePublishConfiguration,
+  InstanceContent,
+  InstancePublishConfiguration,
+} from './types'
+import { InstanceMessage, ItemType, MessageType, PaymentType, VolumePersistence } from '../types'
 import { DefaultMessageClient } from '../utils/base'
 import { defaultInstanceExecutionEnvironment, defaultResources, MAXIMUM_DISK_SIZE } from '../utils/constants'
-import { buildInstanceMessage } from '../utils/messageBuilder'
+import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
-export class InstanceMessageClient extends DefaultMessageClient<InstancePublishConfiguration, InstanceContent> {
+export class InstanceMessageClient extends DefaultMessageClient<
+  InstancePublishConfiguration,
+  InstanceContent,
+  CostEstimationInstancePublishConfiguration,
+  CostEstimationInstanceContent
+> {
   constructor(apiServer: string = DEFAULT_API_V2) {
-    super(apiServer)
+    super(apiServer, MessageType.instance)
   }
 
   // TODO: Check that program_ref, runtime and data_ref exist
   // Guard some numbers values
   async send(conf: InstancePublishConfiguration): Promise<InstanceMessage> {
-    const { account, sync = true } = conf
-    const builtMessage = await this.prepareMessage(conf)
+    const { account, channel, sync = true } = conf
+    const content = await this.prepareMessageContent(conf)
+
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel,
+        content,
+        timestamp: content.time,
+        storageEngine: ItemType.inline,
+      },
+      this.messageType,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
@@ -34,9 +55,8 @@ export class InstanceMessageClient extends DefaultMessageClient<InstancePublishC
     return message
   }
 
-  protected async prepareMessage({
+  protected async prepareMessageContent({
     account,
-    channel,
     metadata,
     variables,
     authorized_keys,
@@ -50,7 +70,7 @@ export class InstanceMessageClient extends DefaultMessageClient<InstancePublishC
       chain: Blockchain.ETH,
       type: PaymentType.hold,
     },
-  }: InstancePublishConfiguration): Promise<BuiltMessage<InstanceContent>> {
+  }: InstancePublishConfiguration): Promise<InstanceContent> {
     const timestamp = Date.now() / 1000
     const { address } = account
     // To remove @typescript-eslint/no-unused-vars at buildtime, without removing the argument
@@ -84,7 +104,7 @@ export class InstanceMessageClient extends DefaultMessageClient<InstancePublishC
       time: timestamp,
       metadata,
       authorized_keys,
-      volumes: volumes as MachineVolume[],
+      volumes,
       variables,
       requirements,
       allow_amend: false,
@@ -96,13 +116,7 @@ export class InstanceMessageClient extends DefaultMessageClient<InstancePublishC
 
     if (instanceContent.requirements === null) delete instanceContent.requirements
 
-    return buildInstanceMessage({
-      account,
-      channel,
-      timestamp,
-      storageEngine: ItemType.inline,
-      content: instanceContent,
-    })
+    return instanceContent
   }
 }
 

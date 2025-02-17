@@ -2,8 +2,7 @@ import { ItemHash } from './messages'
 
 export type AbstractVolume = {
   comment?: string[]
-  mount?: string[]
-  is_read_only: () => boolean
+  mount: string
 }
 
 /**
@@ -16,7 +15,10 @@ export type AbstractVolume = {
 export type ImmutableVolume = AbstractVolume & {
   ref: string
   use_latest: boolean
-  is_read_only: () => true
+}
+
+export type CostEstimationImmutableVolume = ImmutableVolume & {
+  estimated_size_mib?: number
 }
 
 /**
@@ -25,7 +27,6 @@ export type ImmutableVolume = AbstractVolume & {
 export type EphemeralVolume = AbstractVolume & {
   ephemeral: true
   size_mib: number //Limit to 1 GiB
-  is_read_only: () => false
 }
 
 export enum VolumePersistence {
@@ -53,7 +54,8 @@ export type PersistentVolume = AbstractVolume & {
   persistence: VolumePersistence
   name: string
   size_mib: number //Limit to 1 GiB
-  is_read_only: () => false
 }
 
 export type MachineVolume = ImmutableVolume | EphemeralVolume | PersistentVolume
+
+export type CostEstimationMachineVolume = CostEstimationImmutableVolume | EphemeralVolume | PersistentVolume
