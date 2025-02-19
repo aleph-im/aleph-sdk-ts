@@ -108,7 +108,7 @@ export type GpuProperties = {
 export type HostRequirements = {
   cpu?: CpuProperties
   node?: NodeRequirements
-  gpu?: GpuProperties
+  gpu?: GpuProperties[]
 }
 
 /**
