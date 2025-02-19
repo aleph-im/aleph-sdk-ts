@@ -86,12 +86,29 @@ export type NodeRequirements = {
 }
 
 /**
+ * Additional properties required for the gpu
+ *
+ * vendor: GPU vendor
+ * device_name: GPU device name
+ * device_class: GPU device class
+ * device_id: GPU device ID
+ */
+export type GpuProperties = {
+  vendor: string
+  device_name: string
+  device_class: string
+  device_id: string
+}
+
+/**
  * cpu: Required CPU properties
  * node: Required Compute Resource Node properties
+ * gpu: Required GPU properties
  */
 export type HostRequirements = {
   cpu?: CpuProperties
   node?: NodeRequirements
+  gpu?: GpuProperties
 }
 
 /**
