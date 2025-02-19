@@ -27,3 +27,17 @@ export function calculateSHA256Hash(data: ArrayBuffer | Buffer): string {
   const buffer = Buffer.from(data)
   return new shajs.sha256().update(buffer).digest('hex')
 }
+
+export async function processFileObject(
+  fileObject: Blob | Buffer | File | Uint8Array | null | undefined,
+): Promise<Buffer | Uint8Array> {
+  if (!fileObject) {
+    throw new Error('fileObject is null')
+  }
+
+  if (fileObject instanceof Buffer || fileObject instanceof Uint8Array) {
+    return fileObject
+  }
+
+  return await blobToBuffer(fileObject)
+}

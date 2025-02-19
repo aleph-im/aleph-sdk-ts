@@ -25,6 +25,10 @@ export type CodeContent = {
   args?: string[]
 }
 
+export type CostEstimationCodeContent = CodeContent & {
+  estimated_size_mib?: number
+}
+
 /**
  * Data to use during computation
  */
@@ -71,6 +75,7 @@ export type ProgramContent = BaseExecutableContent & {
 }
 
 export type CostEstimationProgramContent = ProgramContent & {
+  code: CostEstimationCodeContent
   volumes: CostEstimationMachineVolume[]
 }
 
@@ -98,6 +103,9 @@ export type ProgramPublishConfiguration = RequireOnlyOne<
 >
 
 export type CostEstimationProgramPublishConfiguration = ProgramPublishConfiguration & {
+  estimated_size_mib?: number
+  file?: Buffer | Blob
+  programRef?: string
   volumes?: CostEstimationMachineVolume[]
 }
 

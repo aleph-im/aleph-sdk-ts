@@ -10,7 +10,7 @@ import {
   StorePublishConfiguration,
 } from './types'
 import { HashedMessage, ItemType, MessageType, SignedMessage, StoreMessage } from '../types'
-import { blobToBuffer, calculateSHA256Hash } from './utils'
+import { calculateSHA256Hash, processFileObject } from './utils'
 import { InvalidMessageError } from '../types/errors'
 import { DefaultMessageClient } from '../utils/base'
 import { buildMessage } from '../utils/messageBuilder'
@@ -108,20 +108,6 @@ export class StoreMessageClient extends DefaultMessageClient<
     }
   }
 
-  protected async processFileObject(
-    fileObject: Blob | Buffer | File | Uint8Array | null | undefined,
-  ): Promise<Buffer | Uint8Array> {
-    if (!fileObject) {
-      throw new Error('fileObject is null')
-    }
-
-    if (fileObject instanceof Buffer || fileObject instanceof Uint8Array) {
-      return fileObject
-    }
-
-    return await blobToBuffer(fileObject)
-  }
-
   protected async uploadStore(
     message: HashedMessage<StoreContent>,
     account: Account,
@@ -183,7 +169,7 @@ export class StoreMessageClient extends DefaultMessageClient<
     content.estimated_size_mib = config.estimated_size_mib
 
     if (!content.estimated_size_mib && config.fileObject) {
-      const buffer = await this.processFileObject(config.fileObject)
+      const buffer = await processFileObject(config.fileObject)
       content.estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
     }
 
@@ -205,7 +191,7 @@ export class StoreMessageClient extends DefaultMessageClient<
     let hash: string | undefined = fileHash
 
     if (!hash) {
-      const buffer = await this.processFileObject(fileObject)
+      const buffer = await processFileObject(fileObject)
       hash = await this.getHash(buffer, storageEngine, fileHash, this.apiServer)
     }
 

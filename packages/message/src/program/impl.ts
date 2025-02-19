@@ -11,6 +11,7 @@ import {
 } from './types'
 import { BaseMessageClient } from '../base'
 import { StoreMessageClient } from '../store'
+import { processFileObject } from '../store/utils'
 import { ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
 import { DefaultMessageClient } from '../utils/base'
 import { buildMessage } from '../utils/messageBuilder'
@@ -61,6 +62,32 @@ export class ProgramMessageClient extends DefaultMessageClient<
     return message
   }
 
+  protected override async prepareCostEstimationMessageContent(
+    config: CostEstimationProgramPublishConfiguration,
+  ): Promise<CostEstimationProgramContent> {
+    const { encoding = Encoding.zip, entrypoint, programRef, estimated_size_mib } = config
+
+    const baseContent = this.prepareBaseContent(config)
+
+    const content: CostEstimationProgramContent = {
+      ...baseContent,
+      code: {
+        encoding,
+        entrypoint,
+        ref: programRef as string,
+        use_latest: true,
+        estimated_size_mib,
+      },
+    }
+
+    if (!content.code.estimated_size_mib && config.file) {
+      const buffer = await processFileObject(config.file)
+      content.code.estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
+    }
+
+    return content
+  }
+
   async spawn({
     account,
     channel,
@@ -102,29 +129,18 @@ export class ProgramMessageClient extends DefaultMessageClient<
     })
   }
 
-  protected async prepareMessageContent({
-    account,
-    channel,
-    metadata,
-    isPersistent = false,
-    storageEngine = ItemType.ipfs,
-    file,
-    programRef,
-    encoding = Encoding.zip,
-    entrypoint,
-    subscriptions,
-    memory = 128,
-    vcpus = 1,
-    runtime = '63f07193e6ee9d207b7d1fcf8286f9aee34e6f12f101d2ec77c1229f92964696',
-    volumes = [],
-    variables = {},
-    payment = {
-      chain: Blockchain.ETH,
-      type: PaymentType.hold,
-    },
-    sync = true,
-  }: ProgramPublishConfiguration): Promise<ProgramContent> {
-    const timestamp = Date.now() / 1000
+  protected async prepareMessageContent(config: ProgramPublishConfiguration): Promise<ProgramContent> {
+    const {
+      account,
+      channel,
+      storageEngine = ItemType.ipfs,
+      file,
+      encoding = Encoding.zip,
+      entrypoint,
+      sync = true,
+    } = config
+    let { programRef } = config
+
     if (!programRef && !file) throw new Error('You need to specify a file to upload or a programRef to load.')
     if (programRef && file) throw new Error("You can't load a file and a programRef at the same time.")
 
@@ -153,6 +169,36 @@ export class ProgramMessageClient extends DefaultMessageClient<
       }
     }
 
+    const baseContent = this.prepareBaseContent(config)
+
+    return {
+      ...baseContent,
+      code: {
+        encoding, // retrieve the file format or params
+        entrypoint,
+        ref: programRef as string,
+        use_latest: true,
+      },
+    }
+  }
+
+  protected prepareBaseContent({
+    account,
+    metadata,
+    isPersistent = false,
+    subscriptions,
+    memory = 128,
+    vcpus = 1,
+    runtime = '63f07193e6ee9d207b7d1fcf8286f9aee34e6f12f101d2ec77c1229f92964696',
+    volumes = [],
+    variables = {},
+    payment = {
+      chain: Blockchain.ETH,
+      type: PaymentType.hold,
+    },
+  }: Omit<ProgramPublishConfiguration, 'programRef' | 'file'>): Omit<ProgramContent, 'code'> {
+    const timestamp = Date.now() / 1000
+
     let triggers: FunctionTriggers = { http: true, persistent: isPersistent }
     if (subscriptions) triggers = { ...triggers, message: subscriptions }
 
@@ -161,12 +207,6 @@ export class ProgramMessageClient extends DefaultMessageClient<
       time: timestamp,
       type: MachineType.vm_function,
       allow_amend: false,
-      code: {
-        encoding, // retrieve the file format or params
-        entrypoint: entrypoint,
-        ref: programRef as string,
-        use_latest: true,
-      },
       metadata,
       on: triggers,
       environment: {
