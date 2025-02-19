@@ -2,18 +2,29 @@ import { Account } from '@aleph-sdk/account'
 import { DEFAULT_API_V2, getSocketPath } from '@aleph-sdk/core'
 import axios, { type AxiosResponse } from 'axios'
 
-import { StoreContent, StorePinConfiguration, StorePublishConfiguration } from './types'
-import { BuiltMessage, HashedMessage, ItemType, SignedMessage, StoreMessage } from '../types'
+import {
+  CostEstimationStoreContent,
+  CostEstimationStorePublishConfiguration,
+  StoreContent,
+  StorePinConfiguration,
+  StorePublishConfiguration,
+} from './types'
+import { HashedMessage, ItemType, MessageType, SignedMessage, StoreMessage } from '../types'
 import { blobToBuffer, calculateSHA256Hash } from './utils'
 import { InvalidMessageError } from '../types/errors'
 import { DefaultMessageClient } from '../utils/base'
-import { buildStoreMessage } from '../utils/messageBuilder'
+import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage, pushFileToStorageEngine } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
-export class StoreMessageClient extends DefaultMessageClient<StorePublishConfiguration, StoreContent> {
+export class StoreMessageClient extends DefaultMessageClient<
+  StorePublishConfiguration,
+  StoreContent,
+  CostEstimationStorePublishConfiguration,
+  CostEstimationStoreContent
+> {
   constructor(apiServer: string = DEFAULT_API_V2) {
-    super(apiServer)
+    super(apiServer, MessageType.store)
   }
 
   /**
@@ -37,8 +48,19 @@ export class StoreMessageClient extends DefaultMessageClient<StorePublishConfigu
    * @param spc The configuration used to publish a store message.
    */
   async send(conf: StorePublishConfiguration): Promise<StoreMessage> {
-    const { account, storageEngine, fileObject, sync = false } = conf
-    const builtMessage = await this.prepareMessage(conf)
+    const { account, storageEngine, fileObject, channel, sync = false } = conf
+    const content = await this.prepareMessageContent(conf)
+
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel,
+        content,
+        timestamp: content.time,
+        storageEngine: ItemType.inline,
+      },
+      this.messageType,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
@@ -154,31 +176,42 @@ export class StoreMessageClient extends DefaultMessageClient<StorePublishConfigu
     })
   }
 
-  protected async prepareMessage({
+  protected override async prepareCostEstimationMessageContent(
+    config: CostEstimationStorePublishConfiguration,
+  ): Promise<CostEstimationStoreContent> {
+    const content: CostEstimationStoreContent = await this.prepareMessageContent(config)
+    content.estimated_size_mib = config.estimated_size_mib
+
+    if (!content.estimated_size_mib && config.fileObject) {
+      const buffer = await this.processFileObject(config.fileObject)
+      content.estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
+    }
+
+    return content
+  }
+
+  protected async prepareMessageContent({
     account,
     storageEngine = ItemType.storage,
-    channel,
     fileHash,
     fileObject,
     extraFields,
     metadata,
-  }: StorePublishConfiguration): Promise<BuiltMessage<StoreContent>> {
+  }: StorePublishConfiguration): Promise<StoreContent> {
     if (!fileObject && !fileHash) throw new Error('You need to specify a File to upload or a Hash to pin.')
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.")
     if (fileHash && storageEngine !== ItemType.ipfs) throw new Error('You must choose ipfs to pin the file.')
 
     let hash: string | undefined = fileHash
+
     if (!hash) {
       const buffer = await this.processFileObject(fileObject)
       hash = await this.getHash(buffer, storageEngine, fileHash, this.apiServer)
-      if (typeof File !== 'undefined' && fileObject instanceof File) {
-        fileObject = new File([buffer], fileObject.name)
-      } else {
-        fileObject = new Blob([buffer])
-      }
     }
+
     const timestamp = Date.now() / 1000
-    const storeContent: StoreContent = {
+
+    return {
       address: account.address,
       item_type: storageEngine,
       item_hash: hash,
@@ -186,14 +219,6 @@ export class StoreMessageClient extends DefaultMessageClient<StorePublishConfigu
       extra_fields: extraFields,
       metadata,
     }
-
-    return buildStoreMessage({
-      channel,
-      content: storeContent,
-      account,
-      storageEngine: ItemType.inline,
-      timestamp,
-    })
   }
 }
 

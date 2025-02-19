@@ -8,7 +8,7 @@ import {
   MachineResources,
   Payment,
 } from '../types/execution'
-import { MachineVolume, ParentVolume, VolumePersistence } from '../types/volumes'
+import { CostEstimationMachineVolume, MachineVolume, ParentVolume, VolumePersistence } from '../types/volumes'
 
 /**
  * Root file system of a VM instance.
@@ -29,6 +29,10 @@ export type InstanceContent = BaseExecutableContent & {
   rootfs: RootfsVolume
 }
 
+export type CostEstimationInstanceContent = InstanceContent & {
+  volumes?: CostEstimationMachineVolume[]
+}
+
 // ---------------- SEND -------------------
 
 export type InstancePublishConfiguration = {
@@ -45,4 +49,8 @@ export type InstancePublishConfiguration = {
   storageEngine?: ItemType.ipfs | ItemType.storage
   payment?: Payment
   sync?: boolean
+}
+
+export type CostEstimationInstancePublishConfiguration = InstancePublishConfiguration & {
+  volumes?: CostEstimationMachineVolume[]
 }

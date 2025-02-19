@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 
 import * as ethereum from '../../../ethereum/src'
-import { ProgramMessageClient } from '../../src'
+import { ProgramMessageClient, VolumePersistence } from '../../src'
 
 describe('Test the program message', () => {
   const program = new ProgramMessageClient('http://localhost:4024')
@@ -89,15 +89,36 @@ describe('Test the program message', () => {
 
     const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
 
-    const response = await program.getCost({
+    const response = await program.getEstimatedCost({
       account: account,
       channel: 'TEST',
       file: fileContent,
       entrypoint: 'main:app',
+      volumes: [
+        {
+          mount: '/mount1',
+          ref: 'cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe', // @note: Mock ref
+          use_latest: true,
+        },
+        {
+          mount: '/mount2',
+          ref: 'cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe', // @note: Mock ref
+          use_latest: true,
+          estimated_size_mib: 2048,
+        },
+        {
+          mount: '/mount3',
+          persistence: VolumePersistence.host,
+          name: 'pers1',
+          size_mib: 1024,
+        },
+      ],
     })
 
+    console.log(response)
+
     expect(response).toBeDefined()
-    expect(response.cost).toBe('400.000000000000000000')
-    expect(response.detail).toHaveLength(3)
+    expect(response.cost).toBe('451.200014495849609375')
+    expect(response.detail).toHaveLength(5)
   })
 })

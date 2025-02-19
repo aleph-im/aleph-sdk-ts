@@ -1,6 +1,8 @@
 import { Blockchain, DEFAULT_API_V2 } from '@aleph-sdk/core'
 
 import {
+  CostEstimationProgramContent,
+  CostEstimationProgramPublishConfiguration,
   Encoding,
   FunctionTriggers,
   ProgramContent,
@@ -9,24 +11,40 @@ import {
 } from './types'
 import { BaseMessageClient } from '../base'
 import { StoreMessageClient } from '../store'
-import { BuiltMessage, ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
+import { ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
 import { DefaultMessageClient } from '../utils/base'
-import { buildProgramMessage } from '../utils/messageBuilder'
+import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
-export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishConfiguration, ProgramContent> {
+export class ProgramMessageClient extends DefaultMessageClient<
+  ProgramPublishConfiguration,
+  ProgramContent,
+  CostEstimationProgramPublishConfiguration,
+  CostEstimationProgramContent
+> {
   constructor(
     apiServer: string = DEFAULT_API_V2,
     protected baseMessageClient: BaseMessageClient = new BaseMessageClient(apiServer),
     protected storeMessageClient: StoreMessageClient = new StoreMessageClient(apiServer),
   ) {
-    super(apiServer)
+    super(apiServer, MessageType.program)
   }
 
   async publish(conf: ProgramPublishConfiguration): Promise<ProgramMessage> {
-    const { account, sync = true } = conf
-    const builtMessage = await this.prepareMessage(conf)
+    const { account, channel, sync = true } = conf
+    const content = await this.prepareMessageContent(conf)
+
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel,
+        content,
+        timestamp: content.time,
+        storageEngine: ItemType.inline,
+      },
+      this.messageType,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,
@@ -84,7 +102,7 @@ export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishCon
     })
   }
 
-  protected async prepareMessage({
+  protected async prepareMessageContent({
     account,
     channel,
     metadata,
@@ -105,7 +123,7 @@ export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishCon
       type: PaymentType.hold,
     },
     sync = true,
-  }: ProgramPublishConfiguration): Promise<BuiltMessage<ProgramContent>> {
+  }: ProgramPublishConfiguration): Promise<ProgramContent> {
     const timestamp = Date.now() / 1000
     if (!programRef && !file) throw new Error('You need to specify a file to upload or a programRef to load.')
     if (programRef && file) throw new Error("You can't load a file and a programRef at the same time.")
@@ -138,7 +156,7 @@ export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishCon
     let triggers: FunctionTriggers = { http: true, persistent: isPersistent }
     if (subscriptions) triggers = { ...triggers, message: subscriptions }
 
-    const programContent: ProgramContent = {
+    return {
       address: account.address,
       time: timestamp,
       type: MachineType.vm_function,
@@ -171,14 +189,6 @@ export class ProgramMessageClient extends DefaultMessageClient<ProgramPublishCon
       variables,
       payment,
     }
-
-    return buildProgramMessage({
-      account,
-      channel,
-      timestamp: programContent.time,
-      storageEngine: ItemType.inline,
-      content: programContent,
-    })
   }
 }
 

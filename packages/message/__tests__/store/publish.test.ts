@@ -72,4 +72,41 @@ describe('Store message publish', () => {
       }),
     ).rejects.toThrow('You must choose ipfs to pin the file.')
   })
+
+  it('should calculate the estimated size of a file passing "estimated_size_mib" property', async () => {
+    const { account } = ethereum.newAccount()
+    const fileContent = readFileSync('./packages/message/__tests__/store/heavyTestFile.txt')
+
+    const cost = await store.getEstimatedCost({
+      channel: 'TEST',
+      account: account,
+      fileObject: fileContent,
+      estimated_size_mib: 20,
+    })
+
+    expect(cost).toBeDefined()
+    expect(cost.cost).toBe('6.666666660000000000')
+  })
+
+  it('should calculate the estimated size of a file from the fileObject', async () => {
+    const { account } = ethereum.newAccount()
+    // @note: 1MiB ~file size
+    const fileContent = readFileSync('./packages/message/__tests__/store/heavyTestFile.txt')
+
+    const cost = await store.getEstimatedCost({
+      channel: 'TEST',
+      account: account,
+      fileObject: fileContent,
+    })
+
+    expect(cost).toBeDefined()
+    expect(cost.cost).toBe('0.333333333000000000')
+  })
+
+  it('should get the cost of an existing message', async () => {
+    const cost = await store.getCost('9d6fa0355f946b60f15a56f3510551fbbb5b3ea2e38adf098d80f4dc0d3647ed')
+
+    expect(cost).toBeDefined()
+    expect(cost.cost).toBe('0.059805234213469505')
+  })
 })

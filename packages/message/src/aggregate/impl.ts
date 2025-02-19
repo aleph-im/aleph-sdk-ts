@@ -7,14 +7,15 @@ import {
   AggregateGetResponse,
   AggregatePublishConfiguration,
 } from './types'
-import { AggregateMessage, ItemType } from '../types'
+import { AggregateMessage, ItemType, MessageType } from '../types'
 import { MessageNotFoundError } from '../types/errors'
-import { buildAggregateMessage } from '../utils/messageBuilder'
+import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
 export class AggregateMessageClient {
   apiServer: string
+  protected messageType = MessageType.aggregate
 
   constructor(apiServer: string = DEFAULT_API_V2) {
     this.apiServer = stripTrailingSlash(apiServer)
@@ -81,13 +82,16 @@ export class AggregateMessageClient {
       content: content,
     }
 
-    const builtMessage = buildAggregateMessage({
-      account,
-      channel,
-      timestamp,
-      storageEngine,
-      content: aggregateContent,
-    })
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel,
+        timestamp,
+        storageEngine,
+        content: aggregateContent,
+      },
+      this.messageType,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,

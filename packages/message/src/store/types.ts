@@ -12,6 +12,10 @@ export type StoreContent = BaseContent & {
   metadata?: Record<string, unknown>
 }
 
+export type CostEstimationStoreContent = StoreContent & {
+  estimated_size_mib?: number
+}
+
 // -------- PIN ----------
 
 /**
@@ -62,4 +66,8 @@ export type StorePublishConfiguration = {
   extraFields?: Record<string, unknown>
   metadata?: Record<string, unknown>
   sync?: boolean
+}
+
+export type CostEstimationStorePublishConfiguration = StorePublishConfiguration & {
+  estimated_size_mib?: number
 }

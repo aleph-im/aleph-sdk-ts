@@ -3,7 +3,7 @@ import { RequireOnlyOne } from '@aleph-sdk/core'
 
 import { ItemType } from '../types/base'
 import { BaseExecutableContent, MachineType, Payment } from '../types/execution'
-import { MachineVolume } from '../types/volumes'
+import { CostEstimationMachineVolume, MachineVolume } from '../types/volumes'
 
 export enum Encoding {
   plain = 'plain',
@@ -70,6 +70,10 @@ export type ProgramContent = BaseExecutableContent & {
   on: FunctionTriggers
 }
 
+export type CostEstimationProgramContent = ProgramContent & {
+  volumes: CostEstimationMachineVolume[]
+}
+
 export type ProgramPublishConfiguration = RequireOnlyOne<
   {
     account: Account
@@ -92,6 +96,10 @@ export type ProgramPublishConfiguration = RequireOnlyOne<
   },
   'programRef' | 'file'
 >
+
+export type CostEstimationProgramPublishConfiguration = ProgramPublishConfiguration & {
+  volumes?: CostEstimationMachineVolume[]
+}
 
 export type ProgramSpawnConfiguration = {
   account: Account
