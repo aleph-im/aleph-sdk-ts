@@ -6,9 +6,14 @@ import {
   InstanceContent,
   InstancePublishConfiguration,
 } from './types'
-import { InstanceMessage, ItemType, MessageType, PaymentType, VolumePersistence } from '../types'
+import { InstanceMessage, ItemType, MessageType, PaymentType } from '../types'
 import { DefaultMessageClient } from '../utils/base'
-import { defaultInstanceExecutionEnvironment, defaultResources, MAXIMUM_DISK_SIZE } from '../utils/constants'
+import {
+  defaultInstanceExecutionEnvironment,
+  defaultResources,
+  defaultRootfsVolume,
+  MAXIMUM_DISK_SIZE,
+} from '../utils/constants'
 import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
@@ -63,7 +68,7 @@ export class InstanceMessageClient extends DefaultMessageClient<
     resources,
     requirements,
     environment,
-    image = 'f7e68c568906b4ebcd3cd3c4bfdff96c489cd2a9ef73ba2d7503f244dfd578de',
+    rootfs,
     volumes = [],
     storageEngine = ItemType.ipfs,
     payment = {
@@ -86,18 +91,21 @@ export class InstanceMessageClient extends DefaultMessageClient<
       ...environment,
     }
 
-    if (mergedEnvironment.trusted_execution === null) delete mergedEnvironment.trusted_execution
+    const tier_size_mib = mergedResources.memory * 10
+    const user_size_mib = Math.max(rootfs?.size_mib || tier_size_mib, tier_size_mib)
+    const size_mib = Math.min(user_size_mib, MAXIMUM_DISK_SIZE)
 
-    const size_mib = mergedResources.memory * 10 > MAXIMUM_DISK_SIZE ? MAXIMUM_DISK_SIZE : mergedResources.memory * 10
-
-    const rootfs = {
-      parent: {
-        ref: image as string,
-        use_latest: true,
-      },
-      persistence: VolumePersistence.host,
+    const mergedRootfs = {
+      ...defaultRootfsVolume,
+      ...rootfs,
       size_mib,
+      parent: {
+        ...defaultRootfsVolume.parent,
+        ...rootfs?.parent,
+      },
     }
+
+    if (mergedEnvironment.trusted_execution === null) delete mergedEnvironment.trusted_execution
 
     const instanceContent: InstanceContent = {
       address,
@@ -110,7 +118,7 @@ export class InstanceMessageClient extends DefaultMessageClient<
       allow_amend: false,
       resources: mergedResources,
       environment: mergedEnvironment,
-      rootfs,
+      rootfs: mergedRootfs,
       payment,
     }
 
