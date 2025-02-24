@@ -1,5 +1,6 @@
 import { Account } from '@aleph-sdk/account'
 
+import { ItemHash } from '../types'
 import { ItemType } from '../types/base'
 import {
   BaseExecutableContent,
@@ -17,7 +18,7 @@ import { CostEstimationMachineVolume, MachineVolume, ParentVolume, VolumePersist
 export type RootfsVolume = {
   parent: ParentVolume
   persistence: VolumePersistence
-  size_mib: number //Limit to 1 GiB
+  size_mib: number
 }
 
 /**
@@ -35,6 +36,13 @@ export type CostEstimationInstanceContent = InstanceContent & {
 
 // ---------------- SEND -------------------
 
+export type RootfsVolumeConfiguration = {
+  parent?: {
+    ref: ItemHash
+  }
+  size_mib?: number
+}
+
 export type InstancePublishConfiguration = {
   account: Account
   channel?: string
@@ -44,7 +52,7 @@ export type InstancePublishConfiguration = {
   resources?: Partial<MachineResources>
   requirements?: HostRequirements
   environment?: Partial<InstanceEnvironment>
-  image?: string
+  rootfs?: RootfsVolumeConfiguration
   volumes?: MachineVolume[]
   storageEngine?: ItemType.ipfs | ItemType.storage
   payment?: Payment

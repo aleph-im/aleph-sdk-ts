@@ -2,7 +2,7 @@ import { Decimal } from 'decimal.js'
 
 import { EphAccount } from '../../account/src'
 import { EthereumMockProvider } from '../../evm/src'
-import { HashedMessage, ItemType, PostContent, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
+import { buildMessage, HashedMessage, ItemType, MessageType, PostContent, prepareAlephMessage } from '../../message/src'
 import * as avalanche from '../src'
 
 async function createEphemeralAvax(): Promise<EphAccount> {
@@ -119,13 +119,16 @@ describe('Avalanche accounts', () => {
   it('Should success to verif the authenticity of a signature', async () => {
     const { account } = await avalanche.newAccount()
 
-    const builtMessage = PostMessageBuilder({
-      account,
-      channel: 'TEST',
-      storageEngine: ItemType.inline,
-      timestamp: Date.now() / 1000,
-      content: { address: account.address, time: 15, type: '' },
-    })
+    const builtMessage = buildMessage(
+      {
+        account,
+        channel: 'TEST',
+        storageEngine: ItemType.inline,
+        timestamp: Date.now() / 1000,
+        content: { address: account.address, time: 15, type: '' },
+      },
+      MessageType.post,
+    )
 
     const hashedMessage = await prepareAlephMessage({ message: builtMessage })
     if (!account.publicKey) throw Error()
@@ -141,13 +144,16 @@ describe('Avalanche accounts', () => {
     const { account: account } = await avalanche.newAccount()
     const { account: fakeAccount } = await avalanche.newAccount()
 
-    const message = PostMessageBuilder({
-      account,
-      channel: 'TEST',
-      timestamp: 15,
-      storageEngine: ItemType.storage,
-      content: { address: account.address, time: 15, type: '' },
-    })
+    const message = buildMessage(
+      {
+        account,
+        channel: 'TEST',
+        timestamp: 15,
+        storageEngine: ItemType.storage,
+        content: { address: account.address, time: 15, type: '' },
+      },
+      MessageType.post,
+    )
     const hashedMessage = await prepareAlephMessage({ message })
     const fakeMessage = {
       ...hashedMessage,

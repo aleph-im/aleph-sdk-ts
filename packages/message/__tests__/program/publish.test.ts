@@ -4,7 +4,7 @@ import * as ethereum from '../../../ethereum/src'
 import { ProgramMessageClient, VolumePersistence } from '../../src'
 
 describe('Test the program message', () => {
-  const program = new ProgramMessageClient('http://localhost:4024')
+  const program = new ProgramMessageClient()
 
   it('Publish a program retrieve the message', async () => {
     const { account } = ethereum.newAccount()
@@ -115,10 +115,11 @@ describe('Test the program message', () => {
       ],
     })
 
-    console.log(response)
+    // console.log(response)
 
     expect(response).toBeDefined()
-    expect(response.cost).toBe('451.200014495849609375')
+    expect(response.cost).toBe('468.191015625000000000')
+    // expect(response.cost).toBe('451.200014495849609375')
     expect(response.detail).toHaveLength(5)
   })
 })

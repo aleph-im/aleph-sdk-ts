@@ -1,6 +1,6 @@
 import { EphAccount } from '../../account/src'
 import { createEphemeralEth, EthereumMockProvider } from '../../evm/src'
-import { ItemType, PostMessageBuilder, prepareAlephMessage } from '../../message/src'
+import { buildMessage, ItemType, MessageType, prepareAlephMessage } from '../../message/src'
 import * as base from '../src'
 
 describe('Ethereum accounts', () => {
@@ -36,13 +36,16 @@ describe('Ethereum accounts', () => {
     const accountFromMnemonic = base.importAccountFromMnemonic(ephemeralAccount.mnemonic!)
     const accountFromPrivate = base.importAccountFromPrivateKey(ephemeralAccount.privateKey!)
 
-    const builtMessage = PostMessageBuilder({
-      account: accountFromMnemonic,
-      channel: 'TEST',
-      storageEngine: ItemType.inline,
-      timestamp: Date.now() / 1000,
-      content: { address: accountFromMnemonic.address, time: 15, type: '' },
-    })
+    const builtMessage = buildMessage(
+      {
+        account: accountFromMnemonic,
+        channel: 'TEST',
+        storageEngine: ItemType.inline,
+        timestamp: Date.now() / 1000,
+        content: { address: accountFromMnemonic.address, time: 15, type: '' },
+      },
+      MessageType.post,
+    )
 
     const hashedMessage = await prepareAlephMessage({
       message: builtMessage,

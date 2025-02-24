@@ -14,6 +14,7 @@ import { StoreMessageClient } from '../store'
 import { processFileObject } from '../store/utils'
 import { ItemType, MachineType, MessageType, PaymentType, ProgramMessage } from '../types'
 import { DefaultMessageClient } from '../utils/base'
+import { mockVolumeRef } from '../utils/constants'
 import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
@@ -65,27 +66,28 @@ export class ProgramMessageClient extends DefaultMessageClient<
   protected override async prepareCostEstimationMessageContent(
     config: CostEstimationProgramPublishConfiguration,
   ): Promise<CostEstimationProgramContent> {
-    const { encoding = Encoding.zip, entrypoint, programRef, estimated_size_mib } = config
+    const { encoding = Encoding.zip, entrypoint, file, programRef } = config
+    let { estimated_size_mib } = config
 
     const baseContent = this.prepareBaseContent(config)
 
-    const content: CostEstimationProgramContent = {
+    const ref = programRef || mockVolumeRef
+
+    if (!estimated_size_mib && !programRef && file) {
+      const buffer = await processFileObject(file)
+      estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
+    }
+
+    return {
       ...baseContent,
       code: {
         encoding,
         entrypoint,
-        ref: programRef as string,
         use_latest: true,
+        ref,
         estimated_size_mib,
       },
     }
-
-    if (!content.code.estimated_size_mib && config.file) {
-      const buffer = await processFileObject(config.file)
-      content.code.estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
-    }
-
-    return content
   }
 
   async spawn({
