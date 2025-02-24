@@ -115,10 +115,11 @@ describe('Test the program message', () => {
       ],
     })
 
-    console.log(response)
+    // console.log(response)
 
     expect(response).toBeDefined()
-    expect(response.cost).toBe('451.200014495849609375')
+    expect(response.cost).toBe('468.191015625000000000')
+    // expect(response.cost).toBe('451.200014495849609375')
     expect(response.detail).toHaveLength(5)
   })
 })

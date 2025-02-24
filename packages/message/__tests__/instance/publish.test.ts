@@ -74,7 +74,7 @@ describe('Test the instance message', () => {
         memory: 1024,
       },
       rootfs: {
-        size_mib: 1024 * 201,
+        size_mib: MAXIMUM_DISK_SIZE * 2,
       },
     })
 

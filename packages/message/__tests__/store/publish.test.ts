@@ -104,9 +104,9 @@ describe('Store message publish', () => {
   })
 
   it('should get the cost of an existing message', async () => {
-    const cost = await store.getCost('9d6fa0355f946b60f15a56f3510551fbbb5b3ea2e38adf098d80f4dc0d3647ed')
+    const cost = await store.getCost('b6ff5c3a8205d1ca4c7c3369300eeafff498b558f71b851aa2114afd0a532717')
 
     expect(cost).toBeDefined()
-    expect(cost.cost).toBe('0.059805234213469505')
+    expect(cost.cost).toBe('108.999999891000000000')
   })
 })

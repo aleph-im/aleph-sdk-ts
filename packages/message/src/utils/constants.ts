@@ -25,7 +25,7 @@ export const defaultResources: MachineResources = {
 }
 
 // https://github.com/aleph-im/aleph-message/blob/main/aleph_message/models/execution/volume.py#L63
-export const MAXIMUM_DISK_SIZE = gigabyteToMebibyte(200)
+export const MAXIMUM_DISK_SIZE = gigabyteToMebibyte(2048)
 
 export const defaultRootfsVolume: RootfsVolume = {
   parent: {
@@ -35,3 +35,5 @@ export const defaultRootfsVolume: RootfsVolume = {
   persistence: VolumePersistence.host,
   size_mib: 0,
 }
+
+export const mockVolumeRef = 'cafecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe'
