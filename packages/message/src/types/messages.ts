@@ -84,7 +84,7 @@ export type CostComputableMessage<C extends MessageContent> = Omit<
   | 'channel'
   | 'getVerificationBuffer'
   | 'isOfType'
-  | 'getMessageEstimatedCostRequestSchema'
+  | 'getEstimatedCostRequestSchema'
 >
 
 export class HashedMessage<C extends MessageContent> extends BuiltMessage<C> {
@@ -107,7 +107,7 @@ export class HashedMessage<C extends MessageContent> extends BuiltMessage<C> {
   /**
    *  Returns a message schema that can be sent to a CCN for cost esstimation
    */
-  getMessageEstimatedCostRequestSchema(): CostComputableMessage<C> {
+  getEstimatedCostRequestSchema(): CostComputableMessage<C> {
     return {
       item_type: this.item_type,
       item_hash: this.item_hash,
@@ -123,7 +123,7 @@ export type SignedMessageProps<C extends MessageContent> = HashedMessageProps<C>
 
 export type BroadcastableMessage<C extends MessageContent> = Omit<
   SignedMessage<C>,
-  'content' | 'getVerificationBuffer' | 'isOfType' | 'getBroadcastable' | 'getMessageEstimatedCostRequestSchema'
+  'content' | 'getVerificationBuffer' | 'isOfType' | 'getBroadcastable' | 'getEstimatedCostRequestSchema'
 >
 
 export class SignedMessage<C extends MessageContent> extends HashedMessage<C> {

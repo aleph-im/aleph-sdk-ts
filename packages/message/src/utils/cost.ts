@@ -1,7 +1,7 @@
 import { stripTrailingSlash, getSocketPath } from '@aleph-sdk/core'
 import axios from 'axios'
 
-import { HashedMessage, MessageContent, MessageCost } from '../types'
+import { CostComputableMessage, MessageContent, MessageCost } from '../types'
 
 export type GetMessageCostConfiguration = {
   hash: string
@@ -13,12 +13,12 @@ export type GetMessageCostResponse = {
 }
 
 export type GetMessageEstimatedCostConfiguration<C extends MessageContent> = {
-  message: HashedMessage<C>
+  message: CostComputableMessage<C>
   apiServer: string
 }
 
 export type GetMessageEstimatedCostResponse<C extends MessageContent> = {
-  message: HashedMessage<C>
+  message: CostComputableMessage<C>
   response: MessageCost
 }
 
@@ -41,7 +41,7 @@ export async function getMessageEstimatedCost<C extends MessageContent>({
 }: GetMessageEstimatedCostConfiguration<C>): Promise<GetMessageEstimatedCostResponse<C>> {
   const response = await axios.post(
     `${stripTrailingSlash(apiServer)}/api/v0/price/estimate`,
-    { message: message.getMessageEstimatedCostRequestSchema() },
+    { message },
     { socketPath: getSocketPath() },
   )
 

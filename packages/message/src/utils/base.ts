@@ -1,7 +1,7 @@
 import { Account } from '@aleph-sdk/account'
 import { stripTrailingSlash } from '@aleph-sdk/core'
 
-import { ItemType, MessageContent, MessageCost, MessageType } from '../types'
+import { CostComputableMessage, ItemType, MessageContent, MessageCost, MessageType } from '../types'
 import { getMessageCost, getMessageEstimatedCost } from './cost'
 import { buildMessage } from './messageBuilder'
 import { prepareAlephMessage } from './publish'
@@ -32,6 +32,15 @@ export abstract class DefaultMessageClient<
 
   async getEstimatedCost(config: CostCfg): Promise<MessageCost> {
     const { apiServer } = this
+
+    const message = await this.getCostComputableMessage(config)
+    const { response } = await getMessageEstimatedCost({ message, apiServer })
+
+    return response
+  }
+
+  async getCostComputableMessage(config: CostCfg): Promise<CostComputableMessage<CostCnt>> {
+    const { apiServer } = this
     const { channel, account } = config
 
     const content = await this.prepareCostEstimationMessageContent(config)
@@ -47,9 +56,7 @@ export abstract class DefaultMessageClient<
       this.messageType,
     )
     const hashedMessage = await prepareAlephMessage({ message: builtMessage, apiServer })
-    const { response } = await getMessageEstimatedCost({ message: hashedMessage, apiServer })
-
-    return response
+    return hashedMessage.getEstimatedCostRequestSchema()
   }
 
   protected async prepareCostEstimationMessageContent(config: CostCfg): Promise<CostCnt> {
