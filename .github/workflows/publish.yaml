@@ -18,7 +18,7 @@ jobs:
       - name: "Setup node"
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
           scope: '@aleph-sdk'
 
@@ -47,7 +47,7 @@ jobs:
       - name: "Setup node"
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           registry-url: 'https://npm.pkg.github.com'
           scope: '@aleph-sdk'
 
