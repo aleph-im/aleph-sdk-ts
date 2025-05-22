@@ -23,7 +23,7 @@ export async function blobToBuffer(blob: Blob | File): Promise<Buffer> {
   })
 }
 
-export function calculateSHA256Hash(data: ArrayBuffer | Buffer): string {
+export function calculateSHA256Hash(data: Buffer | Uint8Array): string {
   const buffer = Buffer.from(data)
   return new shajs.sha256().update(buffer).digest('hex')
 }

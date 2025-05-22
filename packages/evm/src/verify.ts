@@ -25,7 +25,7 @@ export function verifyEthereum(
   try {
     const address = ethers.utils.verifyMessage(message, signature)
     return address === signerAddress
-  } catch (e: unknown) {
+  } catch {
     return false
   }
 }

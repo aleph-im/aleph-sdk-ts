@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { E2EWalletAdapter } from '@jet-lab/e2e-react-adapter'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import nacl from 'tweetnacl'

@@ -116,7 +116,7 @@ export async function getAccountFromProvider(address?: string): Promise<DOTAccou
 
   try {
     web3Bundle = await import('@polkadot/extension-dapp')
-  } catch (e: any) {
+  } catch {
     throw new Error('Substrate provider can only be instanced in the browser.')
   }
 

@@ -41,7 +41,7 @@ export async function verifyCosmos(
     const secp256k1 = new elliptic.ec('secp256k1')
     const key = secp256k1.keyFromPublic(publicKey)
     return key.verify(message, signatureObj)
-  } catch (e: unknown) {
+  } catch {
     return false
   }
 }

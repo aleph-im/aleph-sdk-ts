@@ -21,7 +21,7 @@ export function verifySolana(message: Uint8Array | SignableMessage, serializedSi
 
   try {
     return nacl.sign.detached.verify(message, base58.decode(signature), base58.decode(publicKey))
-  } catch (e: unknown) {
+  } catch {
     return false
   }
 }

@@ -58,7 +58,7 @@ async function getCosmosAccount(wallet: OfflineAminoSigner, accountNumber = 0): 
   try {
     const account = accounts[accountNumber]
     return new CosmosAccount(wallet, account.address, accountNumber)
-  } catch (err) {
+  } catch {
     throw new RangeError('Account offset out of bound')
   }
 }

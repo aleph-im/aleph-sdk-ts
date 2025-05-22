@@ -171,7 +171,7 @@ export class ProgramMessageClient extends DefaultMessageClient<
           console.warn(
             'Caution, you are not the owner of the code. Be aware that the codebase can be changed at any time by the owner.',
           )
-      } catch (e) {
+      } catch {
         throw new Error(`The program ref: ${programRef} does not exist on Aleph network.`)
       }
     }

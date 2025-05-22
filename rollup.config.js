@@ -1,10 +1,9 @@
+import { readFileSync } from 'node:fs'
 import path from 'path'
 import process from 'process'
-import * as url from 'url'
-import { readFileSync } from 'node:fs'
-
 import dts from 'rollup-plugin-dts'
 import esbuild from 'rollup-plugin-esbuild'
+import * as url from 'url'
 
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 

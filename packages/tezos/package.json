@@ -12,17 +12,19 @@
     "access": "public"
   },
   "devDependencies": {
-    "@airgap/beacon-types": "^3.2.0"
+    "@airgap/beacon-types": "^3.2.0",
+    "@taquito/beacon-wallet": "^22.0.0",
+    "@taquito/utils": "^22.0.0"
   },
   "dependencies": {
-    "@taquito/utils": "^17.5.2",
     "tweetnacl": "^1.0.3"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
     "@aleph-sdk/core": "^1.x.x",
-    "@taquito/beacon-wallet": "^17.5.2",
-    "@taquito/signer": "^17.5.2"
+    "@taquito/beacon-wallet": "^22.0.0",
+    "@taquito/signer": "^22.0.0",
+    "@taquito/utils": "^22.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

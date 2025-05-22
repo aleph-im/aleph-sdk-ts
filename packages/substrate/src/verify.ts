@@ -27,7 +27,7 @@ export function verifySubstrate(
     const result = signatureVerify(message, parsedSignature.data, signerAddress)
 
     return result.isValid
-  } catch (e: unknown) {
+  } catch {
     return false
   }
 }

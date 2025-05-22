@@ -191,7 +191,7 @@ export function findChainMetadataByChainId(chainId: number): ChainMetadataType |
  * Wrapper for JSON RPC Providers (ex: Metamask).
  */
 export class JsonRPCWallet extends BaseProviderWallet {
-  public declare readonly provider: providers.JsonRpcProvider | providers.Web3Provider
+  declare public readonly provider: providers.JsonRpcProvider | providers.Web3Provider
   private signer?: providers.JsonRpcSigner | Wallet
   public address?: string
   private publicKey?: string

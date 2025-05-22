@@ -32,8 +32,9 @@ export function isNode(): boolean {
   try {
     // should fail in strict mode
     const window = {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     window
-  } catch (error) {
+  } catch {
     hasNoWindow = false
   }
 

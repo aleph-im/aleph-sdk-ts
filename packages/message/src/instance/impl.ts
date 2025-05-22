@@ -78,7 +78,8 @@ export class InstanceMessageClient extends DefaultMessageClient<
   }: InstancePublishConfiguration): Promise<InstanceContent> {
     const timestamp = Date.now() / 1000
     const { address } = account
-    // To remove @typescript-eslint/no-unused-vars at buildtime, without removing the argument
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     storageEngine
 
     const mergedResources = {
