@@ -17,14 +17,14 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: 18.x
           cache: npm
 
       - name: Upgrade NPM
         run: npm i -g npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm i
 
       - name: Build packages
         run: npm run build

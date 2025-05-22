@@ -18,7 +18,7 @@ jobs:
       - name: "Setup node"
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: 18.x
           cache: npm
           registry-url: 'https://registry.npmjs.org'
           scope: '@aleph-sdk'
@@ -48,7 +48,7 @@ jobs:
       - name: "Setup node"
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: 18.x
           registry-url: 'https://npm.pkg.github.com'
           scope: '@aleph-sdk'
 
