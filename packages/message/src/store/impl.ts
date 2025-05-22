@@ -173,6 +173,11 @@ export class StoreMessageClient extends DefaultMessageClient<
       content.estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
     }
 
+    // @note: Make sure it is always an integer
+    if (typeof content.estimated_size_mib === 'number') {
+      content.estimated_size_mib = Math.ceil(content.estimated_size_mib)
+    }
+
     return content
   }
 

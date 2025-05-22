@@ -78,6 +78,11 @@ export class ProgramMessageClient extends DefaultMessageClient<
       estimated_size_mib = Buffer.byteLength(buffer) / 1024 / 1024
     }
 
+    // @note: Make sure it is always an integer
+    if (typeof estimated_size_mib === 'number') {
+      estimated_size_mib = Math.ceil(estimated_size_mib)
+    }
+
     return {
       ...baseContent,
       code: {

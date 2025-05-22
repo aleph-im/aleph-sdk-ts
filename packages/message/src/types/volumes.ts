@@ -18,7 +18,7 @@ export type ImmutableVolume = AbstractVolume & {
 }
 
 export type CostEstimationImmutableVolume = ImmutableVolume & {
-  estimated_size_mib?: number
+  estimated_size_mib?: number // int
 }
 
 /**

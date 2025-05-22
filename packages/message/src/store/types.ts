@@ -13,7 +13,7 @@ export type StoreContent = BaseContent & {
 }
 
 export type CostEstimationStoreContent = StoreContent & {
-  estimated_size_mib?: number
+  estimated_size_mib?: number // int
 }
 
 // -------- PIN ----------
@@ -69,5 +69,5 @@ export type StorePublishConfiguration = {
 }
 
 export type CostEstimationStorePublishConfiguration = StorePublishConfiguration & {
-  estimated_size_mib?: number
+  estimated_size_mib?: number // int
 }

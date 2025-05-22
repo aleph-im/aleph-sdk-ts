@@ -11,8 +11,9 @@ import {
   hexToDec,
   JsonRPCWallet,
   RpcId,
+  alephToWei,
+  weiToAleph,
 } from '@aleph-sdk/evm'
-import { alephToWei, weiToAleph } from '@aleph-sdk/evm'
 import { Framework, SuperToken } from '@superfluid-finance/sdk-core'
 import { Decimal } from 'decimal.js'
 import { Wallet, BigNumber, providers, utils } from 'ethers'

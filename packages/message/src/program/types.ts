@@ -26,7 +26,7 @@ export type CodeContent = {
 }
 
 export type CostEstimationCodeContent = CodeContent & {
-  estimated_size_mib?: number
+  estimated_size_mib?: number // int
 }
 
 /**
@@ -103,7 +103,7 @@ export type ProgramPublishConfiguration = RequireOnlyOne<
 >
 
 export type CostEstimationProgramPublishConfiguration = ProgramPublishConfiguration & {
-  estimated_size_mib?: number
+  estimated_size_mib?: number // int
   file?: Buffer | Blob
   programRef?: string
   volumes?: CostEstimationMachineVolume[]
