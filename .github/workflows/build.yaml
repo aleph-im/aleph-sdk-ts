@@ -24,7 +24,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm i && cat package-lock.json
+
+      - name: Show locked deps
+        run: cat package-lock.json
 
       - name: Run build
         run: npm run build
