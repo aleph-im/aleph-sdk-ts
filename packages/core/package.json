@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/core",
-  "version": "1.2.0",
+  "version": "1.6.2",
   "description": "Shared utilities and constants for @aleph-sdk",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
