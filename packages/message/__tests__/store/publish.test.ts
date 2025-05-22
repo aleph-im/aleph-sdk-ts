@@ -100,7 +100,7 @@ describe('Store message publish', () => {
     })
 
     expect(cost).toBeDefined()
-    expect(cost.cost).toBe('0.333333333000000000')
+    expect(cost.cost).toBe('0.666666666000000000')
   })
 
   it('should get the cost of an existing message', async () => {

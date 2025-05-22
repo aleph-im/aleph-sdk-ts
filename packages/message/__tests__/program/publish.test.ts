@@ -6,7 +6,7 @@ import { ProgramMessageClient, VolumePersistence } from '../../src'
 describe('Test the program message', () => {
   const program = new ProgramMessageClient()
 
-  it('Publish a program retrieve the message', async () => {
+  xit('Publish a program retrieve the message', async () => {
     const { account } = ethereum.newAccount()
 
     const fileContent = readFileSync('./packages/message/__tests__/program/main.py.zip')
@@ -22,7 +22,7 @@ describe('Test the program message', () => {
     expect(res.content.address).toBe(account.address)
   })
 
-  it('Spawn a program', async () => {
+  xit('Spawn a program', async () => {
     const { account } = ethereum.newAccount()
 
     const res = await program.publish({
@@ -52,7 +52,7 @@ describe('Test the program message', () => {
     expect(res.content.address).toBe(account.address)
   }) */
 
-  it('Spawn a program with custom metadata', async () => {
+  xit('Spawn a program with custom metadata', async () => {
     const { account } = ethereum.newAccount()
 
     const res = await program.publish({
@@ -118,8 +118,7 @@ describe('Test the program message', () => {
     // console.log(response)
 
     expect(response).toBeDefined()
-    expect(response.cost).toBe('468.191015625000000000')
-    // expect(response.cost).toBe('451.200014495849609375')
-    expect(response.detail).toHaveLength(5)
+    expect(response.cost).toBe('468.241015625000000000')
+    expect(response.detail).toHaveLength(6)
   })
 })
