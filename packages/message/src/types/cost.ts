@@ -17,6 +17,7 @@ export type MessageCostLine = {
   name: string
   cost_hold: string
   cost_stream: string
+  cost_credit: string
 }
 
 export type MessageCost = {

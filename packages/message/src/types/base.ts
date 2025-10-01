@@ -29,6 +29,7 @@ export enum ItemType {
 export enum PaymentType {
   hold = 'hold',
   superfluid = 'superfluid',
+  credit = 'credit',
 }
 
 /**

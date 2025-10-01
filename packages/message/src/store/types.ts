@@ -1,5 +1,6 @@
 import { Account } from '@aleph-sdk/account'
 
+import { Payment } from '../types'
 import { BaseContent, ItemType } from '../types/base'
 
 export type StoreContent = BaseContent & {
@@ -14,6 +15,7 @@ export type StoreContent = BaseContent & {
 
 export type CostEstimationStoreContent = StoreContent & {
   estimated_size_mib?: number // int
+  payment?: Payment
 }
 
 // -------- PIN ----------
@@ -70,4 +72,5 @@ export type StorePublishConfiguration = {
 
 export type CostEstimationStorePublishConfiguration = StorePublishConfiguration & {
   estimated_size_mib?: number // int
+  payment?: Payment
 }
