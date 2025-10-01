@@ -167,6 +167,7 @@ export class StoreMessageClient extends DefaultMessageClient<
   ): Promise<CostEstimationStoreContent> {
     const content: CostEstimationStoreContent = await this.prepareMessageContent(config)
     content.estimated_size_mib = config.estimated_size_mib
+    content.payment = config.payment
 
     if (!content.estimated_size_mib && config.fileObject) {
       const buffer = await processFileObject(config.fileObject)
