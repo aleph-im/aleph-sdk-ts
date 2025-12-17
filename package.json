@@ -28,7 +28,9 @@
     "test": "npm run test:jest",
     "test:jest": "jest --testTimeout=120000 --verbose --coverage ./packages"
   },
-  "repository": "git@github.com:aleph-im/aleph-sdk-ts.git",
+  "repository": {
+    "url": "https://github.com/aleph-im/aleph-sdk-ts"
+  },
   "author": "Aleph.im Team",
   "contributors": [
     "PtitLuca <luca.georges-francois@epitech.eu>",

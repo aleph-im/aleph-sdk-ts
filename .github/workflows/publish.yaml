@@ -6,6 +6,11 @@ on:
   release:
     types: [published]
 
+permissions:
+  id-token: write  # Required for OIDC
+  packages: write
+  contents: read
+  
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
