@@ -16,4 +16,12 @@ export default {
   },
   testPathIgnorePatterns: ['<rootDir>/cypress/'],
   coverageReporters: ['text-summary', 'html'],
+  transformIgnorePatterns: ['/node_modules/'],
+  // Limit the number of workers to prevent CPU overload
+  maxWorkers: '50%',
+  // Enable caching (should be on by default, but explicitly set)
+  cache: true,
+  cacheDirectory: '<rootDir>/.jest-cache',
+  // Avoid transforming unnecessary files
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/examples/'],
 }
