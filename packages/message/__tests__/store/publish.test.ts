@@ -1,6 +1,5 @@
-import { readFileSync } from 'fs'
-
 import { Blockchain } from '@aleph-sdk/core'
+import { readFileSync } from 'fs'
 
 import * as ethereum from '../../../ethereum/src'
 import { PaymentType, StoreMessageClient } from '../../src'
