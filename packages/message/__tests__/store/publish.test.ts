@@ -1,7 +1,9 @@
 import { readFileSync } from 'fs'
 
+import { Blockchain } from '@aleph-sdk/core'
+
 import * as ethereum from '../../../ethereum/src'
-import { StoreMessageClient } from '../../src'
+import { PaymentType, StoreMessageClient } from '../../src'
 
 export function ArraybufferToString(ab: ArrayBuffer): string {
   return String.fromCharCode.apply(null, new Uint8Array(ab) as unknown as number[])
@@ -108,5 +110,99 @@ describe('Store message publish', () => {
 
     expect(cost).toBeDefined()
     expect(cost.cost).toBe('108.999999891000000000')
+  })
+
+  // TODO: Unskip these tests once the production API supports the new payment schema for STORE messages
+  // Payment tests using temporary test endpoint
+  describe.skip('Store message payment', () => {
+    const storeWithPayment = new StoreMessageClient()
+
+    it('should store a file with hold payment type', async () => {
+      const { account } = ethereum.newAccount()
+      const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
+
+      const hash = await storeWithPayment.send({
+        channel: 'TEST',
+        account: account,
+        fileObject: fileContent,
+        payment: {
+          chain: Blockchain.ETH,
+          type: PaymentType.hold,
+        },
+      })
+
+      expect(hash.content.payment).toBeDefined()
+      expect(hash.content.payment?.chain).toBe(Blockchain.ETH)
+      expect(hash.content.payment?.type).toBe(PaymentType.hold)
+    })
+
+    it('should store a file with credit payment type', async () => {
+      const { account } = ethereum.newAccount()
+      const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
+
+      const hash = await storeWithPayment.send({
+        channel: 'TEST',
+        account: account,
+        fileObject: fileContent,
+        payment: {
+          chain: Blockchain.ETH,
+          type: PaymentType.credit,
+        },
+      })
+
+      expect(hash.content.payment).toBeDefined()
+      expect(hash.content.payment?.chain).toBe(Blockchain.ETH)
+      expect(hash.content.payment?.type).toBe(PaymentType.credit)
+    })
+
+    it('should store a file without payment (defaults to no payment field)', async () => {
+      const { account } = ethereum.newAccount()
+      const fileContent = readFileSync('./packages/message/__tests__/store/testFile.txt')
+
+      const hash = await storeWithPayment.send({
+        channel: 'TEST',
+        account: account,
+        fileObject: fileContent,
+      })
+
+      expect(hash.content.payment).toBeUndefined()
+    })
+
+    it('should pin a file with credit payment type', async () => {
+      const { account } = ethereum.newAccount()
+      const helloWorldHash = 'QmTp2hEo8eXRp6wg7jXv1BLCMh5a4F3B7buAUZNZUu772j'
+
+      const hash = await storeWithPayment.pin({
+        channel: 'TEST',
+        account: account,
+        fileHash: helloWorldHash,
+        payment: {
+          chain: Blockchain.ETH,
+          type: PaymentType.credit,
+        },
+      })
+
+      expect(hash.content.payment).toBeDefined()
+      expect(hash.content.payment?.chain).toBe(Blockchain.ETH)
+      expect(hash.content.payment?.type).toBe(PaymentType.credit)
+    })
+
+    it('should calculate the estimated cost with credit payment type', async () => {
+      const { account } = ethereum.newAccount()
+      const fileContent = readFileSync('./packages/message/__tests__/store/heavyTestFile.txt')
+
+      const cost = await storeWithPayment.getEstimatedCost({
+        channel: 'TEST',
+        account: account,
+        fileObject: fileContent,
+        payment: {
+          chain: Blockchain.ETH,
+          type: PaymentType.credit,
+        },
+      })
+
+      expect(cost).toBeDefined()
+      expect(cost.payment_type).toBe(PaymentType.credit)
+    })
   })
 })

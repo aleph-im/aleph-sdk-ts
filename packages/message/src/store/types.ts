@@ -11,6 +11,7 @@ export type StoreContent = BaseContent & {
   ref?: string
   extra_fields?: Record<string, unknown>
   metadata?: Record<string, unknown>
+  payment?: Payment
 }
 
 export type CostEstimationStoreContent = StoreContent & {
@@ -29,6 +30,8 @@ export type CostEstimationStoreContent = StoreContent & {
  *
  * storageEngine:   [Deprecated] - The storage engine to used when storing the message.
  *
+ * payment:         Payment information for storage. If not specified, defaults to hold tier.
+ *
  * apiServer:       The API server endpoint used to carry the request to the Aleph's network.
  */
 export type StorePinConfiguration = {
@@ -36,6 +39,7 @@ export type StorePinConfiguration = {
   account: Account
   fileHash: string
   storageEngine?: ItemType
+  payment?: Payment
 }
 
 // -------- SEND -----------
@@ -57,6 +61,8 @@ export type StorePinConfiguration = {
  *
  * metadata:        Metadata about the stored content.
  *
+ * payment:         Payment information for storage. If not specified, defaults to hold tier.
+ *
  * sync:            If true, the function will wait for the message to be confirmed by the API server.
  */
 export type StorePublishConfiguration = {
@@ -67,6 +73,7 @@ export type StorePublishConfiguration = {
   storageEngine?: ItemType.ipfs | ItemType.storage
   extraFields?: Record<string, unknown>
   metadata?: Record<string, unknown>
+  payment?: Payment
   sync?: boolean
 }
 
