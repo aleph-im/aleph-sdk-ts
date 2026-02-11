@@ -110,6 +110,7 @@ export class BaseMessageClient {
     contentKeys = [],
     hashes = [],
     messageTypes = [],
+    paymentTypes = [],
     startDate,
     endDate,
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
@@ -126,6 +127,7 @@ export class BaseMessageClient {
       contentKeys: any(contentKeys) ? contentKeys.join(',') : undefined,
       hashes: any(hashes) ? hashes.join(',') : undefined,
       msgTypes: any(messageTypes) ? messageTypes?.join(',') : undefined,
+      paymentTypes: any(paymentTypes) ? paymentTypes.join(',') : undefined,
       startDate: startDate ? startDate.valueOf() / 1000 : undefined,
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }
