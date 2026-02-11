@@ -22,7 +22,7 @@ export type PostGetConfiguration = {
 }
 
 export type PostQueryParams = {
-  types?: string | string[]
+  types?: string
   pagination: number
   page: number
   refs?: string | undefined

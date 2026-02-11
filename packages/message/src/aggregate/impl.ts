@@ -11,6 +11,7 @@ import { AggregateMessage, ItemType, MessageType } from '../types'
 import { MessageNotFoundError } from '../types/errors'
 import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
+import { toQueryParam } from '../utils/queryParams'
 import { broadcast } from '../utils/signature'
 
 export class AggregateMessageClient {
@@ -27,12 +28,12 @@ export class AggregateMessageClient {
    *
    * @param configuration The configuration used to get the message, including the API endpoint.
    */
-  async get<T = any>({ address = '', keys = [] }: AggregateGetConfiguration): Promise<Record<string, T>> {
+  async get<T = any>({ address = '', keys }: AggregateGetConfiguration): Promise<Record<string, T>> {
     try {
       const response = await axios.get<AggregateGetResponse<T>>(`${this.apiServer}/api/v0/aggregates/${address}.json`, {
         socketPath: getSocketPath(),
         params: {
-          keys: keys.length > 0 ? keys.join(',') : undefined,
+          keys: toQueryParam(keys),
         },
       })
 

@@ -1,4 +1,5 @@
 export * from './constants'
 export * from './messageBuilder'
 export * from './publish'
+export * from './queryParams'
 export * from './signature'
