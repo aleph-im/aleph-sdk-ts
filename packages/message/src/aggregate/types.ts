@@ -19,7 +19,7 @@ export type AggregateGetResponse<T> = {
 
 export type AggregateGetConfiguration = {
   address: string
-  keys?: Array<string>
+  keys?: string | string[]
 }
 
 export type AggregatePublishConfiguration<T> = {
