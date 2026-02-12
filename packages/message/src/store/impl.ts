@@ -159,6 +159,7 @@ export class StoreMessageClient extends DefaultMessageClient<
       channel: spc.channel,
       fileHash: spc.fileHash,
       storageEngine: ItemType.ipfs,
+      payment: spc.payment,
     })
   }
 
@@ -189,6 +190,7 @@ export class StoreMessageClient extends DefaultMessageClient<
     fileObject,
     extraFields,
     metadata,
+    payment,
   }: StorePublishConfiguration): Promise<StoreContent> {
     if (!fileObject && !fileHash) throw new Error('You need to specify a File to upload or a Hash to pin.')
     if (fileObject && fileHash) throw new Error("You can't pin a file and upload it at the same time.")
@@ -203,7 +205,7 @@ export class StoreMessageClient extends DefaultMessageClient<
 
     const timestamp = Date.now() / 1000
 
-    return {
+    const content: StoreContent = {
       address: account.address,
       item_type: storageEngine,
       item_hash: hash,
@@ -211,6 +213,12 @@ export class StoreMessageClient extends DefaultMessageClient<
       extra_fields: extraFields,
       metadata,
     }
+
+    if (payment) {
+      content.payment = payment
+    }
+
+    return content
   }
 }
 
