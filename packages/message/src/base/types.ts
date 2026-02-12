@@ -1,6 +1,6 @@
 import { Blockchain } from '@aleph-sdk/core'
 
-import { MessageContent, MessageStatus, MessageType, PublishedMessage } from '../types'
+import { MessageContent, MessageStatus, MessageType, PaymentType, PublishedMessage } from '../types'
 
 export type GetMessageParams = {
   hashes: string[]
@@ -42,6 +42,7 @@ export type GetMessagesConfiguration = {
   contentKeys?: string[]
   hashes?: string[]
   messageTypes?: MessageType[]
+  paymentTypes?: PaymentType[]
   startDate?: Date
   endDate?: Date
 }
@@ -58,6 +59,7 @@ export type GetMessagesParams = {
   contentKeys?: string
   hashes?: string
   msgTypes?: string
+  paymentTypes?: string
   startDate?: number
   endDate?: number
 }

@@ -111,6 +111,7 @@ export class BaseMessageClient {
     contentKeys,
     hashes,
     messageTypes,
+    paymentTypes,
     startDate,
     endDate,
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
@@ -126,6 +127,7 @@ export class BaseMessageClient {
       contentKeys: toQueryParam(contentKeys),
       hashes: toQueryParam(hashes),
       msgTypes: toQueryParam(messageTypes),
+      paymentTypes: toQueryParam(paymentTypes),
       startDate: startDate ? startDate.valueOf() / 1000 : undefined,
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }

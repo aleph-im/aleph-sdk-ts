@@ -2,7 +2,7 @@ import { Blockchain } from '@aleph-sdk/core'
 
 import { AlephNodeWebSocket } from './alephNodeWebSocket'
 import { AlephWebSocket } from './alephWebSocket'
-import { BaseContent, ItemType, MessageType } from '../../types'
+import { BaseContent, ItemType, MessageType, PaymentType } from '../../types'
 
 export type SocketResponse = {
   _id?: string
@@ -32,6 +32,7 @@ export type GetMessagesSocketConfiguration = {
   contentKeys?: string[]
   hashes?: string[]
   messageType?: MessageType
+  paymentTypes?: PaymentType[]
   startDate?: Date
   endDate?: Date
   history?: number
@@ -48,6 +49,7 @@ export type GetMessagesSocketParams = {
   contentKeys?: string
   hashes?: string
   msgType?: string
+  paymentTypes?: string
   startDate?: number
   endDate?: number
   history?: number
