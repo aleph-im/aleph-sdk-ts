@@ -11,7 +11,7 @@ import {
 } from './types'
 import { ItemType, MessageType, PostMessage } from '../types'
 import { MessageNotFoundError } from '../types/errors'
-import { broadcast, buildMessage, prepareAlephMessage } from '../utils'
+import { broadcast, buildMessage, prepareAlephMessage, toQueryParam } from '../utils'
 
 export class PostMessageClient {
   apiServer: string
@@ -47,25 +47,24 @@ export class PostMessageClient {
    * @param hashes      The hashes to retrieve the messages from.
    */
   async getAll<T = any>({
-    types = [],
+    types,
     pagination = 50,
     page = 1,
-    channels = [],
-    refs = [],
-    addresses = [],
-    tags = [],
-    hashes = [],
+    channels,
+    refs,
+    addresses,
+    tags,
+    hashes,
   }: PostGetConfiguration): Promise<PostQueryResponse<T>> {
-    const any = (value: any) => value && value.length > 0
     const params: PostQueryParams = {
-      types,
+      types: toQueryParam(types),
       pagination,
       page,
-      refs: any(refs) ? refs?.join(',') : undefined,
-      addresses: any(addresses) ? addresses?.join(',') : undefined,
-      tags: any(tags) ? tags?.join(',') : undefined,
-      hashes: any(hashes) ? hashes?.join(',') : undefined,
-      channels: any(channels) ? channels?.join(',') : undefined,
+      refs: toQueryParam(refs),
+      addresses: toQueryParam(addresses),
+      tags: toQueryParam(tags),
+      hashes: toQueryParam(hashes),
+      channels: toQueryParam(channels),
     }
 
     const response = (await axios.get<PostQueryResponse<T>>(`${this.apiServer}/api/v0/posts.json`, {

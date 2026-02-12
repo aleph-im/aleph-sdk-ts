@@ -13,6 +13,7 @@ import {
 import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
 import { AlephSocket, getMessagesSocket, GetMessagesSocketConfiguration } from './websocket'
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
+import { toQueryParam } from '../utils'
 
 export class BaseMessageClient {
   apiServer: string
@@ -101,31 +102,30 @@ export class BaseMessageClient {
   async getAll({
     pagination = 20,
     page = 1,
-    addresses = [],
-    channels = [],
-    chains = [],
-    refs = [],
-    tags = [],
-    contentTypes = [],
-    contentKeys = [],
-    hashes = [],
-    messageTypes = [],
+    addresses,
+    channels,
+    chains,
+    refs,
+    tags,
+    contentTypes,
+    contentKeys,
+    hashes,
+    messageTypes,
     startDate,
     endDate,
   }: GetMessagesConfiguration): Promise<MessagesQueryResponse> {
-    const any = (value: any) => value && value.length > 0
     const params: GetMessagesParams = {
       pagination,
       page,
-      addresses: any(addresses) ? addresses.join(',') : undefined,
-      channels: any(channels) ? channels.join(',') : undefined,
-      chains: any(chains) ? chains.join(',') : undefined,
-      refs: any(refs) ? refs.join(',') : undefined,
-      tags: any(tags) ? tags.join(',') : undefined,
-      contentTypes: any(contentTypes) ? contentTypes.join(',') : undefined,
-      contentKeys: any(contentKeys) ? contentKeys.join(',') : undefined,
-      hashes: any(hashes) ? hashes.join(',') : undefined,
-      msgTypes: any(messageTypes) ? messageTypes?.join(',') : undefined,
+      addresses: toQueryParam(addresses),
+      channels: toQueryParam(channels),
+      chains: toQueryParam(chains),
+      refs: toQueryParam(refs),
+      tags: toQueryParam(tags),
+      contentTypes: toQueryParam(contentTypes),
+      contentKeys: toQueryParam(contentKeys),
+      hashes: toQueryParam(hashes),
+      msgTypes: toQueryParam(messageTypes),
       startDate: startDate ? startDate.valueOf() / 1000 : undefined,
       endDate: endDate ? endDate.valueOf() / 1000 : undefined,
     }
