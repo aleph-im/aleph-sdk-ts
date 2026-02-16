@@ -32,6 +32,10 @@
   "author": "",
   "homepage": "https://aleph.im",
   "bugs": "https://github.com/aleph-im/aleph-sdk-ts/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aleph-im/aleph-sdk-ts"
+  },
   "license": "MIT",
   "gitHead": "f8b38067d95820cb0f030638d8c8754cb4490205"
 }
