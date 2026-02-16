@@ -1,8 +1,5 @@
 name: Publish Packages (NPM & Github)
 on:
-  push:
-    branches:
-      - feature/package-refactor
   release:
     types: [published]
 
@@ -34,6 +31,8 @@ jobs:
 
       - name: "Publish package"
         run: npm run publish
+        env:
+          NPM_CONFIG_PROVENANCE: true
 
   publish-github:
     runs-on: ubuntu-latest
