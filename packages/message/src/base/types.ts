@@ -13,12 +13,21 @@ export type GetMessageConfiguration = {
   messageType?: MessageType
 }
 
-export type MessageResponse<T extends MessageContent> = {
+export type MessageResponseProcessed<T extends MessageContent> = {
   item_hash: string
   message: PublishedMessage<T>
-  status: MessageStatus
+  status: Exclude<MessageStatus, 'pending'>
   forgotten_by?: string[]
 }
+
+export type MessageResponsePending<T extends MessageContent> = {
+  item_hash: string
+  messages: PublishedMessage<T>[]
+  status: MessageStatus.pending
+  reception_time: string
+}
+
+export type MessageResponse<T extends MessageContent> = MessageResponseProcessed<T> | MessageResponsePending<T>
 
 // --------- MESSAGES ------------
 

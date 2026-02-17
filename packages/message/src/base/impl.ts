@@ -51,9 +51,15 @@ export class BaseMessageClient {
           socketPath: getSocketPath(),
         },
       )
-      message = response.data.message
-      status = response.data.status
-      forgotten_by = response.data.forgotten_by || []
+      const data = response.data
+      status = data.status
+      if (data.status === MessageStatus.pending) {
+        message = data.messages[0]
+        forgotten_by = []
+      } else {
+        message = data.message
+        forgotten_by = data.forgotten_by || []
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
@@ -82,15 +88,16 @@ export class BaseMessageClient {
       socketPath: getSocketPath(),
     })
     if (response.status === 404) throw new MessageNotFoundError(`No such hash ${item_hash}`)
-    const message_raw = response.data
-    if (message_raw.status === 'forgotten')
+    const data = response.data
+    if (data.status === MessageStatus.pending) return null
+    if (data.status === MessageStatus.forgotten)
       throw new ForgottenMessageError(
-        `The requested message ${message_raw.item_hash} has been forgotten by ${message_raw.forgotten_by.join(', ')}`,
+        `The requested message ${data.item_hash} has been forgotten by ${data.forgotten_by.join(', ')}`,
       )
-    if (message_raw.status !== 'rejected') return null
+    if (data.status !== MessageStatus.rejected) return null
     return {
-      error_code: message_raw.error_code,
-      details: message_raw.details,
+      error_code: data.error_code,
+      details: data.details,
     }
   }
 
