@@ -1,10 +1,6 @@
 import { Account } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
-import {
-  generateKeyPairSync,
-  sign as cryptoSign,
-  KeyObject,
-} from 'node:crypto'
+import { generateKeyPairSync, sign as cryptoSign, KeyObject } from 'node:crypto'
 
 // --- Types ---
 
@@ -26,8 +22,7 @@ export type VmOperationResult = {
 
 // --- Base58 decoder (for Solana signature conversion) ---
 
-const BASE58_ALPHABET =
-  '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 function base58Decode(input: string): Uint8Array {
   if (input.length === 0) return new Uint8Array(0)
@@ -118,8 +113,7 @@ export class VmClient {
 
   private async ensurePubkeyHeader(): Promise<string> {
     if (!this.pubkeySignatureHeader) {
-      this.pubkeySignatureHeader =
-        await this.buildPubkeySignatureHeader()
+      this.pubkeySignatureHeader = await this.buildPubkeySignatureHeader()
     }
     return this.pubkeySignatureHeader
   }
@@ -137,14 +131,11 @@ export class VmClient {
     const signable = {
       time: 0,
       sender: this.account.address,
-      getVerificationBuffer: () =>
-        isSOL ? Buffer.from(hexPayload) : Buffer.from(jsonString),
+      getVerificationBuffer: () => (isSOL ? Buffer.from(hexPayload) : Buffer.from(jsonString)),
     }
 
     const rawSignature = await this.account.sign(signable)
-    const signature = isSOL
-      ? this.convertSolSignatureToHex(rawSignature)
-      : rawSignature
+    const signature = isSOL ? this.convertSolSignatureToHex(rawSignature) : rawSignature
 
     return JSON.stringify({
       sender: this.account.address,
@@ -167,9 +158,7 @@ export class VmClient {
    * Sign a control payload with the ephemeral key using ES256
    * (ECDSA P-256 + SHA-256, IEEE P1363 format).
    */
-  private signControlPayload(
-    payload: Record<string, string>,
-  ): string {
+  private signControlPayload(payload: Record<string, string>): string {
     const payloadBytes = Buffer.from(JSON.stringify(payload))
     const signature = cryptoSign('SHA256', payloadBytes, {
       key: this.ephemeralPrivateKey,
@@ -182,11 +171,7 @@ export class VmClient {
     })
   }
 
-  private buildControlPayload(
-    vmId: string,
-    operation: string,
-    method: string,
-  ): Record<string, string> {
+  private buildControlPayload(vmId: string, operation: string, method: string): Record<string, string> {
     return {
       time: new Date().toISOString(),
       method: method.toUpperCase(),
@@ -236,11 +221,7 @@ export class VmClient {
     },
   ): Promise<VmOperationResult> {
     const method = options?.method ?? 'POST'
-    const { url, headers } = await this.buildHeaders(
-      vmId,
-      operation,
-      method,
-    )
+    const { url, headers } = await this.buildHeaders(vmId, operation, method)
 
     const requestUrl = new URL(url)
     if (options?.params) {
@@ -260,10 +241,7 @@ export class VmClient {
     }
 
     try {
-      const response = await fetch(
-        requestUrl.toString(),
-        fetchOptions,
-      )
+      const response = await fetch(requestUrl.toString(), fetchOptions)
       return {
         status: response.status,
         response: await response.text(),
@@ -281,14 +259,11 @@ export class VmClient {
    */
   async startInstance(vmId: string): Promise<VmOperationResult> {
     try {
-      const response = await fetch(
-        `${this.nodeUrl}/control/allocation/notify`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instance: vmId }),
-        },
-      )
+      const response = await fetch(`${this.nodeUrl}/control/allocation/notify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instance: vmId }),
+      })
       return {
         status: response.status,
         response: await response.text(),
@@ -322,13 +297,8 @@ export class VmClient {
    * @param vmId The item hash identifying the VM instance
    * @param eraseVolumes Whether to erase persistent volumes (default: true)
    */
-  async reinstallInstance(
-    vmId: string,
-    eraseVolumes = true,
-  ): Promise<VmOperationResult> {
-    const params = eraseVolumes
-      ? undefined
-      : { erase_volumes: 'false' }
+  async reinstallInstance(vmId: string, eraseVolumes = true): Promise<VmOperationResult> {
+    const params = eraseVolumes ? undefined : { erase_volumes: 'false' }
     return this.performOperation(vmId, VmOperation.Reinstall, {
       params,
     })
@@ -374,10 +344,7 @@ export class VmClient {
    * @param vmId The item hash identifying the VM instance
    * @param backupId Alphanumeric backup identifier
    */
-  async deleteBackup(
-    vmId: string,
-    backupId: string,
-  ): Promise<VmOperationResult> {
+  async deleteBackup(vmId: string, backupId: string): Promise<VmOperationResult> {
     if (!/^[a-zA-Z0-9_-]+$/.test(backupId)) {
       throw new Error(`Invalid backup ID format: ${backupId}`)
     }
@@ -394,10 +361,7 @@ export class VmClient {
    * @param vmId The item hash identifying the VM instance
    * @param volumeRef The item hash of the volume to restore from
    */
-  async restoreFromVolume(
-    vmId: string,
-    volumeRef: string,
-  ): Promise<VmOperationResult> {
+  async restoreFromVolume(vmId: string, volumeRef: string): Promise<VmOperationResult> {
     return this.performOperation(vmId, VmOperation.Restore, {
       jsonData: { volume_ref: volumeRef },
     })
@@ -409,15 +373,8 @@ export class VmClient {
    * @param vmId The item hash identifying the VM instance
    * @param rootfsData The rootfs file content as Buffer or Blob
    */
-  async restoreFromFile(
-    vmId: string,
-    rootfsData: Buffer | Blob,
-  ): Promise<VmOperationResult> {
-    const { url, headers } = await this.buildHeaders(
-      vmId,
-      VmOperation.Restore,
-      'POST',
-    )
+  async restoreFromFile(vmId: string, rootfsData: Buffer | Blob): Promise<VmOperationResult> {
+    const { url, headers } = await this.buildHeaders(vmId, VmOperation.Restore, 'POST')
 
     const formData = new FormData()
     const blob =
@@ -447,9 +404,7 @@ export class VmClient {
    * Get the authenticated URL and headers for a restore operation.
    * Useful for custom upload implementations with progress tracking.
    */
-  async getRestoreEndpoint(
-    vmId: string,
-  ): Promise<{ url: string; headers: Record<string, string> }> {
+  async getRestoreEndpoint(vmId: string): Promise<{ url: string; headers: Record<string, string> }> {
     return this.buildHeaders(vmId, VmOperation.Restore, 'POST')
   }
 }

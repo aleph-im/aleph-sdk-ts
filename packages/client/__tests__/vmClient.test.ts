@@ -254,9 +254,7 @@ describe('VmClient', () => {
       const account = createMockAccount()
       const client = new VmClient(account, 'https://crn.example.com')
 
-      await expect(
-        client.deleteBackup('vm123', '../etc/passwd'),
-      ).rejects.toThrow('Invalid backup ID format')
+      await expect(client.deleteBackup('vm123', '../etc/passwd')).rejects.toThrow('Invalid backup ID format')
     })
   })
 
@@ -314,9 +312,7 @@ describe('VmClient', () => {
       expect(pubkeyHeader.content.domain).toBe('crn.example.com')
 
       // Verify the payload decodes to valid JSON with expected fields
-      const payloadJson = JSON.parse(
-        Buffer.from(pubkeyHeader.payload, 'hex').toString(),
-      )
+      const payloadJson = JSON.parse(Buffer.from(pubkeyHeader.payload, 'hex').toString())
       expect(payloadJson.pubkey).toBeDefined()
       expect(payloadJson.alg).toBe('ECDSA')
       expect(payloadJson.domain).toBe('crn.example.com')
@@ -338,9 +334,7 @@ describe('VmClient', () => {
       expect(opHeader.signature).toBeDefined()
 
       // Verify the payload decodes to valid control payload
-      const payloadJson = JSON.parse(
-        Buffer.from(opHeader.payload, 'hex').toString(),
-      )
+      const payloadJson = JSON.parse(Buffer.from(opHeader.payload, 'hex').toString())
       expect(payloadJson.time).toBeDefined()
       expect(payloadJson.method).toBe('POST')
       expect(payloadJson.path).toBe('/control/machine/vm123/stop')
@@ -378,9 +372,7 @@ describe('VmClient', () => {
 
       const [, options] = mockFetch.mock.calls[0]
       const pubkeyHeader = JSON.parse(options.headers['X-SignedPubKey'])
-      const payloadJson = JSON.parse(
-        Buffer.from(pubkeyHeader.payload, 'hex').toString(),
-      )
+      const payloadJson = JSON.parse(Buffer.from(pubkeyHeader.payload, 'hex').toString())
       expect(payloadJson.chain).toBe('SOL')
     })
   })
