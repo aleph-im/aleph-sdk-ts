@@ -100,6 +100,10 @@ export class VmClient {
     this.ephemeralKey = ephemeralKey
   }
 
+  get nodeDomain(): string {
+    return new URL(this.nodeUrl).hostname
+  }
+
   static async create(
     account: Account,
     nodeUrl: string,
@@ -113,7 +117,7 @@ export class VmClient {
 
     const ephemeralKey = await crypto.subtle.generateKey(
       EPHEMERAL_KEY_PARAMS,
-      false,
+      true,
       ['sign', 'verify'],
     )
 
@@ -129,9 +133,9 @@ export class VmClient {
     const payload = {
       pubkey: publicJwk,
       alg: 'ECDSA',
-      domain: this.nodeUrl,
+      domain: this.nodeDomain,
       address: this.account.address,
-      chain: this.account.getChain(),
+      chain: this.account.getChain() === Blockchain.SOL ? 'SOL' : 'ETH',
       expires: new Date(
         Date.now() + PUBKEY_TTL_MS,
       ).toISOString(),
@@ -173,7 +177,7 @@ export class VmClient {
       sender: this.account.address,
       payload: hexPayload,
       signature,
-      content: { domain: this.nodeUrl },
+      content: { domain: this.nodeDomain },
     })
 
     return header
@@ -232,7 +236,7 @@ export class VmClient {
       time: new Date().toISOString(),
       method,
       path,
-      domain: this.nodeUrl,
+      domain: this.nodeDomain,
     })
 
     const hexPayload = bytesToHex(
@@ -246,7 +250,7 @@ export class VmClient {
       sender: this.account.address,
       payload: hexPayload,
       signature,
-      content: { domain: this.nodeUrl },
+      content: { domain: this.nodeDomain },
     })
 
     return {

@@ -88,7 +88,7 @@ describe('X-SignedPubKey header', () => {
       '0xmocksignature123',
     )
     expect(pubkeyHeader.content.domain).toBe(
-      TEST_NODE_URL,
+      'crn.example.com',
     )
     expect(typeof pubkeyHeader.payload).toBe('string')
   })
@@ -111,7 +111,7 @@ describe('X-SignedPubKey header', () => {
     expect(payload.pubkey.kty).toBe('EC')
     expect(payload.pubkey.crv).toBe('P-256')
     expect(payload.alg).toBe('ECDSA')
-    expect(payload.domain).toBe(TEST_NODE_URL)
+    expect(payload.domain).toBe('crn.example.com')
     expect(payload.address).toBe(
       '0xTestAddress1234567890',
     )
@@ -168,7 +168,7 @@ describe('X-SignedOperation header', () => {
     expect(payload.path).toBe(
       `/control/machine/${TEST_VM_ID}/stop`,
     )
-    expect(payload.domain).toBe(TEST_NODE_URL)
+    expect(payload.domain).toBe('crn.example.com')
   })
 
   it('should include sender and signature', async () => {
