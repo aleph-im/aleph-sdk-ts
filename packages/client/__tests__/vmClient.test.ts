@@ -233,6 +233,77 @@ describe('startInstance', () => {
   })
 })
 
+describe('createBackup', () => {
+  let client: VmClient
+
+  beforeEach(async () => {
+    const account = createMockAccount()
+    client = await VmClient.create(account, TEST_NODE_URL)
+    mockFetch.mockClear()
+    mockFetch.mockResolvedValue({
+      status: 200,
+      text: () => Promise.resolve('{"backup_id": "bk_123"}'),
+    })
+  })
+
+  it('should POST to backup endpoint with no params by default', async () => {
+    await client.createBackup(TEST_VM_ID)
+
+    const [calledUrl, options] = mockFetch.mock.calls[0]
+    expect(calledUrl).toBe(`${TEST_NODE_URL}/control/machine/${TEST_VM_ID}/backup`)
+    expect(options.method).toBe('POST')
+  })
+
+  it('should include include_volumes param when specified', async () => {
+    await client.createBackup(TEST_VM_ID, { includeVolumes: true })
+
+    const calledUrl = mockFetch.mock.calls[0][0] as string
+    expect(calledUrl).toContain('include_volumes=true')
+  })
+
+  it('should include skip_fsfreeze param when specified', async () => {
+    await client.createBackup(TEST_VM_ID, { skipFsfreeze: true })
+
+    const calledUrl = mockFetch.mock.calls[0][0] as string
+    expect(calledUrl).toContain('skip_fsfreeze=true')
+  })
+
+  it('should include both params when both specified', async () => {
+    await client.createBackup(TEST_VM_ID, {
+      includeVolumes: false,
+      skipFsfreeze: true,
+    })
+
+    const calledUrl = mockFetch.mock.calls[0][0] as string
+    expect(calledUrl).toContain('include_volumes=false')
+    expect(calledUrl).toContain('skip_fsfreeze=true')
+  })
+})
+
+describe('getBackup', () => {
+  let client: VmClient
+
+  beforeEach(async () => {
+    const account = createMockAccount()
+    client = await VmClient.create(account, TEST_NODE_URL)
+    mockFetch.mockClear()
+    mockFetch.mockResolvedValue({
+      status: 200,
+      text: () => Promise.resolve('[{"id": "bk_123"}]'),
+    })
+  })
+
+  it('should GET the backup endpoint', async () => {
+    const result = await client.getBackup(TEST_VM_ID)
+
+    const [calledUrl, options] = mockFetch.mock.calls[0]
+    expect(calledUrl).toBe(`${TEST_NODE_URL}/control/machine/${TEST_VM_ID}/backup`)
+    expect(options.method).toBe('GET')
+    expect(result.status).toBe(200)
+    expect(result.response).toBe('[{"id": "bk_123"}]')
+  })
+})
+
 describe('deleteBackup', () => {
   let client: VmClient
 

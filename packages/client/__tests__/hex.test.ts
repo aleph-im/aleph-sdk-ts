@@ -25,6 +25,14 @@ describe('hexToBytes', () => {
   it('should return empty array for empty string', () => {
     expect(hexToBytes('')).toEqual(new Uint8Array([]))
   })
+
+  it('should throw on odd-length hex string', () => {
+    expect(() => hexToBytes('abc')).toThrow('odd length')
+  })
+
+  it('should throw on invalid hex characters', () => {
+    expect(() => hexToBytes('zzzz')).toThrow('Invalid hex character')
+  })
 })
 
 describe('hex round-trip', () => {

@@ -1,5 +1,4 @@
-import { Account } from '@aleph-sdk/account'
-import { SignableMessage } from '@aleph-sdk/account'
+import { Account, SignableMessage } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
 
 import { bytesToHex, utf8ToBytes } from './utils/hex'
@@ -18,7 +17,7 @@ export enum VmOperation {
 }
 
 export type VmOperationResult = {
-  status: number | null
+  status: number
   response: string
 }
 
