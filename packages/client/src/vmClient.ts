@@ -1,6 +1,6 @@
-import { Blockchain } from '@aleph-sdk/core'
 import { Account } from '@aleph-sdk/account'
 import { SignableMessage } from '@aleph-sdk/account'
+import { Blockchain } from '@aleph-sdk/core'
 
 import { bytesToHex, utf8ToBytes } from './utils/hex'
 
@@ -30,8 +30,7 @@ export type LogEntry = {
 
 // --- Base58 decoding (for Solana signature conversion) ---
 
-const BASE58_ALPHABET =
-  '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 function base58Decode(input: string): Uint8Array {
   if (input.length === 0) return new Uint8Array(0)
@@ -40,9 +39,7 @@ function base58Decode(input: string): Uint8Array {
   for (let i = 0; i < input.length; i++) {
     const charIndex = BASE58_ALPHABET.indexOf(input[i])
     if (charIndex < 0) {
-      throw new Error(
-        `Invalid base58 character: ${input[i]}`,
-      )
+      throw new Error(`Invalid base58 character: ${input[i]}`)
     }
     let carry = charIndex
     for (let j = 0; j < bytes.length; j++) {
@@ -90,11 +87,7 @@ export class VmClient {
   private readonly ephemeralKey: CryptoKeyPair
   private cachedPubkeyHeader: string | null = null
 
-  private constructor(
-    account: Account,
-    nodeUrl: string,
-    ephemeralKey: CryptoKeyPair,
-  ) {
+  private constructor(account: Account, nodeUrl: string, ephemeralKey: CryptoKeyPair) {
     this.account = account
     this.nodeUrl = nodeUrl
     this.ephemeralKey = ephemeralKey
@@ -104,10 +97,7 @@ export class VmClient {
     return new URL(this.nodeUrl).hostname
   }
 
-  static async create(
-    account: Account,
-    nodeUrl: string,
-  ): Promise<VmClient> {
+  static async create(account: Account, nodeUrl: string): Promise<VmClient> {
     const normalized = nodeUrl.replace(/\/+\s*$/, '')
     try {
       new URL(normalized)
@@ -115,20 +105,13 @@ export class VmClient {
       throw new Error(`Invalid node URL: ${nodeUrl}`)
     }
 
-    const ephemeralKey = await crypto.subtle.generateKey(
-      EPHEMERAL_KEY_PARAMS,
-      true,
-      ['sign', 'verify'],
-    )
+    const ephemeralKey = await crypto.subtle.generateKey(EPHEMERAL_KEY_PARAMS, true, ['sign', 'verify'])
 
     return new VmClient(account, normalized, ephemeralKey)
   }
 
   private async buildPubkeyPayload(): Promise<string> {
-    const publicJwk = await crypto.subtle.exportKey(
-      'jwk',
-      this.ephemeralKey.publicKey,
-    )
+    const publicJwk = await crypto.subtle.exportKey('jwk', this.ephemeralKey.publicKey)
 
     const payload = {
       pubkey: publicJwk,
@@ -136,17 +119,13 @@ export class VmClient {
       domain: this.nodeDomain,
       address: this.account.address,
       chain: this.account.getChain() === Blockchain.SOL ? 'SOL' : 'ETH',
-      expires: new Date(
-        Date.now() + PUBKEY_TTL_MS,
-      ).toISOString(),
+      expires: new Date(Date.now() + PUBKEY_TTL_MS).toISOString(),
     }
 
     return JSON.stringify(payload)
   }
 
-  private async buildPubkeySignatureHeader(
-    payloadJson: string,
-  ): Promise<string> {
+  private async buildPubkeySignatureHeader(payloadJson: string): Promise<string> {
     const jsonBytes = utf8ToBytes(payloadJson)
     const hexPayload = bytesToHex(jsonBytes)
 
@@ -154,9 +133,7 @@ export class VmClient {
     let verificationBuffer: Buffer
 
     if (chain === Blockchain.SOL) {
-      verificationBuffer = Buffer.from(
-        utf8ToBytes(hexPayload),
-      )
+      verificationBuffer = Buffer.from(utf8ToBytes(hexPayload))
     } else {
       verificationBuffer = Buffer.from(jsonBytes)
     }
@@ -189,42 +166,28 @@ export class VmClient {
     }
 
     const payloadJson = await this.buildPubkeyPayload()
-    const header = await this.buildPubkeySignatureHeader(
-      payloadJson,
-    )
+    const header = await this.buildPubkeySignatureHeader(payloadJson)
 
     this.cachedPubkeyHeader = header
     return header
   }
 
-  private async signControlPayload(
-    payload: string,
-  ): Promise<string> {
+  private async signControlPayload(payload: string): Promise<string> {
     const payloadBytes = utf8ToBytes(payload)
 
-    const signatureBuffer = await crypto.subtle.sign(
-      SIGN_ALGORITHM,
-      this.ephemeralKey.privateKey,
-      payloadBytes,
-    )
+    const signatureBuffer = await crypto.subtle.sign(SIGN_ALGORITHM, this.ephemeralKey.privateKey, payloadBytes)
 
     return bytesToHex(new Uint8Array(signatureBuffer))
   }
 
-  private convertSolSignatureToHex(
-    jsonSignature: string,
-  ): string {
+  private convertSolSignatureToHex(jsonSignature: string): string {
     const parsed = JSON.parse(jsonSignature)
-    const signatureStr: string =
-      parsed.signature ?? parsed
+    const signatureStr: string = parsed.signature ?? parsed
     const decoded = base58Decode(signatureStr)
     return '0x' + bytesToHex(decoded)
   }
 
-  private async buildAuthHeaders(
-    path: string,
-    method: string,
-  ): Promise<Record<string, string>> {
+  private async buildAuthHeaders(path: string, method: string): Promise<Record<string, string>> {
     const pubkeyHeader = await this.ensurePubkeyHeader()
 
     const operationPayload = JSON.stringify({
@@ -234,12 +197,8 @@ export class VmClient {
       domain: this.nodeDomain,
     })
 
-    const hexPayload = bytesToHex(
-      utf8ToBytes(operationPayload),
-    )
-    const signature = await this.signControlPayload(
-      operationPayload,
-    )
+    const hexPayload = bytesToHex(utf8ToBytes(operationPayload))
+    const signature = await this.signControlPayload(operationPayload)
 
     const operationHeader = JSON.stringify({
       sender: this.account.address,
@@ -259,13 +218,9 @@ export class VmClient {
     operation: VmOperation,
     method: string = 'POST',
   ): Promise<{ url: string; headers: Record<string, string> }> {
-    const path =
-      `/control/machine/${vmId}/${operation}`
+    const path = `/control/machine/${vmId}/${operation}`
     const url = `${this.nodeUrl}${path}`
-    const headers = await this.buildAuthHeaders(
-      path,
-      method,
-    )
+    const headers = await this.buildAuthHeaders(path, method)
 
     return { url, headers }
   }
@@ -280,17 +235,11 @@ export class VmClient {
     },
   ): Promise<VmOperationResult> {
     const method = options?.method ?? 'POST'
-    const { url, headers } = await this.buildHeaders(
-      vmId,
-      operation,
-      method,
-    )
+    const { url, headers } = await this.buildHeaders(vmId, operation, method)
 
     let fullUrl = url
     if (options?.params) {
-      const searchParams = new URLSearchParams(
-        options.params,
-      )
+      const searchParams = new URLSearchParams(options.params)
       fullUrl = `${url}?${searchParams.toString()}`
     }
 
@@ -300,12 +249,8 @@ export class VmClient {
     }
 
     if (options?.jsonData !== undefined) {
-      ;(
-        fetchOptions.headers as Record<string, string>
-      )['Content-Type'] = 'application/json'
-      fetchOptions.body = JSON.stringify(
-        options.jsonData,
-      )
+      ;(fetchOptions.headers as Record<string, string>)['Content-Type'] = 'application/json'
+      fetchOptions.body = JSON.stringify(options.jsonData)
     }
 
     const resp = await fetch(fullUrl, fetchOptions)
@@ -317,9 +262,7 @@ export class VmClient {
     }
   }
 
-  async startInstance(
-    vmId: string,
-  ): Promise<VmOperationResult> {
+  async startInstance(vmId: string): Promise<VmOperationResult> {
     const url = `${this.nodeUrl}/control/allocation/notify`
     const resp = await fetch(url, {
       method: 'POST',
@@ -330,56 +273,27 @@ export class VmClient {
     return { status: resp.status, response: responseText }
   }
 
-  async stopInstance(
-    vmId: string,
-  ): Promise<VmOperationResult> {
-    return this.performOperation(
-      vmId,
-      VmOperation.Stop,
-    )
+  async stopInstance(vmId: string): Promise<VmOperationResult> {
+    return this.performOperation(vmId, VmOperation.Stop)
   }
 
-  async rebootInstance(
-    vmId: string,
-  ): Promise<VmOperationResult> {
-    return this.performOperation(
-      vmId,
-      VmOperation.Reboot,
-    )
+  async rebootInstance(vmId: string): Promise<VmOperationResult> {
+    return this.performOperation(vmId, VmOperation.Reboot)
   }
 
-  async eraseInstance(
-    vmId: string,
-  ): Promise<VmOperationResult> {
-    return this.performOperation(
-      vmId,
-      VmOperation.Erase,
-    )
+  async eraseInstance(vmId: string): Promise<VmOperationResult> {
+    return this.performOperation(vmId, VmOperation.Erase)
   }
 
-  async expireInstance(
-    vmId: string,
-  ): Promise<VmOperationResult> {
-    return this.performOperation(
-      vmId,
-      VmOperation.Expire,
-    )
+  async expireInstance(vmId: string): Promise<VmOperationResult> {
+    return this.performOperation(vmId, VmOperation.Expire)
   }
 
-  async reinstallInstance(
-    vmId: string,
-    eraseVolumes?: boolean,
-  ): Promise<VmOperationResult> {
+  async reinstallInstance(vmId: string, eraseVolumes?: boolean): Promise<VmOperationResult> {
     const params: Record<string, string> | undefined =
-      eraseVolumes !== undefined
-        ? { erase_volumes: String(eraseVolumes) }
-        : undefined
+      eraseVolumes !== undefined ? { erase_volumes: String(eraseVolumes) } : undefined
 
-    return this.performOperation(
-      vmId,
-      VmOperation.Reinstall,
-      { params },
-    )
+    return this.performOperation(vmId, VmOperation.Reinstall, { params })
   }
 
   async createBackup(
@@ -391,42 +305,22 @@ export class VmClient {
   ): Promise<VmOperationResult> {
     const params: Record<string, string> = {}
     if (options?.includeVolumes !== undefined) {
-      params['include_volumes'] = String(
-        options.includeVolumes,
-      )
+      params['include_volumes'] = String(options.includeVolumes)
     }
     if (options?.skipFsfreeze !== undefined) {
-      params['skip_fsfreeze'] = String(
-        options.skipFsfreeze,
-      )
+      params['skip_fsfreeze'] = String(options.skipFsfreeze)
     }
 
-    return this.performOperation(
-      vmId,
-      VmOperation.Backup,
-      {
-        params:
-          Object.keys(params).length > 0
-            ? params
-            : undefined,
-      },
-    )
+    return this.performOperation(vmId, VmOperation.Backup, {
+      params: Object.keys(params).length > 0 ? params : undefined,
+    })
   }
 
-  async getBackup(
-    vmId: string,
-  ): Promise<VmOperationResult> {
-    return this.performOperation(
-      vmId,
-      VmOperation.Backup,
-      { method: 'GET' },
-    )
+  async getBackup(vmId: string): Promise<VmOperationResult> {
+    return this.performOperation(vmId, VmOperation.Backup, { method: 'GET' })
   }
 
-  async deleteBackup(
-    vmId: string,
-    backupId: string,
-  ): Promise<VmOperationResult> {
+  async deleteBackup(vmId: string, backupId: string): Promise<VmOperationResult> {
     if (!/^[a-zA-Z0-9_-]+$/.test(backupId)) {
       throw new Error(
         `Invalid backup ID: ${backupId}. ` +
@@ -435,11 +329,7 @@ export class VmClient {
       )
     }
 
-    const { url, headers } = await this.buildHeaders(
-      vmId,
-      VmOperation.Backup,
-      'DELETE',
-    )
+    const { url, headers } = await this.buildHeaders(vmId, VmOperation.Backup, 'DELETE')
 
     const resp = await fetch(`${url}/${backupId}`, {
       method: 'DELETE',
@@ -449,26 +339,12 @@ export class VmClient {
     return { status: resp.status, response: responseText }
   }
 
-  async restoreFromVolume(
-    vmId: string,
-    volumeRef: string,
-  ): Promise<VmOperationResult> {
-    return this.performOperation(
-      vmId,
-      VmOperation.Restore,
-      { jsonData: { volume_ref: volumeRef } },
-    )
+  async restoreFromVolume(vmId: string, volumeRef: string): Promise<VmOperationResult> {
+    return this.performOperation(vmId, VmOperation.Restore, { jsonData: { volume_ref: volumeRef } })
   }
 
-  async restoreFromFile(
-    vmId: string,
-    rootfsData: Blob,
-  ): Promise<VmOperationResult> {
-    const { url, headers } = await this.buildHeaders(
-      vmId,
-      VmOperation.Restore,
-      'POST',
-    )
+  async restoreFromFile(vmId: string, rootfsData: Blob): Promise<VmOperationResult> {
+    const { url, headers } = await this.buildHeaders(vmId, VmOperation.Restore, 'POST')
 
     const formData = new FormData()
     formData.append('rootfs', rootfsData)
@@ -482,33 +358,17 @@ export class VmClient {
     return { status: resp.status, response: responseText }
   }
 
-  async getRestoreEndpoint(
-    vmId: string,
-  ): Promise<{ url: string; headers: Record<string, string> }> {
-    return this.buildHeaders(
-      vmId,
-      VmOperation.Restore,
-      'POST',
-    )
+  async getRestoreEndpoint(vmId: string): Promise<{ url: string; headers: Record<string, string> }> {
+    return this.buildHeaders(vmId, VmOperation.Restore, 'POST')
   }
 
   getStreamLogsUrl(vmId: string): string {
-    const wsBase = this.nodeUrl.replace(
-      /^http/,
-      'ws',
-    )
+    const wsBase = this.nodeUrl.replace(/^http/, 'ws')
     return `${wsBase}/control/machine/${vmId}/stream_logs`
   }
 
-  async *streamLogs(
-    vmId: string,
-    abort?: AbortSignal,
-  ): AsyncGenerator<LogEntry> {
-    const { headers } = await this.buildHeaders(
-      vmId,
-      VmOperation.StreamLogs,
-      'GET',
-    )
+  async *streamLogs(vmId: string, abort?: AbortSignal): AsyncGenerator<LogEntry> {
+    const { headers } = await this.buildHeaders(vmId, VmOperation.StreamLogs, 'GET')
 
     const wsUrl = this.getStreamLogsUrl(vmId)
     const ws = new WebSocket(wsUrl)
@@ -521,10 +381,7 @@ export class VmClient {
     const cleanup = () => {
       done = true
       if (resolve) resolve()
-      if (
-        ws.readyState === WebSocket.OPEN ||
-        ws.readyState === WebSocket.CONNECTING
-      ) {
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
         ws.close()
       }
     }
@@ -532,21 +389,15 @@ export class VmClient {
     ws.onopen = () => {
       const authMessage = JSON.stringify({
         auth: {
-          'X-SignedPubKey': JSON.parse(
-            headers['X-SignedPubKey'],
-          ),
-          'X-SignedOperation': JSON.parse(
-            headers['X-SignedOperation'],
-          ),
+          'X-SignedPubKey': JSON.parse(headers['X-SignedPubKey']),
+          'X-SignedOperation': JSON.parse(headers['X-SignedOperation']),
         },
       })
       ws.send(authMessage)
     }
 
     ws.onmessage = (event: MessageEvent) => {
-      const entry = JSON.parse(
-        String(event.data),
-      ) as LogEntry
+      const entry = JSON.parse(String(event.data)) as LogEntry
       messageQueue.push(entry)
       if (resolve) resolve()
     }
@@ -561,11 +412,7 @@ export class VmClient {
     }
 
     if (abort) {
-      abort.addEventListener(
-        'abort',
-        () => cleanup(),
-        { once: true },
-      )
+      abort.addEventListener('abort', () => cleanup(), { once: true })
     }
 
     try {
@@ -586,15 +433,10 @@ export class VmClient {
     }
   }
 
-  async reserveResources(
-    config: Record<string, unknown>,
-  ): Promise<VmOperationResult> {
+  async reserveResources(config: Record<string, unknown>): Promise<VmOperationResult> {
     const path = '/control/reserve_resources'
     const url = `${this.nodeUrl}${path}`
-    const headers = await this.buildAuthHeaders(
-      path,
-      'POST',
-    )
+    const headers = await this.buildAuthHeaders(path, 'POST')
 
     const resp = await fetch(url, {
       method: 'POST',
