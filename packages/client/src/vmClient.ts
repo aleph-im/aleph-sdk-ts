@@ -221,16 +221,11 @@ export class VmClient {
     return '0x' + bytesToHex(decoded)
   }
 
-  async buildHeaders(
-    vmId: string,
-    operation: VmOperation,
-    method: string = 'POST',
-  ): Promise<{ url: string; headers: Record<string, string> }> {
+  private async buildAuthHeaders(
+    path: string,
+    method: string,
+  ): Promise<Record<string, string>> {
     const pubkeyHeader = await this.ensurePubkeyHeader()
-
-    const path =
-      `/control/machine/${vmId}/${operation}`
-    const url = `${this.nodeUrl}${path}`
 
     const operationPayload = JSON.stringify({
       time: new Date().toISOString(),
@@ -254,12 +249,25 @@ export class VmClient {
     })
 
     return {
-      url,
-      headers: {
-        'X-SignedPubKey': pubkeyHeader,
-        'X-SignedOperation': operationHeader,
-      },
+      'X-SignedPubKey': pubkeyHeader,
+      'X-SignedOperation': operationHeader,
     }
+  }
+
+  async buildHeaders(
+    vmId: string,
+    operation: VmOperation,
+    method: string = 'POST',
+  ): Promise<{ url: string; headers: Record<string, string> }> {
+    const path =
+      `/control/machine/${vmId}/${operation}`
+    const url = `${this.nodeUrl}${path}`
+    const headers = await this.buildAuthHeaders(
+      path,
+      method,
+    )
+
+    return { url, headers }
   }
 
   async performOperation(
@@ -482,5 +490,125 @@ export class VmClient {
       VmOperation.Restore,
       'POST',
     )
+  }
+
+  getStreamLogsUrl(vmId: string): string {
+    const wsBase = this.nodeUrl.replace(
+      /^http/,
+      'ws',
+    )
+    return `${wsBase}/control/machine/${vmId}/stream_logs`
+  }
+
+  async *streamLogs(
+    vmId: string,
+    abort?: AbortSignal,
+  ): AsyncGenerator<LogEntry> {
+    const { headers } = await this.buildHeaders(
+      vmId,
+      VmOperation.StreamLogs,
+      'GET',
+    )
+
+    const wsUrl = this.getStreamLogsUrl(vmId)
+    const ws = new WebSocket(wsUrl)
+
+    const messageQueue: LogEntry[] = []
+    let resolve: (() => void) | null = null
+    let done = false
+    let error: Error | null = null
+
+    const cleanup = () => {
+      done = true
+      if (resolve) resolve()
+      if (
+        ws.readyState === WebSocket.OPEN ||
+        ws.readyState === WebSocket.CONNECTING
+      ) {
+        ws.close()
+      }
+    }
+
+    ws.onopen = () => {
+      const authMessage = JSON.stringify({
+        auth: {
+          'X-SignedPubKey': JSON.parse(
+            headers['X-SignedPubKey'],
+          ),
+          'X-SignedOperation': JSON.parse(
+            headers['X-SignedOperation'],
+          ),
+        },
+      })
+      ws.send(authMessage)
+    }
+
+    ws.onmessage = (event: MessageEvent) => {
+      const entry = JSON.parse(
+        String(event.data),
+      ) as LogEntry
+      messageQueue.push(entry)
+      if (resolve) resolve()
+    }
+
+    ws.onerror = () => {
+      error = new Error('WebSocket error')
+      cleanup()
+    }
+
+    ws.onclose = () => {
+      cleanup()
+    }
+
+    if (abort) {
+      abort.addEventListener(
+        'abort',
+        () => cleanup(),
+        { once: true },
+      )
+    }
+
+    try {
+      while (!done || messageQueue.length > 0) {
+        if (messageQueue.length > 0) {
+          yield messageQueue.shift()!
+          continue
+        }
+        if (done) break
+        await new Promise<void>((r) => {
+          resolve = r
+        })
+        resolve = null
+      }
+      if (error) throw error
+    } finally {
+      cleanup()
+    }
+  }
+
+  async reserveResources(
+    config: Record<string, unknown>,
+  ): Promise<VmOperationResult> {
+    const path = '/control/reserve_resources'
+    const url = `${this.nodeUrl}${path}`
+    const headers = await this.buildAuthHeaders(
+      path,
+      'POST',
+    )
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(config),
+    })
+    const responseText = await resp.text()
+
+    return {
+      status: resp.status,
+      response: responseText,
+    }
   }
 }

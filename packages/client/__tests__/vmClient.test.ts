@@ -399,3 +399,136 @@ describe('reinstallInstance', () => {
     expect(calledUrl).not.toContain('erase_volumes')
   })
 })
+
+describe('streamLogs', () => {
+  let client: VmClient
+
+  beforeEach(async () => {
+    const account = createMockAccount()
+    client = await VmClient.create(
+      account,
+      TEST_NODE_URL,
+    )
+    mockFetch.mockClear()
+  })
+
+  it('should build correct WebSocket URL from https node URL', () => {
+    const url = client.getStreamLogsUrl(TEST_VM_ID)
+    expect(url).toBe(
+      `wss://crn.example.com/control/machine/${TEST_VM_ID}/stream_logs`,
+    )
+  })
+
+  it('should build correct WebSocket URL from http node URL', async () => {
+    const account = createMockAccount()
+    const httpClient = await VmClient.create(
+      account,
+      'http://crn.example.com',
+    )
+    const url = httpClient.getStreamLogsUrl(TEST_VM_ID)
+    expect(url).toBe(
+      `ws://crn.example.com/control/machine/${TEST_VM_ID}/stream_logs`,
+    )
+  })
+
+  it('should build auth headers with stream_logs operation and GET method', async () => {
+    const { url, headers } = await client.buildHeaders(
+      TEST_VM_ID,
+      VmOperation.StreamLogs,
+      'GET',
+    )
+
+    expect(url).toBe(
+      `${TEST_NODE_URL}/control/machine/${TEST_VM_ID}/stream_logs`,
+    )
+
+    const opHeader = JSON.parse(
+      headers['X-SignedOperation'],
+    )
+    const payloadJson = bytesToUtf8(
+      hexToBytes(opHeader.payload),
+    )
+    const payload = JSON.parse(payloadJson)
+
+    expect(payload.method).toBe('GET')
+    expect(payload.path).toBe(
+      `/control/machine/${TEST_VM_ID}/stream_logs`,
+    )
+    expect(payload.domain).toBe('crn.example.com')
+
+    expect(headers['X-SignedPubKey']).toBeDefined()
+    expect(
+      headers['X-SignedOperation'],
+    ).toBeDefined()
+  })
+})
+
+describe('reserveResources', () => {
+  let client: VmClient
+
+  beforeEach(async () => {
+    const account = createMockAccount()
+    client = await VmClient.create(
+      account,
+      TEST_NODE_URL,
+    )
+    mockFetch.mockClear()
+    mockFetch.mockResolvedValue({
+      status: 200,
+      text: () => Promise.resolve('{"reserved": true}'),
+    })
+  })
+
+  it('should POST to /control/reserve_resources with auth headers and JSON body', async () => {
+    const config = {
+      vcpus: 4,
+      memory_mib: 2048,
+      storage_mib: 10240,
+    }
+    const result = await client.reserveResources(config)
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const [calledUrl, options] = mockFetch.mock.calls[0]
+
+    expect(calledUrl).toBe(
+      `${TEST_NODE_URL}/control/reserve_resources`,
+    )
+    expect(options.method).toBe('POST')
+    expect(options.headers['Content-Type']).toBe(
+      'application/json',
+    )
+    expect(
+      options.headers['X-SignedPubKey'],
+    ).toBeDefined()
+    expect(
+      options.headers['X-SignedOperation'],
+    ).toBeDefined()
+
+    const body = JSON.parse(options.body)
+    expect(body.vcpus).toBe(4)
+    expect(body.memory_mib).toBe(2048)
+    expect(body.storage_mib).toBe(10240)
+
+    expect(result.status).toBe(200)
+    expect(result.response).toBe('{"reserved": true}')
+  })
+
+  it('should sign the operation with the /control/reserve_resources path', async () => {
+    await client.reserveResources({ vcpus: 1 })
+
+    const [, options] = mockFetch.mock.calls[0]
+    const opHeader = JSON.parse(
+      options.headers['X-SignedOperation'],
+    )
+    const payloadJson = bytesToUtf8(
+      hexToBytes(opHeader.payload),
+    )
+    const payload = JSON.parse(payloadJson)
+
+    expect(payload.path).toBe(
+      '/control/reserve_resources',
+    )
+    expect(payload.method).toBe('POST')
+    expect(payload.domain).toBe('crn.example.com')
+  })
+})
