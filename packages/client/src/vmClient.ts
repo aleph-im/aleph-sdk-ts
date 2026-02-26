@@ -15,7 +15,6 @@ export enum VmOperation {
   Backup = 'backup',
   Restore = 'restore',
   StreamLogs = 'stream_logs',
-  Update = 'update',
 }
 
 export type VmOperationResult = {
@@ -86,6 +85,7 @@ export class VmClient {
   private readonly nodeUrl: string
   private readonly ephemeralKey: CryptoKeyPair
   private cachedPubkeyHeader: string | null = null
+  private cachedPubkeyExpiry: number = 0
 
   private constructor(account: Account, nodeUrl: string, ephemeralKey: CryptoKeyPair) {
     this.account = account
@@ -161,7 +161,7 @@ export class VmClient {
   }
 
   async ensurePubkeyHeader(): Promise<string> {
-    if (this.cachedPubkeyHeader) {
+    if (this.cachedPubkeyHeader && Date.now() < this.cachedPubkeyExpiry) {
       return this.cachedPubkeyHeader
     }
 
@@ -169,6 +169,7 @@ export class VmClient {
     const header = await this.buildPubkeySignatureHeader(payloadJson)
 
     this.cachedPubkeyHeader = header
+    this.cachedPubkeyExpiry = Date.now() + PUBKEY_TTL_MS
     return header
   }
 
@@ -182,7 +183,10 @@ export class VmClient {
 
   private convertSolSignatureToHex(jsonSignature: string): string {
     const parsed = JSON.parse(jsonSignature)
-    const signatureStr: string = parsed.signature ?? parsed
+    const signatureStr = typeof parsed === 'string' ? parsed : parsed?.signature
+    if (typeof signatureStr !== 'string') {
+      throw new Error('SOL signature must be a string or { signature: string }')
+    }
     const decoded = base58Decode(signatureStr)
     return '0x' + bytesToHex(decoded)
   }
@@ -329,12 +333,11 @@ export class VmClient {
       )
     }
 
-    const { url, headers } = await this.buildHeaders(vmId, VmOperation.Backup, 'DELETE')
+    const path = `/control/machine/${vmId}/backup/${backupId}`
+    const url = `${this.nodeUrl}${path}`
+    const headers = await this.buildAuthHeaders(path, 'DELETE')
 
-    const resp = await fetch(`${url}/${backupId}`, {
-      method: 'DELETE',
-      headers,
-    })
+    const resp = await fetch(url, { method: 'DELETE', headers })
     const responseText = await resp.text()
     return { status: resp.status, response: responseText }
   }
@@ -403,7 +406,7 @@ export class VmClient {
     }
 
     ws.onerror = () => {
-      error = new Error('WebSocket error')
+      error = new Error(`WebSocket error connecting to ${wsUrl}`)
       cleanup()
     }
 
