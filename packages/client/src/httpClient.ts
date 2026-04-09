@@ -2,14 +2,21 @@ import {
   AggregateMessageClient,
   AlephSocket,
   BaseMessageClient,
+  CursorMessagesResponse,
+  CursorPostsResponse,
   ForgetMessageClient,
   GetMessagesConfiguration,
+  GetMessagesCursorConfiguration,
   InstanceMessageClient,
+  MessageContent,
   MessageError,
   MessageType,
   PostGetConfiguration,
+  PostGetCursorConfiguration,
   PostMessageClient,
+  PostResponse,
   ProgramMessageClient,
+  PublishedMessage,
   StoreMessageClient,
 } from '@aleph-sdk/message'
 
@@ -114,6 +121,46 @@ export class AlephHttpClient {
    */
   async getMessageError(itemHash: string): Promise<MessageError | null> {
     return await this.messageClient.getError(itemHash)
+  }
+
+  /**
+   * Retrieves messages using cursor-based pagination. More efficient than page-based pagination for large result sets.
+   *
+   * @param config The configuration used to fetch messages (same filters as getMessages, minus `page`).
+   */
+  async getMessagesCursor(config: GetMessagesCursorConfiguration): Promise<CursorMessagesResponse> {
+    return await this.messageClient.getCursor(config)
+  }
+
+  /**
+   * Returns an async iterator over all messages matching the given filters.
+   * Handles cursor-based pagination automatically, yielding individual messages.
+   *
+   * @param config The filters used to query messages (same as getMessages, minus `page`).
+   */
+  getMessagesIterator(
+    config: Omit<GetMessagesCursorConfiguration, 'cursor'>,
+  ): AsyncGenerator<PublishedMessage<MessageContent>> {
+    return this.messageClient.getAsyncIterator(config)
+  }
+
+  /**
+   * Retrieves posts using cursor-based pagination. More efficient than page-based pagination for large result sets.
+   *
+   * @param config The configuration used to fetch posts (same filters as getPosts, minus `page`).
+   */
+  async getPostsCursor<T = any>(config: PostGetCursorConfiguration): Promise<CursorPostsResponse<T>> {
+    return await this.postClient.getCursor<T>(config)
+  }
+
+  /**
+   * Returns an async iterator over all posts matching the given filters.
+   * Handles cursor-based pagination automatically, yielding individual posts.
+   *
+   * @param config The filters used to query posts (same as getPosts, minus `page`).
+   */
+  getPostsIterator<T = any>(config: Omit<PostGetCursorConfiguration, 'cursor'>): AsyncGenerator<PostResponse<T>> {
+    return this.postClient.getAsyncIterator<T>(config)
   }
 
   /**
