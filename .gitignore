@@ -116,3 +116,6 @@ docs/
 
 .DS_Store
 .jest-cache/
+
+# Git worktrees
+.worktrees/
