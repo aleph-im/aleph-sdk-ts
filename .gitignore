@@ -115,3 +115,4 @@ docs/
 .gitsigners
 
 .DS_Store
+.jest-cache/
