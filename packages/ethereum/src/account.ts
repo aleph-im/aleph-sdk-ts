@@ -1,6 +1,6 @@
 import { SignableMessage } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
-import { ChainMetadata, ChangeRpcParam, EVMAccount, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
+import { ChainMetadata, ChangeRpcParam, EVMAccount, ExternalSignerWallet, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
 import * as bip39 from 'bip39'
 import { providers, Wallet } from 'ethers'
 
@@ -9,11 +9,15 @@ import { providers, Wallet } from 'ethers'
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 export class ETHAccount extends EVMAccount {
-  public override readonly wallet: Wallet | JsonRPCWallet
+  public override readonly wallet: Wallet | JsonRPCWallet | ExternalSignerWallet
 
-  public constructor(wallet: Wallet | JsonRPCWallet, address: string, publicKey?: string, rpcId?: number) {
+  public constructor(wallet: Wallet | JsonRPCWallet | ExternalSignerWallet, address: string, publicKey?: string, rpcId?: number) {
     super(address, publicKey)
     this.selectedRpcId = rpcId || RpcId.ETH
+    if (wallet instanceof ExternalSignerWallet) {
+      this.wallet = wallet
+      return
+    }
     if (wallet instanceof Wallet && !wallet.provider) {
       const network = ChainMetadata[rpcId || this.selectedRpcId]
       const provider = new providers.JsonRpcProvider(network.rpcUrls.at(0), {
@@ -41,13 +45,15 @@ export class ETHAccount extends EVMAccount {
   override async askPubKey(): Promise<void> {
     if (this.publicKey) return
     if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
-
+    if (this.wallet instanceof ExternalSignerWallet) {
+      // ECIES encryption not yet supported for external signers
+      throw new Error('PublicKey not available for ExternalSignerWallet accounts')
+    }
     if (this.wallet instanceof Wallet) {
       this.publicKey = this.wallet.publicKey
       return
     }
     this.publicKey = await this.wallet.getPublicKey()
-    return
   }
 
   /**
@@ -122,4 +128,38 @@ export async function getAccountFromProvider(
   if (jrw.address)
     return new ETHAccount(jrw, jrw.address, undefined, typeof requestedRpc === 'number' ? requestedRpc : undefined)
   throw new Error('Insufficient permissions')
+}
+
+/**
+ * Creates an ETHAccount backed by any async signing function.
+ *
+ * Intended for embedded or smart-wallet signers (e.g. Privy) that are not
+ * backed by a standard Web3 provider. The caller supplies:
+ *   - address      — the signer's on-chain address (use the smart wallet address)
+ *   - provider     — a JSON-RPC provider for balance and chain queries
+ *   - signMessage  — the signing function, e.g.:
+ *                    (msg) => smartWalletClient.signMessage({ message: msg.toString() })
+ *   - requestedRpc — optional RPC preset (default: ETH mainnet)
+ *
+ * @example
+ * const account = getAccountFromExternalSigner(
+ *   smartWalletAddress,
+ *   new providers.JsonRpcProvider(rpcUrl),
+ *   (msg) => smartWalletClient.signMessage({ message: msg.toString() }),
+ *   RpcId.ETH,
+ * )
+ */
+export function getAccountFromExternalSigner(
+  address: string,
+  provider: providers.JsonRpcProvider,
+  signMessage: (message: Buffer | string) => Promise<string>,
+  requestedRpc: ChangeRpcParam = RpcId.ETH,
+): ETHAccount {
+  const wallet = new ExternalSignerWallet(address, provider, signMessage)
+  return new ETHAccount(
+    wallet,
+    address,
+    undefined,
+    typeof requestedRpc === 'number' ? requestedRpc : undefined,
+  )
 }
