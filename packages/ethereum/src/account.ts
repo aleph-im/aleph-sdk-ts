@@ -1,6 +1,14 @@
 import { SignableMessage } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
-import { ChainMetadata, ChangeRpcParam, EVMAccount, ExternalSignerWallet, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
+import {
+  ChainMetadata,
+  ChangeRpcParam,
+  EVMAccount,
+  ExternalSignerWallet,
+  hexToDec,
+  JsonRPCWallet,
+  RpcId,
+} from '@aleph-sdk/evm'
 import * as bip39 from 'bip39'
 import { providers, Wallet } from 'ethers'
 
@@ -11,7 +19,12 @@ import { providers, Wallet } from 'ethers'
 export class ETHAccount extends EVMAccount {
   public override readonly wallet: Wallet | JsonRPCWallet | ExternalSignerWallet
 
-  public constructor(wallet: Wallet | JsonRPCWallet | ExternalSignerWallet, address: string, publicKey?: string, rpcId?: number) {
+  public constructor(
+    wallet: Wallet | JsonRPCWallet | ExternalSignerWallet,
+    address: string,
+    publicKey?: string,
+    rpcId?: number,
+  ) {
     super(address, publicKey)
     this.selectedRpcId = rpcId || RpcId.ETH
     if (wallet instanceof ExternalSignerWallet) {
@@ -156,10 +169,5 @@ export function getAccountFromExternalSigner(
   requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): ETHAccount {
   const wallet = new ExternalSignerWallet(address, provider, signMessage)
-  return new ETHAccount(
-    wallet,
-    address,
-    undefined,
-    typeof requestedRpc === 'number' ? requestedRpc : undefined,
-  )
+  return new ETHAccount(wallet, address, undefined, typeof requestedRpc === 'number' ? requestedRpc : undefined)
 }

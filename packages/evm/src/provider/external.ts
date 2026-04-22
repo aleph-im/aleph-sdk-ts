@@ -45,7 +45,7 @@ export class ExternalSignerWallet extends BaseProviderWallet {
     // Throw until the SDK re-introduces encryption support.
     throw new Error(
       'ExternalSignerWallet: getPublicKey is not supported. ' +
-      'ECIES encryption is not yet available for external signer accounts.',
+        'ECIES encryption is not yet available for external signer accounts.',
     )
   }
 
