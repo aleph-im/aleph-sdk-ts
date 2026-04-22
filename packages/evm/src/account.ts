@@ -2,16 +2,19 @@ import { ECIESAccount } from '@aleph-sdk/account'
 import { Decimal } from 'decimal.js'
 import { Contract, Wallet } from 'ethers'
 
-import { ChainData, ChainMetadata, decToHex, JsonRPCWallet, RpcId, RpcType } from './provider'
+import { ChainData, ChainMetadata, decToHex, ExternalSignerWallet, JsonRPCWallet, RpcId, RpcType } from './provider'
 import { erc20Abi, weiToAleph } from './utils'
 
 export abstract class EVMAccount extends ECIESAccount {
-  public wallet?: Wallet | JsonRPCWallet
+  public wallet?: Wallet | JsonRPCWallet | ExternalSignerWallet
   public selectedRpcId?: RpcId
 
   public async getChainId(): Promise<number> {
     if (this.wallet instanceof JsonRPCWallet) {
       return this.wallet.provider.network.chainId
+    }
+    if (this.wallet instanceof ExternalSignerWallet) {
+      return (await this.wallet.provider.getNetwork()).chainId
     }
     if (this.wallet instanceof Wallet) {
       return (await this.wallet.provider.getNetwork()).chainId
@@ -28,6 +31,9 @@ export abstract class EVMAccount extends ECIESAccount {
 
   public getRpcUrl(): string {
     if (this.wallet instanceof JsonRPCWallet) {
+      return this.wallet.provider.connection.url
+    }
+    if (this.wallet instanceof ExternalSignerWallet) {
       return this.wallet.provider.connection.url
     }
     if (this.wallet instanceof Wallet) {
