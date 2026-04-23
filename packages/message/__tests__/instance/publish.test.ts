@@ -1,7 +1,8 @@
+import { Blockchain } from '@aleph-sdk/core'
 import axios from 'axios'
 
 import * as ethereum from '../../../ethereum/src'
-import { InstanceMessageClient, MAXIMUM_DISK_SIZE } from '../../src'
+import { InstanceMessageClient, MAXIMUM_DISK_SIZE, PaymentType } from '../../src'
 
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
@@ -79,5 +80,19 @@ describe('Test the instance message', () => {
     })
 
     expect(res.content.rootfs.size_mib).toBe(MAXIMUM_DISK_SIZE)
+  })
+
+  it('defaults payment to credit on ETH when none is provided', async () => {
+    const { account } = ethereum.newAccount()
+    mockedAxios.post.mockResolvedValueOnce({ status: 200, data: {} })
+
+    const res = await instance.send({
+      account: account,
+      channel: 'TEST',
+    })
+
+    expect(res.content.payment).toBeDefined()
+    expect(res.content.payment?.type).toBe(PaymentType.credit)
+    expect(res.content.payment?.chain).toBe(Blockchain.ETH)
   })
 })
