@@ -73,7 +73,7 @@ export class InstanceMessageClient extends DefaultMessageClient<
     storageEngine = ItemType.ipfs,
     payment = {
       chain: Blockchain.ETH,
-      type: PaymentType.hold,
+      type: PaymentType.credit,
     },
   }: InstancePublishConfiguration): Promise<InstanceContent> {
     const timestamp = Date.now() / 1000
