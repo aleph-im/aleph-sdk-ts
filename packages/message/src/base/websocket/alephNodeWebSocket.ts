@@ -1,6 +1,10 @@
-import WebSocket from 'ws'
+// Type-only import: erased at emit, so browser bundlers walking the import
+// graph never see a static reference to the Node-only `ws` package.
+import type WebSocket from 'ws'
 
 import { GetMessagesSocketParams, SocketResponse } from './types'
+
+export type WebSocketCtor = typeof WebSocket
 
 /**
  * This class is used to manipulate Node Web Socket to list Aleph Messages
@@ -11,7 +15,7 @@ export class AlephNodeWebSocket {
 
   private isOpen: boolean
 
-  constructor(queryParam: GetMessagesSocketParams, apiServer: string) {
+  constructor(queryParam: GetMessagesSocketParams, apiServer: string, WebSocketCtor: WebSocketCtor) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     this.isOpen = false
@@ -22,7 +26,7 @@ export class AlephNodeWebSocket {
       if (value) queryParamString = queryParamString + `&${key}=${value}`
     })
     if (queryParamString) queryParamString = queryParamString.substring(1)
-    this.socket = new WebSocket(`${apiServer}/api/ws0/messages?${queryParamString}`)
+    this.socket = new WebSocketCtor(`${apiServer}/api/ws0/messages?${queryParamString}`)
 
     // ON OPEN SOCKET
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

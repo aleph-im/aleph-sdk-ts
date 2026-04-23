@@ -147,7 +147,7 @@ export class BaseMessageClient {
     return response.data
   }
 
-  getMessagesSocket(params: Omit<GetMessagesSocketConfiguration, 'apiServer'>): AlephSocket {
+  async getMessagesSocket(params: Omit<GetMessagesSocketConfiguration, 'apiServer'>): Promise<AlephSocket> {
     return getMessagesSocket({
       ...params,
       apiServer: this.wsServer,
