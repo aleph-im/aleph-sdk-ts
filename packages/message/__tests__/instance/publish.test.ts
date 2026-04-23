@@ -1,6 +1,5 @@
-import axios from 'axios'
-
 import { Blockchain } from '@aleph-sdk/core'
+import axios from 'axios'
 
 import * as ethereum from '../../../ethereum/src'
 import { InstanceMessageClient, MAXIMUM_DISK_SIZE, PaymentType } from '../../src'
