@@ -8,9 +8,13 @@ import { AlephSocket, GetMessagesSocketConfiguration, GetMessagesSocketParams } 
  * Retrieves all incoming messages by opening a WebSocket.
  * Messages can be filtered with the params.
  *
+ * In Node, the `ws` package is loaded lazily via a dynamic import so that
+ * browser bundlers walking this module's static import graph never pull in
+ * Node-only dependencies.
+ *
  * @param configuration The message params to make the query.
  */
-export function getMessagesSocket({
+export async function getMessagesSocket({
   addresses = [],
   channels = [],
   chains = [],
@@ -25,7 +29,7 @@ export function getMessagesSocket({
   endDate,
   history,
   apiServer = DEFAULT_API_WS_V2,
-}: GetMessagesSocketConfiguration): AlephSocket {
+}: GetMessagesSocketConfiguration): Promise<AlephSocket> {
   const params: GetMessagesSocketParams = {
     addresses: addresses.join(',') || undefined,
     channels: channels.join(',') || undefined,
@@ -42,6 +46,9 @@ export function getMessagesSocket({
     history: history || undefined,
   }
 
-  if (isNode()) return new AlephNodeWebSocket(params, apiServer)
-  else return new AlephWebSocket(params, apiServer)
+  if (isNode()) {
+    const { default: WebSocket } = await import('ws')
+    return new AlephNodeWebSocket(params, apiServer, WebSocket)
+  }
+  return new AlephWebSocket(params, apiServer)
 }
