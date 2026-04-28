@@ -173,7 +173,7 @@ export class BaseMessageClient {
     endDate,
   }: GetMessagesCursorConfiguration): Promise<CursorMessagesResponse> {
     const params: GetMessagesCursorParams = {
-      pagination: Math.min(pagination ?? 200, 200),
+      pagination: Math.min(pagination, 200),
       cursor,
       addresses: toQueryParam(addresses),
       channels: toQueryParam(channels),

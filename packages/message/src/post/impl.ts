@@ -93,7 +93,7 @@ export class PostMessageClient {
   }: PostGetCursorConfiguration): Promise<CursorPostsResponse<T>> {
     const params: PostCursorQueryParams = {
       types: toQueryParam(types),
-      pagination: Math.min(pagination ?? 200, 200),
+      pagination: Math.min(pagination, 200),
       cursor,
       refs: toQueryParam(refs),
       addresses: toQueryParam(addresses),
