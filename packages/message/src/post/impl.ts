@@ -2,8 +2,11 @@ import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/co
 import axios, { type AxiosResponse } from 'axios'
 
 import {
+  CursorPostsResponse,
   PostContent,
+  PostCursorQueryParams,
   PostGetConfiguration,
+  PostGetCursorConfiguration,
   PostPublishConfiguration,
   PostQueryParams,
   PostQueryResponse,
@@ -72,6 +75,58 @@ export class PostMessageClient {
       socketPath: getSocketPath(),
     })) as AxiosResponse<PostQueryResponse<T>>
     return response.data
+  }
+
+  /**
+   * Queries the Aleph network for post messages using cursor-based pagination.
+   * Pass an empty cursor (or omit it) to start from the beginning.
+   */
+  async getCursor<T = any>({
+    types,
+    pagination = 200,
+    cursor = '',
+    channels,
+    refs,
+    addresses,
+    tags,
+    hashes,
+  }: PostGetCursorConfiguration): Promise<CursorPostsResponse<T>> {
+    const params: PostCursorQueryParams = {
+      types: toQueryParam(types),
+      pagination: Math.min(pagination, 200),
+      cursor,
+      refs: toQueryParam(refs),
+      addresses: toQueryParam(addresses),
+      tags: toQueryParam(tags),
+      hashes: toQueryParam(hashes),
+      channels: toQueryParam(channels),
+    }
+
+    const response = (await axios.get<CursorPostsResponse<T>>(`${this.apiServer}/api/v0/posts.json`, {
+      params,
+      socketPath: getSocketPath(),
+    })) as AxiosResponse<CursorPostsResponse<T>>
+    return response.data
+  }
+
+  /**
+   * Returns an async iterator over all posts matching the given filters.
+   * Handles cursor-based pagination automatically.
+   */
+  async *getAsyncIterator<T = any>(
+    configuration: Omit<PostGetCursorConfiguration, 'cursor'>,
+  ): AsyncGenerator<PostResponse<T>> {
+    let cursor: string = ''
+    while (true) {
+      const response = await this.getCursor<T>({ ...configuration, cursor })
+      for (const post of response.posts) {
+        yield post
+      }
+      if (response.next_cursor === null) {
+        break
+      }
+      cursor = response.next_cursor
+    }
   }
 
   /**

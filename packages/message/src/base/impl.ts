@@ -2,15 +2,18 @@ import { DEFAULT_API_V2, DEFAULT_API_WS_V2, getSocketPath, stripTrailingSlash } 
 import axios, { type AxiosResponse } from 'axios'
 
 import {
+  CursorMessagesResponse,
   GetMessageConfiguration,
   GetMessageParams,
   GetMessagesConfiguration,
+  GetMessagesCursorConfiguration,
+  GetMessagesCursorParams,
   GetMessagesParams,
   MessageError,
   MessageResponse,
   MessagesQueryResponse,
 } from './types'
-import { MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
+import { MessageContent, MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
 import { AlephSocket, getMessagesSocket, GetMessagesSocketConfiguration } from './websocket'
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
 import { toQueryParam } from '../utils'
@@ -145,6 +148,75 @@ export class BaseMessageClient {
     })) as AxiosResponse<MessagesQueryResponse>
 
     return response.data
+  }
+
+  /**
+   * Retrieves Messages using cursor-based pagination.
+   * Pass an empty cursor (or omit it) to start from the beginning.
+   *
+   * @param configuration The message params to make the query.
+   */
+  async getCursor({
+    pagination = 200,
+    cursor = '',
+    addresses,
+    channels,
+    chains,
+    refs,
+    tags,
+    contentTypes,
+    contentKeys,
+    hashes,
+    messageTypes,
+    paymentTypes,
+    startDate,
+    endDate,
+  }: GetMessagesCursorConfiguration): Promise<CursorMessagesResponse> {
+    const params: GetMessagesCursorParams = {
+      pagination: Math.min(pagination, 200),
+      cursor,
+      addresses: toQueryParam(addresses),
+      channels: toQueryParam(channels),
+      chains: toQueryParam(chains),
+      refs: toQueryParam(refs),
+      tags: toQueryParam(tags),
+      contentTypes: toQueryParam(contentTypes),
+      contentKeys: toQueryParam(contentKeys),
+      hashes: toQueryParam(hashes),
+      msgTypes: toQueryParam(messageTypes),
+      paymentTypes: toQueryParam(paymentTypes),
+      startDate: startDate ? startDate.valueOf() / 1000 : undefined,
+      endDate: endDate ? endDate.valueOf() / 1000 : undefined,
+    }
+
+    const response = (await axios.get<CursorMessagesResponse>(`${this.apiServer}/api/v0/messages.json`, {
+      params,
+      socketPath: getSocketPath(),
+    })) as AxiosResponse<CursorMessagesResponse>
+
+    return response.data
+  }
+
+  /**
+   * Returns an async iterator over all messages matching the given filters.
+   * Handles cursor-based pagination automatically.
+   *
+   * @param configuration The message filters (same as getAll, minus `page`).
+   */
+  async *getAsyncIterator(
+    configuration: Omit<GetMessagesCursorConfiguration, 'cursor'>,
+  ): AsyncGenerator<PublishedMessage<MessageContent>> {
+    let cursor: string = ''
+    while (true) {
+      const response = await this.getCursor({ ...configuration, cursor })
+      for (const message of response.messages) {
+        yield message
+      }
+      if (response.next_cursor === null) {
+        break
+      }
+      cursor = response.next_cursor
+    }
   }
 
   async getMessagesSocket(params: Omit<GetMessagesSocketConfiguration, 'apiServer'>): Promise<AlephSocket> {
