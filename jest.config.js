@@ -15,7 +15,7 @@ export default {
     ...tsJestTransformCfg,
   },
   testPathIgnorePatterns: ['<rootDir>/cypress/'],
-  coverageReporters: ['text-summary', 'html'],
+  coverageReporters: ['text-summary', 'html', 'lcov'],
   transformIgnorePatterns: ['/node_modules/'],
   // Limit the number of workers to prevent CPU overload
   maxWorkers: '50%',
