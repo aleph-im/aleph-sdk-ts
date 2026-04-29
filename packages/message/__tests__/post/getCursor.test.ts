@@ -1,11 +1,24 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import { delay } from '../../../core/src'
-import * as ethereum from '../../../ethereum/src'
 import { PostMessageClient, PostResponse } from '../../src'
+import { hephAccount } from '../_helpers/hephAccount'
 
 describe('Post cursor pagination', () => {
   const post = new PostMessageClient()
+  const account = hephAccount(0)
+
+  beforeAll(async () => {
+    // Ensure the TEST channel has at least one post for queries below.
+    await post.send({
+      channel: 'TEST',
+      account,
+      postType: uuidv4(),
+      content: { body: 'cursor seed' },
+      sync: true,
+    })
+    await delay(500)
+  })
 
   it('should return a cursor response with next_cursor field', async () => {
     const res = await post.getCursor({
@@ -21,7 +34,6 @@ describe('Post cursor pagination', () => {
   })
 
   it('should iterate over all posts across multiple pages until next_cursor is null', async () => {
-    const { account } = ethereum.newAccount()
     const postType = uuidv4()
     const totalPosts = 5
 

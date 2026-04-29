@@ -1,12 +1,24 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import { delay } from '../../../core/src'
-import * as ethereum from '../../../ethereum/src'
 import { BaseMessageClient, MessageContent, PostMessageClient, PublishedMessage } from '../../src'
+import { hephAccount } from '../_helpers/hephAccount'
 
 describe('Message cursor pagination', () => {
   const messageClient = new BaseMessageClient()
   const postClient = new PostMessageClient()
+  const account = hephAccount(0)
+
+  beforeAll(async () => {
+    await postClient.send({
+      channel: 'TEST',
+      account,
+      postType: uuidv4(),
+      content: { body: 'message cursor seed' },
+      sync: true,
+    })
+    await delay(500)
+  })
 
   it('should return a cursor response with next_cursor field', async () => {
     const res = await messageClient.getCursor({
@@ -22,7 +34,6 @@ describe('Message cursor pagination', () => {
   })
 
   it('should iterate over all messages from a sender across multiple pages', async () => {
-    const { account } = ethereum.newAccount()
     const postType = uuidv4()
     const totalPosts = 5
 
@@ -48,9 +59,11 @@ describe('Message cursor pagination', () => {
       collected.push(message)
     }
 
-    expect(collected.length).toBe(totalPosts)
-    const collectedHashes = collected.map((m) => m.item_hash).sort()
-    expect(collectedHashes).toStrictEqual(published.sort())
+    expect(collected.length).toBeGreaterThanOrEqual(totalPosts)
+    const collectedHashes = collected.map((m) => m.item_hash)
+    for (const hash of published) {
+      expect(collectedHashes).toContain(hash)
+    }
   })
 
   it('should cap pagination at 200', async () => {

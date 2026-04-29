@@ -1,11 +1,11 @@
-import * as ethereum from '../../../ethereum/src'
 import { AggregateMessageClient } from '../../src'
+import { hephAccount } from '../_helpers/hephAccount'
 
 describe('Aggregate message publish test', () => {
   const client = new AggregateMessageClient()
 
   it('should publish an aggregate message', async () => {
-    const { account } = ethereum.newAccount()
+    const account = hephAccount(1)
     const key = 'publishTest'
 
     const content: { A: number } = {

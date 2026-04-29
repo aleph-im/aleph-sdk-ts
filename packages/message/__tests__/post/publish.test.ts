@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import { delay } from '../../../core/src'
-import * as ethereum from '../../../ethereum/src'
 import { AggregateMessageClient, PostMessageClient } from '../../src'
+import { hephAccount } from '../_helpers/hephAccount'
 
 describe('Post publish tests', () => {
   const post = new PostMessageClient()
   const aggregate = new AggregateMessageClient()
 
   it('should amend post message correctly', async () => {
-    const { account } = ethereum.newAccount()
+    const account = hephAccount(0)
     const postType = uuidv4()
     const content: { body: string } = {
       body: 'Hello World',
@@ -49,8 +49,8 @@ describe('Post publish tests', () => {
    * createSecurityConfig() inside tests/testAccount/generateAccounts.ts
    */
   it('should delegate amend post message correctly', async () => {
-    const { account: owner } = ethereum.newAccount()
-    const { account: guest } = ethereum.newAccount()
+    const owner = hephAccount(0)
+    const guest = hephAccount(9)
 
     const originalPost = await post.send({
       channel: 'TEST',
@@ -94,7 +94,7 @@ describe('Post publish tests', () => {
   })
 
   it('should automatically switch between inline and Aleph Storage due to the message size', async () => {
-    const { account } = ethereum.newAccount()
+    const account = hephAccount(0)
 
     const postRes = await post.send({
       channel: 'TEST',
