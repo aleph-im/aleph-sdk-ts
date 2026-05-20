@@ -63,6 +63,20 @@ export type PostQueryResponse<T> = {
   pagination_item: string
 }
 
+export type CursorPostsResponse<T> = {
+  posts: PostResponse<T>[]
+  pagination_per_page: number
+  next_cursor: string | null
+}
+
+export type PostGetCursorConfiguration = Omit<PostGetConfiguration, 'page'> & {
+  cursor?: string
+}
+
+export type PostCursorQueryParams = Omit<PostQueryParams, 'page'> & {
+  cursor: string
+}
+
 // ------- PUBLISH -------
 
 export type PostPublishConfiguration<T> = {

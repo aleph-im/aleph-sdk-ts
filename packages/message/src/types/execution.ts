@@ -116,7 +116,7 @@ export type HostRequirements = {
  *
  * chain: Blockchain to use
  * receiver: Receiver address, should be usually the (streaming) reward address of the targeted node
- * type: Payment type (hold, stream)
+ * type: Payment type (hold, superfluid, credit)
  */
 export type Payment = {
   chain: Blockchain

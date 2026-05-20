@@ -115,8 +115,6 @@ docs/
 .gitsigners
 
 .DS_Store
-
-# Jest cache
 .jest-cache/
 
 # Git worktrees

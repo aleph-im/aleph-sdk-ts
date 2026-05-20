@@ -73,4 +73,20 @@ export type GetMessagesParams = {
   endDate?: number
 }
 
+// --------- CURSOR PAGINATION ------------
+
+export type CursorMessagesResponse = {
+  messages: PublishedMessage<MessageContent>[]
+  pagination_per_page: number
+  next_cursor: string | null
+}
+
+export type GetMessagesCursorConfiguration = Omit<GetMessagesConfiguration, 'page'> & {
+  cursor?: string
+}
+
+export type GetMessagesCursorParams = Omit<GetMessagesParams, 'page'> & {
+  cursor: string
+}
+
 export type MessageError = { error_code: string; details: string }
