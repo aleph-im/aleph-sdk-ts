@@ -81,3 +81,22 @@ export type CostEstimationStorePublishConfiguration = StorePublishConfiguration 
   estimated_size_mib?: number // int
   payment?: Payment
 }
+
+// -------- LOOKUP -----------
+
+/** Response of GET /api/v0/storage/{file_hash} — the stored file content, base64 encoded. */
+export type StorageHashResponse = {
+  status: string
+  hash: string
+  engine: string
+  content: string
+}
+
+/** Response of the by-ref and by-message-hash file metadata lookups. */
+export type FileMetadataResponse = {
+  ref: string
+  owner: string
+  file_hash: string
+  download_url: string
+  size: number
+}
