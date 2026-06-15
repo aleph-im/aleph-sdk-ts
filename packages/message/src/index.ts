@@ -1,3 +1,4 @@
+export * from './address'
 export * from './aggregate'
 export * from './balance'
 export * from './base'
