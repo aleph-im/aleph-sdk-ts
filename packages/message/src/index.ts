@@ -1,4 +1,5 @@
 export * from './aggregate'
+export * from './balance'
 export * from './base'
 export * from './forget'
 export * from './instance'

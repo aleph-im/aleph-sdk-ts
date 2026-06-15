@@ -1,16 +1,26 @@
 import {
   AggregateMessageClient,
   AlephSocket,
+  BalanceClient,
   BaseMessageClient,
   CursorMessagesResponse,
   CursorPostsResponse,
   ForgetMessageClient,
+  GetAccountBalanceConfiguration,
+  GetAccountBalanceResponse,
+  GetAccountCreditHistoryResponse,
+  GetBalancesConfiguration,
+  GetCreditBalancesConfiguration,
+  GetCreditHistoryConfiguration,
   GetMessagesConfiguration,
   GetMessagesCursorConfiguration,
+  GetResourceConsumedCreditsResponse,
   InstanceMessageClient,
   MessageContent,
   MessageError,
   MessageType,
+  PaginatedBalances,
+  PaginatedCreditBalances,
   PostGetConfiguration,
   PostGetCursorConfiguration,
   PostMessageClient,
@@ -28,6 +38,7 @@ export class AlephHttpClient {
   instanceClient: InstanceMessageClient
   storeClient: StoreMessageClient
   messageClient: BaseMessageClient
+  balanceClient: BalanceClient
 
   constructor(apiServer?: string) {
     this.postClient = new PostMessageClient(apiServer)
@@ -37,6 +48,7 @@ export class AlephHttpClient {
     this.instanceClient = new InstanceMessageClient(apiServer)
     this.storeClient = new StoreMessageClient(apiServer)
     this.messageClient = new BaseMessageClient(apiServer)
+    this.balanceClient = new BalanceClient(apiServer)
   }
 
   /**
@@ -169,6 +181,56 @@ export class AlephHttpClient {
    */
   async watchMessages(config: Omit<GetMessagesConfiguration, 'page' | 'pagination'>): Promise<AlephSocket> {
     return this.messageClient.getMessagesSocket(config)
+  }
+
+  /**
+   * Fetches the token balance of an address, including the locked amount and credit balance.
+   *
+   * @param address The address to query.
+   * @param config Optional chain filter and credit-details toggle.
+   */
+  async getBalance(address: string, config: GetAccountBalanceConfiguration = {}): Promise<GetAccountBalanceResponse> {
+    return await this.balanceClient.getBalance(address, config)
+  }
+
+  /**
+   * Fetches a paginated list of token balances across chains.
+   *
+   * @param config Optional chain filter, minimum balance and pagination.
+   */
+  async getBalances(config: GetBalancesConfiguration = {}): Promise<PaginatedBalances> {
+    return await this.balanceClient.getBalances(config)
+  }
+
+  /**
+   * Fetches a paginated list of credit balances.
+   *
+   * @param config Optional minimum balance and pagination.
+   */
+  async getCreditBalances(config: GetCreditBalancesConfiguration = {}): Promise<PaginatedCreditBalances> {
+    return await this.balanceClient.getCreditBalances(config)
+  }
+
+  /**
+   * Fetches the credit history of an address.
+   *
+   * @param address The address to query.
+   * @param config Optional filters and pagination.
+   */
+  async getCreditHistory(
+    address: string,
+    config: GetCreditHistoryConfiguration = {},
+  ): Promise<GetAccountCreditHistoryResponse> {
+    return await this.balanceClient.getCreditHistory(address, config)
+  }
+
+  /**
+   * Fetches the amount of credits consumed by a resource, identified by its message hash.
+   *
+   * @param itemHash The hash of the resource's message.
+   */
+  async getConsumedCredits(itemHash: string): Promise<GetResourceConsumedCreditsResponse> {
+    return await this.balanceClient.getConsumedCredits(itemHash)
   }
 }
 
