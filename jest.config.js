@@ -14,6 +14,7 @@ export default {
   transform: {
     ...tsJestTransformCfg,
   },
+  testMatch: ['**/__tests__/**/*.test.ts'],
   testPathIgnorePatterns: ['<rootDir>/cypress/'],
   coverageReporters: ['text-summary', 'html', 'lcov'],
   transformIgnorePatterns: ['/node_modules/'],

@@ -10,6 +10,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      heph:
+        image: ghcr.io/aleph-im/heph:0.2.0
+        ports:
+          - 4024:4024
+
+    env:
+      ALEPH_API_SERVER: http://localhost:4024
+      ALEPH_API_WS_SERVER: ws://localhost:4024
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,8 +35,11 @@ jobs:
       - name: Build packages
         run: npm run build
 
+      - name: Wait for heph
+        run: ./scripts/wait-for-heph.sh "$ALEPH_API_SERVER"
+
       - name: Run tests
-        run: npm run test
+        run: npm run test -- --runInBand
         env:
           CI: true
 

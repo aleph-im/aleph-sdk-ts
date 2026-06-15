@@ -1,5 +1,5 @@
-import * as ethereum from '../../../ethereum/src'
 import { ForgetMessageClient, PostMessageClient } from '../../src'
+import { hephAccount } from '../_helpers/hephAccount'
 
 describe('Forget publish tests', () => {
   const postType = 'TS Forget Test'
@@ -8,7 +8,7 @@ describe('Forget publish tests', () => {
   const forget = new ForgetMessageClient()
 
   it('should post a message which will be forget', async () => {
-    const { account } = ethereum.newAccount()
+    const account = hephAccount(0)
 
     const res = await post.send({
       channel: 'TEST',
@@ -26,7 +26,7 @@ describe('Forget publish tests', () => {
   })
 
   it('Forget a message using storage engine', async () => {
-    const { account } = ethereum.newAccount()
+    const account = hephAccount(0)
     const postRest = await post.send({
       channel: 'TEST',
       account: account,

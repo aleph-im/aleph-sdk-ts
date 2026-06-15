@@ -1,11 +1,11 @@
-import * as ethereum from '../../../ethereum/src'
 import { AggregateMessageClient } from '../../src'
+import { hephAccount } from '../_helpers/hephAccount'
 
 describe('Aggregate message update test', () => {
   const client = new AggregateMessageClient()
 
   it('should publish and update an aggregate message', async () => {
-    const { account } = ethereum.newAccount()
+    const account = hephAccount(2)
     const key = 'updateTest'
 
     const content: { A: number } = {
@@ -51,8 +51,8 @@ describe('Aggregate message update test', () => {
    * createSecurityConfig() inside tests/testAccount/generateAccounts.ts
    */
   it('should allow an delegate call update', async () => {
-    const { account: owner } = ethereum.newAccount()
-    const { account: guest } = ethereum.newAccount()
+    const owner = hephAccount(2)
+    const guest = hephAccount(8)
 
     const key = 'delegateUpdateTest'
     const content: { A: number } = {
