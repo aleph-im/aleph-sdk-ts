@@ -72,6 +72,20 @@ describe('Address-scoped queries', () => {
     )
   })
 
+  it('getStats (v0) passes an array of addresses through unchanged', async () => {
+    const addresses = [address, '0x0987654321098765432109876543210987654321']
+    const data = { data: { messages: 5 } }
+    mockedAxios.get.mockResolvedValueOnce({ status: 200, data })
+
+    const res = await client.getStats({ addresses })
+
+    expect(res).toEqual(data)
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      `${apiServer}/api/v0/addresses/stats.json`,
+      expect.objectContaining({ params: { addresses } }),
+    )
+  })
+
   it('getStatsV1 forwards the v1 filter and pagination params', async () => {
     const data = {
       data: {},

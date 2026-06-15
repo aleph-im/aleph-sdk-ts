@@ -95,6 +95,8 @@ export class AddressClient {
     page,
   }: GetAddressStatsV1Configuration = {}): Promise<AddressStatsV1Response> {
     const response = await axios.get<AddressStatsV1Response>(`${this.apiServer}/api/v1/addresses/stats.json`, {
+      // @note: unlike the v0 endpoints, the v1 stats endpoint expects camelCase
+      // query params (addressContains, sortBy, sortOrder) per the API spec.
       params: {
         addressContains,
         sortBy,
