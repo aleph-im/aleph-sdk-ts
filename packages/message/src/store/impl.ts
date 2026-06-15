@@ -5,6 +5,8 @@ import axios, { type AxiosResponse } from 'axios'
 import {
   CostEstimationStoreContent,
   CostEstimationStorePublishConfiguration,
+  FileMetadataResponse,
+  StorageHashResponse,
   StoreContent,
   StorePinConfiguration,
   StorePublishConfiguration,
@@ -38,6 +40,67 @@ export class StoreMessageClient extends DefaultMessageClient<
       socketPath: getSocketPath(),
     })) as AxiosResponse<ArrayBuffer>
 
+    return response.data
+  }
+
+  /**
+   * Retrieves a stored file by its hash, returning the (base64 encoded) content alongside its storage metadata.
+   *
+   * @param fileHash The hash of the file to retrieve.
+   */
+  async getFile(fileHash: string): Promise<StorageHashResponse> {
+    const response = await axios.get<StorageHashResponse>(`${this.apiServer}/api/v0/storage/${fileHash}`, {
+      socketPath: getSocketPath(),
+    })
+    return response.data
+  }
+
+  /**
+   * Retrieves a file's metadata from the hash of the STORE message that references it.
+   *
+   * @param messageHash The hash of the STORE message.
+   */
+  async getFileMetadataByMessageHash(messageHash: string): Promise<FileMetadataResponse> {
+    const response = await axios.get<FileMetadataResponse>(
+      `${this.apiServer}/api/v0/storage/by-message-hash/${messageHash}`,
+      { socketPath: getSocketPath() },
+    )
+    return response.data
+  }
+
+  /**
+   * Retrieves a file's metadata from its reference.
+   *
+   * @param ref The reference of the file.
+   */
+  async getFileMetadataByRef(ref: string): Promise<FileMetadataResponse> {
+    const response = await axios.get<FileMetadataResponse>(`${this.apiServer}/api/v0/storage/by-ref/${ref}`, {
+      socketPath: getSocketPath(),
+    })
+    return response.data
+  }
+
+  /**
+   * Retrieves the raw stored metadata of a file by its hash.
+   *
+   * @param fileHash The hash of the file.
+   */
+  async getFileMetadata(fileHash: string): Promise<Record<string, any>> {
+    const response = await axios.get<Record<string, any>>(`${this.apiServer}/api/v0/storage/metadata/${fileHash}`, {
+      socketPath: getSocketPath(),
+    })
+    return response.data
+  }
+
+  /**
+   * Retrieves the number of pins referencing a given file hash.
+   *
+   * @param hash The hash of the file.
+   */
+  async getFilePinsCount(hash: string): Promise<number> {
+    const response = await axios.get<number>(`${this.apiServer}/api/v0/storage/count/${hash}`, {
+      socketPath: getSocketPath(),
+    })
     return response.data
   }
 
