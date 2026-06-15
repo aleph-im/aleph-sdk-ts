@@ -23,5 +23,8 @@ export default {
   cache: true,
   cacheDirectory: '<rootDir>/.jest-cache',
   // Avoid transforming unnecessary files
-  modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/examples/'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/examples/', '<rootDir>/.worktrees/'],
+  moduleNameMapper: {
+    '^@aleph-sdk/(.*)$': '<rootDir>/packages/$1/src',
+  },
 }
