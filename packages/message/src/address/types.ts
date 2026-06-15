@@ -41,17 +41,17 @@ export type GetAccountChannelsResponse = {
 
 // ------- GET /api/v0/addresses/stats.json -------
 
-export type GetAddressStatsConfiguration = {
+export type GetAccountStatsConfiguration = {
   addresses?: string | string[]
 }
 
-export type AddressStatsResponse = {
+export type GetAccountStatsResponse = {
   data: Record<string, any>
 }
 
 // ------- GET /api/v1/addresses/stats.json -------
 
-export type GetAddressStatsV1Configuration = {
+export type GetAccountStatsV1Configuration = {
   /** Case-insensitive substring filter for addresses. */
   addressContains?: string
   sortBy?: string
@@ -60,7 +60,7 @@ export type GetAddressStatsV1Configuration = {
   page?: number
 }
 
-export type AddressStatsV1Response = {
+export type GetAccountStatsV1Response = {
   data: Record<string, any>
   pagination_per_page: number
   pagination_page: number

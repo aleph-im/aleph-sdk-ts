@@ -96,13 +96,25 @@ describe('Address-scoped queries', () => {
     }
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data })
 
-    const res = await client.getStatsV1({ addressContains: 'abc', sortBy: 'messages', sortOrder: -1 })
+    const res = await client.getStatsV1({
+      addressContains: 'abc',
+      sortBy: 'messages',
+      sortOrder: -1,
+      pagination: 50,
+      page: 2,
+    })
 
     expect(res).toEqual(data)
     expect(mockedAxios.get).toHaveBeenCalledWith(
       `${apiServer}/api/v1/addresses/stats.json`,
       expect.objectContaining({
-        params: expect.objectContaining({ addressContains: 'abc', sortBy: 'messages', sortOrder: -1 }),
+        params: expect.objectContaining({
+          addressContains: 'abc',
+          sortBy: 'messages',
+          sortOrder: -1,
+          pagination: 50,
+          page: 2,
+        }),
       }),
     )
   })

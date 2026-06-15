@@ -2,14 +2,14 @@ import { DEFAULT_API_V2, getSocketPath, stripTrailingSlash } from '@aleph-sdk/co
 import axios from 'axios'
 
 import {
-  AddressStatsResponse,
-  AddressStatsV1Response,
+  GetAccountStatsResponse,
+  GetAccountStatsV1Response,
   GetAccountChannelsResponse,
   GetAccountFilesConfiguration,
   GetAccountFilesResponse,
   GetAccountPostTypesResponse,
-  GetAddressStatsConfiguration,
-  GetAddressStatsV1Configuration,
+  GetAccountStatsConfiguration,
+  GetAccountStatsV1Configuration,
 } from './types'
 
 export class AddressClient {
@@ -72,8 +72,8 @@ export class AddressClient {
    *
    * @param config Optional list of addresses to filter on.
    */
-  async getStats({ addresses }: GetAddressStatsConfiguration = {}): Promise<AddressStatsResponse> {
-    const response = await axios.get<AddressStatsResponse>(`${this.apiServer}/api/v0/addresses/stats.json`, {
+  async getStats({ addresses }: GetAccountStatsConfiguration = {}): Promise<GetAccountStatsResponse> {
+    const response = await axios.get<GetAccountStatsResponse>(`${this.apiServer}/api/v0/addresses/stats.json`, {
       params: {
         addresses: addresses === undefined ? undefined : Array.isArray(addresses) ? addresses : [addresses],
       },
@@ -93,8 +93,8 @@ export class AddressClient {
     sortOrder,
     pagination,
     page,
-  }: GetAddressStatsV1Configuration = {}): Promise<AddressStatsV1Response> {
-    const response = await axios.get<AddressStatsV1Response>(`${this.apiServer}/api/v1/addresses/stats.json`, {
+  }: GetAccountStatsV1Configuration = {}): Promise<GetAccountStatsV1Response> {
+    const response = await axios.get<GetAccountStatsV1Response>(`${this.apiServer}/api/v1/addresses/stats.json`, {
       // @note: unlike the v0 endpoints, the v1 stats endpoint expects camelCase
       // query params (addressContains, sortBy, sortOrder) per the API spec.
       params: {

@@ -1,7 +1,7 @@
 import {
   AddressClient,
-  AddressStatsResponse,
-  AddressStatsV1Response,
+  GetAccountStatsResponse,
+  GetAccountStatsV1Response,
   AggregateMessageClient,
   AlephSocket,
   BalanceClient,
@@ -17,8 +17,8 @@ import {
   GetAccountFilesConfiguration,
   GetAccountFilesResponse,
   GetAccountPostTypesResponse,
-  GetAddressStatsConfiguration,
-  GetAddressStatsV1Configuration,
+  GetAccountStatsConfiguration,
+  GetAccountStatsV1Configuration,
   GetBalancesConfiguration,
   GetCreditBalancesConfiguration,
   GetCreditHistoryConfiguration,
@@ -324,7 +324,7 @@ export class AlephHttpClient {
    *
    * @param config Optional list of addresses to filter on.
    */
-  async getAddressStats(config: GetAddressStatsConfiguration = {}): Promise<AddressStatsResponse> {
+  async getAddressStats(config: GetAccountStatsConfiguration = {}): Promise<GetAccountStatsResponse> {
     return await this.addressClient.getStats(config)
   }
 
@@ -333,7 +333,7 @@ export class AlephHttpClient {
    *
    * @param config Optional substring filter, sort and pagination.
    */
-  async getAddressStatsV1(config: GetAddressStatsV1Configuration = {}): Promise<AddressStatsV1Response> {
+  async getAddressStatsV1(config: GetAccountStatsV1Configuration = {}): Promise<GetAccountStatsV1Response> {
     return await this.addressClient.getStatsV1(config)
   }
 }
