@@ -5,6 +5,8 @@ import {
   BaseMessageClient,
   CursorMessagesResponse,
   CursorPostsResponse,
+  EstimateInstanceCostConfiguration,
+  EstimatedCostsResponse,
   FileMetadataResponse,
   ForgetMessageClient,
   GetAccountBalanceConfiguration,
@@ -26,8 +28,10 @@ import {
   PostGetCursorConfiguration,
   PostMessageClient,
   PostResponse,
+  PriceClient,
   ProgramMessageClient,
   PublishedMessage,
+  RecalculateCostsResponse,
   StorageHashResponse,
   StoreMessageClient,
 } from '@aleph-sdk/message'
@@ -41,6 +45,7 @@ export class AlephHttpClient {
   storeClient: StoreMessageClient
   messageClient: BaseMessageClient
   balanceClient: BalanceClient
+  priceClient: PriceClient
 
   constructor(apiServer?: string) {
     this.postClient = new PostMessageClient(apiServer)
@@ -51,6 +56,7 @@ export class AlephHttpClient {
     this.storeClient = new StoreMessageClient(apiServer)
     this.messageClient = new BaseMessageClient(apiServer)
     this.balanceClient = new BalanceClient(apiServer)
+    this.priceClient = new PriceClient(apiServer)
   }
 
   /**
@@ -278,6 +284,22 @@ export class AlephHttpClient {
    */
   async getConsumedCredits(itemHash: string): Promise<GetResourceConsumedCreditsResponse> {
     return await this.balanceClient.getConsumedCredits(itemHash)
+  }
+
+  /**
+   * Estimates the cost of an instance from its content, without publishing a message.
+   *
+   * @param config The instance content to estimate.
+   */
+  async estimateInstanceCost(config: EstimateInstanceCostConfiguration): Promise<EstimatedCostsResponse> {
+    return await this.priceClient.estimateInstanceCost(config)
+  }
+
+  /**
+   * Triggers a recalculation of message costs and returns a summary of the changes found.
+   */
+  async recalculateCosts(): Promise<RecalculateCostsResponse> {
+    return await this.priceClient.recalculate()
   }
 }
 
