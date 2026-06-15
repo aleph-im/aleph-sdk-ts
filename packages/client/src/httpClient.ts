@@ -1,4 +1,7 @@
 import {
+  AddressClient,
+  AddressStatsResponse,
+  AddressStatsV1Response,
   AggregateMessageClient,
   AlephSocket,
   BalanceClient,
@@ -9,7 +12,13 @@ import {
   ForgetMessageClient,
   GetAccountBalanceConfiguration,
   GetAccountBalanceResponse,
+  GetAccountChannelsResponse,
   GetAccountCreditHistoryResponse,
+  GetAccountFilesConfiguration,
+  GetAccountFilesResponse,
+  GetAccountPostTypesResponse,
+  GetAddressStatsConfiguration,
+  GetAddressStatsV1Configuration,
   GetBalancesConfiguration,
   GetCreditBalancesConfiguration,
   GetCreditHistoryConfiguration,
@@ -41,6 +50,7 @@ export class AlephHttpClient {
   storeClient: StoreMessageClient
   messageClient: BaseMessageClient
   balanceClient: BalanceClient
+  addressClient: AddressClient
 
   constructor(apiServer?: string) {
     this.postClient = new PostMessageClient(apiServer)
@@ -51,6 +61,7 @@ export class AlephHttpClient {
     this.storeClient = new StoreMessageClient(apiServer)
     this.messageClient = new BaseMessageClient(apiServer)
     this.balanceClient = new BalanceClient(apiServer)
+    this.addressClient = new AddressClient(apiServer)
   }
 
   /**
@@ -278,6 +289,52 @@ export class AlephHttpClient {
    */
   async getConsumedCredits(itemHash: string): Promise<GetResourceConsumedCreditsResponse> {
     return await this.balanceClient.getConsumedCredits(itemHash)
+  }
+
+  /**
+   * Fetches the files stored by an address, along with their total size.
+   *
+   * @param address The address to query.
+   * @param config Optional file-hash filter, sort order and pagination.
+   */
+  async getAddressFiles(address: string, config: GetAccountFilesConfiguration = {}): Promise<GetAccountFilesResponse> {
+    return await this.addressClient.getFiles(address, config)
+  }
+
+  /**
+   * Fetches the POST types used by an address.
+   *
+   * @param address The address to query.
+   */
+  async getAddressPostTypes(address: string): Promise<GetAccountPostTypesResponse> {
+    return await this.addressClient.getPostTypes(address)
+  }
+
+  /**
+   * Fetches the channels used by an address.
+   *
+   * @param address The address to query.
+   */
+  async getAddressChannels(address: string): Promise<GetAccountChannelsResponse> {
+    return await this.addressClient.getChannels(address)
+  }
+
+  /**
+   * Fetches message statistics for one or more addresses (v0 endpoint).
+   *
+   * @param config Optional list of addresses to filter on.
+   */
+  async getAddressStats(config: GetAddressStatsConfiguration = {}): Promise<AddressStatsResponse> {
+    return await this.addressClient.getStats(config)
+  }
+
+  /**
+   * Fetches paginated message statistics across addresses (v1 endpoint).
+   *
+   * @param config Optional substring filter, sort and pagination.
+   */
+  async getAddressStatsV1(config: GetAddressStatsV1Configuration = {}): Promise<AddressStatsV1Response> {
+    return await this.addressClient.getStatsV1(config)
   }
 }
 
