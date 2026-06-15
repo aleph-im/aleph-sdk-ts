@@ -5,6 +5,7 @@ import {
   BaseMessageClient,
   CursorMessagesResponse,
   CursorPostsResponse,
+  FileMetadataResponse,
   ForgetMessageClient,
   GetAccountBalanceConfiguration,
   GetAccountBalanceResponse,
@@ -27,6 +28,7 @@ import {
   PostResponse,
   ProgramMessageClient,
   PublishedMessage,
+  StorageHashResponse,
   StoreMessageClient,
 } from '@aleph-sdk/message'
 
@@ -106,6 +108,51 @@ export class AlephHttpClient {
    */
   async downloadFile(file_hash: string): Promise<ArrayBuffer> {
     return await this.storeClient.download(file_hash)
+  }
+
+  /**
+   * Fetches a stored file by its hash, returning the base64 encoded content and its storage metadata.
+   *
+   * @param fileHash The hash of the file to retrieve.
+   */
+  async getFile(fileHash: string): Promise<StorageHashResponse> {
+    return await this.storeClient.getFile(fileHash)
+  }
+
+  /**
+   * Fetches a file's metadata from the hash of the STORE message that references it.
+   *
+   * @param messageHash The hash of the STORE message.
+   */
+  async getFileMetadataByMessageHash(messageHash: string): Promise<FileMetadataResponse> {
+    return await this.storeClient.getFileMetadataByMessageHash(messageHash)
+  }
+
+  /**
+   * Fetches a file's metadata from its reference.
+   *
+   * @param ref The reference of the file.
+   */
+  async getFileMetadataByRef(ref: string): Promise<FileMetadataResponse> {
+    return await this.storeClient.getFileMetadataByRef(ref)
+  }
+
+  /**
+   * Fetches the raw stored metadata of a file by its hash.
+   *
+   * @param fileHash The hash of the file.
+   */
+  async getFileMetadata(fileHash: string): Promise<Record<string, any>> {
+    return await this.storeClient.getFileMetadata(fileHash)
+  }
+
+  /**
+   * Fetches the number of pins referencing a given file hash.
+   *
+   * @param hash The hash of the file.
+   */
+  async getFilePinsCount(hash: string): Promise<number> {
+    return await this.storeClient.getFilePinsCount(hash)
   }
 
   /**
