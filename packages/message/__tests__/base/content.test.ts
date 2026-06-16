@@ -16,7 +16,6 @@ describe('Message content retrieval', () => {
 
   it('getContent returns the content from the content endpoint', async () => {
     const data = { body: 'hello' }
-    mockedAxios.isAxiosError.mockReturnValue(false)
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data })
 
     const res = await client.getContent(itemHash)
