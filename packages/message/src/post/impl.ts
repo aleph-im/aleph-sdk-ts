@@ -58,6 +58,10 @@ export class PostMessageClient {
     addresses,
     tags,
     hashes,
+    startDate,
+    endDate,
+    sortBy,
+    sortOrder,
   }: PostGetConfiguration): Promise<PostQueryResponse<T>> {
     const params: PostQueryParams = {
       types: toQueryParam(types),
@@ -68,6 +72,10 @@ export class PostMessageClient {
       tags: toQueryParam(tags),
       hashes: toQueryParam(hashes),
       channels: toQueryParam(channels),
+      startDate: startDate ? startDate.valueOf() / 1000 : undefined,
+      endDate: endDate ? endDate.valueOf() / 1000 : undefined,
+      sortBy,
+      sortOrder,
     }
 
     const response = (await axios.get<PostQueryResponse<T>>(`${this.apiServer}/api/v0/posts.json`, {
@@ -90,6 +98,10 @@ export class PostMessageClient {
     addresses,
     tags,
     hashes,
+    startDate,
+    endDate,
+    sortBy,
+    sortOrder,
   }: PostGetCursorConfiguration): Promise<CursorPostsResponse<T>> {
     const params: PostCursorQueryParams = {
       types: toQueryParam(types),
@@ -100,6 +112,10 @@ export class PostMessageClient {
       tags: toQueryParam(tags),
       hashes: toQueryParam(hashes),
       channels: toQueryParam(channels),
+      startDate: startDate ? startDate.valueOf() / 1000 : undefined,
+      endDate: endDate ? endDate.valueOf() / 1000 : undefined,
+      sortBy,
+      sortOrder,
     }
 
     const response = (await axios.get<CursorPostsResponse<T>>(`${this.apiServer}/api/v0/posts.json`, {

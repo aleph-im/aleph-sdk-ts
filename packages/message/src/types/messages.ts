@@ -183,6 +183,11 @@ export type MessageStatusInfo = {
   reception_time: string
 }
 
+// Shared query sorting / content-detail options for the messages and posts endpoints.
+export type SortBy = 'time' | 'tx-time'
+export type SortOrder = -1 | 1
+export type ContentFormat = 'full' | 'headers' | 'none'
+
 export type ProgramMessage = SignedMessage<ProgramContent>
 export type InstanceMessage = SignedMessage<InstanceContent>
 export type StoreMessage = SignedMessage<StoreContent>
