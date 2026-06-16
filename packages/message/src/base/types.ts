@@ -1,6 +1,15 @@
 import { Blockchain } from '@aleph-sdk/core'
 
-import { MessageContent, MessageStatus, MessageType, PaymentType, PublishedMessage } from '../types'
+import {
+  ContentFormat,
+  MessageContent,
+  MessageStatus,
+  MessageType,
+  PaymentType,
+  PublishedMessage,
+  SortBy,
+  SortOrder,
+} from '../types'
 
 export type GetMessageParams = {
   hashes: string[]
@@ -43,34 +52,50 @@ export type GetMessagesConfiguration = {
   pagination?: number
   page?: number
   addresses?: string[]
+  owners?: string[]
   channels?: string[]
   chains?: Blockchain[]
   refs?: string[]
   tags?: string[]
   contentTypes?: string[]
   contentKeys?: string[]
+  contentHashes?: string[]
   hashes?: string[]
   messageTypes?: MessageType[]
+  messageStatuses?: MessageStatus[]
   paymentTypes?: PaymentType[]
   startDate?: Date
   endDate?: Date
+  startBlock?: number
+  endBlock?: number
+  sortBy?: SortBy
+  sortOrder?: SortOrder
+  contentFormat?: ContentFormat
 }
 
 export type GetMessagesParams = {
   pagination?: number
   page?: number
   addresses?: string
+  owners?: string
   channels?: string
   chains?: string
   refs?: string
   tags?: string
   contentTypes?: string
   contentKeys?: string
+  contentHashes?: string
   hashes?: string
   msgTypes?: string
+  msgStatuses?: string
   paymentTypes?: string
   startDate?: number
   endDate?: number
+  startBlock?: number
+  endBlock?: number
+  sortBy?: SortBy
+  sortOrder?: SortOrder
+  contentFormat?: ContentFormat
 }
 
 // --------- CURSOR PAGINATION ------------

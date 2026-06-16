@@ -1,6 +1,7 @@
 import { Account } from '@aleph-sdk/account'
 
 import { BaseContent, ChainRef, ItemType } from '../types/base'
+import { SortBy, SortOrder } from '../types/messages'
 
 export type PostContent<T> = BaseContent & {
   content?: T
@@ -19,6 +20,10 @@ export type PostGetConfiguration = {
   tags?: string[]
   hashes?: string[]
   channels?: string[]
+  startDate?: Date
+  endDate?: Date
+  sortBy?: SortBy
+  sortOrder?: SortOrder
 }
 
 export type PostQueryParams = {
@@ -30,6 +35,10 @@ export type PostQueryParams = {
   tags?: string | undefined
   hashes?: string | undefined
   channels?: string | undefined
+  startDate?: number
+  endDate?: number
+  sortBy?: SortBy
+  sortOrder?: SortOrder
 }
 
 export type PostResponse<T> = {
