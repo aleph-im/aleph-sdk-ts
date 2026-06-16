@@ -36,6 +36,28 @@ describe('Address-scoped queries', () => {
     )
   })
 
+  it('getFiles works without a config, sending all params undefined', async () => {
+    const data = {
+      address,
+      total_size: 0,
+      files: [],
+      pagination_page: 1,
+      pagination_total: 0,
+      pagination_per_page: 100,
+    }
+    mockedAxios.get.mockResolvedValueOnce({ status: 200, data })
+
+    const res = await client.getFiles(address)
+
+    expect(res).toEqual(data)
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      `${apiServer}/api/v0/addresses/${address}/files`,
+      expect.objectContaining({
+        params: { pagination: undefined, page: undefined, sort_order: undefined, file_hash: undefined },
+      }),
+    )
+  })
+
   it('getPostTypes queries the post_types endpoint', async () => {
     const data = { address, post_types: ['my-type'] }
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data })
