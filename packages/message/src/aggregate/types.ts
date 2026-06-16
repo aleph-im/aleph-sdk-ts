@@ -22,6 +22,25 @@ export type AggregateGetConfiguration = {
   keys?: string | string[]
 }
 
+// ------- GET (cross-address listing) -------
+
+export type GetAggregatesConfiguration = {
+  keys?: string | string[]
+  addresses?: string | string[]
+  sortBy?: 'last_modified'
+  sortOrder?: -1 | 1
+  pagination?: number
+  page?: number
+}
+
+export type PaginatedAggregates = {
+  aggregates: Record<string, any>[]
+  pagination_per_page: number
+  pagination_page: number
+  pagination_total: number
+  pagination_item: string
+}
+
 export type AggregatePublishConfiguration<T> = {
   account: Account
   address?: string

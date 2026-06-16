@@ -139,6 +139,25 @@ export class BaseMessageClient {
   }
 
   /**
+   * Retrieves only the content of a message, without the surrounding message envelope.
+   *
+   * @param item_hash The hash of the message to query.
+   */
+  async getContent<Content = any>(item_hash: string): Promise<Content> {
+    try {
+      const response = await axios.get<Content>(`${this.apiServer}/api/v0/messages/${item_hash}/content`, {
+        socketPath: getSocketPath(),
+      })
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        throw new MessageNotFoundError(`No such hash ${item_hash}`)
+      }
+      throw error
+    }
+  }
+
+  /**
    * Retrieves Messages with query params.
    *
    * @param configuration The message params to make the query.
