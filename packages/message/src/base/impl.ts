@@ -117,6 +117,11 @@ export class BaseMessageClient {
    * Lighter than {@link get}: it returns only the status and reception time, without the
    * message content.
    *
+   * Unlike {@link get} and {@link getError}, a forgotten message is returned as data with
+   * status "forgotten" rather than throwing ForgottenMessageError. Callers must inspect the
+   * returned status field; no exception is thrown for forgotten, rejected or pending states.
+   * Only a missing hash (404) throws (MessageNotFoundError).
+   *
    * @param item_hash The hash of the message to query.
    */
   async getStatus(item_hash: string): Promise<MessageStatusInfo> {
