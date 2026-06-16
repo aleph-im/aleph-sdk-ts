@@ -29,15 +29,18 @@ export class AddressClient {
     address: string,
     { pagination, page, sortOrder, fileHash }: GetAccountFilesConfiguration = {},
   ): Promise<GetAccountFilesResponse> {
-    const response = await axios.get<GetAccountFilesResponse>(`${this.apiServer}/api/v0/addresses/${address}/files`, {
-      params: {
-        pagination,
-        page,
-        sort_order: sortOrder,
-        file_hash: fileHash,
+    const response = await axios.get<GetAccountFilesResponse>(
+      `${this.apiServer}/api/v0/addresses/${encodeURIComponent(address)}/files`,
+      {
+        params: {
+          pagination,
+          page,
+          sort_order: sortOrder,
+          file_hash: fileHash,
+        },
+        socketPath: getSocketPath(),
       },
-      socketPath: getSocketPath(),
-    })
+    )
     return response.data
   }
 
@@ -48,7 +51,7 @@ export class AddressClient {
    */
   async getPostTypes(address: string): Promise<GetAccountPostTypesResponse> {
     const response = await axios.get<GetAccountPostTypesResponse>(
-      `${this.apiServer}/api/v0/addresses/${address}/post_types`,
+      `${this.apiServer}/api/v0/addresses/${encodeURIComponent(address)}/post_types`,
       { socketPath: getSocketPath() },
     )
     return response.data
@@ -61,7 +64,7 @@ export class AddressClient {
    */
   async getChannels(address: string): Promise<GetAccountChannelsResponse> {
     const response = await axios.get<GetAccountChannelsResponse>(
-      `${this.apiServer}/api/v0/addresses/${address}/channels`,
+      `${this.apiServer}/api/v0/addresses/${encodeURIComponent(address)}/channels`,
       { socketPath: getSocketPath() },
     )
     return response.data
