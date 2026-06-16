@@ -177,6 +177,12 @@ export enum MessageStatus {
   forgotten = 'forgotten',
 }
 
+export type MessageStatusInfo = {
+  status: MessageStatus
+  item_hash: ItemHash
+  reception_time: string
+}
+
 export type ProgramMessage = SignedMessage<ProgramContent>
 export type InstanceMessage = SignedMessage<InstanceContent>
 export type StoreMessage = SignedMessage<StoreContent>

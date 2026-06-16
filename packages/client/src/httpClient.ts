@@ -30,6 +30,7 @@ import {
   InstanceMessageClient,
   MessageContent,
   MessageError,
+  MessageStatusInfo,
   MessageType,
   PaginatedBalances,
   PaginatedCreditBalances,
@@ -197,6 +198,16 @@ export class AlephHttpClient {
    */
   async getMessageError(itemHash: string): Promise<MessageError | null> {
     return await this.messageClient.getError(itemHash)
+  }
+
+  /**
+   * Fetches the processing status of a message (pending, processed, rejected or forgotten),
+   * along with its reception time, without fetching the message content.
+   *
+   * @param itemHash The hash of the message to query.
+   */
+  async getMessageStatus(itemHash: string): Promise<MessageStatusInfo> {
+    return await this.messageClient.getStatus(itemHash)
   }
 
   /**
