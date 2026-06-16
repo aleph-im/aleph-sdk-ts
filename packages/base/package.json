@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "eciesjs": "^0.4.6",
-    "sha.js": "^2.4.11"
+    "sha.js": "^2.4.12"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
