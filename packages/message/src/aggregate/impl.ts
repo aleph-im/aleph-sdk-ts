@@ -6,6 +6,8 @@ import {
   AggregateGetConfiguration,
   AggregateGetResponse,
   AggregatePublishConfiguration,
+  GetAggregatesConfiguration,
+  PaginatedAggregates,
 } from './types'
 import { AggregateMessage, ItemType, MessageType } from '../types'
 import { MessageNotFoundError } from '../types/errors'
@@ -47,6 +49,33 @@ export class AggregateMessageClient {
       }
       throw e
     }
+  }
+
+  /**
+   * Retrieves a paginated list of aggregates across addresses.
+   *
+   * @param config Optional key/address filters, sorting and pagination.
+   */
+  async getAggregates({
+    keys,
+    addresses,
+    sortBy,
+    sortOrder,
+    pagination,
+    page,
+  }: GetAggregatesConfiguration = {}): Promise<PaginatedAggregates> {
+    const response = await axios.get<PaginatedAggregates>(`${this.apiServer}/api/v0/aggregates`, {
+      params: {
+        keys: toQueryParam(keys),
+        addresses: toQueryParam(addresses),
+        sortBy,
+        sortOrder,
+        pagination,
+        page,
+      },
+      socketPath: getSocketPath(),
+    })
+    return response.data
   }
 
   /**

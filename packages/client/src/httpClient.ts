@@ -6,12 +6,14 @@ import {
   AlephSocket,
   BalanceClient,
   BaseMessageClient,
+  ChannelsListResponse,
   CursorMessagesResponse,
   CursorPostsResponse,
   EstimateInstanceCostConfiguration,
   EstimatedCostsResponse,
   FileMetadataResponse,
   ForgetMessageClient,
+  GetAggregatesConfiguration,
   GetAccountBalanceConfiguration,
   GetAccountBalanceResponse,
   GetAccountChannelsResponse,
@@ -32,6 +34,9 @@ import {
   MessageError,
   MessageStatusInfo,
   MessageType,
+  NodeClient,
+  NodePublicInfo,
+  PaginatedAggregates,
   PaginatedBalances,
   PaginatedCreditBalances,
   PostGetConfiguration,
@@ -44,6 +49,7 @@ import {
   RecalculateCostsResponse,
   StorageHashResponse,
   StoreMessageClient,
+  VersionResponse,
 } from '@aleph-sdk/message'
 
 export class AlephHttpClient {
@@ -57,6 +63,7 @@ export class AlephHttpClient {
   balanceClient: BalanceClient
   priceClient: PriceClient
   addressClient: AddressClient
+  nodeClient: NodeClient
 
   constructor(apiServer?: string) {
     this.postClient = new PostMessageClient(apiServer)
@@ -69,6 +76,7 @@ export class AlephHttpClient {
     this.balanceClient = new BalanceClient(apiServer)
     this.priceClient = new PriceClient(apiServer)
     this.addressClient = new AddressClient(apiServer)
+    this.nodeClient = new NodeClient(apiServer)
   }
 
   /**
@@ -208,6 +216,15 @@ export class AlephHttpClient {
    */
   async getMessageStatus(itemHash: string): Promise<MessageStatusInfo> {
     return await this.messageClient.getStatus(itemHash)
+  }
+
+  /**
+   * Fetches only the content of a message, without the surrounding message envelope.
+   *
+   * @param itemHash The hash of the message to query.
+   */
+  async getMessageContent<Content = any>(itemHash: string): Promise<Content> {
+    return await this.messageClient.getContent<Content>(itemHash)
   }
 
   /**
@@ -368,6 +385,36 @@ export class AlephHttpClient {
    */
   async getAddressStatsV1(config: GetAccountStatsV1Configuration = {}): Promise<GetAccountStatsV1Response> {
     return await this.addressClient.getStatsV1(config)
+  }
+
+  /**
+   * Fetches a paginated list of aggregates across addresses.
+   *
+   * @param config Optional key/address filters, sorting and pagination.
+   */
+  async getAggregatesList(config: GetAggregatesConfiguration = {}): Promise<PaginatedAggregates> {
+    return await this.aggregateClient.getAggregates(config)
+  }
+
+  /**
+   * Fetches the node's public information, including its P2P multiaddresses.
+   */
+  async getNodePublicInfo(): Promise<NodePublicInfo> {
+    return await this.nodeClient.getPublicInfo()
+  }
+
+  /**
+   * Fetches the list of channels known to the node.
+   */
+  async listChannels(): Promise<ChannelsListResponse> {
+    return await this.nodeClient.listChannels()
+  }
+
+  /**
+   * Fetches the node software version.
+   */
+  async getNodeVersion(): Promise<VersionResponse> {
+    return await this.nodeClient.getVersion()
   }
 }
 
