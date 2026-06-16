@@ -13,7 +13,14 @@ import {
   MessageResponse,
   MessagesQueryResponse,
 } from './types'
-import { MessageContent, MessageStatus, MessageType, MessageTypeMap, PublishedMessage } from '../types'
+import {
+  MessageContent,
+  MessageStatus,
+  MessageStatusInfo,
+  MessageType,
+  MessageTypeMap,
+  PublishedMessage,
+} from '../types'
 import { AlephSocket, getMessagesSocket, GetMessagesSocketConfiguration } from './websocket'
 import { ForgottenMessageError, MessageNotFoundError, QueryError } from '../types/errors'
 import { toQueryParam } from '../utils'
@@ -101,6 +108,28 @@ export class BaseMessageClient {
     return {
       error_code: data.error_code,
       details: data.details,
+    }
+  }
+
+  /**
+   * Retrieves the processing status of a message (pending, processed, rejected or forgotten).
+   *
+   * Lighter than {@link get}: it returns only the status and reception time, without the
+   * message content.
+   *
+   * @param item_hash The hash of the message to query.
+   */
+  async getStatus(item_hash: string): Promise<MessageStatusInfo> {
+    try {
+      const response = await axios.get<MessageStatusInfo>(`${this.apiServer}/api/v0/messages/${item_hash}/status`, {
+        socketPath: getSocketPath(),
+      })
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        throw new MessageNotFoundError(`No such hash ${item_hash}`)
+      }
+      throw error
     }
   }
 
