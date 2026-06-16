@@ -27,7 +27,7 @@ describe('Price endpoints', () => {
     jest.clearAllMocks()
   })
 
-  it('estimateInstanceCost posts the content to the instance estimate endpoint', async () => {
+  it('returns a cost estimate for the given instance content', async () => {
     const content = instanceContent
     const data = {
       required_tokens: 1,
@@ -48,7 +48,7 @@ describe('Price endpoints', () => {
     )
   })
 
-  it('recalculate posts to the recalculate endpoint and returns the summary', async () => {
+  it('returns a summary of the changes after recalculating message costs', async () => {
     const data = {
       message: 'done',
       recalculated_count: 3,
