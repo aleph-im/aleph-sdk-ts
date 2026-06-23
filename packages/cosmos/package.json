@@ -12,7 +12,7 @@
     "access": "public"
   },
   "dependencies": {
-    "elliptic": "^6.5.4"
+    "elliptic": "^6.6.1"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
