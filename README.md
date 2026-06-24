@@ -112,6 +112,27 @@ You can check the configuration files from the [examples/toolshed](./examples/to
 
 Your contributions are always welcome, [here's a guide to get started](./contributing.md).
 
+## Releasing
+
+Packages are versioned together (fixed mode) and published by the `Publish Packages` workflow, which runs on a published GitHub Release.
+
+The version number must be bumped **before** the release is created. Do not create a release by tagging in the GitHub UI: that leaves `package.json` unchanged, so `lerna publish from-git` finds the existing versions already on npm and publishes nothing.
+
+Correct flow:
+
+1. From a clean `main`, bump every package and create the tag:
+
+   ```
+   npm run release:version          # interactive, or:
+   npm run release:version -- X.Y.Z # explicit version
+   ```
+
+   This updates every `package.json` and `lerna.json`, commits, and pushes the `vX.Y.Z` tag.
+
+2. Create the GitHub Release on the resulting `vX.Y.Z` tag. That triggers the publish workflow, which builds and runs `npm run release:publish` (`lerna publish from-git`).
+
+> The version/publish scripts are named `release:version` and `release:publish` on purpose. npm treats `version` and `publish` as reserved lifecycle hooks, so naming them that way makes `lerna version`/`lerna publish` re-enter themselves and abort.
+
 ## License
 
 This software is released under [The MIT License](./LICENSE).
