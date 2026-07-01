@@ -1,7 +1,5 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "version": "1.9.1",
-  "packages": [
-    "packages/*"
-  ]
+  "version": "1.9.2",
+  "packages": ["packages/*"]
 }
