@@ -141,7 +141,7 @@ export class StoreMessageClient extends DefaultMessageClient<
     } else if (!fileObject) {
       throw new Error('You need to specify a File to upload or a Hash to pin.')
     } else {
-      const { message } = await this.uploadStore(hashedMessage, account, fileObject as Blob | File, sync || false)
+      const { message } = await this.uploadStore(hashedMessage, account, fileObject, sync || false)
       return message
     }
   }
@@ -174,7 +174,7 @@ export class StoreMessageClient extends DefaultMessageClient<
   protected async uploadStore(
     message: HashedMessage<StoreContent>,
     account: Account,
-    file: Blob | File,
+    file: Blob | Buffer | Uint8Array,
     sync: boolean,
   ): Promise<{ message: SignedMessage<StoreContent>; response: { status: string; hash: string } }> {
     const form = new FormData()
@@ -186,8 +186,13 @@ export class StoreMessageClient extends DefaultMessageClient<
       message: signedMessage.getBroadcastable(),
       sync,
     }
+    // @note: A Buffer/Uint8Array is coerced to a UTF-8 string by FormData, which
+    // corrupts binary content and makes the uploaded bytes differ from item_hash
+    // (server returns "File hash does not match"). Wrap it in a Blob so the bytes
+    // sent are exactly the bytes that were hashed.
+    const filePart = file instanceof Blob ? file : new Blob([file])
     form.append('metadata', JSON.stringify(metadata))
-    form.append('file', file)
+    form.append('file', filePart)
     try {
       const response = await axios.post(`${this.apiServer}/api/v0/storage/add_file`, form, {
         headers: {
