@@ -9,7 +9,47 @@ permissions:
   contents: read
   
 jobs:
+  # Guard against publishing from a tag that was not produced by
+  # `npm run release:version`: `lerna publish from-git` publishes whatever
+  # version is in package.json at the tagged commit, so a tag placed on an
+  # unbumped commit silently re-publishes the previous version (v1.10.0 was
+  # once tagged on a 1.9.2 commit and the run "succeeded" without publishing).
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Release tag must match lerna.json version and be annotated"
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./lerna.json').version")
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Release tag '$TAG' does not match lerna.json version 'v$version'."
+            echo "::error::Run 'npm run release:version' first (it bumps the packages, commits and creates the annotated tag), then create the release from that tag."
+            exit 1
+          fi
+          if [ "$(git cat-file -t "refs/tags/$TAG")" != "tag" ]; then
+            echo "::error::Tag '$TAG' is a lightweight tag; lerna's 'git describe --match v*' only sees annotated tags."
+            echo "::error::Recreate it with 'git tag -a $TAG -m $TAG <commit>' or via 'npm run release:version'."
+            exit 1
+          fi
+          for pkg in packages/*/package.json; do
+            if [ "$(node -p "require('./$pkg').private === true")" = "true" ]; then continue; fi
+            pkg_version=$(node -p "require('./$pkg').version")
+            if [ "$pkg_version" != "$version" ]; then
+              echo "::error::$pkg is at $pkg_version, expected $version."
+              exit 1
+            fi
+          done
+          echo "Release $TAG matches lerna.json and all package versions."
+
   publish-npm:
+    needs: check-version
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -35,6 +75,7 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
 
   publish-github:
+    needs: check-version
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
