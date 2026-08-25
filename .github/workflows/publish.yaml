@@ -38,15 +38,20 @@ jobs:
             echo "::error::Recreate it with 'git tag -a $TAG -m $TAG <commit>' or via 'npm run release:version'."
             exit 1
           fi
+          # Fixed mode only bumps the packages that changed since the last
+          # release, so not every package carries the new version; require
+          # that at least one public package does (those are what from-git
+          # will publish).
+          bumped=0
           for pkg in packages/*/package.json; do
             if [ "$(node -p "require('./$pkg').private === true")" = "true" ]; then continue; fi
-            pkg_version=$(node -p "require('./$pkg').version")
-            if [ "$pkg_version" != "$version" ]; then
-              echo "::error::$pkg is at $pkg_version, expected $version."
-              exit 1
-            fi
+            if [ "$(node -p "require('./$pkg').version")" = "$version" ]; then bumped=$((bumped + 1)); fi
           done
-          echo "Release $TAG matches lerna.json and all package versions."
+          if [ "$bumped" -eq 0 ]; then
+            echo "::error::No public package is at $version; the tagged commit was not produced by 'npm run release:version'."
+            exit 1
+          fi
+          echo "Release $TAG matches lerna.json; $bumped package(s) at $version."
 
   publish-npm:
     needs: check-version
