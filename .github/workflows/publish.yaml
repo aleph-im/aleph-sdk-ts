@@ -33,7 +33,10 @@ jobs:
             echo "::error::Run 'npm run release:version' first (it bumps the packages, commits and creates the annotated tag), then create the release from that tag."
             exit 1
           fi
-          if [ "$(git cat-file -t "refs/tags/$TAG")" != "tag" ]; then
+          # actions/checkout fetches the release tag as +<sha>:refs/tags/<tag>,
+          # which turns it into a lightweight ref locally, so inspect the
+          # remote: only an annotated tag has a peeled (^{}) entry.
+          if [ -z "$(git ls-remote --tags origin "refs/tags/$TAG^{}")" ]; then
             echo "::error::Tag '$TAG' is a lightweight tag; lerna's 'git describe --match v*' only sees annotated tags."
             echo "::error::Recreate it with 'git tag -a $TAG -m $TAG <commit>' or via 'npm run release:version'."
             exit 1
