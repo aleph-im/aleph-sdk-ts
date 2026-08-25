@@ -10,6 +10,7 @@ import {
   PaymentType,
   TeePlatform,
   VerifiableProgramMessageClient,
+  VerifiableProgramPayment,
   VerifiableProgramPublishConfiguration,
 } from '../../src'
 
@@ -82,7 +83,12 @@ describe('Test the V-PROGRAM message', () => {
   it('rejects non-credit payment', async () => {
     const { account } = ethereum.newAccount()
     await expect(
-      client.send({ account, ...baseConfig(), payment: { chain: Blockchain.ETH, type: PaymentType.hold } }),
+      client.send({
+        account,
+        ...baseConfig(),
+        // Cast: the type forbids this, the runtime check must still catch JS callers
+        payment: { chain: Blockchain.ETH, type: PaymentType.hold } as unknown as VerifiableProgramPayment,
+      }),
     ).rejects.toThrow(/credit-only/)
   })
 

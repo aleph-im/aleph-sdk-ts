@@ -2,6 +2,7 @@ import { Blockchain, DEFAULT_API_V2 } from '@aleph-sdk/core'
 
 import {
   LaunchMeasurement,
+  TeeBackend,
   TeePlatform,
   TeeVerification,
   VerifiableProgramContent,
@@ -23,6 +24,7 @@ import { buildMessage } from '../utils/messageBuilder'
 import { prepareAlephMessage } from '../utils/publish'
 import { broadcast } from '../utils/signature'
 
+const DEFAULT_TEE_BACKEND: TeeBackend = 'sev_snp'
 // sha256 dm-verity root hash, as printed by veritysetup format
 const VERITY_ROOTHASH_PATTERN = /^[0-9a-f]{64}$/
 // Every pinned SEV-SNP register is a 48-byte SHA-384 value
@@ -125,7 +127,8 @@ export class VerifiableProgramMessageClient extends DefaultMessageClient<
     const timestamp = Date.now() / 1000
     const { address } = account
 
-    if (payment.type !== PaymentType.credit) {
+    // Type-level narrowing covers TS callers; keep the runtime check for JS callers and casts.
+    if ((payment.type as PaymentType) !== PaymentType.credit) {
       throw new Error('V-Programs are credit-only: holder-tier and PAYG stream payments are not supported')
     }
 
@@ -153,7 +156,7 @@ export class VerifiableProgramMessageClient extends DefaultMessageClient<
     validateSnpPolicy(policy)
 
     const teeVerification: TeeVerification = {
-      backend: verification.backend ?? 'sev_snp',
+      backend: verification.backend ?? DEFAULT_TEE_BACKEND,
       policy,
       // Copy so the content does not alias caller-owned objects and carries
       // only the declared fields.

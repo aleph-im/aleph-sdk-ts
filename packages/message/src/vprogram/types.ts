@@ -2,7 +2,21 @@ import { Account } from '@aleph-sdk/account'
 
 import { ItemHash } from '../types'
 import { BaseContent } from '../types/base'
+import { PaymentType } from '../types/base'
 import { HostRequirements, MachineResources, Payment } from '../types/execution'
+
+/**
+ * TEE backend a V-Program launches with. Distinct from TeePlatform (which
+ * describes what a launch measurement's registers are defined for), even
+ * though the two share a value today.
+ */
+export type TeeBackend = 'sev_snp'
+
+/**
+ * V-Programs are credit-only: holder-tier and PAYG stream payments are
+ * rejected by the network.
+ */
+export type VerifiableProgramPayment = Payment & { type: PaymentType.credit }
 
 /**
  * TEE platforms with a defined launch-measurement semantics.
@@ -42,7 +56,7 @@ export type LaunchMeasurement = {
  * measurements: Expected measurement registers; never sent to the supervisor
  */
 export type TeeVerification = {
-  backend: 'sev_snp'
+  backend: TeeBackend
   policy: number
   measurements: LaunchMeasurement[]
 }
@@ -97,7 +111,7 @@ export type VerifiableProgramEnvironment = {
 export type VerifiableProgramContent = BaseContent & {
   allow_amend: false
   metadata?: Record<string, unknown>
-  payment: Payment
+  payment: VerifiableProgramPayment
   environment: VerifiableProgramEnvironment
   resources: MachineResources
   requirements?: HostRequirements
@@ -119,7 +133,7 @@ export type VerifiedVolumeConfiguration = VerifiedWorkload & {
 }
 
 export type TeeVerificationConfiguration = {
-  backend?: 'sev_snp'
+  backend?: TeeBackend
   policy?: number
   measurements: LaunchMeasurement[]
 }
@@ -135,6 +149,6 @@ export type VerifiableProgramPublishConfiguration = {
   workload: VerifiedWorkload
   verification: TeeVerificationConfiguration
   volumes?: VerifiedVolumeConfiguration[]
-  payment?: Payment
+  payment?: VerifiableProgramPayment
   sync?: boolean
 }
