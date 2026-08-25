@@ -7,6 +7,7 @@ import {
   PostPublishConfiguration,
   ProgramPublishConfiguration,
   StorePublishConfiguration,
+  VerifiableProgramPublishConfiguration,
 } from '@aleph-sdk/message'
 
 import AlephHttpClient from './httpClient'
@@ -120,6 +121,31 @@ export class AuthenticatedAlephHttpClient extends AlephHttpClient {
       account: this.account,
       ...config,
     } as InstancePublishConfiguration)
+  }
+
+  /**
+   * Create a verifiable program (V-Program) on the network by posting a V-PROGRAM message: an
+   * auto-booting SEV-SNP confidential VM whose full software stack is attestable.
+   * V-Programs are credit-only and immutable; it will be rejected by the network if the account
+   * does not have enough credits.
+   *
+   * @param channel The channel in which the message will be published
+   * @param metadata Additional information about the VM
+   * @param resources Resources to allocate to the VM, such as memory and CPU
+   * @param requirements Requirements for the VM host
+   * @param environment Environment flags (internet access); the hypervisor is always QEMU
+   * @param runtime Store message of the measured runtime manifest
+   * @param workload The user's verity-bound workload volume
+   * @param verification TEE launch config and expected launch measurements
+   * @param volumes Extra read-only verity-bound volumes
+   * @param payment Payment configuration for the VM (must be credit)
+   * @param sync If true, waits for the message to be processed by the API server (Default: True)
+   */
+  async createVerifiableProgram(config: Omit<VerifiableProgramPublishConfiguration, 'account'>) {
+    return await this.vProgramClient.send({
+      account: this.account,
+      ...config,
+    } as VerifiableProgramPublishConfiguration)
   }
 
   /**

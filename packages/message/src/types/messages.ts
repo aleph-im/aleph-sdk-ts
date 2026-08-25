@@ -12,6 +12,7 @@ import { InstanceContent } from '../instance'
 import { PostContent } from '../post'
 import { ProgramContent } from '../program'
 import { StoreContent } from '../store'
+import { VerifiableProgramContent } from '../vprogram'
 import { ItemType, MessageConfirmation, MessageType } from './base'
 
 export type MessageContent<Content = any> =
@@ -21,6 +22,7 @@ export type MessageContent<Content = any> =
   | ProgramContent
   | ForgetContent
   | InstanceContent
+  | VerifiableProgramContent
 
 /**
  * Message types supported by Aleph
@@ -33,6 +35,7 @@ export interface MessageTypeMap<Content = any> {
   [MessageType.program]: ProgramContent
   [MessageType.forget]: ForgetContent
   [MessageType.instance]: InstanceContent
+  [MessageType.vProgram]: VerifiableProgramContent
   [key: string]: MessageContent
 }
 
@@ -190,6 +193,7 @@ export type ContentFormat = 'full' | 'headers' | 'none'
 
 export type ProgramMessage = SignedMessage<ProgramContent>
 export type InstanceMessage = SignedMessage<InstanceContent>
+export type VerifiableProgramMessage = SignedMessage<VerifiableProgramContent>
 export type StoreMessage = SignedMessage<StoreContent>
 export type PostMessage<T> = SignedMessage<PostContent<T>>
 export type AggregateMessage<T> = SignedMessage<AggregateContent<T>>
@@ -197,6 +201,7 @@ export type ForgetMessage = SignedMessage<ForgetContent>
 export type Message =
   | ProgramMessage
   | InstanceMessage
+  | VerifiableProgramMessage
   | StoreMessage
   | PostMessage<any>
   | AggregateMessage<any>
