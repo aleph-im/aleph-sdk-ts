@@ -102,6 +102,45 @@ describe('Test the V-PROGRAM message', () => {
     ).rejects.toThrow(/roothash/)
   })
 
+  it('rejects a malformed volume roothash', async () => {
+    const { account } = ethereum.newAccount()
+    await expect(
+      client.send({
+        account,
+        ...baseConfig(),
+        volumes: [{ ref: WORKLOAD_REF, hash_tree: HASH_TREE_REF, roothash: 'zz'.repeat(32) }],
+      }),
+    ).rejects.toThrow(/volumes\[0\] roothash/)
+  })
+
+  it('attaches metadata and requirements when provided, drops them otherwise', async () => {
+    const { account } = ethereum.newAccount()
+    mockedAxios.post.mockResolvedValueOnce({ status: 200, data: {} })
+    const requirements = { node: { node_hash: RUNTIME_REF } }
+
+    const res = await client.send({ account, ...baseConfig(), metadata: { name: 'vp' }, requirements })
+
+    expect(res.content.metadata).toEqual({ name: 'vp' })
+    expect(res.content.requirements).toEqual(requirements)
+
+    mockedAxios.post.mockResolvedValueOnce({ status: 200, data: {} })
+    const bare = await client.send({ account, ...baseConfig() })
+    expect(bare.content).not.toHaveProperty('metadata')
+    expect(bare.content).not.toHaveProperty('requirements')
+  })
+
+  it('does not alias the caller measurements array', async () => {
+    const { account } = ethereum.newAccount()
+    mockedAxios.post.mockResolvedValueOnce({ status: 200, data: {} })
+    const cfg = baseConfig()
+
+    const res = await client.send({ account, ...cfg })
+    cfg.verification.measurements.push(cfg.verification.measurements[0])
+
+    expect(res.content.verification.measurements).toHaveLength(1)
+    expect(res.content.verification.measurements).not.toBe(cfg.verification.measurements)
+  })
+
   it('rejects a malformed launch register value', async () => {
     const { account } = ethereum.newAccount()
     const cfg = baseConfig()

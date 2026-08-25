@@ -155,7 +155,13 @@ export class VerifiableProgramMessageClient extends DefaultMessageClient<
     const teeVerification: TeeVerification = {
       backend: verification.backend ?? 'sev_snp',
       policy,
-      measurements,
+      // Copy so the content does not alias caller-owned objects and carries
+      // only the declared fields.
+      measurements: measurements.map((m) => ({
+        platform: m.platform,
+        registers: { launch: m.registers.launch },
+        ...(m.vcpu_type !== undefined ? { vcpu_type: m.vcpu_type } : {}),
+      })),
     }
 
     const content: VerifiableProgramContent = {
