@@ -33,8 +33,10 @@ const REGISTER_VALUE_PATTERN = /^[0-9a-f]{96}$/
  * Mirrors aleph_message.models.execution.environment.validate_snp_policy.
  */
 export function validateSnpPolicy(policy: number): void {
-  if (!Number.isInteger(policy) || policy < 0 || policy >= 2 ** 64) {
-    throw new Error(`SEV-SNP guest policy must be an unsigned 64-bit integer; got ${policy}`)
+  // The policy is a 64-bit value on the wire, but it travels as a JSON number
+  // (BigInt does not serialize), so only safe integers (< 2^53) are accepted.
+  if (!Number.isSafeInteger(policy) || policy < 0) {
+    throw new Error(`SEV-SNP guest policy must be a non-negative safe integer (below 2^53, JSON number); got ${policy}`)
   }
   // Use BigInt: bitwise operators on numbers truncate to 32 bits.
   if ((BigInt(policy) & SNP_POLICY_RESERVED_BIT_17) === 0n) {
@@ -55,7 +57,10 @@ function validateMeasurement(measurement: LaunchMeasurement, index: number): voi
   if (measurement.platform !== TeePlatform.sev_snp) {
     throw new Error(`measurements[${index}]: unknown TEE platform ${measurement.platform}`)
   }
-  const keys = Object.keys(measurement.registers || {})
+  if (!measurement.registers) {
+    throw new Error(`measurements[${index}]: registers is required`)
+  }
+  const keys = Object.keys(measurement.registers)
   if (keys.length !== 1 || keys[0] !== 'launch') {
     throw new Error(`measurements[${index}]: sev_snp registers must declare exactly { launch }`)
   }

@@ -4,6 +4,8 @@ import axios from 'axios'
 import * as ethereum from '../../../ethereum/src'
 import {
   DEFAULT_SNP_POLICY,
+  LaunchMeasurement,
+  MAX_MEASUREMENTS,
   MessageType,
   PaymentType,
   TeePlatform,
@@ -92,12 +94,17 @@ describe('Test the V-PROGRAM message', () => {
     )
   })
 
-  it('rejects malformed roothash and register values', async () => {
+  it('rejects a malformed workload roothash', async () => {
     const { account } = ethereum.newAccount()
     const cfg = baseConfig()
     await expect(
       client.send({ account, ...cfg, workload: { ...cfg.workload, roothash: 'AB'.repeat(32) } }),
     ).rejects.toThrow(/roothash/)
+  })
+
+  it('rejects a malformed launch register value', async () => {
+    const { account } = ethereum.newAccount()
+    const cfg = baseConfig()
     await expect(
       client.send({
         account,
@@ -110,11 +117,50 @@ describe('Test the V-PROGRAM message', () => {
     ).rejects.toThrow(/launch/)
   })
 
+  it('rejects missing registers, extra register keys and unknown platforms', async () => {
+    const { account } = ethereum.newAccount()
+    const cfg = baseConfig()
+    const withMeasurements = (measurements: unknown) =>
+      client.send({
+        account,
+        ...cfg,
+        verification: { ...cfg.verification, measurements: measurements as LaunchMeasurement[] },
+      })
+    await expect(withMeasurements([{ platform: 'sev_snp' }])).rejects.toThrow(/registers is required/)
+    await expect(
+      withMeasurements([{ platform: 'sev_snp', registers: { launch: HEX48, mrtd: HEX48 } }]),
+    ).rejects.toThrow(/exactly \{ launch \}/)
+    await expect(withMeasurements([{ platform: 'tdx', registers: { launch: HEX48 } }])).rejects.toThrow(
+      /unknown TEE platform/,
+    )
+  })
+
+  it('rejects an unsafe-integer SNP policy', async () => {
+    const { account } = ethereum.newAccount()
+    const cfg = baseConfig()
+    await expect(
+      client.send({ account, ...cfg, verification: { ...cfg.verification, policy: 2 ** 60 } }),
+    ).rejects.toThrow(/safe integer/)
+  })
+
   it('rejects an empty measurement list', async () => {
     const { account } = ethereum.newAccount()
     const cfg = baseConfig()
     await expect(
       client.send({ account, ...cfg, verification: { ...cfg.verification, measurements: [] } }),
+    ).rejects.toThrow(/measurements/)
+  })
+
+  it('rejects more than the maximum number of measurements', async () => {
+    const { account } = ethereum.newAccount()
+    const cfg = baseConfig()
+    const measurement = cfg.verification.measurements[0]
+    await expect(
+      client.send({
+        account,
+        ...cfg,
+        verification: { ...cfg.verification, measurements: Array(MAX_MEASUREMENTS + 1).fill(measurement) },
+      }),
     ).rejects.toThrow(/measurements/)
   })
 
