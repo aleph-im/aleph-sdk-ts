@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "Release tag must match lerna.json version and be annotated"
+      - name: "Release tag must match lerna.json version"
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
@@ -35,8 +35,8 @@ jobs:
           fi
           # Fixed mode only bumps the packages that changed since the last
           # release, so not every package carries the new version; require
-          # that at least one public package does (those are what from-git
-          # will publish).
+          # that at least one public package does (those are what from-package
+          # will publish, being absent from the registry).
           bumped=0
           for pkg in packages/*/package.json; do
             if [ "$(node -p "require('./$pkg').private === true")" = "true" ]; then continue; fi

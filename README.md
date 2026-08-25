@@ -116,7 +116,7 @@ Your contributions are always welcome, [here's a guide to get started](./contrib
 
 Packages are versioned together (fixed mode) and published by the `Publish Packages` workflow, which runs on a published GitHub Release.
 
-The version number must be bumped **before** the release is created. Do not create a release by tagging in the GitHub UI: that leaves `package.json` unchanged, so `lerna publish from-git` finds the existing versions already on npm and publishes nothing.
+The version number must be bumped **before** the release is created. Do not create a release by tagging in the GitHub UI: that leaves `package.json` unchanged, so `lerna publish from-package` finds every version already on npm and publishes nothing. The workflow's `check-version` job fails such a release early (tag must equal `v<lerna.json version>` and at least one public package must carry that version).
 
 Correct flow:
 
@@ -129,7 +129,7 @@ Correct flow:
 
    This updates every `package.json` and `lerna.json`, commits, and pushes the `vX.Y.Z` tag.
 
-2. Create the GitHub Release on the resulting `vX.Y.Z` tag. That triggers the publish workflow, which builds and runs `npm run release:publish` (`lerna publish from-git`).
+2. Create the GitHub Release on the resulting `vX.Y.Z` tag. That triggers the publish workflow, which builds and runs `npm run release:publish` (`lerna publish from-package`): every public package whose `package.json` version is not yet on the registry gets published, wherever the tag sits. Re-running the workflow is therefore safe.
 
 > The version/publish scripts are named `release:version` and `release:publish` on purpose. npm treats `version` and `publish` as reserved lifecycle hooks, so naming them that way makes `lerna version`/`lerna publish` re-enter themselves and abort.
 
