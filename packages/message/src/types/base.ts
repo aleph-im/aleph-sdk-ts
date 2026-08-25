@@ -15,6 +15,7 @@ export enum MessageType {
   program = 'PROGRAM',
   forget = 'FORGET',
   instance = 'INSTANCE',
+  vProgram = 'V-PROGRAM',
 }
 
 export enum ItemType {

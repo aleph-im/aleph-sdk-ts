@@ -49,6 +49,7 @@ import {
   RecalculateCostsResponse,
   StorageHashResponse,
   StoreMessageClient,
+  VerifiableProgramMessageClient,
   VersionResponse,
 } from '@aleph-sdk/message'
 
@@ -58,6 +59,7 @@ export class AlephHttpClient {
   aggregateClient: AggregateMessageClient
   programClient: ProgramMessageClient
   instanceClient: InstanceMessageClient
+  vProgramClient: VerifiableProgramMessageClient
   storeClient: StoreMessageClient
   messageClient: BaseMessageClient
   balanceClient: BalanceClient
@@ -71,6 +73,7 @@ export class AlephHttpClient {
     this.aggregateClient = new AggregateMessageClient(apiServer)
     this.programClient = new ProgramMessageClient(apiServer)
     this.instanceClient = new InstanceMessageClient(apiServer)
+    this.vProgramClient = new VerifiableProgramMessageClient(apiServer)
     this.storeClient = new StoreMessageClient(apiServer)
     this.messageClient = new BaseMessageClient(apiServer)
     this.balanceClient = new BalanceClient(apiServer)
