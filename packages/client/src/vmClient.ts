@@ -6,6 +6,7 @@ import { bytesToHex, utf8ToBytes } from './utils/hex'
 // --- Types ---
 
 export enum VmOperation {
+  Start = 'start',
   Stop = 'stop',
   Reboot = 'reboot',
   Erase = 'erase',
@@ -266,14 +267,22 @@ export class VmClient {
   }
 
   async startInstance(vmId: string): Promise<VmOperationResult> {
-    const url = `${this.nodeUrl}/control/allocation/notify`
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ instance: vmId }),
-    })
-    const responseText = await resp.text()
-    return { status: resp.status, response: responseText }
+    // Start a VM its owner stopped: the authenticated route, falling back to
+    // the legacy notify push on 404 for CRNs that predate aleph-vm 2.1.
+    const result = await this.performOperation(vmId, VmOperation.Start)
+
+    if (result.status === 404) {
+      const url = `${this.nodeUrl}/control/allocation/notify`
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instance: vmId }),
+      })
+      const responseText = await resp.text()
+      return { status: resp.status, response: responseText }
+    }
+
+    return result
   }
 
   async stopInstance(vmId: string): Promise<VmOperationResult> {
