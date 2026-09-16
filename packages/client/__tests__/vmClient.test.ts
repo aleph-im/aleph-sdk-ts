@@ -37,7 +37,7 @@ describe('VmClient.create', () => {
     await client.startInstance(TEST_VM_ID)
 
     const calledUrl = mockFetch.mock.calls[0][0] as string
-    expect(calledUrl).toBe('https://crn.example.com/control/allocation/notify')
+    expect(calledUrl).toBe('https://crn.example.com/control/machine/abc123def456/start')
   })
 
   it('should reject an invalid URL', async () => {
@@ -219,17 +219,48 @@ describe('startInstance', () => {
     })
   })
 
-  it('should POST to /control/allocation/notify without auth headers', async () => {
+  it('should POST to /control/machine/{id}/start with auth headers', async () => {
     await client.startInstance(TEST_VM_ID)
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
     const [url, options] = mockFetch.mock.calls[0]
-    expect(url).toBe(`${TEST_NODE_URL}/control/allocation/notify`)
+    expect(url).toBe(`${TEST_NODE_URL}/control/machine/${TEST_VM_ID}/start`)
     expect(options.method).toBe('POST')
-    expect(options.headers['X-SignedPubKey']).toBeUndefined()
+    expect(options.headers['X-SignedPubKey']).toBeDefined()
+    expect(options.headers['X-SignedOperation']).toBeDefined()
+  })
 
-    const body = JSON.parse(options.body)
-    expect(body.instance).toBe(TEST_VM_ID)
+  it('should fall back to /control/allocation/notify on 404', async () => {
+    mockFetch.mockResolvedValueOnce({
+      status: 404,
+      text: () => Promise.resolve('404: Not Found'),
+    })
+
+    const result = await client.startInstance(TEST_VM_ID)
+
+    expect(result.status).toBe(200)
+    expect(mockFetch).toHaveBeenCalledTimes(2)
+
+    const [startUrl, startOptions] = mockFetch.mock.calls[0]
+    expect(startUrl).toBe(`${TEST_NODE_URL}/control/machine/${TEST_VM_ID}/start`)
+    expect(startOptions.headers['X-SignedOperation']).toBeDefined()
+
+    const [notifyUrl, notifyOptions] = mockFetch.mock.calls[1]
+    expect(notifyUrl).toBe(`${TEST_NODE_URL}/control/allocation/notify`)
+    expect(notifyOptions.headers['X-SignedPubKey']).toBeUndefined()
+    expect(JSON.parse(notifyOptions.body).instance).toBe(TEST_VM_ID)
+  })
+
+  it('should not fall back on other statuses', async () => {
+    mockFetch.mockResolvedValueOnce({
+      status: 403,
+      text: () => Promise.resolve('Unauthorized sender'),
+    })
+
+    const result = await client.startInstance(TEST_VM_ID)
+
+    expect(result.status).toBe(403)
+    expect(mockFetch).toHaveBeenCalledTimes(1)
   })
 })
 
