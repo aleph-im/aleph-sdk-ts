@@ -51,7 +51,7 @@ export class SuperfluidAccount extends EVMAccount {
     if (!network) throw new Error(`ChainID ${currentChainId} not supported`)
 
     const superTokenAddress = findChainMetadataByChainId(currentChainId)?.superTokenAddress
-    if (!superTokenAddress) throw new Error(`ChainID ${currentChainId} not supported`)
+    if (!superTokenAddress) throw new Error(`No ALEPH super token configured for ChainID ${currentChainId}`)
 
     this.forwarderAddress = network.contractsV1.cfaV1Forwarder
     this.superTokenAddress = superTokenAddress

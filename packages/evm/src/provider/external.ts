@@ -15,12 +15,19 @@ export class ExternalSignerWallet extends BaseProviderWallet {
   public readonly address: string
   public override readonly provider: JsonRpcProvider
   private readonly _signMessage: (message: Buffer | string) => Promise<string>
+  private readonly rpcUrl?: string
 
-  constructor(address: string, provider: JsonRpcProvider, signMessage: (message: Buffer | string) => Promise<string>) {
+  constructor(
+    address: string,
+    provider: JsonRpcProvider,
+    signMessage: (message: Buffer | string) => Promise<string>,
+    rpcUrl?: string,
+  ) {
     super()
     this.address = address
     this.provider = provider
     this._signMessage = signMessage
+    this.rpcUrl = rpcUrl
   }
 
   async connect(): Promise<void> {
@@ -31,8 +38,8 @@ export class ExternalSignerWallet extends BaseProviderWallet {
     return this._signMessage(data)
   }
 
-  getRpcUrl(): string {
-    return this.provider._getConnection().url
+  getRpcUrl(): string | undefined {
+    return this.rpcUrl
   }
 
   async getCurrentChainId(): Promise<number> {

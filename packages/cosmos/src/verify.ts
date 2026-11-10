@@ -3,7 +3,7 @@ import elliptic from 'elliptic'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
- * This method rely on the ethers.utils.verifyMessage() implementation.
+ * This method relies on the elliptic signature verification implementation.
  *
  * @param message The content of the signature to verify. It can be the result of GetVerificationBuffer() or directly a BaseMessage object.
  * @param serializedSignature The signature associated with the first params of this method.

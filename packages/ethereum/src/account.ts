@@ -124,7 +124,7 @@ export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
 /**
  * Get an account from a Web3 provider (ex: Metamask)
  *
- * @param  {ethers.providers.ExternalProvider | ethers.providers.Web3Provider} provider
+ * @param  {Eip1193Provider | BrowserProvider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
@@ -153,11 +153,12 @@ export async function getAccountFromProvider(
  *   - signMessage  — the signing function, e.g.:
  *                    (msg) => smartWalletClient.signMessage({ message: msg.toString() })
  *   - requestedRpc — optional RPC preset (default: ETH mainnet)
+ *   - rpcUrl       — optional provider URL, used to resolve the RPC preset
  *
  * @example
  * const account = getAccountFromExternalSigner(
  *   smartWalletAddress,
- *   new providers.JsonRpcProvider(rpcUrl),
+ *   new JsonRpcProvider(rpcUrl),
  *   (msg) => smartWalletClient.signMessage({ message: msg.toString() }),
  *   RpcId.ETH,
  * )
@@ -167,7 +168,8 @@ export function getAccountFromExternalSigner(
   provider: JsonRpcProvider,
   signMessage: (message: Buffer | string) => Promise<string>,
   requestedRpc: ChangeRpcParam = RpcId.ETH,
+  rpcUrl?: string,
 ): ETHAccount {
-  const wallet = new ExternalSignerWallet(address, provider, signMessage)
+  const wallet = new ExternalSignerWallet(address, provider, signMessage, rpcUrl)
   return new ETHAccount(wallet, address, undefined, typeof requestedRpc === 'number' ? requestedRpc : undefined)
 }

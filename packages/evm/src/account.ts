@@ -30,7 +30,7 @@ export abstract class EVMAccount extends ECIESAccount {
     }
   }
 
-  public getRpcUrl(): string {
+  public getRpcUrl(): string | undefined {
     if (this.wallet instanceof JsonRPCWallet) {
       return this.wallet.getRpcUrl()
     }
@@ -38,7 +38,7 @@ export abstract class EVMAccount extends ECIESAccount {
       return this.wallet.getRpcUrl()
     }
     if (this.wallet instanceof BaseWallet) {
-      throw new Error('Wallet has no connected provider')
+      return undefined
     }
     throw new Error('EVMAccount has no connected wallet')
   }

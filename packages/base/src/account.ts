@@ -59,7 +59,7 @@ export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: Base
 /**
  * Get an account from a Web3 provider (ex: Metamask)
  *
- * @param  {providers.ExternalProvider | providers.Web3Provider} provider
+ * @param  {Eip1193Provider | BrowserProvider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(

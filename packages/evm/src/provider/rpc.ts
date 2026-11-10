@@ -197,9 +197,16 @@ export class JsonRPCWallet extends BaseProviderWallet {
   public address?: string
   private publicKey?: string
 
-  constructor(providerOrWallet: JsonRpcProvider | BrowserProvider | BaseWallet, eip1193Provider?: Eip1193Provider) {
+  private readonly rpcUrl?: string
+
+  constructor(
+    providerOrWallet: JsonRpcProvider | BrowserProvider | BaseWallet,
+    eip1193Provider?: Eip1193Provider,
+    rpcUrl?: string,
+  ) {
     super()
     this.eip1193Provider = eip1193Provider
+    this.rpcUrl = rpcUrl
     if (providerOrWallet instanceof BaseWallet) {
       if (!providerOrWallet.provider) throw new Error('Wallet has no connected provider')
       this.signer = providerOrWallet
@@ -209,11 +216,8 @@ export class JsonRPCWallet extends BaseProviderWallet {
     }
   }
 
-  public getRpcUrl(): string {
-    if (this.provider instanceof JsonRpcProvider) {
-      return this.provider._getConnection().url
-    }
-    throw new Error('Provider has no RPC URL')
+  public getRpcUrl(): string | undefined {
+    return this.rpcUrl
   }
 
   public async connect(): Promise<void> {
@@ -265,8 +269,9 @@ export class JsonRPCWallet extends BaseProviderWallet {
   }
 
   public isMetamask(): boolean {
-    const provider = this.eip1193Provider as (Eip1193Provider & { isMetaMask?: boolean }) | undefined
-    return !!provider?.isMetaMask
+    const provider =
+      this.eip1193Provider ?? (this.provider instanceof BrowserProvider ? this.provider.provider : undefined)
+    return !!(provider as { isMetaMask?: boolean } | undefined)?.isMetaMask
   }
 
   public async isConnected(): Promise<boolean> {
