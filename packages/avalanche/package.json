@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/avalanche",
-  "version": "1.9.2",
+  "version": "2.0.0",
   "description": "Avalanche accounts for signing messages on aleph.im",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -24,9 +24,9 @@
     "sha.js": "^2.4.12"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
-    "@aleph-sdk/evm": "^1.x.x",
+    "@aleph-sdk/account": "^2.x.x",
+    "@aleph-sdk/core": "^2.x.x",
+    "@aleph-sdk/evm": "^2.x.x",
     "ethers": "^6.17.0"
   },
   "scripts": {

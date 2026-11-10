@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/cosmos",
-  "version": "1.9.2",
+  "version": "2.0.0",
   "description": "Cosmos accounts for signing messages on aleph.im",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -15,8 +15,8 @@
     "elliptic": "^6.6.1"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
+    "@aleph-sdk/account": "^2.x.x",
+    "@aleph-sdk/core": "^2.x.x",
     "@cosmjs/amino": "^0.32.2"
   },
   "scripts": {

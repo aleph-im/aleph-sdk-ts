@@ -1,6 +1,6 @@
 {
   "name": "@aleph-sdk/superfluid",
-  "version": "1.9.2",
+  "version": "2.0.0",
   "description": "Aleph.im account wrapper for interacting with the Superfluid Avalanche Contract",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
@@ -19,11 +19,11 @@
     "ethers": "^6.17.0"
   },
   "peerDependencies": {
-    "@aleph-sdk/account": "^1.x.x",
-    "@aleph-sdk/avalanche": "^1.x.x",
-    "@aleph-sdk/base": "^1.x.x",
-    "@aleph-sdk/core": "^1.x.x",
-    "@aleph-sdk/evm": "^1.x.x",
+    "@aleph-sdk/account": "^2.x.x",
+    "@aleph-sdk/avalanche": "^2.x.x",
+    "@aleph-sdk/base": "^2.x.x",
+    "@aleph-sdk/core": "^2.x.x",
+    "@aleph-sdk/evm": "^2.x.x",
     "decimal.js": "^10.4.3",
     "ethers": "^6.17.0"
   },
