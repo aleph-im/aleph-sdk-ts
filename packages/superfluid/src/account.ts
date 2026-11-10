@@ -192,11 +192,11 @@ export async function getAccountFromProvider(
 
   let account: EVMAccount
   if ([hexToDec(ChainData[RpcId.AVAX].chainId), hexToDec(ChainData[RpcId.AVAX_TESTNET].chainId)].includes(networkInfo))
-    account = await getAvalancheAccountFromProvider(provider)
+    account = await getAvalancheAccountFromProvider(provider, requestedRpc)
   else if (
     [hexToDec(ChainData[RpcId.BASE].chainId), hexToDec(ChainData[RpcId.BASE_TESTNET].chainId)].includes(networkInfo)
   )
-    account = await getBaseAccountFromProvider(provider)
+    account = await getBaseAccountFromProvider(provider, requestedRpc)
   else if (
     [
       hexToDec(ChainData[RpcId.ETH].chainId),
@@ -204,7 +204,7 @@ export async function getAccountFromProvider(
       hexToDec(ChainData[RpcId.ETH_SEPOLIA].chainId),
     ].includes(networkInfo)
   )
-    account = await getEthereumAccountFromProvider(provider)
+    account = await getEthereumAccountFromProvider(provider, requestedRpc)
   else throw new Error(`Unsupported Chain: ${requestedRpc}`)
 
   return createFromEVMAccount(account)
