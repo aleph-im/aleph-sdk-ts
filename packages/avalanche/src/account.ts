@@ -33,7 +33,7 @@ export class AvalancheAccount extends EVMAccount {
         name: network.chainName,
         chainId: hexToDec(network.chainId),
       })
-      this.wallet = new JsonRPCWallet(signerOrWallet.connect(provider))
+      this.wallet = new JsonRPCWallet(signerOrWallet.connect(provider), undefined, network.rpcUrls.at(0))
     } else if (signerOrWallet instanceof JsonRPCWallet) {
       this.wallet = signerOrWallet
     }
@@ -101,17 +101,20 @@ export enum ChainType {
   X_CHAIN = 'X',
 }
 
+const DEFAULT_HRP = 'avax'
+
 /**
  * Get Key Chains
  * @param chain Avalanche chain type: c-chain | x-chain
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  * @returns key chains
  */
-async function getKeyChain(chain = ChainType.C_CHAIN) {
-  return new KeyChain('', chain)
+async function getKeyChain(chain = ChainType.C_CHAIN, hrp = DEFAULT_HRP) {
+  return new KeyChain(hrp, chain)
 }
 
-export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN): Promise<KeyPair> {
-  const keyChain = await getKeyChain(chain)
+export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN, hrp = DEFAULT_HRP): Promise<KeyPair> {
+  const keyChain = await getKeyChain(chain, hrp)
   const keyPair = keyChain.makeKey()
 
   if (privateKey) {
@@ -129,13 +132,15 @@ export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN)
  *
  * @param privateKey The private key of the account to import.
  * @param chain The Avalanche subnet to use the account with.
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  */
 export async function importAccountFromPrivateKey(
   privateKey: string,
   chain = ChainType.C_CHAIN,
+  hrp?: string,
 ): Promise<AvalancheAccount> {
   if (chain === ChainType.X_CHAIN) {
-    const keyPair = await getKeyPair(privateKey, chain)
+    const keyPair = await getKeyPair(privateKey, chain, hrp)
     return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString('hex'))
   } else {
     const wallet = new Wallet(privateKey)
@@ -151,21 +156,23 @@ export async function importAccountFromPrivateKey(
  * @param mnemonic The mnemonic of the account to import.
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  * @param chain The Avalanche subnet to use the account with.
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  */
 export async function importAccountFromMnemonic(
   mnemonic: string,
   derivationPath = "m/44'/60'/0'/0/0",
   chain = ChainType.C_CHAIN,
+  hrp?: string,
 ): Promise<AvalancheAccount> {
   const wallet = HDNodeWallet.fromPhrase(mnemonic, undefined, derivationPath)
 
-  return await importAccountFromPrivateKey(wallet.privateKey, chain)
+  return await importAccountFromPrivateKey(wallet.privateKey, chain, hrp)
 }
 
 /**
  * Get an account from a Web3 provider (ex: Metamask)
  *
- * @param  {providers.ExternalProvider | providers.Web3Provider} provider
+ * @param  {Eip1193Provider | BrowserProvider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
@@ -207,11 +214,14 @@ export function getEVMAddress(keypair: EVMKeyPair | KeyPair): string {
 
 /**
  * Creates a new Avalanche account using a randomly generated privateKey
+ * @param chain Avalanche chain type: c-chain | x-chain
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  */
 export async function newAccount(
   chain = ChainType.C_CHAIN,
+  hrp?: string,
 ): Promise<{ account: AvalancheAccount; privateKey: string }> {
-  const keypair = await getKeyPair(undefined, chain)
+  const keypair = await getKeyPair(undefined, chain, hrp)
   const privateKey = keypair.getPrivateKey().toString('hex')
 
   let address: string = keypair.getAddressString()
