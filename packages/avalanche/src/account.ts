@@ -79,9 +79,7 @@ export class AvalancheAccount extends EVMAccount {
     const digest = digestMessage(buffer)
 
     if (this.keyPair) {
-      const digestHex = digest.toString('hex')
-      const digestBuff = Buffer.from(digestHex, 'hex')
-      const signatureBuffer = this.keyPair?.sign(digestBuff)
+      const signatureBuffer = this.keyPair.sign(digest)
       if (!signatureBuffer) throw new Error('Cannot sign message')
 
       const signature = cb58Encode(signatureBuffer)

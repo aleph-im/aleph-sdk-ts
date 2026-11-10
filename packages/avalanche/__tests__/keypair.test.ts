@@ -1,4 +1,5 @@
 import { cb58Decode, cb58Encode, KeyPair, recoverPublicKey } from '../src/keypair'
+import { digestMessage, verifyAvalanche } from '../src/verify'
 
 const PRIVATE_KEY = '0000000000000000000000000000000000000000000000000000000000000001'
 const PUBLIC_KEY = '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798'
@@ -23,8 +24,9 @@ describe('Avalanche keypair', () => {
     expect(cb58Decode('13DV5cZ86B').toString('hex')).toBe(bytes.toString('hex'))
   })
 
-  it('should reject invalid cb58 checksums', () => {
+  it('should reject invalid cb58 checksums and short inputs', () => {
     expect(() => cb58Decode('13DV5cZ86C')).toThrow('Invalid cb58 checksum')
+    expect(() => cb58Decode('1')).toThrow('Invalid cb58 value')
   })
 
   it('should generate the expected public key and addresses', () => {
@@ -44,5 +46,13 @@ describe('Avalanche keypair', () => {
     expect(pair.verify(message, signature)).toBe(true)
     expect(recoverPublicKey(message, signature).toString('hex')).toBe(PUBLIC_KEY)
     expect(pair.recover(message, signature).toString('hex')).toBe(PUBLIC_KEY)
+  })
+
+  it('should verify an ALEPH message signature', async () => {
+    const pair = keypair()
+    const message = Buffer.from('aleph')
+    const signature = cb58Encode(pair.sign(digestMessage(message)))
+
+    await expect(verifyAvalanche(message, signature, PUBLIC_KEY)).resolves.toBe(true)
   })
 })

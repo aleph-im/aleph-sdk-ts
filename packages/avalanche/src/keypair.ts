@@ -1,80 +1,8 @@
 import { secp256k1 } from '@noble/curves/secp256k1'
 import { ripemd160 } from '@noble/hashes/ripemd160'
 import { sha256 } from '@noble/hashes/sha256'
-import { base58 } from '@scure/base'
+import { base58, bech32 } from '@scure/base'
 import { Buffer } from 'buffer'
-
-const BECH32_ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
-
-function polymodStep(pre: number): number {
-  const b = pre >> 25
-  return (
-    ((pre & 0x1ffffff) << 5) ^
-    (-((b >> 0) & 1) & 0x3b6a57b2) ^
-    (-((b >> 1) & 1) & 0x26508e6d) ^
-    (-((b >> 2) & 1) & 0x1ea119fa) ^
-    (-((b >> 3) & 1) & 0x3d4233dd) ^
-    (-((b >> 4) & 1) & 0x2a1462b3)
-  )
-}
-
-function prefixChk(prefix: string): number {
-  let chk = 1
-
-  for (let i = 0; i < prefix.length; i++) {
-    chk = polymodStep(chk) ^ (prefix.charCodeAt(i) >> 5)
-  }
-  chk = polymodStep(chk)
-
-  for (let i = 0; i < prefix.length; i++) {
-    chk = polymodStep(chk) ^ (prefix.charCodeAt(i) & 0x1f)
-  }
-
-  return chk
-}
-
-function toWords(bytes: Uint8Array): number[] {
-  const result: number[] = []
-  let value = 0
-  let bits = 0
-
-  for (const byte of bytes) {
-    value = (value << 8) | byte
-    bits += 8
-
-    while (bits >= 5) {
-      bits -= 5
-      result.push((value >> bits) & 31)
-    }
-  }
-
-  if (bits > 0) result.push((value << (5 - bits)) & 31)
-
-  return result
-}
-
-function bech32Encode(prefix: string, words: number[], limit = 90): string {
-  const lowered = prefix.toLowerCase()
-  if (lowered.length + 7 + words.length > limit) throw new Error('Exceeds length limit')
-
-  let chk = prefixChk(lowered)
-  let result = `${lowered}1`
-
-  for (const word of words) {
-    if (word >> 5 !== 0) throw new Error('Non 5-bit word')
-    chk = polymodStep(chk) ^ word
-    result += BECH32_ALPHABET.charAt(word)
-  }
-
-  for (let i = 0; i < 6; i++) chk = polymodStep(chk)
-  chk ^= 1
-
-  for (let i = 0; i < 6; i++) {
-    result += BECH32_ALPHABET.charAt((chk >> ((5 - i) * 5)) & 31)
-  }
-
-  return result
-}
 
 function equalBytes(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false
@@ -114,7 +42,7 @@ export class KeyPair {
   private hrp: string
   private chainID: string
 
-  constructor(hrp = '', chainID = '') {
+  constructor(hrp = 'avax', chainID = '') {
     this.hrp = hrp
     this.chainID = chainID
     this.privateKey = secp256k1.utils.randomPrivateKey()
@@ -146,7 +74,7 @@ export class KeyPair {
   }
 
   getAddressString(): string {
-    return `${this.chainID}-${bech32Encode(this.hrp, toWords(this.getAddress()))}`
+    return `${this.chainID}-${bech32.encode(this.hrp.toLowerCase(), bech32.toWords(this.getAddress()))}`
   }
 
   getPrivateKeyString(): string {

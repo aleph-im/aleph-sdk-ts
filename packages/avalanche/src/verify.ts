@@ -35,10 +35,8 @@ export async function verifyAvalanche(
   }
   const readableSignature = cb58Decode(signature)
 
-  const digest = Buffer.from(await digestMessage(message))
-  const digestHex = digest.toString('hex')
-  const digestBuff = Buffer.from(digestHex, 'hex')
+  const digest = digestMessage(message)
 
-  const recovered = recoverPublicKey(digestBuff, readableSignature)
+  const recovered = recoverPublicKey(digest, readableSignature)
   return signerPKey === recovered.toString('hex')
 }
