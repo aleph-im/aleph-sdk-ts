@@ -1,7 +1,9 @@
+import { JsonRpcProvider, Wallet } from 'ethers'
+
 import { EphAccount } from '../../account/src'
 import * as avalanche from '../../avalanche/src'
 import * as base from '../../base/src'
-import { createEphemeralEth } from '../../evm/src'
+import { createEphemeralEth, JsonRPCWallet } from '../../evm/src'
 import { createFromEVMAccount, SuperfluidAccount } from '../src'
 
 describe('SuperfluidAccount', () => {
@@ -41,6 +43,15 @@ describe('SuperfluidAccount', () => {
   it('should create Superfluid account from Base account', async () => {
     const baseSuperfluidAccount = await createFromEVMAccount(baseAccount)
     expect(baseSuperfluidAccount).toBeInstanceOf(SuperfluidAccount)
+  })
+
+  it('should create a Superfluid account from a connected BaseWallet', () => {
+    const provider = new JsonRpcProvider('http://localhost:8545')
+    const wallet = new Wallet(ephemeralAccount.privateKey, provider)
+    const rawWalletAccount = new base.BaseAccount(wallet, wallet.address, wallet.signingKey.publicKey)
+    const superfluidAccount = new SuperfluidAccount(rawWalletAccount)
+
+    expect(superfluidAccount.wallet).toBeInstanceOf(JsonRPCWallet)
   })
 
   it('should fail if account does not have a wallet', () => {

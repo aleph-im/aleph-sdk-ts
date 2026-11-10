@@ -16,7 +16,7 @@ import {
 } from '@aleph-sdk/evm'
 import superfluidMetadata from '@superfluid-finance/metadata'
 import { Decimal } from 'decimal.js'
-import { BrowserProvider, Contract, Eip1193Provider } from 'ethers'
+import { BaseWallet, BrowserProvider, Contract, Eip1193Provider } from 'ethers'
 
 const erc20BalanceAbi = ['function balanceOf(address account) view returns (uint256)']
 const cfaV1ForwarderAbi = [
@@ -40,6 +40,7 @@ export class SuperfluidAccount extends EVMAccount {
     super(account.address, account.publicKey)
     this.account = account
     if (account.wallet instanceof JsonRPCWallet) this.wallet = account.wallet
+    else if (account.wallet instanceof BaseWallet) this.wallet = new JsonRPCWallet(account.wallet)
     else throw new Error('Unsupported wallet type')
   }
 
