@@ -47,6 +47,20 @@ describe('Avalanche accounts', () => {
     await expect(fct).rejects.toThrow('Invalid private key')
   })
 
+  it('should import an X-chain account with the avax HRP', async () => {
+    const privateKey = '0000000000000000000000000000000000000000000000000000000000000001'
+    const account = await avalanche.importAccountFromPrivateKey(privateKey, avalanche.ChainType.X_CHAIN)
+
+    expect(account.address).toBe('X-avax1w508d6qejxtdg4y5r3zarvary0c5xw7k0l6nk9')
+  })
+
+  it('should use a custom HRP for X-chain addresses', async () => {
+    const privateKey = '0000000000000000000000000000000000000000000000000000000000000001'
+    const keypair = await avalanche.getKeyPair(privateKey, avalanche.ChainType.X_CHAIN, 'fuji')
+
+    expect(keypair.getAddressString()).toBe('X-fuji1w508d6qejxtdg4y5r3zarvary0c5xw7krd7v66')
+  })
+
   it('should import an avalanche account using a provider', async () => {
     const mockProvider = new EthereumMockProvider({
       address: '0x1234567890AbcdEF1234567890aBcdef12345678',

@@ -1,12 +1,10 @@
 import { SignableMessage } from '@aleph-sdk/account'
 import { Blockchain } from '@aleph-sdk/core'
 import { ChainData, ChainMetadata, ChangeRpcParam, EVMAccount, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
-import { Buffer as AvaBuff, AvalancheCore as Avalanche, BinTools } from 'avalanche'
-import { KeyChain, KeyPair } from 'avalanche/dist/apis/avm'
-import { KeyPair as EVMKeyPair } from 'avalanche/dist/apis/evm'
-import { privateToAddress } from 'ethereumjs-util'
-import { providers, utils, Wallet } from 'ethers'
+import { Buffer } from 'buffer'
+import { BaseWallet, BrowserProvider, Eip1193Provider, HDNodeWallet, JsonRpcProvider, Wallet } from 'ethers'
 
+import { EVMKeyPair, KeyChain, KeyPair, cb58Encode } from './keypair'
 import { digestMessage, verifyAvalanche } from './verify'
 
 /**
@@ -17,7 +15,7 @@ export class AvalancheAccount extends EVMAccount {
   public readonly keyPair?: KeyPair | EVMKeyPair
 
   constructor(
-    signerOrWallet: KeyPair | EVMKeyPair | Wallet | providers.JsonRpcProvider | JsonRPCWallet,
+    signerOrWallet: KeyPair | EVMKeyPair | BaseWallet | JsonRpcProvider | JsonRPCWallet,
     address: string,
     publicKey?: string,
     rpcId?: number,
@@ -28,14 +26,14 @@ export class AvalancheAccount extends EVMAccount {
       this.keyPair = signerOrWallet
       signerOrWallet = new Wallet(signerOrWallet.getPrivateKey().toString('hex'))
     }
-    if (signerOrWallet instanceof providers.JsonRpcProvider) this.wallet = new JsonRPCWallet(signerOrWallet)
-    else if (signerOrWallet instanceof Wallet && !signerOrWallet.provider) {
+    if (signerOrWallet instanceof JsonRpcProvider) this.wallet = new JsonRPCWallet(signerOrWallet)
+    else if (signerOrWallet instanceof BaseWallet && !signerOrWallet.provider) {
       const network = ChainMetadata[rpcId || this.selectedRpcId]
-      const provider = new providers.JsonRpcProvider(network.rpcUrls.at(0), {
+      const provider = new JsonRpcProvider(network.rpcUrls.at(0), {
         name: network.chainName,
         chainId: hexToDec(network.chainId),
       })
-      this.wallet = new JsonRPCWallet(signerOrWallet.connect(provider))
+      this.wallet = new JsonRPCWallet(signerOrWallet.connect(provider), undefined, network.rpcUrls.at(0))
     } else if (signerOrWallet instanceof JsonRPCWallet) {
       this.wallet = signerOrWallet
     }
@@ -59,8 +57,8 @@ export class AvalancheAccount extends EVMAccount {
     if (this.publicKey) return
     if (!this.wallet) throw Error('PublicKey Error: No providers are setup')
 
-    if (this.wallet instanceof Wallet) {
-      this.publicKey = this.wallet.publicKey
+    if (this.wallet instanceof BaseWallet) {
+      this.publicKey = this.wallet.signingKey.publicKey
       return
     }
     this.publicKey = await this.wallet.getPublicKey()
@@ -81,13 +79,10 @@ export class AvalancheAccount extends EVMAccount {
     const digest = digestMessage(buffer)
 
     if (this.keyPair) {
-      const digestHex = digest.toString('hex')
-      const digestBuff = AvaBuff.from(digestHex, 'hex')
-      const signatureBuffer = this.keyPair?.sign(digestBuff)
+      const signatureBuffer = this.keyPair.sign(digest)
       if (!signatureBuffer) throw new Error('Cannot sign message')
 
-      const bintools = BinTools.getInstance()
-      const signature = bintools.cb58Encode(signatureBuffer)
+      const signature = cb58Encode(signatureBuffer)
       if (await verifyAvalanche(buffer, signature, this.keyPair.getPublicKey().toString('hex'))) return signature
 
       throw new Error('Cannot proof the integrity of the signature')
@@ -104,28 +99,25 @@ export enum ChainType {
   X_CHAIN = 'X',
 }
 
+const DEFAULT_HRP = 'avax'
+
 /**
  * Get Key Chains
  * @param chain Avalanche chain type: c-chain | x-chain
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  * @returns key chains
  */
-async function getKeyChain(chain = ChainType.C_CHAIN) {
-  return new KeyChain(new Avalanche().getHRP(), chain)
+async function getKeyChain(chain = ChainType.C_CHAIN, hrp = DEFAULT_HRP) {
+  return new KeyChain(hrp, chain)
 }
 
-export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN): Promise<KeyPair> {
-  const keyChain = await getKeyChain(chain)
+export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN, hrp = DEFAULT_HRP): Promise<KeyPair> {
+  const keyChain = await getKeyChain(chain, hrp)
   const keyPair = keyChain.makeKey()
 
   if (privateKey) {
-    let keyBuff: AvaBuff
-    if (privateKey.startsWith('PrivateKey-')) {
-      const bintools = BinTools.getInstance()
-      keyBuff = bintools.cb58Decode(privateKey.split('-')[1])
-    } else {
-      keyBuff = AvaBuff.from(privateKey, 'hex')
-    }
-    if (keyPair.importKey(keyBuff)) return keyPair
+    if (privateKey.startsWith('PrivateKey-')) return keyChain.importKey(privateKey)
+    if (keyPair.importKey(Buffer.from(privateKey, 'hex'))) return keyPair
     throw new Error('Invalid private key')
   }
   return keyPair
@@ -138,17 +130,19 @@ export async function getKeyPair(privateKey?: string, chain = ChainType.C_CHAIN)
  *
  * @param privateKey The private key of the account to import.
  * @param chain The Avalanche subnet to use the account with.
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  */
 export async function importAccountFromPrivateKey(
   privateKey: string,
   chain = ChainType.C_CHAIN,
+  hrp?: string,
 ): Promise<AvalancheAccount> {
   if (chain === ChainType.X_CHAIN) {
-    const keyPair = await getKeyPair(privateKey, chain)
+    const keyPair = await getKeyPair(privateKey, chain, hrp)
     return new AvalancheAccount(keyPair, keyPair.getAddressString(), keyPair.getPublicKey().toString('hex'))
   } else {
     const wallet = new Wallet(privateKey)
-    return new AvalancheAccount(wallet, wallet.address, wallet.publicKey)
+    return new AvalancheAccount(wallet, wallet.address, wallet.signingKey.publicKey)
   }
 }
 
@@ -160,32 +154,34 @@ export async function importAccountFromPrivateKey(
  * @param mnemonic The mnemonic of the account to import.
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  * @param chain The Avalanche subnet to use the account with.
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  */
 export async function importAccountFromMnemonic(
   mnemonic: string,
   derivationPath = "m/44'/60'/0'/0/0",
   chain = ChainType.C_CHAIN,
+  hrp?: string,
 ): Promise<AvalancheAccount> {
-  const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
+  const wallet = HDNodeWallet.fromPhrase(mnemonic, undefined, derivationPath)
 
-  return await importAccountFromPrivateKey(wallet.privateKey, chain)
+  return await importAccountFromPrivateKey(wallet.privateKey, chain, hrp)
 }
 
 /**
  * Get an account from a Web3 provider (ex: Metamask)
  *
- * @param  {providers.ExternalProvider | providers.Web3Provider} provider
+ * @param  {Eip1193Provider | BrowserProvider} provider
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
-  provider: providers.ExternalProvider | providers.Web3Provider,
+  provider: Eip1193Provider | BrowserProvider,
   requestedRpc: ChangeRpcParam = RpcId.AVAX,
 ): Promise<AvalancheAccount> {
-  const ETHprovider = provider instanceof providers.Web3Provider ? provider : new providers.Web3Provider(provider)
-  const jrw = new JsonRPCWallet(ETHprovider)
+  const ETHprovider = provider instanceof BrowserProvider ? provider : new BrowserProvider(provider)
+  const jrw = new JsonRPCWallet(ETHprovider, provider instanceof BrowserProvider ? undefined : provider)
 
-  const chainId = Number((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
-  if (chainId !== (await jrw.provider.getNetwork()).chainId) await jrw.changeNetwork(requestedRpc)
+  const chainId = hexToDec((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
+  if (chainId !== (await jrw.getCurrentChainId())) await jrw.changeNetwork(requestedRpc)
   await jrw.connect()
 
   if (jrw.address) {
@@ -209,20 +205,21 @@ export async function getAccountFromProvider(
  * @returns A Promise that resolves to the EVM-style address of the account
  * @throws An error if the current signer is not associated with the C-Chain
  */
-export function getEVMAddress(keypair: EVMKeyPair): string {
+export function getEVMAddress(keypair: EVMKeyPair | KeyPair): string {
   const pkHex = keypair.getPrivateKey().toString('hex')
-  const pkBuffNative = Buffer.from(pkHex, 'hex')
-  const ethAddress = privateToAddress(pkBuffNative).toString('hex')
-  return utils.getAddress(`0x${ethAddress}`)
+  return new Wallet(pkHex).address
 }
 
 /**
  * Creates a new Avalanche account using a randomly generated privateKey
+ * @param chain Avalanche chain type: c-chain | x-chain
+ * @param hrp Avalanche human-readable part: avax | fuji | cascade
  */
 export async function newAccount(
   chain = ChainType.C_CHAIN,
+  hrp?: string,
 ): Promise<{ account: AvalancheAccount; privateKey: string }> {
-  const keypair = await getKeyPair(undefined, chain)
+  const keypair = await getKeyPair(undefined, chain, hrp)
   const privateKey = keypair.getPrivateKey().toString('hex')
 
   let address: string = keypair.getAddressString()

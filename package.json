@@ -26,7 +26,14 @@
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "test": "npm run test:jest",
-    "test:jest": "jest --testTimeout=120000 --verbose --coverage ./packages"
+    "test:jest": "jest --testTimeout=120000 --verbose --coverage ./packages",
+    "sandbox": "scripts/sandbox.sh",
+    "sandbox:install": "scripts/sandbox.sh --net -- npm ci --ignore-scripts",
+    "sandbox:audit": "scripts/sandbox.sh --net --ro -- npm audit",
+    "sandbox:build": "scripts/sandbox.sh -- npm run build",
+    "sandbox:test": "scripts/sandbox.sh --net -- npm test",
+    "sandbox:lint": "scripts/sandbox.sh --ro -- npm run lint",
+    "sandbox:shell": "scripts/sandbox.sh --tty -- bash"
   },
   "repository": {
     "url": "https://github.com/aleph-im/aleph-sdk-ts"
@@ -65,9 +72,11 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.4.0",
+    "ethers": "^6.17.0",
     "jest": "^29.7.0",
     "lerna": "^9.0.4",
     "prettier": "^3.5.3",
+    "rimraf": "^6.1.4",
     "rollup": "^4.41.0",
     "rollup-plugin-dts": "^6.2.1",
     "rollup-plugin-esbuild": "^6.2.1",

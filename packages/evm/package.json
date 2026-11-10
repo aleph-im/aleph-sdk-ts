@@ -11,17 +11,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "@metamask/eth-sig-util": "^7.0.1",
-    "ethereumjs-util": "^7.1.5"
-  },
   "devDependencies": {
-    "ethers": "^5.x.x"
+    "ethers": "^6.17.0"
   },
   "peerDependencies": {
     "@aleph-sdk/account": "^1.x.x",
     "@aleph-sdk/core": "^1.x.x",
-    "ethers": "^5.x.x"
+    "ethers": "^6.17.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

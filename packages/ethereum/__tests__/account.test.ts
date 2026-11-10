@@ -1,5 +1,5 @@
 import { EphAccount } from '../../account/src'
-import { createEphemeralEth, EthereumMockProvider } from '../../evm/src'
+import { createEphemeralEth, EthereumMockProvider, RpcId } from '../../evm/src'
 import { buildMessage, ItemType, MessageType, prepareAlephMessage } from '../../message/src'
 import * as ethereum from '../src'
 
@@ -30,6 +30,18 @@ describe('Ethereum accounts', () => {
     })
     const accountFromProvider = await ethereum.getAccountFromProvider(mockProvider)
     expect(accountFromProvider.address).toStrictEqual(mockProvider.getAddress())
+  })
+
+  it('should resolve the RPC id for injected provider accounts', async () => {
+    const mockProvider = new EthereumMockProvider({
+      address: '0x1234567890AbcdEF1234567890aBcdef12345678',
+      privateKey: '0x1234567890AbcdEF1234567890aBcdef12345678',
+      networkVersion: 1,
+    })
+    const account = await ethereum.getAccountFromProvider(mockProvider)
+
+    expect(account.getRpcUrl()).toBeUndefined()
+    expect(await account.getRpcId()).toBe(RpcId.ETH)
   })
 
   it('should get the same signed message for each account', async () => {

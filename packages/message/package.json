@@ -12,11 +12,12 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/sha.js": "^2.4.4"
+    "@types/sha.js": "^2.4.4",
+    "uuid": "^11.1.0"
   },
   "dependencies": {
-    "axios": "^1.18.0",
-    "form-data": "^4.0.0",
+    "axios": "^1.21.1",
+    "form-data": "^4.0.6",
     "sha.js": "^2.4.12"
   },
   "peerDependencies": {
