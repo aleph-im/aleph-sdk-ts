@@ -61,7 +61,7 @@ function bech32Encode(prefix: string, words: number[], limit = 90): string {
   let result = `${lowered}1`
 
   for (const word of words) {
-    if ((word >> 5) !== 0) throw new Error('Non 5-bit word')
+    if (word >> 5 !== 0) throw new Error('Non 5-bit word')
     chk = polymodStep(chk) ^ word
     result += BECH32_ALPHABET.charAt(word)
   }
