@@ -1,15 +1,15 @@
 import { Blockchain } from '@aleph-sdk/core'
 import { ETHAccount } from '@aleph-sdk/ethereum'
-import { ChainData, ChangeRpcParam, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
+import { ChainData, ChangeRpcParam, hexToDec, JsonRPCWallet, RpcId } from '@aleph-sdk/evm'
 import * as bip39 from 'bip39'
-import { providers, Wallet } from 'ethers'
+import { BaseWallet, BrowserProvider, Eip1193Provider, HDNodeWallet, Wallet } from 'ethers'
 
 /**
  * BaseAccount implements the Account class for the Base protocol.
  * It is used to represent a Base account when publishing a message on the Aleph network.
  */
 export class BaseAccount extends ETHAccount {
-  public constructor(wallet: Wallet | JsonRPCWallet, address: string, publicKey?: string, rpcId?: number) {
+  public constructor(wallet: BaseWallet | JsonRPCWallet, address: string, publicKey?: string, rpcId?: number) {
     super(wallet, address, publicKey, rpcId || RpcId.BASE)
   }
 
@@ -27,7 +27,7 @@ export class BaseAccount extends ETHAccount {
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  */
 export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): BaseAccount {
-  const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
+  const wallet = HDNodeWallet.fromPhrase(mnemonic, undefined, derivationPath)
 
   return new BaseAccount(wallet, wallet.address, wallet.publicKey)
 }
@@ -42,7 +42,7 @@ export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/
 export function importAccountFromPrivateKey(privateKey: string): BaseAccount {
   const wallet = new Wallet(privateKey)
 
-  return new BaseAccount(wallet, wallet.address, wallet.publicKey)
+  return new BaseAccount(wallet, wallet.address, wallet.signingKey.publicKey)
 }
 
 /**
@@ -63,14 +63,14 @@ export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: Base
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
-  provider: providers.ExternalProvider | providers.Web3Provider,
+  provider: Eip1193Provider | BrowserProvider,
   requestedRpc: ChangeRpcParam = RpcId.BASE,
 ): Promise<BaseAccount> {
-  const ETHprovider = provider instanceof providers.Web3Provider ? provider : new providers.Web3Provider(provider)
-  const jrw = new JsonRPCWallet(ETHprovider)
+  const ETHprovider = provider instanceof BrowserProvider ? provider : new BrowserProvider(provider)
+  const jrw = new JsonRPCWallet(ETHprovider, provider instanceof BrowserProvider ? undefined : provider)
 
-  const chainId = Number((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
-  if (chainId !== (await jrw.provider.getNetwork()).chainId) await jrw.changeNetwork(requestedRpc)
+  const chainId = hexToDec((typeof requestedRpc === 'number' ? ChainData[requestedRpc] : requestedRpc).chainId)
+  if (chainId !== (await jrw.getCurrentChainId())) await jrw.changeNetwork(requestedRpc)
   await jrw.connect()
 
   if (jrw.address)

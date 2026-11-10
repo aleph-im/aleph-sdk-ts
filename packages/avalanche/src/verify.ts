@@ -1,6 +1,8 @@
 import { SignableMessage } from '@aleph-sdk/account'
-import { Buffer as AvaBuff, Avalanche, BinTools } from 'avalanche'
+import { Buffer } from 'buffer'
 import shajs from 'sha.js'
+
+import { cb58Decode, recoverPublicKey } from './keypair'
 
 export function digestMessage(message: Uint8Array): Buffer {
   const msgSize = Buffer.alloc(4)
@@ -31,16 +33,12 @@ export async function verifyAvalanche(
       throw Error(`Cannot sign message: ${message}`)
     }
   }
-  const ava = new Avalanche()
-  const keyPair = ava.XChain().keyChain().makeKey()
-
-  const bintools = BinTools.getInstance()
-  const readableSignature = bintools.cb58Decode(signature)
+  const readableSignature = cb58Decode(signature)
 
   const digest = Buffer.from(await digestMessage(message))
   const digestHex = digest.toString('hex')
-  const digestBuff = AvaBuff.from(digestHex, 'hex')
+  const digestBuff = Buffer.from(digestHex, 'hex')
 
-  const recovered = keyPair.recover(digestBuff, readableSignature)
+  const recovered = recoverPublicKey(digestBuff, readableSignature)
   return signerPKey === recovered.toString('hex')
 }

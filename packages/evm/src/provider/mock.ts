@@ -5,9 +5,8 @@
  */
 
 import { EphAccount } from '@aleph-sdk/account'
-import { personalSign } from '@metamask/eth-sig-util'
 import * as bip39 from 'bip39'
-import { ethers } from 'ethers'
+import { getBytes, HDNodeWallet, isHexString, Signer, Wallet } from 'ethers'
 
 interface ProviderSetup {
   address: string
@@ -27,7 +26,7 @@ interface IMockProvider {
   getNetworkVersion?: () => number
   getAddress?: () => string
   getPrivateKey?: () => string
-  getSigner?: () => ethers.Signer
+  getSigner?: () => Signer
 }
 
 export class EthereumMockProvider implements IMockProvider {
@@ -48,11 +47,11 @@ export class EthereumMockProvider implements IMockProvider {
     return `0x${this.setup.networkVersion.toString(16)}`
   }
 
-  getSigner(): ethers.Signer {
-    return new ethers.Wallet(this.setup.privateKey)
+  getSigner(): Signer {
+    return new Wallet(this.setup.privateKey)
   }
 
-  request({ method, params }: { method: string; params?: any[] }): Promise<any> {
+  async request({ method, params }: { method: string; params?: any[] }): Promise<any> {
     this.log(`request[${method}]`)
 
     switch (method) {
@@ -66,13 +65,14 @@ export class EthereumMockProvider implements IMockProvider {
 
       case 'personal_sign': {
         if (!params) throw Error('Nothing to sign')
-        const privateKey = Buffer.from(this.setup.privateKey, 'hex')
+        const data = params[0]
+        const message = typeof data === 'string' && isHexString(data) ? getBytes(data) : data
 
-        const signed: string = personalSign({ privateKey, data: params[0] })
+        const signed = await new Wallet(this.setup.privateKey).signMessage(message)
 
         this.log('signed', signed)
 
-        return Promise.resolve(signed)
+        return signed
       }
 
       case 'wallet_addEthereumChain': {
@@ -114,7 +114,7 @@ export class EthereumMockProvider implements IMockProvider {
 
 export async function createEphemeralEth(): Promise<EphAccount> {
   const mnemonic = bip39.generateMnemonic()
-  const { address, publicKey, privateKey } = ethers.Wallet.fromMnemonic(mnemonic)
+  const { address, publicKey, privateKey } = HDNodeWallet.fromPhrase(mnemonic)
 
   return {
     address,

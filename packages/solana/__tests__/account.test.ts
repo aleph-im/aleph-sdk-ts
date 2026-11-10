@@ -1,5 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
-import { E2EWalletAdapter } from '@jet-lab/e2e-react-adapter'
 import { Keypair, PublicKey } from '@solana/web3.js'
 import nacl from 'tweetnacl'
 
@@ -13,20 +11,19 @@ type WalletSignature = {
 }
 
 class SolanaMockProvider {
-  public provider
   public publicKey: PublicKey
   public secretKey: Uint8Array
   public connected: boolean
 
   constructor(randomKeypair: Keypair) {
-    this.provider = new E2EWalletAdapter({ keypair: randomKeypair })
     this.secretKey = randomKeypair.secretKey
-    this.publicKey = this.provider.publicKey
-    this.connected = this.provider.connected
+    this.publicKey = randomKeypair.publicKey
+    this.connected = true
   }
 
   connect(): Promise<void> {
-    return this.provider.connect()
+    this.connected = true
+    return Promise.resolve()
   }
 }
 

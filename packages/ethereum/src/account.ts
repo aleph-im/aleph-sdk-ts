@@ -10,17 +10,17 @@ import {
   RpcId,
 } from '@aleph-sdk/evm'
 import * as bip39 from 'bip39'
-import { providers, Wallet } from 'ethers'
+import { BaseWallet, BrowserProvider, Eip1193Provider, HDNodeWallet, JsonRpcProvider, Wallet } from 'ethers'
 
 /**
  * ETHAccount implements the Account class for the Ethereum protocol.
  * It is used to represent an ethereum account when publishing a message on the Aleph network.
  */
 export class ETHAccount extends EVMAccount {
-  public override readonly wallet: Wallet | JsonRPCWallet | ExternalSignerWallet
+  public override readonly wallet: BaseWallet | JsonRPCWallet | ExternalSignerWallet
 
   public constructor(
-    wallet: Wallet | JsonRPCWallet | ExternalSignerWallet,
+    wallet: BaseWallet | JsonRPCWallet | ExternalSignerWallet,
     address: string,
     publicKey?: string,
     rpcId?: number,
@@ -31,9 +31,9 @@ export class ETHAccount extends EVMAccount {
       this.wallet = wallet
       return
     }
-    if (wallet instanceof Wallet && !wallet.provider) {
+    if (wallet instanceof BaseWallet && !wallet.provider) {
       const network = ChainMetadata[rpcId || this.selectedRpcId]
-      const provider = new providers.JsonRpcProvider(network.rpcUrls.at(0), {
+      const provider = new JsonRpcProvider(network.rpcUrls.at(0), {
         name: network.chainName,
         chainId: hexToDec(network.chainId),
       })
@@ -62,8 +62,8 @@ export class ETHAccount extends EVMAccount {
       // ECIES encryption not yet supported for external signers
       throw new Error('PublicKey not available for ExternalSignerWallet accounts')
     }
-    if (this.wallet instanceof Wallet) {
-      this.publicKey = this.wallet.publicKey
+    if (this.wallet instanceof BaseWallet) {
+      this.publicKey = this.wallet.signingKey.publicKey
       return
     }
     this.publicKey = await this.wallet.getPublicKey()
@@ -92,7 +92,7 @@ export class ETHAccount extends EVMAccount {
  * @param derivationPath The derivation path used to retrieve the list of accounts attached to the given mnemonic.
  */
 export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/44'/60'/0'/0/0"): ETHAccount {
-  const wallet = Wallet.fromMnemonic(mnemonic, derivationPath)
+  const wallet = HDNodeWallet.fromPhrase(mnemonic, undefined, derivationPath)
 
   return new ETHAccount(wallet, wallet.address, wallet.publicKey)
 }
@@ -107,7 +107,7 @@ export function importAccountFromMnemonic(mnemonic: string, derivationPath = "m/
 export function importAccountFromPrivateKey(privateKey: string): ETHAccount {
   const wallet = new Wallet(privateKey)
 
-  return new ETHAccount(wallet, wallet.address, wallet.publicKey)
+  return new ETHAccount(wallet, wallet.address, wallet.signingKey.publicKey)
 }
 
 /**
@@ -128,11 +128,11 @@ export function newAccount(derivationPath = "m/44'/60'/0'/0/0"): { account: ETHA
  * @param requestedRpc Use this params to change the RPC endpoint;
  */
 export async function getAccountFromProvider(
-  provider: providers.ExternalProvider | providers.Web3Provider,
+  provider: Eip1193Provider | BrowserProvider,
   requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): Promise<ETHAccount> {
-  const ETHprovider = provider instanceof providers.Web3Provider ? provider : new providers.Web3Provider(provider)
-  const jrw = new JsonRPCWallet(ETHprovider)
+  const ETHprovider = provider instanceof BrowserProvider ? provider : new BrowserProvider(provider)
+  const jrw = new JsonRPCWallet(ETHprovider, provider instanceof BrowserProvider ? undefined : provider)
 
   const chainId = hexToDec((typeof requestedRpc === 'number' ? ChainMetadata[requestedRpc] : requestedRpc).chainId)
   if (chainId !== (await jrw.getCurrentChainId())) await jrw.changeNetwork(requestedRpc)
@@ -164,7 +164,7 @@ export async function getAccountFromProvider(
  */
 export function getAccountFromExternalSigner(
   address: string,
-  provider: providers.JsonRpcProvider,
+  provider: JsonRpcProvider,
   signMessage: (message: Buffer | string) => Promise<string>,
   requestedRpc: ChangeRpcParam = RpcId.ETH,
 ): ETHAccount {

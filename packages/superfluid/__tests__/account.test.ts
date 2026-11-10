@@ -24,15 +24,13 @@ describe('SuperfluidAccount', () => {
   it('init should setup framework and alephx for Avalanche account', async () => {
     await avalancheSuperfluidAccount.init()
 
-    expect(avalancheSuperfluidAccount).toHaveProperty('framework')
-    expect(avalancheSuperfluidAccount).toHaveProperty('alephx')
+    expect(avalancheSuperfluidAccount).toHaveProperty('initialized', true)
   })
 
   it('init should setup framework and alephx for Base account', async () => {
     await baseSuperfluidAccount.init()
 
-    expect(baseSuperfluidAccount).toHaveProperty('framework')
-    expect(baseSuperfluidAccount).toHaveProperty('alephx')
+    expect(baseSuperfluidAccount).toHaveProperty('initialized', true)
   })
 
   it('should create Superfluid account from Avalanche account', async () => {

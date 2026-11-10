@@ -1,9 +1,9 @@
 import { SignableMessage } from '@aleph-sdk/account'
-import { ethers } from 'ethers'
+import { verifyMessage } from 'ethers'
 
 /**
  * Provide a way to verify the authenticity of a signature associated with a given message.
- * This method rely on the ethers.utils.verifyMessage() implementation.
+ * This method rely on the ethers verifyMessage() implementation.
  *
  * @param message The content of the signature to verify. It can be the result of GetVerificationBuffer() or directly a BaseMessage object.
  * @param signature The signature associated with the first params of this method.
@@ -23,7 +23,7 @@ export function verifyEthereum(
   }
 
   try {
-    const address = ethers.utils.verifyMessage(message, signature)
+    const address = verifyMessage(message, signature)
     return address === signerAddress
   } catch {
     return false

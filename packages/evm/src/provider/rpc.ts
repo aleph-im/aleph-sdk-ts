@@ -1,5 +1,5 @@
 import { BaseProviderWallet } from '@aleph-sdk/account'
-import { providers, Wallet } from 'ethers'
+import { BaseWallet, BrowserProvider, Eip1193Provider, JsonRpcProvider, JsonRpcSigner } from 'ethers'
 
 import { MetamaskErrorCodes } from './constants'
 
@@ -191,19 +191,29 @@ export function findChainMetadataByChainId(chainId: number): ChainMetadataType |
  * Wrapper for JSON RPC Providers (ex: Metamask).
  */
 export class JsonRPCWallet extends BaseProviderWallet {
-  declare public readonly provider: providers.JsonRpcProvider | providers.Web3Provider
-  private signer?: providers.JsonRpcSigner | Wallet
+  declare public readonly provider: JsonRpcProvider | BrowserProvider
+  private signer?: JsonRpcSigner | BaseWallet
+  private readonly eip1193Provider?: Eip1193Provider
   public address?: string
   private publicKey?: string
 
-  constructor(providerOrWallet: providers.JsonRpcProvider | providers.Web3Provider | Wallet) {
+  constructor(providerOrWallet: JsonRpcProvider | BrowserProvider | BaseWallet, eip1193Provider?: Eip1193Provider) {
     super()
-    if (providerOrWallet instanceof Wallet) {
+    this.eip1193Provider = eip1193Provider
+    if (providerOrWallet instanceof BaseWallet) {
+      if (!providerOrWallet.provider) throw new Error('Wallet has no connected provider')
       this.signer = providerOrWallet
-      this.provider = providerOrWallet.provider as providers.JsonRpcProvider
+      this.provider = providerOrWallet.provider as JsonRpcProvider | BrowserProvider
     } else {
       this.provider = providerOrWallet
     }
+  }
+
+  public getRpcUrl(): string {
+    if (this.provider instanceof JsonRpcProvider) {
+      return this.provider._getConnection().url
+    }
+    throw new Error('Provider has no RPC URL')
   }
 
   public async connect(): Promise<void> {
@@ -213,7 +223,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
         if (!connected) {
           await this.provider.send('wallet_requestPermissions', [{ eth_accounts: {} }])
         }
-        this.signer = this.provider.getSigner()
+        this.signer = await this.provider.getSigner()
       } else if (!connected) {
         throw new Error('JsonRpcProvider error')
       }
@@ -225,8 +235,8 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
   public async getPublicKey(): Promise<string> {
     if (!this.publicKey) {
-      if (this.signer instanceof Wallet) {
-        this.publicKey = this.signer.publicKey
+      if (this.signer instanceof BaseWallet) {
+        this.publicKey = this.signer.signingKey.publicKey
       } else {
         console.warn(RPC_WARNING)
         this.publicKey = await this.provider.send('eth_getEncryptionPublicKey', [this.address])
@@ -238,6 +248,12 @@ export class JsonRPCWallet extends BaseProviderWallet {
     return this.publicKey
   }
 
+  public async getSigner(): Promise<JsonRpcSigner | BaseWallet> {
+    if (!this.signer) await this.connect()
+    if (!this.signer) throw new Error('Wallet not connected')
+    return this.signer
+  }
+
   public async signMessage(data: Buffer | string): Promise<string> {
     if (!this.signer) throw new Error('Wallet not connected')
     return this.signer.signMessage(data)
@@ -245,16 +261,18 @@ export class JsonRPCWallet extends BaseProviderWallet {
 
   public async getCurrentChainId(): Promise<number> {
     const network = await this.provider.getNetwork()
-    return network.chainId
+    return Number(network.chainId)
   }
 
   public isMetamask(): boolean {
-    return this.provider instanceof providers.Web3Provider && !!this.provider?.provider.isMetaMask
+    const provider = this.eip1193Provider as (Eip1193Provider & { isMetaMask?: boolean }) | undefined
+    return !!provider?.isMetaMask
   }
 
   public async isConnected(): Promise<boolean> {
-    if (this.signer instanceof Wallet) {
-      return !!(await this.provider.detectNetwork())
+    if (this.signer instanceof BaseWallet) {
+      await this.provider.getNetwork()
+      return true
     }
 
     const accounts = await this.provider.send('eth_accounts', [])
@@ -262,7 +280,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
   }
 
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
-    if (this.signer instanceof Wallet) {
+    if (this.signer instanceof BaseWallet) {
       console.warn('[Switch Network]: Only available for injected providers')
     }
 
@@ -283,7 +301,7 @@ export class JsonRPCWallet extends BaseProviderWallet {
   }
 
   private async addNetwork(chainData: RpcType): Promise<void> {
-    if (this.signer instanceof Wallet) {
+    if (this.signer instanceof BaseWallet) {
       console.warn('[Add Network]: Only available for injected providers')
     }
 

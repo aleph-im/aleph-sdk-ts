@@ -1,29 +1,30 @@
 import { ECIESAccount } from '@aleph-sdk/account'
 import { Decimal } from 'decimal.js'
-import { Contract, Wallet } from 'ethers'
+import { BaseWallet, Contract } from 'ethers'
 
 import { ChainData, ChainMetadata, decToHex, ExternalSignerWallet, JsonRPCWallet, RpcId, RpcType } from './provider'
 import { erc20Abi, weiToAleph } from './utils'
 
 export abstract class EVMAccount extends ECIESAccount {
-  public wallet?: Wallet | JsonRPCWallet | ExternalSignerWallet
+  public wallet?: BaseWallet | JsonRPCWallet | ExternalSignerWallet
   public selectedRpcId?: RpcId
 
   public async getChainId(): Promise<number> {
     if (this.wallet instanceof JsonRPCWallet) {
-      return this.wallet.provider.network.chainId
+      return this.wallet.getCurrentChainId()
     }
     if (this.wallet instanceof ExternalSignerWallet) {
-      return (await this.wallet.provider.getNetwork()).chainId
+      return Number((await this.wallet.provider.getNetwork()).chainId)
     }
-    if (this.wallet instanceof Wallet) {
-      return (await this.wallet.provider.getNetwork()).chainId
+    if (this.wallet instanceof BaseWallet) {
+      if (!this.wallet.provider) throw new Error('Wallet has no connected provider')
+      return Number((await this.wallet.provider.getNetwork()).chainId)
     }
     if (!this.wallet) {
       throw new Error('EVMAccount has no connected wallet')
     }
     try {
-      return (this.wallet as JsonRPCWallet).provider.network.chainId
+      return await (this.wallet as JsonRPCWallet).getCurrentChainId()
     } catch (err: unknown) {
       throw new Error(`Could not get chainId: ${err}`)
     }
@@ -31,12 +32,12 @@ export abstract class EVMAccount extends ECIESAccount {
 
   public getRpcUrl(): string {
     if (this.wallet instanceof JsonRPCWallet) {
-      return this.wallet.provider.connection.url
+      return this.wallet.getRpcUrl()
     }
     if (this.wallet instanceof ExternalSignerWallet) {
-      return this.wallet.provider.connection.url
+      return this.wallet.getRpcUrl()
     }
-    if (this.wallet instanceof Wallet) {
+    if (this.wallet instanceof BaseWallet) {
       throw new Error('Wallet has no connected provider')
     }
     throw new Error('EVMAccount has no connected wallet')
@@ -57,7 +58,7 @@ export abstract class EVMAccount extends ECIESAccount {
   public async changeNetwork(chainOrRpc: RpcType | RpcId = RpcId.ETH): Promise<void> {
     if (this.wallet instanceof JsonRPCWallet) {
       await this.wallet.changeNetwork(chainOrRpc)
-    } else if (this.wallet instanceof Wallet) {
+    } else if (this.wallet instanceof BaseWallet) {
       throw new Error('Not implemented for Wallet')
     }
   }

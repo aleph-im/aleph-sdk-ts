@@ -1,5 +1,5 @@
 import { BaseProviderWallet } from '@aleph-sdk/account'
-import { providers } from 'ethers'
+import { JsonRpcProvider } from 'ethers'
 
 /**
  * Wraps any async sign function as a BaseProviderWallet so it can be used
@@ -13,14 +13,10 @@ import { providers } from 'ethers'
  */
 export class ExternalSignerWallet extends BaseProviderWallet {
   public readonly address: string
-  public override readonly provider: providers.JsonRpcProvider
+  public override readonly provider: JsonRpcProvider
   private readonly _signMessage: (message: Buffer | string) => Promise<string>
 
-  constructor(
-    address: string,
-    provider: providers.JsonRpcProvider,
-    signMessage: (message: Buffer | string) => Promise<string>,
-  ) {
+  constructor(address: string, provider: JsonRpcProvider, signMessage: (message: Buffer | string) => Promise<string>) {
     super()
     this.address = address
     this.provider = provider
@@ -35,9 +31,13 @@ export class ExternalSignerWallet extends BaseProviderWallet {
     return this._signMessage(data)
   }
 
+  getRpcUrl(): string {
+    return this.provider._getConnection().url
+  }
+
   async getCurrentChainId(): Promise<number> {
     const network = await this.provider.getNetwork()
-    return network.chainId
+    return Number(network.chainId)
   }
 
   async getPublicKey(): Promise<string> {
